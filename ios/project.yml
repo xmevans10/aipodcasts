@@ -16,7 +16,8 @@ settings:
     INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.news
     CURRENT_PROJECT_VERSION: 1
     MARKETING_VERSION: 0.1.0
-    CODE_SIGNING_ALLOWED: NO
+    DEVELOPMENT_TEAM: 8K5ZVPCQ42
+    CODE_SIGN_STYLE: Automatic
 targets:
   ScienceBreak:
     type: application

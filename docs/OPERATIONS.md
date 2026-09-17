@@ -95,6 +95,8 @@ Validation: standalone listening-state checks and an unsigned simulator-SDK buil
 
 ## Sound design and direction (Eleven v3)
 
+Effects can also be full-level stingers: an `effect_after` entry may be a dict with its own `gain_db`, fades and trailing gap, which is how Clara’s jingle now plays after her signature line rather than before the first word.
+
 `backend/produce.py` synthesizes one directed beat at a time and caches by content hash, so retouching a line re-buys only that line. Per beat you can set `voice_settings` (v3 stability: 0.0 creative, 0.5 natural, 1.0 robust), `pause_after_seconds`, `effect_after` (a named clip from the plan's `assets` table) and `ambience` (a looping bed mixed under the speech at a given gain). Effects come from ElevenLabs sound generation (`/v1/sound-generation`); all music and effects are generated or user-supplied, never field recordings of the animals or places described, and the plan records that.
 
 Direction is expressed in `directed_text` only; the canonical `text` stays word-for-word identical, so transcripts, timings and the source check stay valid. A word-count assertion guards this. Creative stability (0.0) is more expressive but riskier: it slurred the dolphin's name "Bubbles" into "Bustles" in a takeaway beat, caught by `backend/evals/qa_episodes.py` and fixed by moving that beat to natural stability. v3 ignores the `speed` setting; pace comes from voice casting, ellipses and inter-beat pauses.

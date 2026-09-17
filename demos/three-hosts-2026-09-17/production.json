@@ -73,7 +73,7 @@
       "host": "Clara Rowan",
       "voice_id": "QtY3JBOUKEB5xzrRfOKc",
       "voice_name": "Maisie - Friendly Casual Neighbor",
-      "intro_asset": "../../assets/audio/clara-intro.wav",
+      "intro_asset": null,
       "beats": [
         {
           "id": "01",
@@ -94,11 +94,30 @@
         },
         {
           "id": "02",
+          "title": "Signature",
+          "speaker": "Clara Rowan",
+          "direction": "Warm, unhurried signature; the show jingle plays straight after it.",
+          "text": "I'm Clara Rowan, and this is Sound Science.",
+          "directed_text": "[warmly] I'm Clara Rowan, and this is Sound Science.",
+          "voice_settings": {
+            "stability": 0.5
+          },
+          "pause_after_seconds": 0.2,
+          "effect_after": {
+            "asset": "clara-intro",
+            "gain_db": -4,
+            "fade_in": 0.02,
+            "fade_out": 1.2,
+            "gap_after": 0.45
+          }
+        },
+        {
+          "id": "02b",
           "title": "The headline",
           "speaker": "Clara Rowan",
-          "direction": "Warm signature, then settle into careful attribution.",
-          "text": "I'm Clara Rowan, and this is Sound Science. Today's headline: The dolphin who lets dinner escape.\n\nA paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.",
-          "directed_text": "[warmly] I'm Clara Rowan, and this is Sound Science. Today's headline: [playfully] The dolphin who lets dinner escape.\n\n[measured] A paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.",
+          "direction": "Pick the thread back up after the jingle; playful on the headline, then careful attribution.",
+          "text": "Today's headline: The dolphin who lets dinner escape.\n\nA paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.",
+          "directed_text": "[playfully] Today's headline: The dolphin who lets dinner escape.\n\n[measured] A paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.",
           "voice_settings": {
             "stability": 0.5
           },
@@ -143,7 +162,7 @@
       ],
       "casting_basis": "Chosen from a 19-voice Eleven v3 audition (backend/evals/voices): brief fit, 100% transcript match, no spoken tags, pace and pitch variation. Pending human listening approval. Recast from the featured Australian voice: it narrated at ~104 wpm (brief 140-155) and Eleven v3 ignores the speed setting.",
       "audio_file": "clara.m4a",
-      "duration_seconds": 204.4
+      "duration_seconds": 204.3
     },
     {
       "id": "elias",
@@ -202,7 +221,8 @@
     "transition": "assets/audio/transition.mp3",
     "water-transition": "assets/audio/water-transition.mp3",
     "bubbles-accent": "assets/audio/bubbles-accent.mp3",
-    "reef-ambience": "assets/audio/reef-ambience.mp3"
+    "reef-ambience": "assets/audio/reef-ambience.mp3",
+    "clara-intro": "assets/audio/clara-intro.wav"
   },
   "sound_design_note": "All music and effects are AI-generated (ElevenLabs sound generation) or supplied by the user; none are field recordings of the animals or places described."
 }

@@ -98,7 +98,7 @@ def overlay(base, extra, at=0):
 
 def mix_episode(episode, beat_files, plan, gap, transition_db):
     out = array.array('f')
-    if episode.get('intro_asset'):
+    if episode.get('intro_asset'):  # legacy: jingle before the first word
         intro = decode((DEMO / episode['intro_asset']).resolve())
         out += fade(gain(intro, TARGET_RMS_DBFS - 4 - rms_db(intro)), 0.02, 1.5)
         out += silence(0.35)
@@ -112,9 +112,13 @@ def mix_episode(episode, beat_files, plan, gap, transition_db):
         if i < len(episode['beats']) - 1:
             out += silence(beat.get('pause_after_seconds', gap))
             if effect := beat.get('effect_after'):
-                clip = asset(plan, effect)
+                # a bare name is a quiet transition; a dict can set its own level, fade and trailing gap
+                spec = {'asset': effect} if isinstance(effect, str) else dict(effect)
+                clip = asset(plan, spec['asset'])
                 if clip:
-                    out += gain(fade(clip, 0.01, 0.4), TARGET_RMS_DBFS + transition_db + 12 - rms_db(clip)) + silence(0.25)
+                    level = TARGET_RMS_DBFS + spec.get('gain_db', transition_db + 12)
+                    out += gain(fade(clip, spec.get('fade_in', 0.01), spec.get('fade_out', 0.4)), level - rms_db(clip))
+                    out += silence(spec.get('gap_after', 0.25))
     peak = max(abs(x) for x in out)
     if peak > 0.84: out = gain(out, 20 * math.log10(0.84 / peak))  # ~-1.5 dBTP ceiling
     return out

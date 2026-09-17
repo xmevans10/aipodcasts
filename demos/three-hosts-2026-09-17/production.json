@@ -375,6 +375,66 @@
       "casting_basis": "Chosen from a 19-voice Eleven v3 audition (backend/evals/voices): brief fit, 100% transcript match, no spoken tags, pace and pitch variation. Pending human listening approval.",
       "audio_file": "elias.m4a",
       "duration_seconds": 185.4
+    },
+    {
+      "id": "theo",
+      "host": "Theo Mercer",
+      "voice_id": "Fahco4VZzobUeiPqni1S",
+      "voice_name": "Archer - Conversational",
+      "casting_basis": "Chosen from a nine-voice Eleven v3 audition for Common Ground: 130 wpm with the most breathing room of the field, low grounded register, 100% transcript match.",
+      "intro_asset": null,
+      "beats": [
+        {
+          "id": "01",
+          "title": "The hook",
+          "speaker": "Theo Mercer",
+          "direction": "Unhurried opening; let the scale land.",
+          "text": "Water takes a lot of energy to warm up. Across the planet, that makes the ocean an enormous reservoir of heat.",
+          "voice_settings": {
+            "stability": 0.0
+          },
+          "pause_after_seconds": 0.4,
+          "directed_text": "[grounded, unhurried] Water takes a lot of energy to warm up. [with quiet weight] Across the planet, that makes the ocean... an ENORMOUS reservoir of heat."
+        },
+        {
+          "id": "02",
+          "title": "Signature",
+          "speaker": "Theo Mercer",
+          "direction": "Warm signature, patient headline.",
+          "text": "I'm Theo Mercer, and this is Sound Science. Today: the ocean has a very long memory.",
+          "voice_settings": {
+            "stability": 0.0
+          },
+          "pause_after_seconds": 0.45,
+          "effect_after": "water-transition",
+          "directed_text": "[warm and steady] I'm Theo Mercer, and this is Sound Science. [thoughtful] Today: the ocean has a very long memory."
+        },
+        {
+          "id": "03",
+          "title": "Under the surface",
+          "speaker": "Theo Mercer",
+          "direction": "Plain explanation; curiosity, no alarm.",
+          "text": "Currents move heat through the ocean, and exchanges with the atmosphere influence climate. What happens at the surface is only part of the picture.\n\nScientists combine instruments, satellite observations and models to understand these changes. Each method has limitations, particularly when measuring the deep ocean.",
+          "voice_settings": {
+            "stability": 0.5
+          },
+          "pause_after_seconds": 0.45,
+          "directed_text": "[measured] Currents move heat through the ocean, and exchanges with the atmosphere influence climate. [curious] What happens at the surface... is only part of the picture.\n\n[careful] Scientists combine instruments, satellite observations and models to understand these changes. [firm] Each method has limitations — particularly when measuring the deep ocean."
+        },
+        {
+          "id": "04",
+          "title": "The takeaway",
+          "speaker": "Theo Mercer",
+          "direction": "Reflective close; the sign-off lands softly.",
+          "text": "Thinking about the ocean changes how we think about climate: some responses unfold over very long periods, well beyond a single season or year.\n\nI'm Theo Mercer. Take the long way round. This is an original explainer, not a report of new measurements. Your host and narration are AI-generated.",
+          "voice_settings": {
+            "stability": 0.0
+          },
+          "directed_text": "[reflective] Thinking about the ocean changes how we think about climate: [slowly] some responses unfold over very long periods... well beyond a single season, or year.\n\n[warm] I'm Theo Mercer. [smiling] Take the long way round. [softly] This is an original explainer, not a report of new measurements. Your host and narration are AI-generated."
+        }
+      ],
+      "audio_file": "theo.m4a",
+      "duration_seconds": 65.1
     }
   ],
   "assets": {

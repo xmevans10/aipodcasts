@@ -66,7 +66,7 @@ struct ShowView: View {
     }
 
     private var statsLine: String {
-        let real = episodes.filter { !$0.isDemo }
+        let real = episodes
         guard !real.isEmpty else { return episodes.isEmpty ? "New show" : "Sample episode available" }
         let minutes = real.reduce(0) { $0 + $1.minutes }
         var line = "\(real.count) episode\(real.count == 1 ? "" : "s") · \(minutes) min"

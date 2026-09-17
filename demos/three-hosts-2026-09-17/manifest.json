@@ -176,6 +176,29 @@
       "audio_file": null,
       "audio_status": "directed_version_pending",
       "tts_model": "eleven_v3"
+    },
+    {
+      "id": "theo",
+      "host": "Theo Mercer",
+      "host_id": "atlas",
+      "niche": "Earth",
+      "title": "The ocean has a very long memory",
+      "dek": "Why the sea holds on to heat long after the season has passed.",
+      "script_file": "theo.txt",
+      "word_count": 131,
+      "sources": [
+        {
+          "title": "NASA Earth science",
+          "url": "https://science.nasa.gov/earth/",
+          "authors": [
+            "NASA"
+          ],
+          "published": "2026-09-17",
+          "license": "Original Sound Science explainer; NASA provided as background reading",
+          "licenseURL": "https://www.nasa.gov/nasa-brand-center/images-and-media/"
+        }
+      ],
+      "caveat": "An original Sound Science explainer about how the ocean stores heat, not a report of new measurements or a specific study. Host and narration are AI-generated."
     }
   ],
   "production_plan": "production.json"

@@ -56,7 +56,8 @@ extension SectionHeader where Trailing == EmptyView {
     init(title: String) { self.title = title; self.trailing = EmptyView() }
 }
 
-/// Podcast cover art: the show's gradient, a large symbol and the title set in serif.
+/// Podcast cover art: a vivid three-stop wash, a soft light bloom and the show title
+/// set in serif. No glyph watermark — the colour and type do the work.
 /// Size it with `.frame(width:)`; it stays square.
 struct ShowCover: View {
     var show: Show
@@ -64,17 +65,27 @@ struct ShowCover: View {
         GeometryReader { geometry in
             let w = geometry.size.width
             ZStack(alignment: .bottomLeading) {
-                LinearGradient(colors: [show.light, show.dark], startPoint: .topTrailing, endPoint: .bottomLeading)
+                LinearGradient(colors: [show.light, show.mid, show.dark], startPoint: .topTrailing, endPoint: .bottomLeading)
+                RadialGradient(colors: [show.light.opacity(0.75), .clear], center: UnitPoint(x: 0.82, y: 0.14),
+                               startRadius: 0, endRadius: w * 0.72)
+                    .blendMode(.screen)
+                Ellipse()
+                    .fill(LinearGradient(colors: [.white.opacity(0.22), .clear], startPoint: .top, endPoint: .bottom))
+                    .frame(width: w * 1.5, height: w * 0.42)
+                    .rotationEffect(.degrees(-26))
+                    .offset(x: -w * 0.18, y: w * 0.2)
+                    .blendMode(.softLight)
                 if w >= 96 {
-                    Image(systemName: show.symbol).font(.system(size: w * 0.5, weight: .thin)).foregroundStyle(.white.opacity(0.2))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing).offset(x: w * 0.06, y: -w * 0.04)
                     VStack(alignment: .leading, spacing: w * 0.025) {
-                        Text(show.title).font(.system(size: w * 0.125, weight: .semibold, design: .serif)).tracking(-0.2)
+                        Text(show.title).font(.system(size: w * 0.135, weight: .semibold, design: .serif)).tracking(-0.3)
                             .lineLimit(2).minimumScaleFactor(0.8)
-                        Text(show.host.name.uppercased()).font(.system(size: max(7, w * 0.048), weight: .semibold)).tracking(0.8).opacity(0.82)
-                    }.foregroundStyle(.white).padding(w * 0.085)
+                        Text(show.host.name.uppercased()).font(.system(size: max(7, w * 0.048), weight: .semibold)).tracking(0.9).opacity(0.85)
+                    }
+                    .foregroundStyle(.white).shadow(color: show.dark.opacity(0.4), radius: w * 0.05, y: w * 0.01)
+                    .padding(w * 0.085)
                 } else {
-                    Image(systemName: show.symbol).font(.system(size: w * 0.42, weight: .regular)).foregroundStyle(.white)
+                    Circle().fill(.white.opacity(0.9)).frame(width: w * 0.22, height: w * 0.22)
+                        .overlay(Circle().stroke(.white.opacity(0.5), lineWidth: w * 0.03).scaleEffect(1.6))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }

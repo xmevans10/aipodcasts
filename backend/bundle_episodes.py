@@ -86,7 +86,7 @@ def main():
             'id': 'episode-' + m['id'], 'title': m['title'], 'dek': m['dek'], 'topic': m['niche'].upper(),
             'hostID': m['host_id'], 'minutes': max(1, round(p['duration_seconds'] / 60)),
             'body': '\n\n'.join(paragraphs),
-            'caveat': 'AI-assisted preview episode. Sources checked by the assistant; independent editorial approval is still pending. Host and narration are AI-generated.',
+            'caveat': m.get('caveat', 'AI-assisted preview episode. Sources checked by the assistant; independent editorial approval is still pending. Host and narration are AI-generated.'),
             'sources': [{'title': s['title'], 'url': s['url'], 'attribution': ', '.join(s['authors']), 'license': s['license']} for s in m['sources']],
             'audioURL': 'bundle:' + m['id'] + '.m4a', 'isDemo': False, 'published': manifest['created'],
         }

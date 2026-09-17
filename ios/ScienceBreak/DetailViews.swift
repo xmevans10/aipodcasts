@@ -43,7 +43,7 @@ struct EpisodeView: View {
                     }.accessibilityLabel("Share")
                 }
 
-                if story.isDemo {
+                if story.audioURL == nil {
                     Label("Device voice sample. A produced episode of \(story.show.title) is coming soon.", systemImage: "waveform")
                         .font(.caption).foregroundStyle(Theme.secondary)
                 }

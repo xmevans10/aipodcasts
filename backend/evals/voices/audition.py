@@ -15,6 +15,7 @@ LINES = {
     'mira': "[curious] The Moon looks reassuringly finished. Craters in place. Dust settled. [short pause] But while we were getting on with life... something punched a brand-new hole in it.",
     'clara': "[curious] A dolphin chases a fish. So far, an entirely ordinary afternoon. [laughs softly] Then the fish brings up its last meal, and the dolphin eats that instead.",
     'elias': "[thoughtful] Your ordinary breath is, for a mosquito, a rather specialised signal. [excited] So how does a brain the size of a poppy seed actually pay attention?",
+    'theo': "[grounded] The ocean takes its time. [warmly] A summer of heat can sit in the water for decades... and still be there when we have forgotten the summer.",
 }
 CANDIDATES = {
     'mira': {'Florence': '22N9cF8z0o7y23njdyaY', 'Amelia': 'ZF6FPAbjXT4488VcRRnw', 'Shelley': '4CrZuIW9am7gYAxgo2Af',
@@ -23,6 +24,9 @@ CANDIDATES = {
               'Juniper': 'aMSt68OGf4xUZAnLpTU8', 'Jessica Anne Bogart': 'g6xIsTj2HwM6VR4iXFCw', 'Cassidy': '56AoDkrOh6qfVPDXZ7Pt'},
     'elias': {'Lawrence': 'ktkP7Nsj67dw2zcplQYt', 'Archer': 'Fahco4VZzobUeiPqni1S', 'Chris': 'iP95p4xoKVk53GoZ742B',
               'Eric': 'cjVigY5qzO86Huf0OWal', 'Otto': 'FTNCalFNG5bRnkkaP5Ug', 'Peter': 'TumdjBNWanlT3ysvclWh', 'Liam': 'TX3LPaxmHKxFdv7VOQHJ'},
+    'theo': {'Adam Stone': 'NFG5qt843uXKj4pFvR7C', 'John Doe': 'EiNlNiXeDU1pqqOPrYMO', 'Robert': 'BtWabtumIemAotTjP5sk',
+             'Nassim': 'repzAAjoKlgcT2oOAIWt', 'Eric': 'cjVigY5qzO86Huf0OWal', 'Peter': 'TumdjBNWanlT3ysvclWh',
+             'Archer': 'Fahco4VZzobUeiPqni1S', 'Brian': 'nPczCjzI2devNBz1zQrb', 'Bill': 'pqHfZKP75CvOlQylNhV4'},
 }
 
 

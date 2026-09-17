@@ -11,7 +11,7 @@ struct WelcomeView: View {
     @AccessibilityFocusState private var headingFocused: Bool
 
     private var firstEpisode: Story? {
-        library.latest.first { selected.contains($0.hostID) && !$0.isDemo } ?? library.latest.first { selected.contains($0.hostID) }
+        library.latest.first { selected.contains($0.hostID) }
     }
 
     var body: some View {
@@ -176,7 +176,7 @@ struct WelcomeView: View {
                         }
                         Text(story.title).font(.system(size: 22, weight: .semibold, design: .serif))
                         Text(story.dek).font(.subheadline).foregroundStyle(Theme.secondary)
-                        Text(story.isDemo ? "Device voice sample" : "\(story.minutes) min · AI-narrated · Sources included").font(.caption).foregroundStyle(Theme.secondary)
+                        Text(story.audioURL == nil ? "Device voice sample" : "\(story.minutes) min · AI-narrated · Sources included").font(.caption).foregroundStyle(Theme.secondary)
                     }
                 }.card()
             } else {

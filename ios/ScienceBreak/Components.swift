@@ -74,7 +74,7 @@ struct ShowCard: View {
     @EnvironmentObject var player: AudioPlayer
     var show: Show
     private var episodes: [Story] { library.episodes(of: show) }
-    private var unplayed: Int { episodes.filter { !$0.isDemo && player.progress(of: $0) == 0 }.count }
+    private var unplayed: Int { episodes.filter { player.progress(of: $0) == 0 }.count }
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             ShowCover(show: show)

@@ -29,7 +29,7 @@
    "pause_share": 0.41,
    "median_hz": 219,
    "pitch_sd_semitones": 5.76,
-   "transcript": "The Moon looks reassuringly finished: craters in place, dust settled. But while we were getting on with life, something punched a brand-new hole in it",
+   "transcript": "The Moon looks reassuringly finished\u2014craters in place, dust settled. But while we were getting on with life, something punched a brand-new hole in it",
    "word_match": 1.0,
    "spoken_tags": []
   },
@@ -40,7 +40,7 @@
    "pause_share": 0.4,
    "median_hz": 120,
    "pitch_sd_semitones": 5.81,
-   "transcript": "The moon looks reassuringly finished. Craters in place, dust settled. But while we were getting on with life, something punched a brand new hole in it",
+   "transcript": "The moon looks reassuringly finished, craters in place, dust settled. But while we were getting on with life, something punched a brand new hole in it",
    "word_match": 1.0,
    "spoken_tags": []
   },
@@ -165,7 +165,7 @@
    "pause_share": 0.29,
    "median_hz": 118,
    "pitch_sd_semitones": 7.38,
-   "transcript": "Your ordinary breath is for a mosquito a rather specialized signal. So how does a brain the size of a poppy seed actually pay attention?",
+   "transcript": "Your ordinary breath is, for a mosquito, a rather specialized signal. So how does a brain the size of a poppy seed actually pay attention?",
    "word_match": 0.96,
    "spoken_tags": []
   },
@@ -211,6 +211,107 @@
    "pitch_sd_semitones": 7.27,
    "transcript": "Your ordinary breath is, for a mosquito, a rather specialized signal. So how does a brain the size of a poppy seed actually pay attention?",
    "word_match": 0.96,
+   "spoken_tags": []
+  }
+ },
+ "theo": {
+  "Adam Stone": {
+   "voice_id": "NFG5qt843uXKj4pFvR7C",
+   "seconds": 8.8,
+   "wpm": 177,
+   "pause_share": 0.36,
+   "median_hz": 106,
+   "pitch_sd_semitones": 6.96,
+   "transcript": "The ocean takes its time. A summer of heat can sit in the water for decades and still be there when we have forgotten the summer",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "John Doe": {
+   "voice_id": "EiNlNiXeDU1pqqOPrYMO",
+   "seconds": 9.0,
+   "wpm": 174,
+   "pause_share": 0.25,
+   "median_hz": 122,
+   "pitch_sd_semitones": 12.04,
+   "transcript": "The ocean takes its time. A summer of heat can sit in the water for decades and still be there when we have forgotten the summer",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Robert": {
+   "voice_id": "BtWabtumIemAotTjP5sk",
+   "seconds": 9.7,
+   "wpm": 161,
+   "pause_share": 0.31,
+   "median_hz": 103,
+   "pitch_sd_semitones": 8.64,
+   "transcript": "The ocean takes its time. A summer of heat can sit in the water for decades and still be there when we have forgotten the summer",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Nassim": {
+   "voice_id": "repzAAjoKlgcT2oOAIWt",
+   "seconds": 8.4,
+   "wpm": 187,
+   "pause_share": 0.24,
+   "median_hz": 121,
+   "pitch_sd_semitones": 6.47,
+   "transcript": "The ocean takes its time. A summer of heat can sit in the water for decades and still be there when we have forgotten the summer",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Eric": {
+   "voice_id": "cjVigY5qzO86Huf0OWal",
+   "seconds": 7.5,
+   "wpm": 207,
+   "pause_share": 0.2,
+   "median_hz": 148,
+   "pitch_sd_semitones": 5.56,
+   "transcript": "The ocean takes its time. A summer of heat can sit in the water for decades and still be there when we have forgotten the summer",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Peter": {
+   "voice_id": "TumdjBNWanlT3ysvclWh",
+   "seconds": 8.0,
+   "wpm": 196,
+   "pause_share": 0.31,
+   "median_hz": 96,
+   "pitch_sd_semitones": 4.03,
+   "transcript": "The ocean takes its time. A summer of heat can sit in the water for decades and still be there when we have forgotten the summer",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Archer": {
+   "voice_id": "Fahco4VZzobUeiPqni1S",
+   "seconds": 12.0,
+   "wpm": 130,
+   "pause_share": 0.53,
+   "median_hz": 98,
+   "pitch_sd_semitones": 5.68,
+   "transcript": "The ocean takes its time. A summer of heat can sit in the water for decades and still be there when we have forgotten the summer",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Brian": {
+   "voice_id": "nPczCjzI2devNBz1zQrb",
+   "seconds": 8.0,
+   "wpm": 194,
+   "pause_share": 0.23,
+   "median_hz": 89,
+   "pitch_sd_semitones": 5.63,
+   "transcript": "The ocean takes its time. A summer of heat can sit in the water for decades and still be there when we have forgotten the summer",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Bill": {
+   "voice_id": "pqHfZKP75CvOlQylNhV4",
+   "seconds": 9.0,
+   "wpm": 174,
+   "pause_share": 0.2,
+   "median_hz": 139,
+   "pitch_sd_semitones": 5.87,
+   "transcript": "The ocean takes its time. A summer of heat can sit in the water for decades and still be there when we have forgotten the summer",
+   "word_match": 1.0,
    "spoken_tags": []
   }
  }

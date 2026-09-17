@@ -14,7 +14,7 @@ struct HomeView: View {
     }
     /// Followed shows first, then the rest, in catalogue order.
     private var shows: [Show] { Show.all.filter { library.isFollowing($0) } + Show.all.filter { !library.isFollowing($0) } }
-    private var episodes: [Story] { library.latest.filter { !$0.isDemo } }
+    private var episodes: [Story] { library.latest }
     private var freshThisWeek: [Story] {
         let cutoff = Calendar.current.date(byAdding: .day, value: -7, to: .now) ?? .distantPast
         return episodes.filter { ($0.publishedDate ?? .distantPast) >= cutoff }

@@ -33,3 +33,9 @@ All PNGs in this folder’s sibling `design/` are captures of the compiled iOS a
 - Home: greeting and weekly summary, continue listening, show cards, latest episodes with play-all, listening stats (minutes this week, finished, day streak; stored on device only).
 - Tabs: Home, Browse (shows + episode search), Hosts (persona pages), Library (following, up next, saved / in progress / played), You (daily goal, weekly Swift Charts bar chart, totals, follow toggles, settings). The daily goal is set during onboarding and stored on device.
 - Host portraits: DiceBear "Notionists" (CC0 1.0, https://www.dicebear.com/styles/notionists/), fetched once as 256px PNGs with fixed options (hair/lips variants, no glasses/beard/gesture) and bundled as `host-<id>` assets.
+
+## Motion: the living cover (Rive)
+
+`rive/nowplaying/scene.rml` is the animated player cover, authored as text with the Rive CLI (`rive rive/nowplaying --once` writes `build/nowplaying.riv`, which is copied to `ios/ScienceBreak/Animations/`). One artboard serves every show: a `Cover` view model exposes `colorTop`, `colorBottom` and `isPlaying`, so the app binds the show's gradient and play state rather than shipping four files. While playing, two orbits turn, the sphere breathes and a five-bar equalizer dances; paused, the bars settle and the orbits keep drifting slowly — the drift is deliberate, since a fully settled state machine stops advancing and then misses the next `isPlaying` change.
+
+Swift side: [`LivingCover.swift`](../ios/ScienceBreak/LivingCover.swift) wraps `RiveViewModel` (RiveRuntime 6.27.0 via SPM), writes the two colours and the boolean through `enableAutoBind`, and falls back to the static `ShowCover` if the `.riv` is missing. Verify scene changes headlessly before building the app: `rive rive/nowplaying --screenshot=build/playing.png --data=isPlaying=true --data=colorTop=FF8CC084 --advance=70`.

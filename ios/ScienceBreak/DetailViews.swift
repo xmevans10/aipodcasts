@@ -125,7 +125,8 @@ struct PlayerView: View {
             ScrollView {
                 if let story = player.story {
                     VStack(spacing: 24) {
-                        ShowCover(show: story.show).frame(maxWidth: 300).shadow(color: .black.opacity(0.16), radius: 24, y: 14).padding(.top, 4)
+                        LivingCover(show: story.show, playing: player.playing, cornerRadius: 30)
+                            .frame(maxWidth: 300).shadow(color: .black.opacity(0.16), radius: 24, y: 14).padding(.top, 4)
                         VStack(spacing: 8) {
                             HStack(spacing: 8) {
                                 HostAvatar(host: story.host, size: 22)

@@ -1,0 +1,224 @@
+<Rive version="1" kind="fragment">
+    <!-- Now Playing cover: one artboard for every show. The host app sets colorTop,
+         colorBottom and isPlaying on the Cover view model. -->
+    <Artboard defaultStateMachineId="0:7" viewModelId="0:40" viewModelInstanceId="0:44"
+              clip="true" width="500" height="500" styleId="0:5" name="NowPlaying" id="0:2">
+        <LayoutComponentStyle name="Artboard Style" id="0:5"/>
+
+        <!-- Equalizer: five bars anchored to their base, tallest in the middle. -->
+        <Shape x="190" y="400" name="Bar1" id="0:60">
+            <Rectangle width="16" height="26" originY="1" cornerRadiusTL="8" name="Path" id="0:61"/>
+            <Fill name="Fill"><SolidColor colorValue="FFFFFFFF" name="Color"/></Fill>
+        </Shape>
+        <Shape x="220" y="400" name="Bar2" id="0:62">
+            <Rectangle width="16" height="52" originY="1" cornerRadiusTL="8" name="Path" id="0:63"/>
+            <Fill name="Fill"><SolidColor colorValue="FFFFFFFF" name="Color"/></Fill>
+        </Shape>
+        <Shape x="250" y="400" name="Bar3" id="0:64">
+            <Rectangle width="16" height="78" originY="1" cornerRadiusTL="8" name="Path" id="0:65"/>
+            <Fill name="Fill"><SolidColor colorValue="FFFFFFFF" name="Color"/></Fill>
+        </Shape>
+        <Shape x="280" y="400" name="Bar4" id="0:66">
+            <Rectangle width="16" height="44" originY="1" cornerRadiusTL="8" name="Path" id="0:67"/>
+            <Fill name="Fill"><SolidColor colorValue="FFFFFFFF" name="Color"/></Fill>
+        </Shape>
+        <Shape x="310" y="400" name="Bar5" id="0:68">
+            <Rectangle width="16" height="22" originY="1" cornerRadiusTL="8" name="Path" id="0:69"/>
+            <Fill name="Fill"><SolidColor colorValue="FFFFFFFF" name="Color"/></Fill>
+        </Shape>
+
+        <!-- Body: a soft sphere that breathes while playing. -->
+        <Shape x="250" y="218" name="Pulse" id="0:70">
+            <Ellipse width="188" height="188" name="Path" id="0:71"/>
+            <Fill name="Fill">
+                <LinearGradient startX="-70" startY="-90" endX="80" endY="100" name="Sheen">
+                    <GradientStop colorValue="66FFFFFF" position="0"/>
+                    <GradientStop colorValue="14FFFFFF" position="1"/>
+                </LinearGradient>
+            </Fill>
+        </Shape>
+
+        <!-- Two orbits, turning slowly in opposite directions. -->
+        <Shape x="250" y="218" rotation="-0.45" name="OrbitOuter" id="0:72">
+            <Ellipse width="420" height="196" name="Path" id="0:73"/>
+            <Stroke thickness="2" name="Stroke"><SolidColor colorValue="3DFFFFFF" name="Color"/></Stroke>
+        </Shape>
+        <Shape x="250" y="218" rotation="0.32" name="OrbitInner" id="0:74">
+            <Ellipse width="322" height="150" name="Path" id="0:75"/>
+            <Stroke thickness="2" name="Stroke"><SolidColor colorValue="2EFFFFFF" name="Color"/></Stroke>
+        </Shape>
+
+        <!-- Background, declared last so it paints behind everything. -->
+        <Shape x="250" y="250" name="Backdrop" id="0:10">
+            <Rectangle width="500" height="500" name="Path" id="0:11"/>
+            <Fill name="Fill">
+                <LinearGradient startX="180" startY="-250" endX="-180" endY="250" name="Gradient">
+                    <GradientStop colorValue="FF7D8BE0" position="0" name="Top" id="0:12">
+                        <DataBindContext sourcePathIds="0:40-0:41" propertyKey="38"/>
+                    </GradientStop>
+                    <GradientStop colorValue="FF232B5E" position="1" name="Bottom" id="0:13">
+                        <DataBindContext sourcePathIds="0:40-0:42" propertyKey="38"/>
+                    </GradientStop>
+                </LinearGradient>
+            </Fill>
+        </Shape>
+
+        <!-- Playing: orbits turn, sphere breathes, bars dance. -->
+        <LinearAnimation loopValue="loop" duration="180" name="Playing" id="0:20">
+            <KeyedObject objectId="0:72">
+                <KeyedProperty propertyKey="15">
+                    <KeyFrameDouble value="-0.45" interpolationType="linear"/>
+                    <KeyFrameDouble value="5.8331855" interpolationType="linear" frame="180"/>
+                </KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:74">
+                <KeyedProperty propertyKey="15">
+                    <KeyFrameDouble value="0.32" interpolationType="linear"/>
+                    <KeyFrameDouble value="-5.9631855" interpolationType="linear" frame="180"/>
+                </KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:70">
+                <KeyedProperty propertyKey="16">
+                    <KeyFrameDouble value="1" interpolationType="cubic"/>
+                    <KeyFrameDouble value="1.045" interpolationType="cubic" frame="90"/>
+                    <KeyFrameDouble value="1" interpolationType="cubic" frame="180"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="17">
+                    <KeyFrameDouble value="1" interpolationType="cubic"/>
+                    <KeyFrameDouble value="1.045" interpolationType="cubic" frame="90"/>
+                    <KeyFrameDouble value="1" interpolationType="cubic" frame="180"/>
+                </KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:61">
+                <KeyedProperty propertyKey="21">
+                    <KeyFrameDouble value="26" interpolationType="cubic"/>
+                    <KeyFrameDouble value="64" interpolationType="cubic" frame="34"/>
+                    <KeyFrameDouble value="18" interpolationType="cubic" frame="76"/>
+                    <KeyFrameDouble value="48" interpolationType="cubic" frame="128"/>
+                    <KeyFrameDouble value="26" interpolationType="cubic" frame="180"/>
+                </KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:63">
+                <KeyedProperty propertyKey="21">
+                    <KeyFrameDouble value="52" interpolationType="cubic"/>
+                    <KeyFrameDouble value="20" interpolationType="cubic" frame="42"/>
+                    <KeyFrameDouble value="74" interpolationType="cubic" frame="96"/>
+                    <KeyFrameDouble value="34" interpolationType="cubic" frame="142"/>
+                    <KeyFrameDouble value="52" interpolationType="cubic" frame="180"/>
+                </KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:65">
+                <KeyedProperty propertyKey="21">
+                    <KeyFrameDouble value="78" interpolationType="cubic"/>
+                    <KeyFrameDouble value="36" interpolationType="cubic" frame="30"/>
+                    <KeyFrameDouble value="96" interpolationType="cubic" frame="84"/>
+                    <KeyFrameDouble value="44" interpolationType="cubic" frame="136"/>
+                    <KeyFrameDouble value="78" interpolationType="cubic" frame="180"/>
+                </KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:67">
+                <KeyedProperty propertyKey="21">
+                    <KeyFrameDouble value="44" interpolationType="cubic"/>
+                    <KeyFrameDouble value="82" interpolationType="cubic" frame="48"/>
+                    <KeyFrameDouble value="24" interpolationType="cubic" frame="104"/>
+                    <KeyFrameDouble value="60" interpolationType="cubic" frame="150"/>
+                    <KeyFrameDouble value="44" interpolationType="cubic" frame="180"/>
+                </KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:69">
+                <KeyedProperty propertyKey="21">
+                    <KeyFrameDouble value="22" interpolationType="cubic"/>
+                    <KeyFrameDouble value="56" interpolationType="cubic" frame="56"/>
+                    <KeyFrameDouble value="16" interpolationType="cubic" frame="112"/>
+                    <KeyFrameDouble value="40" interpolationType="cubic" frame="158"/>
+                    <KeyFrameDouble value="22" interpolationType="cubic" frame="180"/>
+                </KeyedProperty>
+            </KeyedObject>
+        </LinearAnimation>
+
+        <!-- Paused: bars settle, orbits keep drifting. The drift also keeps the state machine
+             advancing, so a change to isPlaying is picked up instead of freezing mid-settle. -->
+        <LinearAnimation loopValue="loop" duration="600" name="Paused" id="0:21">
+            <KeyedObject objectId="0:72">
+                <KeyedProperty propertyKey="15">
+                    <KeyFrameDouble value="-0.45" interpolationType="linear"/>
+                    <KeyFrameDouble value="5.8331855" interpolationType="linear" frame="600"/>
+                </KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:74">
+                <KeyedProperty propertyKey="15">
+                    <KeyFrameDouble value="0.32" interpolationType="linear"/>
+                    <KeyFrameDouble value="-5.9631855" interpolationType="linear" frame="600"/>
+                </KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:70">
+                <KeyedProperty propertyKey="16">
+                    <KeyFrameDouble value="1" interpolationType="cubic" frame="24"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="17">
+                    <KeyFrameDouble value="1" interpolationType="cubic" frame="24"/>
+                </KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:61">
+                <KeyedProperty propertyKey="21"><KeyFrameDouble value="16" interpolationType="cubic" frame="24"/></KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:63">
+                <KeyedProperty propertyKey="21"><KeyFrameDouble value="16" interpolationType="cubic" frame="24"/></KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:65">
+                <KeyedProperty propertyKey="21"><KeyFrameDouble value="16" interpolationType="cubic" frame="24"/></KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:67">
+                <KeyedProperty propertyKey="21"><KeyFrameDouble value="16" interpolationType="cubic" frame="24"/></KeyedProperty>
+            </KeyedObject>
+            <KeyedObject objectId="0:69">
+                <KeyedProperty propertyKey="21"><KeyFrameDouble value="16" interpolationType="cubic" frame="24"/></KeyedProperty>
+            </KeyedObject>
+        </LinearAnimation>
+
+        <StateMachine name="State Machine 1" id="0:7">
+            <StateMachineLayer name="Layer 1" id="0:8">
+                <AnyState x="520" y="-120"/>
+                <ExitState x="700" y="-120"/>
+                <EntryState x="20" y="60">
+                    <StateTransition stateToId="0:30"/>
+                </EntryState>
+                <AnimationState x="200" y="60" animationId="0:20" id="0:30">
+                    <StateTransition stateToId="0:31" duration="260">
+                        <TransitionViewModelCondition opValue="equal">
+                            <TransitionPropertyViewModelComparator>
+                                <BindablePropertyBoolean>
+                                    <DataBindContext sourcePathIds="0:40-0:43" propertyKey="634"/>
+                                </BindablePropertyBoolean>
+                            </TransitionPropertyViewModelComparator>
+                            <TransitionValueBooleanComparator value="false"/>
+                        </TransitionViewModelCondition>
+                    </StateTransition>
+                </AnimationState>
+                <AnimationState x="380" y="60" animationId="0:21" id="0:31">
+                    <StateTransition stateToId="0:30" duration="260">
+                        <TransitionViewModelCondition opValue="equal">
+                            <TransitionPropertyViewModelComparator>
+                                <BindablePropertyBoolean>
+                                    <DataBindContext sourcePathIds="0:40-0:43" propertyKey="634"/>
+                                </BindablePropertyBoolean>
+                            </TransitionPropertyViewModelComparator>
+                            <TransitionValueBooleanComparator value="true"/>
+                        </TransitionViewModelCondition>
+                    </StateTransition>
+                </AnimationState>
+            </StateMachineLayer>
+        </StateMachine>
+    </Artboard>
+
+    <ViewModel defaultInstanceId="0:44" name="Cover" id="0:40">
+        <ViewModelPropertyColor name="colorTop" id="0:41"/>
+        <ViewModelPropertyColor name="colorBottom" id="0:42"/>
+        <ViewModelPropertyBoolean name="isPlaying" id="0:43"/>
+        <ViewModelInstance exports="true" name="Default" id="0:44">
+            <ViewModelInstanceColor propertyValue="FF7D8BE0" viewModelPropertyId="0:41"/>
+            <ViewModelInstanceColor propertyValue="FF232B5E" viewModelPropertyId="0:42"/>
+            <ViewModelInstanceBoolean propertyValue="true" viewModelPropertyId="0:43"/>
+        </ViewModelInstance>
+    </ViewModel>
+</Rive>

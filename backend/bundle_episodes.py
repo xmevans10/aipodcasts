@@ -8,6 +8,7 @@ python3 backend/bundle_episodes.py
 from __future__ import annotations
 import difflib, hashlib, json, os, re, shutil, sys, urllib.request, uuid
 from pathlib import Path
+from envelope import envelope, HOP
 from pipeline import load_local_env
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -90,9 +91,12 @@ def main():
             'audioURL': 'bundle:' + m['id'] + '.m4a', 'isDemo': False, 'published': manifest['created'],
         }
         shutil.copyfile(audio, OUT / f"{m['id']}.m4a")
-        (OUT / f"{m['id']}.json").write_text(json.dumps({'story': story, 'duration': p['duration_seconds'], 'transcript': transcript}, indent=1, ensure_ascii=False) + '\n')
+        levels = envelope(audio)  # five-band levels for the animated cover
+        (OUT / f"{m['id']}.json").write_text(json.dumps(
+            {'story': story, 'duration': p['duration_seconds'], 'transcript': transcript,
+             'levelHop': HOP, 'levels': levels}, ensure_ascii=False) + '\n')
         n = sum(len(x['words']) for x in transcript)
-        print(m['id'], 'paragraphs', len(transcript), 'words', n, 'first', transcript[0]['words'][0], 'last', transcript[-1]['words'][-1], 'of', p['duration_seconds'])
+        print(m['id'], 'paragraphs', len(transcript), 'words', n, 'level frames', len(levels), 'of', p['duration_seconds'], 's')
 
 
 if __name__ == '__main__':

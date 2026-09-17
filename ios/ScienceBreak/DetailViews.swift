@@ -125,7 +125,8 @@ struct PlayerView: View {
             ScrollView {
                 if let story = player.story {
                     VStack(spacing: 24) {
-                        LivingCover(show: story.show, playing: player.playing, cornerRadius: 30)
+                        LivingCover(show: story.show, story: story, playing: player.playing,
+                                    position: { player.position }, cornerRadius: 30)
                             .frame(maxWidth: 300).shadow(color: .black.opacity(0.16), radius: 24, y: 14).padding(.top, 4)
                         VStack(spacing: 8) {
                             HStack(spacing: 8) {

@@ -223,5 +223,239 @@
   "characters": 460,
   "utc": 1789671659.660293,
   "status": "ok"
+ },
+ {
+  "host": "mira",
+  "beat": "01",
+  "voice_id": "4CrZuIW9am7gYAxgo2Af",
+  "model": "eleven_v3",
+  "characters": 283,
+  "utc": 1789673878.7480671,
+  "status": "ok"
+ },
+ {
+  "host": "mira",
+  "beat": "02",
+  "voice_id": "4CrZuIW9am7gYAxgo2Af",
+  "model": "eleven_v3",
+  "characters": 153,
+  "utc": 1789673885.866854,
+  "status": "ok"
+ },
+ {
+  "host": "mira",
+  "beat": "03",
+  "voice_id": "4CrZuIW9am7gYAxgo2Af",
+  "model": "eleven_v3",
+  "characters": 255,
+  "utc": 1789673889.059468,
+  "status": "ok"
+ },
+ {
+  "host": "mira",
+  "beat": "04",
+  "voice_id": "4CrZuIW9am7gYAxgo2Af",
+  "model": "eleven_v3",
+  "characters": 354,
+  "utc": 1789673894.957679,
+  "status": "ok"
+ },
+ {
+  "host": "mira",
+  "beat": "05",
+  "voice_id": "4CrZuIW9am7gYAxgo2Af",
+  "model": "eleven_v3",
+  "characters": 653,
+  "utc": 1789673903.694726,
+  "status": "ok"
+ },
+ {
+  "host": "mira",
+  "beat": "06",
+  "voice_id": "4CrZuIW9am7gYAxgo2Af",
+  "model": "eleven_v3",
+  "characters": 67,
+  "utc": 1789673919.608584,
+  "status": "ok"
+ },
+ {
+  "host": "mira",
+  "beat": "07",
+  "voice_id": "4CrZuIW9am7gYAxgo2Af",
+  "model": "eleven_v3",
+  "characters": 462,
+  "utc": 1789673921.711354,
+  "status": "ok"
+ },
+ {
+  "host": "mira",
+  "beat": "08",
+  "voice_id": "4CrZuIW9am7gYAxgo2Af",
+  "model": "eleven_v3",
+  "characters": 340,
+  "utc": 1789673932.4811509,
+  "status": "ok"
+ },
+ {
+  "host": "mira",
+  "beat": "09",
+  "voice_id": "4CrZuIW9am7gYAxgo2Af",
+  "model": "eleven_v3",
+  "characters": 453,
+  "utc": 1789673939.06511,
+  "status": "ok"
+ },
+ {
+  "host": "clara",
+  "beat": "01",
+  "voice_id": "QtY3JBOUKEB5xzrRfOKc",
+  "model": "eleven_v3",
+  "characters": 270,
+  "utc": 1789673949.1199071,
+  "status": "ok"
+ },
+ {
+  "host": "clara",
+  "beat": "02",
+  "voice_id": "QtY3JBOUKEB5xzrRfOKc",
+  "model": "eleven_v3",
+  "characters": 61,
+  "utc": 1789673956.016343,
+  "status": "ok"
+ },
+ {
+  "host": "clara",
+  "beat": "02b",
+  "voice_id": "QtY3JBOUKEB5xzrRfOKc",
+  "model": "eleven_v3",
+  "characters": 469,
+  "utc": 1789673957.894885,
+  "status": "ok"
+ },
+ {
+  "host": "clara",
+  "beat": "03",
+  "voice_id": "QtY3JBOUKEB5xzrRfOKc",
+  "model": "eleven_v3",
+  "characters": 1236,
+  "utc": 1789673969.652543,
+  "status": "ok"
+ },
+ {
+  "host": "clara",
+  "beat": "04",
+  "voice_id": "QtY3JBOUKEB5xzrRfOKc",
+  "model": "eleven_v3",
+  "characters": 665,
+  "utc": 1789673994.032418,
+  "status": "ok"
+ },
+ {
+  "host": "clara",
+  "beat": "05",
+  "voice_id": "QtY3JBOUKEB5xzrRfOKc",
+  "model": "eleven_v3",
+  "characters": 558,
+  "utc": 1789674007.989634,
+  "status": "ok"
+ },
+ {
+  "host": "elias",
+  "beat": "01",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 274,
+  "utc": 1789674020.612703,
+  "status": "ok"
+ },
+ {
+  "host": "elias",
+  "beat": "02",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 130,
+  "utc": 1789674026.583349,
+  "status": "ok"
+ },
+ {
+  "host": "elias",
+  "beat": "03",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 101,
+  "utc": 1789674029.686163,
+  "status": "ok"
+ },
+ {
+  "host": "elias",
+  "beat": "04",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 289,
+  "utc": 1789674032.5648608,
+  "status": "ok"
+ },
+ {
+  "host": "elias",
+  "beat": "05",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 303,
+  "utc": 1789674038.627504,
+  "status": "ok"
+ },
+ {
+  "host": "elias",
+  "beat": "06",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 370,
+  "utc": 1789674044.669652,
+  "status": "ok"
+ },
+ {
+  "host": "elias",
+  "beat": "07",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 224,
+  "utc": 1789674053.201897,
+  "status": "ok"
+ },
+ {
+  "host": "elias",
+  "beat": "08",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 348,
+  "utc": 1789674058.1689541,
+  "status": "ok"
+ },
+ {
+  "host": "elias",
+  "beat": "09",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 323,
+  "utc": 1789674065.635381,
+  "status": "ok"
+ },
+ {
+  "host": "elias",
+  "beat": "10",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 431,
+  "utc": 1789674071.514576,
+  "status": "ok"
+ },
+ {
+  "host": "elias",
+  "beat": "11",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 564,
+  "utc": 1789674078.8173718,
+  "status": "ok"
  }
 ]

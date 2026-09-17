@@ -20,7 +20,7 @@
   "isDemo": false,
   "published": "2026-09-17"
  },
- "duration": 179.2,
+ "duration": 185.4,
  "transcript": [
   {
    "words": [
@@ -30,7 +30,7 @@
     },
     {
      "text": "you,",
-     "start": 0.26
+     "start": 0.28
     },
     {
      "text": "an",
@@ -42,151 +42,151 @@
     },
     {
      "text": "breath",
-     "start": 1.1
+     "start": 1.14
     },
     {
      "text": "is",
-     "start": 1.34
+     "start": 1.44
     },
     {
      "text": "barely",
-     "start": 1.6
+     "start": 1.8
     },
     {
      "text": "an",
-     "start": 1.9
+     "start": 2.1
     },
     {
      "text": "event.",
-     "start": 2.0
+     "start": 2.2
     },
     {
      "text": "To",
-     "start": 3.12
+     "start": 3.24
     },
     {
      "text": "a",
-     "start": 3.2
+     "start": 3.36
     },
     {
      "text": "mosquito,",
-     "start": 3.28
+     "start": 3.42
     },
     {
      "text": "its",
-     "start": 4.08
+     "start": 4.66
     },
     {
      "text": "carbon",
-     "start": 4.24
+     "start": 4.84
     },
     {
      "text": "dioxide",
-     "start": 4.5
-    },
-    {
-     "text": "can",
-     "start": 4.98
-    },
-    {
-     "text": "be",
      "start": 5.14
     },
     {
+     "text": "can",
+     "start": 5.64
+    },
+    {
+     "text": "be",
+     "start": 5.8
+    },
+    {
      "text": "a",
-     "start": 5.28
+     "start": 5.92
     },
     {
      "text": "useful",
-     "start": 5.46
+     "start": 6.06
     },
     {
      "text": "clue",
-     "start": 5.88
+     "start": 6.46
     },
     {
      "text": "that",
-     "start": 6.22
+     "start": 7.32
     },
     {
      "text": "a",
-     "start": 6.34
+     "start": 7.42
     },
     {
      "text": "potential",
-     "start": 6.42
+     "start": 7.5
     },
     {
      "text": "meal",
-     "start": 6.98
+     "start": 8.06
     },
     {
      "text": "is",
-     "start": 7.22
+     "start": 8.5
     },
     {
      "text": "nearby.",
-     "start": 7.36
-    },
-    {
-     "text": "The",
-     "start": 8.6
-    },
-    {
-     "text": "interesting",
      "start": 8.68
     },
     {
+     "text": "The",
+     "start": 10.22
+    },
+    {
+     "text": "interesting",
+     "start": 10.3
+    },
+    {
      "text": "question",
-     "start": 9.1
+     "start": 10.7
     },
     {
      "text": "is",
-     "start": 9.46
+     "start": 11.02
     },
     {
      "text": "how",
-     "start": 9.74
+     "start": 11.56
     },
     {
      "text": "that",
-     "start": 9.96
+     "start": 11.74
     },
     {
      "text": "signal",
-     "start": 10.24
+     "start": 11.94
     },
     {
      "text": "gets",
-     "start": 10.64
+     "start": 12.24
     },
     {
      "text": "through",
-     "start": 10.9
+     "start": 12.98
     },
     {
      "text": "a",
-     "start": 11.22
+     "start": 13.96
     },
     {
      "text": "world",
-     "start": 11.38
+     "start": 14.1
     },
     {
      "text": "full",
-     "start": 11.9
+     "start": 14.54
     },
     {
      "text": "of",
-     "start": 12.06
+     "start": 14.7
     },
     {
      "text": "other",
-     "start": 12.32
+     "start": 14.82
     },
     {
      "text": "smells.",
-     "start": 12.64
+     "start": 15.06
     }
    ]
   },
@@ -194,71 +194,71 @@
    "words": [
     {
      "text": "I'm",
-     "start": 13.94
+     "start": 16.04
     },
     {
      "text": "Elias",
-     "start": 14.04
+     "start": 16.14
     },
     {
      "text": "Reed.",
-     "start": 14.4
+     "start": 16.5
     },
     {
      "text": "This",
-     "start": 15.12
+     "start": 17.22
     },
     {
      "text": "is",
-     "start": 15.28
+     "start": 17.38
     },
     {
      "text": "Sound",
-     "start": 15.42
+     "start": 17.6
     },
     {
      "text": "Science,",
-     "start": 15.7
+     "start": 17.98
     },
     {
      "text": "and",
-     "start": 16.44
+     "start": 18.8
     },
     {
      "text": "today's",
-     "start": 16.58
+     "start": 18.94
     },
     {
      "text": "headline",
-     "start": 16.88
+     "start": 19.26
     },
     {
      "text": "is:",
-     "start": 17.28
+     "start": 19.66
     },
     {
      "text": "Your",
-     "start": 18.1
+     "start": 20.42
     },
     {
      "text": "breath",
-     "start": 18.3
+     "start": 20.7
     },
     {
      "text": "has",
-     "start": 18.9
+     "start": 21.36
     },
     {
      "text": "a",
-     "start": 19.12
+     "start": 21.62
     },
     {
      "text": "volume",
-     "start": 19.34
+     "start": 21.88
     },
     {
      "text": "knob.",
-     "start": 19.84
+     "start": 22.44
     }
    ]
   },
@@ -266,51 +266,51 @@
    "words": [
     {
      "text": "That's",
-     "start": 21.08
+     "start": 23.24
     },
     {
      "text": "a",
-     "start": 21.24
+     "start": 23.42
     },
     {
      "text": "metaphor.",
-     "start": 21.32
+     "start": 23.5
     },
     {
      "text": "The",
-     "start": 22.4
+     "start": 24.74
     },
     {
      "text": "volume",
-     "start": 22.52
+     "start": 24.88
     },
     {
      "text": "knob",
-     "start": 22.82
+     "start": 25.24
     },
     {
      "text": "is",
-     "start": 23.06
+     "start": 25.56
     },
     {
      "text": "in",
-     "start": 23.18
+     "start": 25.7
     },
     {
      "text": "the",
-     "start": 23.26
+     "start": 25.8
     },
     {
      "text": "mosquito's",
-     "start": 23.34
+     "start": 25.88
     },
     {
      "text": "neural",
-     "start": 24.08
+     "start": 26.74
     },
     {
      "text": "circuitry.",
-     "start": 24.46
+     "start": 27.2
     }
    ]
   },
@@ -318,147 +318,147 @@
    "words": [
     {
      "text": "Jialu",
-     "start": 25.74
+     "start": 28.24
     },
     {
      "text": "Bao,",
-     "start": 26.16
+     "start": 28.66
     },
     {
      "text": "Wesley",
-     "start": 26.64
-    },
-    {
-     "text": "Alford",
-     "start": 27.02
-    },
-    {
-     "text": "and",
-     "start": 27.34
-    },
-    {
-     "text": "colleagues",
-     "start": 27.5
-    },
-    {
-     "text": "describe",
-     "start": 28.4
-    },
-    {
-     "text": "the",
-     "start": 28.78
-    },
-    {
-     "text": "work",
-     "start": 28.88
-    },
-    {
-     "text": "in",
-     "start": 29.08
-    },
-    {
-     "text": "PLOS",
      "start": 29.28
     },
     {
-     "text": "Biology,",
-     "start": 29.6
+     "text": "Alford",
+     "start": 29.62
     },
     {
-     "text": "published",
-     "start": 30.56
+     "text": "and",
+     "start": 29.94
     },
     {
-     "text": "September",
-     "start": 30.92
+     "text": "colleagues",
+     "start": 30.08
     },
     {
-     "text": "tenth.",
-     "start": 31.4
+     "text": "describe",
+     "start": 30.9
     },
     {
-     "text": "Their",
-     "start": 32.68
+     "text": "the",
+     "start": 31.28
     },
     {
-     "text": "paper",
-     "start": 32.84
-    },
-    {
-     "text": "is",
-     "start": 33.06
-    },
-    {
-     "text": "called",
-     "start": 33.2
-    },
-    {
-     "text": "Recurrent",
-     "start": 33.72
-    },
-    {
-     "text": "synapses",
-     "start": 34.24
-    },
-    {
-     "text": "between",
-     "start": 34.78
-    },
-    {
-     "text": "carbon",
-     "start": 35.18
-    },
-    {
-     "text": "dioxide-sensitive",
-     "start": 35.5
-    },
-    {
-     "text": "olfactory",
-     "start": 36.96
-    },
-    {
-     "text": "sensory",
-     "start": 37.68
-    },
-    {
-     "text": "neurons",
-     "start": 38.14
-    },
-    {
-     "text": "enable",
-     "start": 39.18
-    },
-    {
-     "text": "robust",
-     "start": 39.6
-    },
-    {
-     "text": "carbon",
-     "start": 40.18
-    },
-    {
-     "text": "dioxide",
-     "start": 40.52
-    },
-    {
-     "text": "detection",
-     "start": 41.1
+     "text": "work",
+     "start": 31.36
     },
     {
      "text": "in",
-     "start": 42.06
+     "start": 31.56
+    },
+    {
+     "text": "PLOS",
+     "start": 31.78
+    },
+    {
+     "text": "Biology,",
+     "start": 32.24
+    },
+    {
+     "text": "published",
+     "start": 33.16
+    },
+    {
+     "text": "September",
+     "start": 33.62
+    },
+    {
+     "text": "tenth.",
+     "start": 34.04
+    },
+    {
+     "text": "Their",
+     "start": 34.88
+    },
+    {
+     "text": "paper",
+     "start": 35.04
+    },
+    {
+     "text": "is",
+     "start": 35.26
+    },
+    {
+     "text": "called",
+     "start": 35.38
+    },
+    {
+     "text": "Recurrent",
+     "start": 35.96
+    },
+    {
+     "text": "synapses",
+     "start": 36.54
+    },
+    {
+     "text": "between",
+     "start": 37.06
+    },
+    {
+     "text": "carbon",
+     "start": 37.44
+    },
+    {
+     "text": "dioxide-sensitive",
+     "start": 37.74
+    },
+    {
+     "text": "olfactory",
+     "start": 38.92
+    },
+    {
+     "text": "sensory",
+     "start": 39.62
+    },
+    {
+     "text": "neurons",
+     "start": 40.04
+    },
+    {
+     "text": "enable",
+     "start": 41.08
+    },
+    {
+     "text": "robust",
+     "start": 41.52
+    },
+    {
+     "text": "carbon",
+     "start": 42.14
+    },
+    {
+     "text": "dioxide",
+     "start": 42.48
+    },
+    {
+     "text": "detection",
+     "start": 43.06
+    },
+    {
+     "text": "in",
+     "start": 43.98
     },
     {
      "text": "Aedes",
-     "start": 42.26
+     "start": 44.2
     },
     {
      "text": "aegypti",
-     "start": 42.62
+     "start": 44.68
     },
     {
      "text": "mosquitoes.",
-     "start": 43.22
+     "start": 45.26
     }
    ]
   },
@@ -466,155 +466,155 @@
    "words": [
     {
      "text": "The",
-     "start": 44.4
+     "start": 46.52
     },
     {
      "text": "team",
-     "start": 44.54
+     "start": 46.64
     },
     {
      "text": "used",
-     "start": 44.86
+     "start": 46.88
     },
     {
      "text": "electron",
-     "start": 45.14
+     "start": 47.28
     },
     {
      "text": "microscopy",
-     "start": 45.56
+     "start": 47.72
     },
     {
      "text": "to",
-     "start": 46.2
+     "start": 48.6
     },
     {
      "text": "reconstruct",
-     "start": 46.44
+     "start": 48.74
     },
     {
      "text": "part",
-     "start": 47.08
+     "start": 49.28
     },
     {
      "text": "of",
-     "start": 47.24
+     "start": 49.42
     },
     {
      "text": "an",
-     "start": 47.32
+     "start": 49.5
     },
     {
      "text": "adult",
-     "start": 47.44
+     "start": 49.62
     },
     {
      "text": "female",
-     "start": 47.92
+     "start": 50.08
     },
     {
      "text": "mosquito's",
-     "start": 48.24
+     "start": 50.4
     },
     {
      "text": "brain.",
-     "start": 48.8
+     "start": 50.96
     },
     {
      "text": "They",
-     "start": 49.82
+     "start": 52.12
     },
     {
      "text": "traced",
-     "start": 49.98
+     "start": 52.26
     },
     {
      "text": "one",
-     "start": 50.42
+     "start": 52.76
     },
     {
      "text": "hundred",
-     "start": 50.58
+     "start": 52.94
     },
     {
      "text": "and",
-     "start": 50.8
+     "start": 53.24
     },
     {
      "text": "thirty-six",
-     "start": 51.02
+     "start": 53.42
     },
     {
      "text": "sensory",
-     "start": 51.62
+     "start": 54.02
     },
     {
      "text": "neurons",
-     "start": 52.08
+     "start": 54.44
     },
     {
      "text": "across",
-     "start": 52.82
+     "start": 54.82
     },
     {
      "text": "three",
-     "start": 53.3
+     "start": 55.6
     },
     {
      "text": "smell-processing",
-     "start": 53.78
+     "start": 56.1
     },
     {
      "text": "regions,",
-     "start": 54.62
+     "start": 56.94
     },
     {
      "text": "then",
-     "start": 55.62
+     "start": 57.94
     },
     {
      "text": "mapped",
-     "start": 55.82
+     "start": 58.12
     },
     {
      "text": "all",
-     "start": 56.22
+     "start": 58.58
     },
     {
      "text": "the",
-     "start": 56.44
+     "start": 58.88
     },
     {
      "text": "outgoing",
-     "start": 56.56
-    },
-    {
-     "text": "synapses",
-     "start": 57.0
-    },
-    {
-     "text": "of",
-     "start": 57.52
-    },
-    {
-     "text": "thirty",
-     "start": 58.1
-    },
-    {
-     "text": "selected",
-     "start": 58.5
-    },
-    {
-     "text": "neurons",
      "start": 59.0
     },
     {
-     "text": "in",
+     "text": "synapses",
      "start": 59.42
     },
     {
+     "text": "of",
+     "start": 59.98
+    },
+    {
+     "text": "thirty",
+     "start": 60.42
+    },
+    {
+     "text": "selected",
+     "start": 60.66
+    },
+    {
+     "text": "neurons",
+     "start": 61.1
+    },
+    {
+     "text": "in",
+     "start": 61.5
+    },
+    {
      "text": "detail.",
-     "start": 59.58
+     "start": 61.68
     }
    ]
   },
@@ -622,163 +622,163 @@
    "words": [
     {
      "text": "One",
-     "start": 60.74
+     "start": 62.68
     },
     {
      "text": "region",
-     "start": 60.92
+     "start": 62.88
     },
     {
      "text": "processes",
-     "start": 61.26
+     "start": 63.28
     },
     {
      "text": "carbon",
-     "start": 61.9
+     "start": 63.88
     },
     {
      "text": "dioxide.",
-     "start": 62.16
+     "start": 64.18
     },
     {
      "text": "Its",
-     "start": 63.38
+     "start": 65.46
     },
     {
      "text": "sensory",
-     "start": 63.56
+     "start": 65.68
     },
     {
      "text": "neurons",
-     "start": 63.9
+     "start": 66.04
     },
     {
      "text": "didn't",
-     "start": 64.28
+     "start": 66.38
     },
     {
      "text": "simply",
-     "start": 64.56
+     "start": 66.62
     },
     {
      "text": "pass",
-     "start": 64.94
+     "start": 66.98
     },
     {
      "text": "messages",
-     "start": 65.22
+     "start": 67.26
     },
     {
      "text": "onward.",
-     "start": 65.7
+     "start": 67.72
     },
     {
      "text": "They",
-     "start": 66.9
+     "start": 68.62
     },
     {
      "text": "made",
-     "start": 67.04
+     "start": 68.78
     },
     {
      "text": "unusually",
-     "start": 67.32
+     "start": 69.06
     },
     {
      "text": "many",
-     "start": 67.94
+     "start": 69.8
     },
     {
      "text": "connections",
-     "start": 68.18
+     "start": 70.08
     },
     {
      "text": "with",
-     "start": 68.66
+     "start": 71.28
     },
     {
      "text": "one",
-     "start": 68.82
+     "start": 71.58
     },
     {
      "text": "another.",
-     "start": 68.94
+     "start": 71.86
     },
     {
      "text": "The",
-     "start": 70.06
+     "start": 73.34
     },
     {
      "text": "researchers",
-     "start": 70.16
+     "start": 73.44
     },
     {
      "text": "also",
-     "start": 70.74
+     "start": 73.98
     },
     {
      "text": "compared",
-     "start": 71.0
+     "start": 74.22
     },
     {
      "text": "the",
-     "start": 71.32
+     "start": 74.58
     },
     {
      "text": "wiring",
-     "start": 71.46
+     "start": 74.68
     },
     {
      "text": "with",
-     "start": 71.88
+     "start": 75.06
     },
     {
      "text": "fruit-fly",
-     "start": 72.1
+     "start": 75.3
     },
     {
      "text": "data,",
-     "start": 72.62
+     "start": 75.82
     },
     {
      "text": "finding",
-     "start": 73.48
+     "start": 76.78
     },
     {
      "text": "particularly",
-     "start": 73.86
+     "start": 77.12
     },
     {
      "text": "strong",
-     "start": 74.62
+     "start": 77.8
     },
     {
      "text": "recurrent",
-     "start": 74.94
+     "start": 78.66
     },
     {
      "text": "connectivity",
-     "start": 75.42
+     "start": 79.18
     },
     {
      "text": "in",
-     "start": 76.44
+     "start": 80.26
     },
     {
      "text": "the",
-     "start": 76.52
+     "start": 80.34
     },
     {
      "text": "mosquito's",
-     "start": 76.6
+     "start": 80.42
     },
     {
      "text": "carbon-dioxide",
-     "start": 77.18
+     "start": 81.0
     },
     {
      "text": "circuit.",
-     "start": 78.14
+     "start": 81.98
     }
    ]
   },
@@ -786,127 +786,127 @@
    "words": [
     {
      "text": "Think",
-     "start": 79.34
+     "start": 82.8
     },
     {
      "text": "of",
-     "start": 79.5
+     "start": 82.96
     },
     {
      "text": "a",
-     "start": 79.6
+     "start": 83.08
     },
     {
      "text": "group",
-     "start": 79.7
+     "start": 83.22
     },
     {
      "text": "passing",
-     "start": 79.98
+     "start": 83.56
     },
     {
      "text": "a",
-     "start": 80.36
+     "start": 83.92
     },
     {
      "text": "quiet",
-     "start": 80.5
+     "start": 84.08
     },
     {
      "text": "message",
-     "start": 80.84
+     "start": 84.44
     },
     {
      "text": "around",
-     "start": 81.18
+     "start": 84.78
     },
     {
      "text": "until",
-     "start": 81.46
+     "start": 85.42
     },
     {
      "text": "it",
-     "start": 81.7
+     "start": 85.62
     },
     {
      "text": "becomes",
-     "start": 81.78
+     "start": 85.72
     },
     {
      "text": "harder",
-     "start": 82.1
+     "start": 86.08
     },
     {
      "text": "to",
-     "start": 82.4
+     "start": 86.44
     },
     {
      "text": "miss.",
-     "start": 82.54
+     "start": 86.56
     },
     {
      "text": "It's",
-     "start": 83.7
-    },
-    {
-     "text": "an",
-     "start": 83.84
-    },
-    {
-     "text": "analogy",
-     "start": 83.96
-    },
-    {
-     "text": "for",
-     "start": 84.5
-    },
-    {
-     "text": "the",
-     "start": 84.62
-    },
-    {
-     "text": "proposed",
-     "start": 84.72
-    },
-    {
-     "text": "amplification,",
-     "start": 85.2
-    },
-    {
-     "text": "not",
-     "start": 86.46
-    },
-    {
-     "text": "a",
-     "start": 86.62
-    },
-    {
-     "text": "description",
-     "start": 86.7
-    },
-    {
-     "text": "of",
-     "start": 87.24
-    },
-    {
-     "text": "tiny",
-     "start": 87.44
-    },
-    {
-     "text": "neurons",
      "start": 87.8
     },
     {
-     "text": "having",
-     "start": 88.18
+     "text": "an",
+     "start": 88.04
+    },
+    {
+     "text": "analogy",
+     "start": 88.16
+    },
+    {
+     "text": "for",
+     "start": 88.74
+    },
+    {
+     "text": "the",
+     "start": 88.86
+    },
+    {
+     "text": "proposed",
+     "start": 88.96
+    },
+    {
+     "text": "amplification,",
+     "start": 89.5
+    },
+    {
+     "text": "not",
+     "start": 91.08
     },
     {
      "text": "a",
-     "start": 88.4
+     "start": 91.28
+    },
+    {
+     "text": "description",
+     "start": 91.36
+    },
+    {
+     "text": "of",
+     "start": 91.8
+    },
+    {
+     "text": "tiny",
+     "start": 91.98
+    },
+    {
+     "text": "neurons",
+     "start": 92.34
+    },
+    {
+     "text": "having",
+     "start": 93.1
+    },
+    {
+     "text": "a",
+     "start": 93.34
     },
     {
      "text": "conversation.",
-     "start": 88.5
+     "start": 93.44
     }
    ]
   },
@@ -914,187 +914,187 @@
    "words": [
     {
      "text": "To",
-     "start": 90.1
+     "start": 96.46
     },
     {
      "text": "explore",
-     "start": 90.2
+     "start": 96.56
     },
     {
      "text": "what",
-     "start": 90.64
+     "start": 96.94
     },
     {
      "text": "those",
-     "start": 90.78
+     "start": 97.08
     },
     {
      "text": "connections",
-     "start": 90.98
+     "start": 97.26
     },
     {
      "text": "might",
-     "start": 91.52
+     "start": 97.7
     },
     {
      "text": "do,",
-     "start": 91.78
+     "start": 97.94
     },
     {
      "text": "the",
-     "start": 92.46
+     "start": 98.58
     },
     {
      "text": "researchers",
-     "start": 92.58
+     "start": 98.68
     },
     {
      "text": "built",
-     "start": 93.14
+     "start": 99.28
     },
     {
      "text": "a",
-     "start": 93.34
+     "start": 99.48
     },
     {
      "text": "computational",
-     "start": 93.42
+     "start": 99.62
     },
     {
      "text": "model.",
-     "start": 94.14
+     "start": 100.52
     },
     {
      "text": "In",
-     "start": 95.34
+     "start": 101.42
     },
     {
      "text": "that",
-     "start": 95.46
+     "start": 101.52
     },
     {
      "text": "model,",
-     "start": 95.66
+     "start": 101.72
     },
     {
      "text": "recurrent",
-     "start": 96.42
+     "start": 102.18
     },
     {
      "text": "connections",
-     "start": 96.92
+     "start": 102.68
     },
     {
      "text": "helped",
-     "start": 97.44
+     "start": 103.14
     },
     {
      "text": "preserve",
-     "start": 97.68
+     "start": 103.4
     },
     {
      "text": "detection",
-     "start": 98.12
+     "start": 103.9
     },
     {
      "text": "of",
-     "start": 98.62
+     "start": 104.32
     },
     {
      "text": "carbon",
-     "start": 98.78
+     "start": 104.44
     },
     {
      "text": "dioxide",
-     "start": 99.06
+     "start": 104.74
     },
     {
      "text": "when",
-     "start": 100.04
-    },
-    {
-     "text": "other",
-     "start": 100.28
-    },
-    {
-     "text": "odours",
-     "start": 100.56
-    },
-    {
-     "text": "created",
-     "start": 101.02
-    },
-    {
-     "text": "a",
-     "start": 101.38
-    },
-    {
-     "text": "challenging",
-     "start": 101.58
-    },
-    {
-     "text": "background.",
-     "start": 102.16
-    },
-    {
-     "text": "The",
-     "start": 103.58
-    },
-    {
-     "text": "proposed",
-     "start": 103.7
-    },
-    {
-     "text": "benefit",
-     "start": 104.12
-    },
-    {
-     "text": "is",
-     "start": 104.82
-    },
-    {
-     "text": "a",
-     "start": 104.94
-    },
-    {
-     "text": "stronger",
-     "start": 105.1
-    },
-    {
-     "text": "signal",
-     "start": 105.52
-    },
-    {
-     "text": "for",
-     "start": 105.82
-    },
-    {
-     "text": "a",
      "start": 105.98
     },
     {
+     "text": "other",
+     "start": 106.26
+    },
+    {
+     "text": "odours",
+     "start": 106.5
+    },
+    {
+     "text": "created",
+     "start": 106.86
+    },
+    {
+     "text": "a",
+     "start": 107.22
+    },
+    {
+     "text": "challenging",
+     "start": 107.36
+    },
+    {
+     "text": "background.",
+     "start": 107.88
+    },
+    {
+     "text": "The",
+     "start": 109.38
+    },
+    {
+     "text": "proposed",
+     "start": 109.5
+    },
+    {
+     "text": "benefit",
+     "start": 110.08
+    },
+    {
+     "text": "is",
+     "start": 110.86
+    },
+    {
+     "text": "a",
+     "start": 111.0
+    },
+    {
+     "text": "stronger",
+     "start": 111.14
+    },
+    {
+     "text": "signal",
+     "start": 111.64
+    },
+    {
+     "text": "for",
+     "start": 112.38
+    },
+    {
+     "text": "a",
+     "start": 112.52
+    },
+    {
      "text": "cue",
-     "start": 106.14
+     "start": 112.68
     },
     {
      "text": "that",
-     "start": 106.8
+     "start": 112.9
     },
     {
      "text": "helps",
-     "start": 106.92
+     "start": 113.0
     },
     {
      "text": "activate",
-     "start": 107.24
+     "start": 113.36
     },
     {
      "text": "host-seeking",
-     "start": 107.72
+     "start": 113.8
     },
     {
      "text": "behaviour.",
-     "start": 108.38
+     "start": 114.62
     }
    ]
   },
@@ -1102,147 +1102,147 @@
    "words": [
     {
      "text": "There",
-     "start": 111.22
+     "start": 115.64
     },
     {
      "text": "was",
-     "start": 111.34
+     "start": 115.74
     },
     {
      "text": "another",
-     "start": 111.46
+     "start": 115.86
     },
     {
      "text": "intriguing",
-     "start": 111.84
-    },
-    {
-     "text": "detail:",
-     "start": 112.32
-    },
-    {
-     "text": "some",
-     "start": 113.26
-    },
-    {
-     "text": "connection",
-     "start": 113.44
-    },
-    {
-     "text": "sites",
-     "start": 113.84
-    },
-    {
-     "text": "contained",
-     "start": 114.08
-    },
-    {
-     "text": "structures",
-     "start": 114.44
-    },
-    {
-     "text": "resembling",
-     "start": 114.84
-    },
-    {
-     "text": "ribbon",
-     "start": 115.7
-    },
-    {
-     "text": "synapses,",
      "start": 116.14
     },
     {
-     "text": "specialised",
-     "start": 117.26
+     "text": "detail:",
+     "start": 116.6
+    },
+    {
+     "text": "some",
+     "start": 117.46
+    },
+    {
+     "text": "connection",
+     "start": 117.68
+    },
+    {
+     "text": "sites",
+     "start": 118.08
+    },
+    {
+     "text": "contained",
+     "start": 118.34
     },
     {
      "text": "structures",
-     "start": 117.76
+     "start": 118.8
     },
     {
-     "text": "known",
-     "start": 118.22
-    },
-    {
-     "text": "from",
-     "start": 118.42
-    },
-    {
-     "text": "other",
-     "start": 118.7
-    },
-    {
-     "text": "sensory",
-     "start": 118.96
-    },
-    {
-     "text": "systems.",
-     "start": 119.34
-    },
-    {
-     "text": "Resembling",
-     "start": 120.54
-    },
-    {
-     "text": "is",
-     "start": 121.38
-    },
-    {
-     "text": "the",
-     "start": 121.62
-    },
-    {
-     "text": "important",
-     "start": 121.72
-    },
-    {
-     "text": "word.",
-     "start": 122.2
-    },
-    {
-     "text": "The",
-     "start": 123.1
-    },
-    {
-     "text": "team",
-     "start": 123.22
-    },
-    {
-     "text": "hasn't",
-     "start": 123.4
-    },
-    {
-     "text": "established",
-     "start": 123.64
-    },
-    {
-     "text": "that",
-     "start": 124.12
-    },
-    {
-     "text": "these",
-     "start": 124.3
-    },
-    {
-     "text": "structures",
-     "start": 124.52
-    },
-    {
-     "text": "function",
-     "start": 125.08
-    },
-    {
-     "text": "as",
-     "start": 125.56
+     "text": "resembling",
+     "start": 119.26
     },
     {
      "text": "ribbon",
-     "start": 126.0
+     "start": 119.92
+    },
+    {
+     "text": "synapses,",
+     "start": 120.3
+    },
+    {
+     "text": "specialised",
+     "start": 121.44
+    },
+    {
+     "text": "structures",
+     "start": 121.9
+    },
+    {
+     "text": "known",
+     "start": 122.3
+    },
+    {
+     "text": "from",
+     "start": 122.5
+    },
+    {
+     "text": "other",
+     "start": 122.68
+    },
+    {
+     "text": "sensory",
+     "start": 122.9
+    },
+    {
+     "text": "systems.",
+     "start": 123.28
+    },
+    {
+     "text": "Resembling",
+     "start": 124.72
+    },
+    {
+     "text": "is",
+     "start": 125.72
+    },
+    {
+     "text": "the",
+     "start": 125.86
+    },
+    {
+     "text": "important",
+     "start": 125.96
+    },
+    {
+     "text": "word.",
+     "start": 126.4
+    },
+    {
+     "text": "The",
+     "start": 127.56
+    },
+    {
+     "text": "team",
+     "start": 127.68
+    },
+    {
+     "text": "hasn't",
+     "start": 127.9
+    },
+    {
+     "text": "established",
+     "start": 128.14
+    },
+    {
+     "text": "that",
+     "start": 128.62
+    },
+    {
+     "text": "these",
+     "start": 128.76
+    },
+    {
+     "text": "structures",
+     "start": 128.92
+    },
+    {
+     "text": "function",
+     "start": 129.4
+    },
+    {
+     "text": "as",
+     "start": 129.82
+    },
+    {
+     "text": "ribbon",
+     "start": 130.24
     },
     {
      "text": "synapses.",
-     "start": 126.36
+     "start": 130.6
     }
    ]
   },
@@ -1250,239 +1250,239 @@
    "words": [
     {
      "text": "And",
-     "start": 127.6
+     "start": 131.8
     },
     {
      "text": "there",
-     "start": 127.76
+     "start": 131.92
     },
     {
      "text": "are",
-     "start": 127.92
+     "start": 132.06
     },
     {
      "text": "broader",
-     "start": 128.1
+     "start": 132.22
     },
     {
      "text": "limits.",
-     "start": 128.44
+     "start": 132.6
     },
     {
      "text": "The",
-     "start": 129.48
+     "start": 133.86
     },
     {
      "text": "anatomical",
-     "start": 129.66
+     "start": 134.02
     },
     {
      "text": "reconstruction",
-     "start": 130.26
+     "start": 134.62
     },
     {
      "text": "came",
-     "start": 130.96
+     "start": 135.38
     },
     {
      "text": "from",
-     "start": 131.14
+     "start": 135.58
     },
     {
      "text": "one",
-     "start": 131.5
+     "start": 136.06
     },
     {
      "text": "adult",
-     "start": 131.84
+     "start": 136.54
     },
     {
      "text": "female",
-     "start": 132.3
+     "start": 136.96
     },
     {
      "text": "mosquito,",
-     "start": 132.58
+     "start": 137.3
     },
     {
      "text": "and",
-     "start": 133.48
+     "start": 138.2
     },
     {
      "text": "it",
-     "start": 133.56
+     "start": 138.3
     },
     {
      "text": "covers",
-     "start": 133.68
+     "start": 138.4
     },
     {
      "text": "only",
-     "start": 133.98
+     "start": 138.7
     },
     {
      "text": "part",
-     "start": 134.3
+     "start": 139.06
     },
     {
      "text": "of",
-     "start": 134.48
+     "start": 139.46
     },
     {
      "text": "the",
-     "start": 134.58
+     "start": 139.56
     },
     {
      "text": "relevant",
-     "start": 134.7
+     "start": 139.68
     },
     {
      "text": "circuit.",
-     "start": 135.1
+     "start": 140.1
     },
     {
      "text": "The",
-     "start": 136.24
+     "start": 141.12
     },
     {
      "text": "signal-boosting",
-     "start": 136.4
+     "start": 141.28
     },
     {
      "text": "explanation",
-     "start": 137.04
-    },
-    {
-     "text": "draws",
-     "start": 137.58
-    },
-    {
-     "text": "on",
-     "start": 137.84
-    },
-    {
-     "text": "a",
-     "start": 137.96
-    },
-    {
-     "text": "computational",
-     "start": 138.1
-    },
-    {
-     "text": "model;",
-     "start": 138.9
-    },
-    {
-     "text": "this",
-     "start": 139.72
-    },
-    {
-     "text": "study",
-     "start": 139.86
-    },
-    {
-     "text": "didn't",
-     "start": 140.12
-    },
-    {
-     "text": "switch",
-     "start": 140.5
-    },
-    {
-     "text": "those",
-     "start": 140.76
-    },
-    {
-     "text": "connections",
-     "start": 140.96
-    },
-    {
-     "text": "off",
-     "start": 141.46
-    },
-    {
-     "text": "in",
-     "start": 141.7
-    },
-    {
-     "text": "a",
-     "start": 141.78
-    },
-    {
-     "text": "flying",
      "start": 141.92
     },
     {
-     "text": "mosquito",
-     "start": 142.18
+     "text": "draws",
+     "start": 142.52
     },
     {
-     "text": "and",
-     "start": 143.08
-    },
-    {
-     "text": "measure",
-     "start": 143.26
-    },
-    {
-     "text": "whether",
-     "start": 143.76
-    },
-    {
-     "text": "it",
-     "start": 144.0
-    },
-    {
-     "text": "stopped",
-     "start": 144.16
-    },
-    {
-     "text": "finding",
-     "start": 144.48
-    },
-    {
-     "text": "people.",
-     "start": 144.84
-    },
-    {
-     "text": "It",
-     "start": 145.86
-    },
-    {
-     "text": "hasn't",
-     "start": 145.96
-    },
-    {
-     "text": "produced",
-     "start": 146.24
+     "text": "on",
+     "start": 142.9
     },
     {
      "text": "a",
-     "start": 146.56
+     "start": 143.0
+    },
+    {
+     "text": "computational",
+     "start": 143.12
+    },
+    {
+     "text": "model;",
+     "start": 143.88
+    },
+    {
+     "text": "this",
+     "start": 144.78
+    },
+    {
+     "text": "study",
+     "start": 144.96
+    },
+    {
+     "text": "didn't",
+     "start": 145.24
+    },
+    {
+     "text": "switch",
+     "start": 145.5
+    },
+    {
+     "text": "those",
+     "start": 145.76
+    },
+    {
+     "text": "connections",
+     "start": 145.98
+    },
+    {
+     "text": "off",
+     "start": 146.46
+    },
+    {
+     "text": "in",
+     "start": 146.6
+    },
+    {
+     "text": "a",
+     "start": 146.68
+    },
+    {
+     "text": "flying",
+     "start": 146.78
+    },
+    {
+     "text": "mosquito",
+     "start": 147.04
+    },
+    {
+     "text": "and",
+     "start": 147.88
+    },
+    {
+     "text": "measure",
+     "start": 148.08
+    },
+    {
+     "text": "whether",
+     "start": 148.46
+    },
+    {
+     "text": "it",
+     "start": 148.68
+    },
+    {
+     "text": "stopped",
+     "start": 148.82
+    },
+    {
+     "text": "finding",
+     "start": 149.14
+    },
+    {
+     "text": "people.",
+     "start": 149.46
+    },
+    {
+     "text": "It",
+     "start": 150.7
+    },
+    {
+     "text": "hasn't",
+     "start": 150.8
+    },
+    {
+     "text": "produced",
+     "start": 151.08
+    },
+    {
+     "text": "a",
+     "start": 151.44
     },
     {
      "text": "new",
-     "start": 146.64
+     "start": 151.5
     },
     {
      "text": "repellent",
-     "start": 146.76
+     "start": 151.64
     },
     {
      "text": "or",
-     "start": 147.58
+     "start": 152.56
     },
     {
      "text": "demonstrated",
-     "start": 147.72
+     "start": 152.7
     },
     {
      "text": "disease",
-     "start": 148.36
+     "start": 153.34
     },
     {
      "text": "prevention.",
-     "start": 148.86
+     "start": 153.8
     }
    ]
   },
@@ -1490,95 +1490,95 @@
    "words": [
     {
      "text": "What",
-     "start": 149.92
+     "start": 154.96
     },
     {
      "text": "it",
-     "start": 150.06
+     "start": 155.08
     },
     {
      "text": "offers",
-     "start": 150.28
+     "start": 155.24
     },
     {
      "text": "is",
-     "start": 150.64
+     "start": 155.64
     },
     {
      "text": "a",
-     "start": 150.78
+     "start": 155.78
     },
     {
      "text": "detailed",
-     "start": 150.96
+     "start": 155.98
     },
     {
      "text": "wiring",
-     "start": 151.5
+     "start": 156.56
     },
     {
      "text": "map",
-     "start": 151.96
+     "start": 157.04
     },
     {
      "text": "and",
-     "start": 152.58
+     "start": 157.76
     },
     {
      "text": "a",
-     "start": 152.68
+     "start": 157.86
     },
     {
      "text": "testable",
-     "start": 152.82
+     "start": 157.98
     },
     {
      "text": "explanation",
-     "start": 153.28
+     "start": 158.46
     },
     {
      "text": "for",
-     "start": 154.2
+     "start": 159.08
     },
     {
      "text": "how",
-     "start": 154.34
+     "start": 159.6
     },
     {
      "text": "a",
-     "start": 154.54
+     "start": 159.78
     },
     {
      "text": "small",
-     "start": 154.78
+     "start": 160.0
     },
     {
      "text": "nervous",
-     "start": 155.2
+     "start": 160.38
     },
     {
      "text": "system",
-     "start": 155.52
+     "start": 160.7
     },
     {
      "text": "might",
-     "start": 156.2
+     "start": 161.44
     },
     {
      "text": "prioritise",
-     "start": 156.42
+     "start": 161.72
     },
     {
      "text": "an",
-     "start": 157.18
+     "start": 162.46
     },
     {
      "text": "important",
-     "start": 157.28
+     "start": 162.56
     },
     {
      "text": "clue.",
-     "start": 157.86
+     "start": 163.04
     }
    ]
   },
@@ -1586,83 +1586,83 @@
    "words": [
     {
      "text": "Sensing",
-     "start": 159.5
+     "start": 164.42
     },
     {
      "text": "the",
-     "start": 159.82
+     "start": 164.82
     },
     {
      "text": "world",
-     "start": 159.92
+     "start": 164.94
     },
     {
      "text": "isn't",
-     "start": 160.3
+     "start": 165.28
     },
     {
      "text": "only",
-     "start": 160.66
+     "start": 165.62
     },
     {
      "text": "about",
-     "start": 160.92
+     "start": 165.88
     },
     {
      "text": "having",
-     "start": 161.18
+     "start": 166.12
     },
     {
      "text": "a",
-     "start": 161.44
+     "start": 166.4
     },
     {
      "text": "detector.",
-     "start": 161.54
+     "start": 166.48
     },
     {
      "text": "What",
-     "start": 162.54
+     "start": 167.72
     },
     {
      "text": "happens",
-     "start": 162.74
+     "start": 167.9
     },
     {
      "text": "to",
-     "start": 163.14
+     "start": 168.3
     },
     {
      "text": "the",
-     "start": 163.24
+     "start": 168.42
     },
     {
      "text": "signal",
-     "start": 163.4
+     "start": 168.62
     },
     {
      "text": "next",
-     "start": 163.8
+     "start": 169.08
     },
     {
      "text": "can",
-     "start": 164.12
+     "start": 169.84
     },
     {
      "text": "be",
-     "start": 164.28
+     "start": 169.96
     },
     {
      "text": "just",
-     "start": 164.5
+     "start": 170.16
     },
     {
      "text": "as",
-     "start": 164.78
+     "start": 170.44
     },
     {
      "text": "interesting.",
-     "start": 164.92
+     "start": 170.58
     }
    ]
   },
@@ -1670,35 +1670,35 @@
    "words": [
     {
      "text": "Your",
-     "start": 166.24
+     "start": 171.72
     },
     {
      "text": "ordinary",
-     "start": 166.44
+     "start": 172.08
     },
     {
      "text": "breath.",
-     "start": 166.88
+     "start": 172.64
     },
     {
      "text": "A",
-     "start": 168.02
+     "start": 173.68
     },
     {
      "text": "rather",
-     "start": 168.1
+     "start": 173.76
     },
     {
      "text": "specialised",
-     "start": 168.48
+     "start": 174.24
     },
     {
      "text": "reception",
-     "start": 169.14
+     "start": 174.8
     },
     {
      "text": "system.",
-     "start": 169.66
+     "start": 175.24
     }
    ]
   },
@@ -1706,87 +1706,87 @@
    "words": [
     {
      "text": "I'm",
-     "start": 170.88
+     "start": 176.52
     },
     {
      "text": "Elias",
-     "start": 171.0
+     "start": 176.68
     },
     {
      "text": "Reed.",
-     "start": 171.44
+     "start": 177.16
     },
     {
      "text": "Let's",
-     "start": 171.98
+     "start": 177.78
     },
     {
      "text": "keep",
-     "start": 172.2
+     "start": 177.98
     },
     {
      "text": "asking",
-     "start": 172.42
-    },
-    {
-     "text": "how.",
-     "start": 172.78
-    },
-    {
-     "text": "Sources",
-     "start": 174.1
-    },
-    {
-     "text": "and",
-     "start": 174.44
-    },
-    {
-     "text": "full",
-     "start": 174.62
-    },
-    {
-     "text": "author",
-     "start": 174.86
-    },
-    {
-     "text": "credits",
-     "start": 175.12
-    },
-    {
-     "text": "accompany",
-     "start": 175.42
-    },
-    {
-     "text": "this",
-     "start": 175.82
-    },
-    {
-     "text": "episode.",
-     "start": 176.0
-    },
-    {
-     "text": "Your",
-     "start": 176.88
-    },
-    {
-     "text": "host",
-     "start": 177.0
-    },
-    {
-     "text": "and",
-     "start": 177.26
-    },
-    {
-     "text": "narration",
-     "start": 177.38
-    },
-    {
-     "text": "are",
      "start": 178.22
     },
     {
+     "text": "how.",
+     "start": 178.56
+    },
+    {
+     "text": "Sources",
+     "start": 179.5
+    },
+    {
+     "text": "and",
+     "start": 179.94
+    },
+    {
+     "text": "full",
+     "start": 180.22
+    },
+    {
+     "text": "author",
+     "start": 180.48
+    },
+    {
+     "text": "credits",
+     "start": 180.74
+    },
+    {
+     "text": "accompany",
+     "start": 181.1
+    },
+    {
+     "text": "this",
+     "start": 181.52
+    },
+    {
+     "text": "episode.",
+     "start": 181.72
+    },
+    {
+     "text": "Your",
+     "start": 182.76
+    },
+    {
+     "text": "host",
+     "start": 182.9
+    },
+    {
+     "text": "and",
+     "start": 183.22
+    },
+    {
+     "text": "narration",
+     "start": 183.36
+    },
+    {
+     "text": "are",
+     "start": 184.32
+    },
+    {
      "text": "AI-generated.",
-     "start": 178.48
+     "start": 184.54
     }
    ]
   }

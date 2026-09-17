@@ -139,11 +139,11 @@ import SwiftUI
     }
     /// 0 = not started, 1 = finished.
     func progress(of item: Story) -> Double {
-        if listening.completed.contains(item.id) { return 1 }
         let seconds = item.id == story?.id && !isPreview ? position : (listening.positions[item.id] ?? 0)
-        return min(0.99, max(0, seconds / max(item.durationSeconds, 1)))
+        return ListeningMath.progress(position: seconds, duration: max(item.durationSeconds, 1),
+                                      completed: listening.completed.contains(item.id))
     }
-    func minutesLeft(of item: Story) -> Int { max(1, Int(((1 - progress(of: item)) * item.durationSeconds / 60).rounded())) }
+    func minutesLeft(of item: Story) -> Int { ListeningMath.minutesLeft(progress: progress(of: item), duration: item.durationSeconds) }
     func minutes(on day: Date) -> Int { Int(((listenedSeconds[Story.dayFormatter.string(from: day)] ?? 0) / 60).rounded()) }
     var minutesToday: Int { minutes(on: .now) }
     /// Last seven days, oldest first.
@@ -154,17 +154,11 @@ import SwiftUI
     }
     var minutesThisWeek: Int {
         let days = (0..<7).compactMap { Calendar.current.date(byAdding: .day, value: -$0, to: .now) }.map { Story.dayFormatter.string(from: $0) }
-        return Int((days.reduce(0) { $0 + (listenedSeconds[$1] ?? 0) } / 60).rounded())
+        return ListeningMath.minutes(seconds: days.reduce(0) { $0 + (listenedSeconds[$1] ?? 0) })
     }
     /// Consecutive days (ending today or yesterday) with at least a minute of listening.
     var streakDays: Int {
-        var count = 0
-        var day = Calendar.current.startOfDay(for: .now)
-        if (listenedSeconds[Story.dayFormatter.string(from: day)] ?? 0) < 60 { day = Calendar.current.date(byAdding: .day, value: -1, to: day)! }
-        while (listenedSeconds[Story.dayFormatter.string(from: day)] ?? 0) >= 60 {
-            count += 1; day = Calendar.current.date(byAdding: .day, value: -1, to: day)!
-        }
-        return count
+        ListeningMath.streak(seconds: listenedSeconds, today: .now) { Story.dayFormatter.string(from: $0) }
     }
     func toggle() { playing ? pause() : resume() }
     func seek(_ value: Double) {

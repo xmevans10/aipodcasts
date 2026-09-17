@@ -24,7 +24,7 @@ struct ShowView: View {
                         if let latest = episodes.first {
                             Button { player.story?.id == latest.id ? player.toggle() : player.play(latest) } label: {
                                 Label(player.story?.id == latest.id && player.playing ? "Pause" : "Play latest", systemImage: player.story?.id == latest.id && player.playing ? "pause.fill" : "play.fill")
-                            }.buttonStyle(PrimaryButtonStyle())
+                            }.buttonStyle(PrimaryButtonStyle(show: show))
                         }
                         Button { library.toggleFollow(show) } label: {
                             Label(library.isFollowing(show) ? "Following" : "Follow", systemImage: library.isFollowing(show) ? "checkmark" : "plus")

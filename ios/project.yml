@@ -18,17 +18,11 @@ settings:
     MARKETING_VERSION: 0.1.0
     DEVELOPMENT_TEAM: 8K5ZVPCQ42
     CODE_SIGN_STYLE: Automatic
-packages:
-  RiveRuntime:
-    url: https://github.com/rive-app/rive-ios
-    from: 6.27.0
 targets:
   ScienceBreak:
     type: application
     platform: iOS
     sources: [ScienceBreak]
-    dependencies:
-      - package: RiveRuntime
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: studio.soundscience.app

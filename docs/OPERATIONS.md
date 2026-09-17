@@ -110,3 +110,9 @@ Also available on the current key and unused so far: text-to-dialogue (multi-spe
 `backend/hosts.py` is the single source of truth for each presenter: name, show, feed topic, beat, persona, delivery, opening style, exact sign-off, the domains their analogies may come from, what they must avoid, and the emotion palette used when directing narration. `writing_guide(host_id)` renders that profile into a block appended to the shared `PODCAST_INSTRUCTIONS`, so drafting is `shared editorial contract + one host personality` (prompt version `podcast-v2`). It also supplies the feed's topic label and the `ELEVENLABS_VOICE_*` variable name, so adding a host is one entry in one file.
 
 Each profile ends with the rule that personality changes delivery only and never a finding, number, limitation or attribution. Drafts are checked against that: `validate_podcast` now requires the host's exact sign-off in the closing sixty words, alongside the existing headline, paper-title, first-author and verbatim-limitations checks. `python3 backend/pipeline.py hosts` prints the configured profiles.
+
+## Tests
+
+- Backend: `python3 -m pytest -q backend/tests` (39 tests) covers the pipeline, evidence packet, host personalities and the podcast contract.
+- App logic: `./scripts/run-ios-tests.sh` (107 checks, no simulator needed) compiles the pure-logic files with `swiftc` and runs [`ios/Tests/LogicChecks.swift`](../ios/Tests/LogicChecks.swift): queue and resume state, `ListeningMath` (progress, minutes left, streaks including broken and stale ones), show/host wiring, story date and duration helpers, and every bundled episode — audio present, sources HTTPS, transcript word-for-word identical to the body, word timings monotonic and inside the episode, and the audio envelope five-band, in range, the right length and actually peaking.
+- UI behaviour still needs a device or simulator; these checks deliberately avoid SwiftUI rendering.

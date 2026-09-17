@@ -10,7 +10,9 @@ struct PlayButton: View {
         Button { player.story?.id == story.id ? player.toggle() : player.play(story) } label: {
             Image(systemName: active ? "pause.fill" : "play.fill")
                 .font(.system(size: size * 0.36, weight: .semibold))
-                .foregroundStyle(.white).frame(width: size, height: size).background(Theme.ink, in: Circle())
+                .foregroundStyle(.white).frame(width: size, height: size)
+                .background(Circle().fill(LinearGradient(colors: active ? [story.show.mid, story.show.dark] : [Theme.ink, Theme.ink],
+                                                         startPoint: .topLeading, endPoint: .bottomTrailing)))
                 .frame(minWidth: 44, minHeight: 44)
         }
         .buttonStyle(.plain)
@@ -30,7 +32,7 @@ struct EpisodeMeta: View {
                 Label("Played", systemImage: "checkmark").labelStyle(.titleAndIcon)
             } else if progress > 0 {
                 Capsule().fill(Theme.hairline).frame(width: 36, height: 4)
-                    .overlay(alignment: .leading) { Capsule().fill(Theme.ink).frame(width: 36 * progress, height: 4) }
+                    .overlay(alignment: .leading) { Capsule().fill(story.show.mid).frame(width: 36 * progress, height: 4) }
                 Text("\(player.minutesLeft(of: story)) min left")
             } else {
                 Text("\(story.minutes) min")
@@ -81,7 +83,8 @@ struct ShowCard: View {
                 .overlay(alignment: .topLeading) {
                     if unplayed > 0 {
                         Text("\(unplayed) NEW").font(.system(size: 10, weight: .bold)).tracking(0.5)
-                            .padding(.horizontal, 8).padding(.vertical, 4).background(.white, in: Capsule()).foregroundStyle(Theme.ink).padding(10)
+                            .padding(.horizontal, 8).padding(.vertical, 4).background(.white, in: Capsule())
+                            .foregroundStyle(show.dark).padding(10)
                     }
                 }
             HStack(spacing: 8) {

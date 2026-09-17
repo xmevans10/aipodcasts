@@ -82,7 +82,7 @@ struct MiniPlayerInset: ViewModifier {
                 .overlay(alignment: .bottom) {
                     if !player.isPreview {
                         GeometryReader { g in
-                            Rectangle().fill(Theme.ink).frame(width: g.size.width * min(1, player.position / max(player.duration, 1)), height: 2)
+                            Rectangle().fill(story.show.mid).frame(width: g.size.width * min(1, player.position / max(player.duration, 1)), height: 2)
                         }.frame(height: 2)
                     }
                 }

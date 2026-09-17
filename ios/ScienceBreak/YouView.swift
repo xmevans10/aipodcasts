@@ -44,7 +44,10 @@ struct YouView: View {
             HStack(alignment: .center, spacing: 18) {
                 ZStack {
                     Circle().stroke(Theme.subtle, lineWidth: 10)
-                    Circle().trim(from: 0, to: goalProgress).stroke(Theme.ink, style: StrokeStyle(lineWidth: 10, lineCap: .round)).rotationEffect(.degrees(-90))
+                    Circle().trim(from: 0, to: goalProgress)
+                        .stroke(AngularGradient(colors: Show.all.map(\.mid) + [Show.all[0].mid], center: .center),
+                                style: StrokeStyle(lineWidth: 10, lineCap: .round))
+                        .rotationEffect(.degrees(-90))
                     VStack(spacing: 0) {
                         Text("\(player.minutesToday)").font(.system(size: 24, weight: .semibold, design: .rounded)).monospacedDigit()
                         Text("min").font(.caption2).foregroundStyle(Theme.secondary)

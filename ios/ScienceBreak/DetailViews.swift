@@ -125,9 +125,15 @@ struct PlayerView: View {
             ScrollView {
                 if let story = player.story {
                     VStack(spacing: 24) {
-                        LivingCover(show: story.show, story: story, playing: player.playing,
-                                    position: { player.position }, cornerRadius: 30)
-                            .frame(maxWidth: 300).shadow(color: .black.opacity(0.16), radius: 24, y: 14).padding(.top, 4)
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 34, style: .continuous)
+                                .fill(LinearGradient(colors: [story.show.light, story.show.mid, story.show.dark],
+                                                     startPoint: .topTrailing, endPoint: .bottomLeading))
+                            HostAvatar(host: story.host, size: 196)
+                                .shadow(color: story.show.dark.opacity(0.35), radius: 18, y: 10)
+                        }
+                        .frame(maxWidth: 300).aspectRatio(1, contentMode: .fit)
+                        .shadow(color: .black.opacity(0.16), radius: 24, y: 14).padding(.top, 4)
                         VStack(spacing: 8) {
                             HStack(spacing: 8) {
                                 HostAvatar(host: story.host, size: 22)
@@ -138,7 +144,7 @@ struct PlayerView: View {
                         if !player.isPreview {
                             VStack(spacing: 4) {
                                 Slider(value: Binding(get: { min(player.position, player.duration) }, set: { player.seek($0) }), in: 0...max(player.duration, 1))
-                                    .tint(Theme.ink).accessibilityLabel("Playback position")
+                                    .tint(story.show.mid).accessibilityLabel("Playback position")
                                 HStack { Text(clock(player.position)); Spacer(); Text("-" + clock(max(0, player.duration - player.position))) }
                                     .font(.caption.monospacedDigit()).foregroundStyle(Theme.secondary)
                             }
@@ -149,7 +155,10 @@ struct PlayerView: View {
                             Button { player.seek(player.position - 15) } label: { Image(systemName: "gobackward.15").font(.title2) }.disabled(player.isPreview).accessibilityLabel("Back 15 seconds")
                             Button { player.toggle() } label: {
                                 Image(systemName: player.playing ? "pause.fill" : "play.fill").font(.title).foregroundStyle(.white)
-                                    .frame(width: 76, height: 76).background(Theme.ink, in: Circle())
+                                    .frame(width: 76, height: 76)
+                                    .background(Circle().fill(LinearGradient(colors: [story.show.mid, story.show.dark],
+                                                                            startPoint: .topLeading, endPoint: .bottomTrailing)))
+                                    .shadow(color: story.show.dark.opacity(0.35), radius: 14, y: 6)
                             }.accessibilityLabel(player.playing ? "Pause" : "Play")
                             Button { player.seek(player.position + 15) } label: { Image(systemName: "goforward.15").font(.title2) }.disabled(player.isPreview).accessibilityLabel("Forward 15 seconds")
                         }.foregroundStyle(Theme.ink)

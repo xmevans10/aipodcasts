@@ -1,255 +1,180 @@
 import SwiftUI
-import AVFoundation
 
-/// Short, explicitly labelled device narration, separate from listening history and the main player.
-@MainActor private final class HostIntroduction: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
-    @Published private(set) var speaking = false
-    private let synthesizer = AVSpeechSynthesizer()
-    private var active: AVSpeechUtterance?
-    override init() { super.init(); synthesizer.delegate = self }
-    func stop() { active = nil; synthesizer.stopSpeaking(at: .immediate); speaking = false }
-    func play(_ host: Host) {
-        stop()
-        let lines = [
-            "nova": "I'm Mira. Let's take the scenic route through the universe. Big questions, strange physics, and a little cosmic perspective.",
-            "fern": "I'm Clara. There is a whole world hiding in the ordinary. Let's follow the roots, the wings, and the wonderfully unexpected connections.",
-            "ada": "I'm Elias. Brains, machines, and the interesting mess in between. Let's ask a better question, and see where the evidence takes us.",
-            "atlas": "I'm Theo. Behind every discovery, there is a human story. Let's meet the ideas, the accidents, and the people who changed how we see."
-        ]
-        let utterance = AVSpeechUtterance(string: lines[host.id] ?? host.personality)
-        utterance.voice = AVSpeechSynthesisVoice(language: host.id == "nova" ? "en-GB" : "en-US")
-        utterance.rate = AVSpeechUtteranceDefaultSpeechRate * 0.92
-        active = utterance; speaking = true; synthesizer.speak(utterance)
-    }
-    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
-        Task { @MainActor in if self.active === utterance { self.speaking = false; self.active = nil } }
-    }
-}
-
+/// Three short steps: what this is, which shows to follow, and a first episode.
 struct WelcomeView: View {
     @AppStorage("onboarded") private var onboarded = false
     @EnvironmentObject private var library: Library
     @EnvironmentObject private var player: AudioPlayer
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.scenePhase) private var scenePhase
-    @StateObject private var introduction = HostIntroduction()
     @State private var step = 0
-    @State private var selectedID = "nova"
+    @State private var selected: Set<String> = Set(Show.all.map(\.id))
     @AccessibilityFocusState private var headingFocused: Bool
-    @ScaledMetric(relativeTo: .largeTitle) private var titleSize = 43
-    private var host: Host { Host.all.first { $0.id == selectedID } ?? Host.all[0] }
-    private var firstStory: Story? { library.stories.first { $0.hostID == selectedID } }
-    private var dark: Bool { step == 0 }
-    private var foreground: Color { dark ? ScienceBreak.paper : ScienceBreak.ink }
+
+    private var firstEpisode: Story? {
+        library.latest.first { selected.contains($0.hostID) && !$0.isDemo } ?? library.latest.first { selected.contains($0.hostID) }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             header
             ScrollView {
-                VStack(alignment: .leading, spacing: 25) {
-                    Group {
-                        switch step {
-                        case 0: welcome
-                        case 1: hosts
-                        default: ready
-                        }
+                VStack(alignment: .leading, spacing: 24) {
+                    switch step {
+                    case 0: intro
+                    case 1: pickShows
+                    default: firstListen
                     }
                 }
-                .padding(.horizontal, 25).padding(.top, 18).padding(.bottom, 24)
+                .padding(.horizontal, 24).padding(.top, 12).padding(.bottom, 24)
                 .frame(maxWidth: 600, alignment: .leading).frame(maxWidth: .infinity)
-                .id(step).transition(.opacity.combined(with: .offset(y: reduceMotion ? 0 : 12)))
+                .id(step).transition(.opacity.combined(with: .offset(y: reduceMotion ? 0 : 10)))
             }
             actions
         }
-        .background((dark ? ScienceBreak.ink : ScienceBreak.paper).ignoresSafeArea())
-        .foregroundStyle(foreground)
+        .background(Theme.canvas.ignoresSafeArea())
+        .foregroundStyle(Theme.ink)
         .interactiveDismissDisabled()
-        .onAppear { selectedID = library.hostID; player.pause() }
-        .onDisappear { introduction.stop() }
-        .onChange(of: scenePhase) { _, phase in if phase != .active { introduction.stop() } }
+        .onAppear { player.pause() }
     }
 
     private var header: some View {
-        HStack(alignment: .center) {
+        HStack {
             if step > 0 {
-                Button { navigate(to: step - 1) } label: {
-                    Image(systemName: "arrow.left").frame(width: 44, height: 44)
-                }.accessibilityLabel("Previous step")
+                Button { go(to: step - 1) } label: { Image(systemName: "chevron.left").font(.body.weight(.semibold)).frame(width: 44, height: 44) }
+                    .accessibilityLabel("Back")
             } else {
-                Text("Sound Science.").font(.system(size: 25, weight: .bold, design: .serif)).tracking(-1).lineLimit(1).minimumScaleFactor(0.75)
+                Text("Sound Science").font(.system(size: 19, weight: .semibold, design: .serif)).frame(height: 44)
             }
             Spacer()
             HStack(spacing: 6) {
                 ForEach(0..<3) { index in
-                    Capsule().fill(index <= step ? (dark ? ScienceBreak.acid : ScienceBreak.ink) : foreground.opacity(0.15))
-                        .frame(width: index == step ? 28 : 7, height: 5)
+                    Capsule().fill(index <= step ? Theme.ink : Theme.hairline).frame(width: index == step ? 22 : 6, height: 6)
                 }
             }.accessibilityElement(children: .ignore).accessibilityLabel("Step \(step + 1) of 3")
             Spacer()
-            Button("Skip") { finish(play: false) }
-                .font(.subheadline).foregroundStyle(foreground.opacity(0.75)).frame(minWidth: 44, minHeight: 44)
-                .accessibilityLabel("Skip setup and explore ScienceBreak")
-        }.padding(.horizontal, 25).padding(.top, 8).padding(.bottom, 6)
+            Button("Skip") { finish(play: false) }.font(.subheadline).foregroundStyle(Theme.secondary).frame(minWidth: 44, minHeight: 44)
+        }
+        .padding(.horizontal, 20).padding(.top, 6)
     }
 
-    private func overline(_ text: String) -> some View {
-        Text(text).font(.system(.caption2, design: .monospaced).weight(.semibold))
-            .tracking(1.6).foregroundStyle(dark ? ScienceBreak.acid : ScienceBreak.muted)
-    }
     private func title(_ text: String) -> some View {
-        Text(text).font(.system(size: titleSize, weight: .regular, design: .serif))
-            .tracking(-1.4).fixedSize(horizontal: false, vertical: true)
+        Text(text).font(.system(size: 34, weight: .semibold, design: .serif)).fixedSize(horizontal: false, vertical: true)
             .accessibilityAddTraits(.isHeader).accessibilityFocused($headingFocused)
     }
 
-    private var welcome: some View {
+    private var intro: some View {
         Group {
-            overline("LESS SCROLL. MORE WONDER.")
-            title("The world is weird.\nStay curious.")
-            ZStack(alignment: .bottomLeading) {
-                OrbitalArt(hue: 0.66)
-                VStack(alignment: .leading, spacing: 8) {
-                    Label("A LITTLE MORE CURIOUS", systemImage: "headphones")
-                        .font(.system(.caption2, design: .monospaced).weight(.semibold)).tracking(1)
-                    Text("Big ideas.\nEasy listening.")
-                        .font(.system(.title, design: .serif)).foregroundStyle(ScienceBreak.ink)
-                }.padding(22).frame(maxWidth: .infinity, alignment: .leading)
-                    .background(LinearGradient(colors: [ScienceBreak.paper.opacity(0), ScienceBreak.paper.opacity(0.95)], startPoint: .top, endPoint: .bottom))
-            }.frame(height: 265).clipShape(RoundedRectangle(cornerRadius: 28)).foregroundStyle(ScienceBreak.ink)
-            Text("Small stories. Big rabbit holes. Science for your walk, your commute, your just-one-more minute.")
-                .font(.body).lineSpacing(4).foregroundStyle(ScienceBreak.paper.opacity(0.78))
-            HStack(spacing: 12) {
-                Image(systemName: "quote.opening").foregroundStyle(ScienceBreak.acid)
-                Text("Real sources. Fresh perspectives. Zero doomscroll.").font(.subheadline)
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
+                ForEach(Show.all) { ShowCover(show: $0) }
+            }
+            title("Science worth\nlistening to.")
+            Text("Short podcasts about new research, from four shows with their own hosts.")
+                .font(.body).foregroundStyle(Theme.secondary)
+            VStack(alignment: .leading, spacing: 14) {
+                point("clock", "About three minutes an episode")
+                point("checkmark.seal", "Every episode links to its sources")
+                point("text.quote", "Read along as you listen")
             }
         }
     }
 
-    private var hosts: some View {
+    private func point(_ symbol: String, _ text: String) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: symbol).font(.body.weight(.medium)).frame(width: 36, height: 36).background(Theme.subtle, in: Circle())
+            Text(text).font(.subheadline)
+        }
+    }
+
+    private var pickShows: some View {
         Group {
-            overline("01 / FIND YOUR FREQUENCY")
-            title("Your kind\nof curious.")
-            Text("Choose the voice of your next rabbit hole. We'll bring their stories to the top.")
-                .font(.body).foregroundStyle(ScienceBreak.muted).lineSpacing(3)
-            VStack(spacing: 10) {
-                ForEach(Host.all) { item in hostOption(item) }
-            }
-            VStack(alignment: .leading, spacing: 12) {
-                HStack {
-                    Label("MEET \(host.name.components(separatedBy: " ")[0].uppercased())", systemImage: "waveform")
-                        .font(.system(.caption2, design: .monospaced).weight(.semibold)).tracking(1)
-                    Spacer()
+            title("Pick your shows")
+            Text("Follow the ones that sound like you. You can change this anytime.").font(.body).foregroundStyle(Theme.secondary)
+            LazyVGrid(columns: [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)], spacing: 18) {
+                ForEach(Show.all) { show in
+                    let isOn = selected.contains(show.id)
                     Button {
-                        if introduction.speaking { introduction.stop() } else { introduction.play(host) }
+                        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.15)) {
+                            if isOn { selected.remove(show.id) } else { selected.insert(show.id) }
+                        }
                     } label: {
-                        Image(systemName: introduction.speaking ? "stop.fill" : "play.fill")
-                            .frame(width: 46, height: 46).background(ScienceBreak.ink, in: Circle()).foregroundStyle(ScienceBreak.paper)
-                    }.accessibilityLabel(introduction.speaking ? "Stop introduction" : "Hear \(host.name)'s introduction")
+                        VStack(alignment: .leading, spacing: 10) {
+                            ShowCover(show: show)
+                                .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).strokeBorder(isOn ? Theme.ink : .clear, lineWidth: 3))
+                                .overlay(alignment: .topTrailing) {
+                                    Image(systemName: isOn ? "checkmark.circle.fill" : "circle")
+                                        .font(.title2).symbolRenderingMode(.palette)
+                                        .foregroundStyle(isOn ? .white : .white.opacity(0.9), isOn ? Theme.ink : .clear).padding(10)
+                                }
+                            HStack(spacing: 8) {
+                                HostAvatar(host: show.host, size: 26)
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(show.title).font(.subheadline.weight(.semibold)).lineLimit(1)
+                                    Text(show.category).font(.caption).foregroundStyle(Theme.secondary).lineLimit(1)
+                                }
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("\(show.title), \(show.category), hosted by \(show.host.name)")
+                    .accessibilityAddTraits(isOn ? .isSelected : [])
                 }
-                Text(host.personality).font(.system(.title3, design: .serif))
-                Text("Device voice sample · Fictional AI host").font(.caption).foregroundStyle(ScienceBreak.muted)
-            }.padding(18).background(host.color.opacity(0.3), in: RoundedRectangle(cornerRadius: 20))
-            Text("All four hosts are yours to explore. You can change your favorite anytime.")
-                .font(.caption).foregroundStyle(ScienceBreak.muted)
+            }
         }
     }
 
-    private func hostOption(_ item: Host) -> some View {
-        let selected = selectedID == item.id
-        return Button {
-            introduction.stop()
-            withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.2)) { selectedID = item.id }
-        } label: {
-            HStack(spacing: 14) {
-                HostAvatar(host: item, size: 48)
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(item.name).font(.system(.title3, design: .serif))
-                    Text(item.niche).font(.subheadline).foregroundStyle(ScienceBreak.muted)
-                }
-                Spacer(minLength: 5)
-                Image(systemName: selected ? "checkmark.circle.fill" : "circle")
-                    .font(.title3).foregroundStyle(selected ? ScienceBreak.ink : ScienceBreak.muted.opacity(0.4))
-            }.padding(15).frame(maxWidth: .infinity, alignment: .leading)
-                .background(selected ? item.color.opacity(0.16) : .white.opacity(0.55), in: RoundedRectangle(cornerRadius: 20))
-                .overlay(RoundedRectangle(cornerRadius: 20).strokeBorder(selected ? ScienceBreak.ink : ScienceBreak.ink.opacity(0.09), lineWidth: selected ? 1.5 : 1))
-                .contentShape(RoundedRectangle(cornerRadius: 20))
-        }.buttonStyle(.plain).accessibilityLabel("\(item.name), \(item.niche)")
-            .accessibilityAddTraits(selected ? .isSelected : [])
-    }
-
-    private var ready: some View {
+    private var firstListen: some View {
         Group {
-            overline("02 / PRESS PLAY ON SOMETHING GOOD")
-            title("A little wonder,\ncoming right up.")
-            if let story = firstStory {
-                VStack(alignment: .leading, spacing: 0) {
-                    OrbitalArt(hue: host.hue).frame(height: 200)
-                        .overlay(alignment: .bottomLeading) {
-                            Text(story.isDemo ? "YOUR FIRST DEMO STORY" : "YOUR FIRST LISTEN")
-                                .font(.system(.caption2, design: .monospaced).weight(.semibold)).tracking(1)
-                                .padding(10).background(ScienceBreak.acid, in: Capsule()).padding(16)
+            title("Start with this one")
+            if let story = firstEpisode {
+                VStack(alignment: .leading, spacing: 16) {
+                    ShowCover(show: story.show)
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 8) {
+                            HostAvatar(host: story.host, size: 24)
+                            Text("\(story.show.title) · \(story.host.name)").font(.caption).foregroundStyle(Theme.secondary)
                         }
-                    VStack(alignment: .leading, spacing: 16) {
-                        overline("\(story.topic) / \(story.minutes) MIN LISTEN")
-                        Text(story.title).font(.system(.title, design: .serif)).fixedSize(horizontal: false, vertical: true)
-                        Text(story.dek).font(.subheadline).foregroundStyle(ScienceBreak.muted)
-                        HStack(spacing: 10) {
-                            HostAvatar(host: host, size: 32)
-                            Text("With \(host.name)").font(.subheadline)
-                        }
-                    }.padding(22)
-                }.background(.white.opacity(0.75), in: RoundedRectangle(cornerRadius: 26))
-                    .clipShape(RoundedRectangle(cornerRadius: 26))
-                Label(story.isDemo ? "Original demo story · Device narration" : "AI-assisted story · Synthetic narration", systemImage: "waveform")
-                    .font(.caption).foregroundStyle(ScienceBreak.muted)
+                        Text(story.title).font(.system(size: 22, weight: .semibold, design: .serif))
+                        Text(story.dek).font(.subheadline).foregroundStyle(Theme.secondary)
+                        Text(story.isDemo ? "Device voice sample" : "\(story.minutes) min · AI-narrated · Sources included").font(.caption).foregroundStyle(Theme.secondary)
+                    }
+                }.card()
             } else {
-                HostAvatar(host: host, size: 100)
-                Text("You're in \(host.name)'s orbit. Explore the current edition while their next story takes shape.")
-                    .font(.body).foregroundStyle(ScienceBreak.muted)
-            }
-            HStack(alignment: .top, spacing: 12) {
-                Image(systemName: "text.book.closed").font(.title3)
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Curiosity, with receipts.").font(.subheadline.weight(.semibold))
-                    Text("Read along, follow the sources, and see what the evidence can—and can't—tell us.")
-                        .font(.subheadline).foregroundStyle(ScienceBreak.muted)
-                }
+                Text("Your shows are warming up. Browse what's available while new episodes are produced.").foregroundStyle(Theme.secondary)
             }
         }
     }
 
     private var actions: some View {
-        VStack(spacing: 9) {
+        VStack(spacing: 6) {
             Button {
-                if step < 2 { navigate(to: step + 1) } else { finish(play: firstStory != nil) }
+                switch step {
+                case 0, 1: go(to: step + 1)
+                default: finish(play: firstEpisode != nil)
+                }
             } label: {
-                HStack {
-                    Text(step == 0 ? "Find my frequency" : step == 1 ? "Continue with \(host.name.components(separatedBy: " ")[0])" : firstStory == nil ? "Explore Sound Science" : "Start my first listen")
-                    Spacer(minLength: 12)
-                    Image(systemName: step == 2 && firstStory != nil ? "play.fill" : "arrow.right")
-                }.frame(maxWidth: .infinity)
-            }.buttonStyle(CapsuleButton(light: true))
-            if step == 2 {
-                Button("I'll explore first") { finish(play: false) }
-                    .font(.subheadline).frame(minHeight: 44)
-            } else {
-                Text(step == 0 ? "No account. No paywall. Just curiosity." : "A favorite, not a commitment.")
-                    .font(.caption).foregroundStyle(foreground.opacity(0.65)).padding(.vertical, 6)
+                Text(step == 0 ? "Get started" : step == 1 ? (selected.isEmpty ? "Pick at least one show" : "Follow \(selected.count) show\(selected.count == 1 ? "" : "s")") : firstEpisode == nil ? "Go to home" : "Play episode")
             }
-        }.padding(.horizontal, 25).padding(.top, 12).padding(.bottom, 10)
-            .frame(maxWidth: 600).frame(maxWidth: .infinity)
-            .background(dark ? ScienceBreak.ink : ScienceBreak.paper)
+            .buttonStyle(PrimaryButtonStyle(fullWidth: true))
+            .disabled(step == 1 && selected.isEmpty)
+            .opacity(step == 1 && selected.isEmpty ? 0.4 : 1)
+            if step == 2 && firstEpisode != nil {
+                Button("Go to home") { finish(play: false) }.font(.subheadline).foregroundStyle(Theme.secondary).frame(minHeight: 44)
+            }
+        }
+        .padding(.horizontal, 24).padding(.top, 10).padding(.bottom, 10)
+        .frame(maxWidth: 600).frame(maxWidth: .infinity)
+        .background(Theme.canvas)
     }
 
-    private func navigate(to next: Int) {
-        introduction.stop()
-        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.3)) { step = next }
+    private func go(to next: Int) {
+        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) { step = next }
         headingFocused = true
     }
+
     private func finish(play: Bool) {
-        introduction.stop()
-        library.hostID = selectedID
-        if play, let story = firstStory { player.play(story) }
+        if !selected.isEmpty { library.setFollowing(selected) }
+        if let first = Show.all.first(where: { selected.contains($0.id) }) { library.hostID = first.id }
+        if play, let story = firstEpisode { player.play(story) }
         onboarded = true
     }
 }

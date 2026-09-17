@@ -1,69 +1,112 @@
 import SwiftUI
 
-enum ScienceBreak {
-    static let paper = Color(red: 0.96, green: 0.95, blue: 0.91)
-    static let ink = Color(red: 0.12, green: 0.14, blue: 0.13)
-    static let acid = Color(red: 0.88, green: 0.96, blue: 0.39)
-    static let muted = Color(red: 0.39, green: 0.41, blue: 0.38)
+/// Warm-neutral, general-purpose design tokens: quiet surfaces, hairlines and ink,
+/// with colour reserved for each show's cover. Radii follow OpenAIKit.
+enum Theme {
+    static let canvas = Color(hex: 0xFAF9F6)
+    static let surface = Color.white
+    static let subtle = Color(hex: 0xF1EFEA)
+    static let hairline = Color(hex: 0xE5E2DB)
+    static let ink = Color(hex: 0x161614)
+    static let secondary = Color(hex: 0x6B6964)
+    static let tertiary = Color(hex: 0xA3A09A)
+    static let display = Font.system(size: 30, weight: .semibold, design: .serif)
+    static func reading(_ size: CGFloat) -> Font { .custom("Charter", size: size, relativeTo: .body) }
 }
-struct CapsuleButton: ButtonStyle {
-    var light = false
+
+extension Color {
+    init(hex: UInt32) {
+        self.init(red: Double((hex >> 16) & 0xFF) / 255, green: Double((hex >> 8) & 0xFF) / 255, blue: Double(hex & 0xFF) / 255)
+    }
+}
+
+struct PrimaryButtonStyle: ButtonStyle {
+    var fullWidth = false
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label.font(.system(.subheadline, design: .rounded, weight: .semibold))
-            .padding(.horizontal, 22).padding(.vertical, 16)
-            .foregroundStyle(light ? ScienceBreak.ink : ScienceBreak.paper)
-            .background(light ? ScienceBreak.acid : ScienceBreak.ink, in: Capsule())
+        configuration.label.font(.subheadline.weight(.semibold))
+            .padding(.horizontal, 20).frame(minHeight: 46).frame(maxWidth: fullWidth ? .infinity : nil)
+            .foregroundStyle(.white).background(Theme.ink, in: Capsule())
+            .opacity(configuration.isPressed ? 0.75 : 1)
+    }
+}
+
+struct SecondaryButtonStyle: ButtonStyle {
+    var fullWidth = false
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label.font(.subheadline.weight(.semibold))
+            .padding(.horizontal, 20).frame(minHeight: 46).frame(maxWidth: fullWidth ? .infinity : nil)
+            .foregroundStyle(Theme.ink).background(Theme.surface, in: Capsule())
+            .overlay(Capsule().strokeBorder(Theme.hairline))
             .opacity(configuration.isPressed ? 0.7 : 1)
     }
 }
-struct Eyebrow: View {
-    var text: String
-    var body: some View { Text(text).font(.system(size: 10, weight: .bold, design: .monospaced)).tracking(2).foregroundStyle(ScienceBreak.muted) }
-}
-struct OrbitalArt: View {
-    var hue: Double = 0.66
+
+struct SectionHeader<Trailing: View>: View {
+    var title: String
+    @ViewBuilder var trailing: Trailing
     var body: some View {
-        GeometryReader { g in
-            let w = g.size.width
-            ZStack {
-                Color(hue: hue, saturation: 0.2, brightness: 0.84)
-                ForEach(0..<7) { i in
-                    Ellipse().stroke(ScienceBreak.ink.opacity(0.22), lineWidth: 0.7)
-                        .frame(width: w * (0.5 + Double(i) * 0.12), height: w * (0.25 + Double(i) * 0.045))
-                        .rotationEffect(.degrees(-34)).offset(x: w * 0.13, y: -8)
+        HStack(alignment: .firstTextBaseline) {
+            Text(title).font(.title3.weight(.semibold)).foregroundStyle(Theme.ink).accessibilityAddTraits(.isHeader)
+            Spacer()
+            trailing.font(.subheadline.weight(.medium)).foregroundStyle(Theme.secondary)
+        }
+    }
+}
+extension SectionHeader where Trailing == EmptyView {
+    init(title: String) { self.title = title; self.trailing = EmptyView() }
+}
+
+/// Podcast cover art: the show's gradient, a large symbol and the title set in serif.
+/// Size it with `.frame(width:)`; it stays square.
+struct ShowCover: View {
+    var show: Show
+    var body: some View {
+        GeometryReader { geometry in
+            let w = geometry.size.width
+            ZStack(alignment: .bottomLeading) {
+                LinearGradient(colors: [show.light, show.dark], startPoint: .topTrailing, endPoint: .bottomLeading)
+                if w >= 96 {
+                    Image(systemName: show.symbol).font(.system(size: w * 0.5, weight: .thin)).foregroundStyle(.white.opacity(0.2))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing).offset(x: w * 0.06, y: -w * 0.04)
+                    VStack(alignment: .leading, spacing: w * 0.025) {
+                        Text(show.title).font(.system(size: w * 0.125, weight: .semibold, design: .serif)).tracking(-0.2)
+                            .lineLimit(2).minimumScaleFactor(0.8)
+                        Text(show.host.name.uppercased()).font(.system(size: max(7, w * 0.048), weight: .semibold)).tracking(0.8).opacity(0.82)
+                    }.foregroundStyle(.white).padding(w * 0.085)
+                } else {
+                    Image(systemName: show.symbol).font(.system(size: w * 0.42, weight: .regular)).foregroundStyle(.white)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                Circle().fill(RadialGradient(colors: [ScienceBreak.paper, Color(hue: hue, saturation: 0.25, brightness: 0.68), ScienceBreak.ink], center: .topLeading, startRadius: 0, endRadius: w * 0.5))
-                    .frame(width: w * 0.43, height: w * 0.43).offset(x: w * 0.1, y: -5)
-                Circle().fill(ScienceBreak.acid).frame(width: w * 0.1, height: w * 0.1).offset(x: -w * 0.24, y: w * 0.12)
-                Image(systemName: "sparkle").font(.system(size: 23, weight: .ultraLight)).offset(x: -w * 0.29, y: -w * 0.17)
-                VStack { HStack { Text("FIELD NOTES / \(hue == 0.66 ? "001" : "002")"); Spacer(); Image(systemName: "viewfinder") }; Spacer() }
-                    .font(.system(size: 8, weight: .medium, design: .monospaced)).tracking(2).padding(20)
-            }.clipped()
-        }.accessibilityHidden(true)
-    }
-}
-struct HostAvatar: View {
-    var host: Host
-    var size: CGFloat = 48
-    var body: some View {
-        ZStack {
-            Circle().fill(host.color)
-            Image(systemName: host.symbol).font(.system(size: size * 0.4, weight: .light)).foregroundStyle(ScienceBreak.ink)
-        }.frame(width: size, height: size).accessibilityHidden(true)
-    }
-}
-struct StoryRow: View {
-    var story: Story
-    var body: some View {
-        HStack(spacing: 15) {
-            OrbitalArt(hue: story.host.hue).frame(width: 80, height: 88).clipShape(RoundedRectangle(cornerRadius: 15))
-            VStack(alignment: .leading, spacing: 7) {
-                Eyebrow(text: "\(story.topic) · \(story.minutes) MIN")
-                Text(story.title).font(.system(.headline, design: .serif)).multilineTextAlignment(.leading)
-                Text("with \(story.host.name)").font(.caption).foregroundStyle(ScienceBreak.muted)
             }
-            Spacer(minLength: 0)
-            Image(systemName: "arrow.up.right").font(.caption)
-        }.foregroundStyle(ScienceBreak.ink).padding(.vertical, 9)
+            .clipShape(RoundedRectangle(cornerRadius: max(6, w * 0.11), style: .continuous))
+        }
+        .aspectRatio(1, contentMode: .fit)
+        .accessibilityHidden(true)
+    }
+}
+
+struct StatTile: View {
+    var value: String
+    var label: String
+    var symbol: String
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Image(systemName: symbol).font(.footnote.weight(.semibold)).foregroundStyle(Theme.secondary)
+            Text(value).font(.system(size: 26, weight: .semibold, design: .rounded)).monospacedDigit().foregroundStyle(Theme.ink)
+            Text(label).font(.caption).foregroundStyle(Theme.secondary).lineLimit(2, reservesSpace: true)
+        }
+        .padding(14).frame(maxWidth: .infinity, alignment: .leading)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: OpenAIKit.Radius.card, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: OpenAIKit.Radius.card, style: .continuous).strokeBorder(Theme.hairline))
+        .accessibilityElement(children: .combine)
+    }
+}
+
+extension View {
+    /// White card with a hairline border.
+    func card(padding: CGFloat = 16, radius: CGFloat = OpenAIKit.Radius.panel) -> some View {
+        self.padding(padding)
+            .background(Theme.surface, in: RoundedRectangle(cornerRadius: radius, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).strokeBorder(Theme.hairline))
     }
 }

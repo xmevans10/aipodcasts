@@ -87,7 +87,7 @@ def main():
             'body': '\n\n'.join(paragraphs),
             'caveat': 'AI-assisted preview episode. Sources checked by the assistant; independent editorial approval is still pending. Host and narration are AI-generated.',
             'sources': [{'title': s['title'], 'url': s['url'], 'attribution': ', '.join(s['authors']), 'license': s['license']} for s in m['sources']],
-            'audioURL': 'bundle:' + m['id'] + '.m4a', 'isDemo': False,
+            'audioURL': 'bundle:' + m['id'] + '.m4a', 'isDemo': False, 'published': manifest['created'],
         }
         shutil.copyfile(audio, OUT / f"{m['id']}.m4a")
         (OUT / f"{m['id']}.json").write_text(json.dumps({'story': story, 'duration': p['duration_seconds'], 'transcript': transcript}, indent=1, ensure_ascii=False) + '\n')

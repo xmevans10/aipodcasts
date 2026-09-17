@@ -21,6 +21,9 @@ import SwiftUI
     private var endObserver: NSObjectProtocol?
     private var sleepTask: Task<Void, Never>?
     private var lastCheckpointAt = 0.0
+    private var lastTick: Date?
+    /// Seconds of real audio listened, keyed by local day ("yyyy-MM-dd").
+    @Published private(set) var listenedSeconds: [String: Double] = UserDefaults.standard.dictionary(forKey: "listenedSeconds") as? [String: Double] ?? [:]
     var isPreview: Bool { story?.audioURL == nil }
     var hasLoadedAudio: Bool { player != nil }
     override init() {
@@ -31,6 +34,7 @@ import SwiftUI
     }
     func persist() {
         if let data = try? JSONEncoder().encode(listening) { UserDefaults.standard.set(data, forKey: "listeningState") }
+        UserDefaults.standard.set(listenedSeconds, forKey: "listenedSeconds")
     }
     func checkpoint() { if !isPreview && !listening.completed.contains(story?.id ?? "") { listening.checkpoint(position) }; persist() }
     func restore(_ stories: [Story]) {
@@ -67,7 +71,7 @@ import SwiftUI
         if let observer { player?.removeTimeObserver(observer) }; observer = nil
         if let endObserver { NotificationCenter.default.removeObserver(endObserver) }; endObserver = nil
         player = nil; activeUtterance = nil; speech.stopSpeaking(at: .immediate)
-        listening = ListeningState(); story = nil; position = 0; cancelSleep(); persist()
+        listening = ListeningState(); listenedSeconds = [:]; story = nil; position = 0; cancelSleep(); persist()
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
     }
     func play(_ item: Story, host: Host? = nil) {
@@ -90,6 +94,11 @@ import SwiftUI
                 Task { @MainActor in
                     guard let self, self.story?.id == item.id else { return }
                     self.position = time.seconds.isFinite ? time.seconds : 0
+                    if self.playing {
+                        let now = Date.now
+                        if let last = self.lastTick { self.listenedSeconds[Story.dayFormatter.string(from: now), default: 0] += min(now.timeIntervalSince(last), 0.5) }
+                        self.lastTick = now
+                    } else { self.lastTick = nil }
                     if abs(self.position - self.lastCheckpointAt) >= 5 { self.lastCheckpointAt = self.position; self.checkpoint() }
                     if let seconds = self.player?.currentItem?.duration.seconds, seconds.isFinite, seconds > 0 { self.duration = seconds }
                     if self.player?.currentItem?.status == .failed { self.message = "This audio is unavailable. You can still read the story."; self.playing = false }
@@ -127,6 +136,27 @@ import SwiftUI
         else if speech.isPaused { speech.continueSpeaking() }
         else if let story { play(story); return }
         playing = true
+    }
+    /// 0 = not started, 1 = finished.
+    func progress(of item: Story) -> Double {
+        if listening.completed.contains(item.id) { return 1 }
+        let seconds = item.id == story?.id && !isPreview ? position : (listening.positions[item.id] ?? 0)
+        return min(0.99, max(0, seconds / max(item.durationSeconds, 1)))
+    }
+    func minutesLeft(of item: Story) -> Int { max(1, Int(((1 - progress(of: item)) * item.durationSeconds / 60).rounded())) }
+    var minutesThisWeek: Int {
+        let days = (0..<7).compactMap { Calendar.current.date(byAdding: .day, value: -$0, to: .now) }.map { Story.dayFormatter.string(from: $0) }
+        return Int((days.reduce(0) { $0 + (listenedSeconds[$1] ?? 0) } / 60).rounded())
+    }
+    /// Consecutive days (ending today or yesterday) with at least a minute of listening.
+    var streakDays: Int {
+        var count = 0
+        var day = Calendar.current.startOfDay(for: .now)
+        if (listenedSeconds[Story.dayFormatter.string(from: day)] ?? 0) < 60 { day = Calendar.current.date(byAdding: .day, value: -1, to: day)! }
+        while (listenedSeconds[Story.dayFormatter.string(from: day)] ?? 0) >= 60 {
+            count += 1; day = Calendar.current.date(byAdding: .day, value: -1, to: day)!
+        }
+        return count
     }
     func toggle() { playing ? pause() : resume() }
     func seek(_ value: Double) {

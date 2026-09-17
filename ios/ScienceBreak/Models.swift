@@ -12,7 +12,33 @@ struct Host: Identifiable, Codable, Hashable {
         Host(id: "nova", name: "Mira Vale", niche: "Space & physics", personality: "Big questions. A little cosmic perspective.", symbol: "sparkles", hue: 0.66),
         Host(id: "fern", name: "Clara Rowan", niche: "Our living planet", personality: "Wild connections, told with warmth.", symbol: "leaf", hue: 0.27),
         Host(id: "ada", name: "Elias Reed", niche: "Minds & machines", personality: "Curious, clear-eyed, delightfully nerdy.", symbol: "waveform.path", hue: 0.06),
-        Host(id: "atlas", name: "Theo Mercer", niche: "Human discovery", personality: "The human story behind the science.", symbol: "touchid", hue: 0.47)
+        Host(id: "atlas", name: "Theo Mercer", niche: "Earth & climate", personality: "The planet beneath the headlines, told patiently.", symbol: "touchid", hue: 0.47)
+    ]
+}
+/// Each host fronts their own show; the app is the platform that carries all of them.
+struct Show: Identifiable, Hashable {
+    let id: String  // matches Host.id
+    let title: String
+    let category: String
+    let tagline: String
+    let about: String
+    let symbol: String
+    let light: Color
+    let dark: Color
+    var host: Host { Host.all.first { $0.id == id } ?? Host.all[0] }
+    static let all = [
+        Show(id: "nova", title: "The Long View", category: "Space & Physics", tagline: "Space, time and the stuff in between.",
+             about: "New findings from telescopes, orbiters and physics labs, explained calmly and without the hype. Each episode follows how we know, not just what was found.",
+             symbol: "moon.stars", light: Color(hex: 0x7D8BE0), dark: Color(hex: 0x232B5E)),
+        Show(id: "fern", title: "Wild Company", category: "Nature & Wildlife", tagline: "The living world, up close.",
+             about: "Animals, plants and ecosystems doing surprising things. Stories come from field observations and peer-reviewed studies, with their limits kept in view.",
+             symbol: "leaf", light: Color(hex: 0x8CC084), dark: Color(hex: 0x1F4A36)),
+        Show(id: "ada", title: "Signal & Noise", category: "Brain & Technology", tagline: "How minds and machines make sense of things.",
+             about: "Neuroscience, perception and computing, taken apart one mechanism at a time. Expect careful distinctions between what was measured and what was modelled.",
+             symbol: "waveform.path.ecg", light: Color(hex: 0xE6936A), dark: Color(hex: 0x6E2A1C)),
+        Show(id: "atlas", title: "Common Ground", category: "Earth & Climate", tagline: "The planet beneath the headlines.",
+             about: "Oceans, weather, geology and climate, with the patience these slow systems deserve. New episodes are on the way; a sample is available now.",
+             symbol: "globe.americas", light: Color(hex: 0x62B6B7), dark: Color(hex: 0x0E4553)),
     ]
 }
 struct Source: Codable, Hashable {
@@ -33,7 +59,14 @@ struct Story: Identifiable, Codable, Hashable {
     let sources: [Source]
     let audioURL: String?
     let isDemo: Bool
+    var published: String? = nil
     var host: Host { Host.all.first { $0.id == hostID } ?? Host.all[0] }
+    var show: Show { Show.all.first { $0.id == hostID } ?? Show.all[0] }
+    var durationSeconds: Double { Episodes.duration(for: id) ?? Double(minutes * 60) }
+    var publishedDate: Date? { published.flatMap { Story.dayFormatter.date(from: $0) } }
+    /// "Sep 17", or "Sample" for device-voice demos without a date.
+    var dateText: String { publishedDate?.formatted(.dateTime.month(.abbreviated).day()) ?? (isDemo ? "Sample" : "") }
+    static let dayFormatter: DateFormatter = { let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"; f.locale = Locale(identifier: "en_US_POSIX"); return f }()
     /// Voiced preview episodes bundled with the app, plus a device-voice demo for hosts without one yet.
     static let demos: [Story] = Episodes.bundled.map(\.story) + [
         Story(id: "ocean", title: "The ocean has a very long memory.", dek: "The enormous role of water in a warming world.", topic: "EARTH", hostID: "atlas", minutes: 1, body: "Water takes a lot of energy to warm up. Across the planet, that makes the ocean an enormous reservoir of heat.\n\nCurrents move heat through the ocean, and exchanges with the atmosphere influence climate. What happens at the surface is only part of the picture.\n\nScientists combine instruments, satellite observations and models to understand these changes. Each method has limitations, particularly when measuring the deep ocean.\n\nThinking about the ocean changes how we think about climate: some responses unfold over very long periods, well beyond a single season or year.", caveat: "Evergreen demo. No new measurements or study results are asserted here.", sources: [Source(title: "NASA Earth science", url: "https://science.nasa.gov/earth/", attribution: "Sound Science original educational demo; background reading: NASA", license: "Original demo")], audioURL: nil, isDemo: true)
@@ -54,6 +87,7 @@ enum Episodes {
         return try? JSONDecoder().decode(BundledEpisode.self, from: data)
     }
     static func transcript(for storyID: String) -> [TranscriptParagraph]? { bundled.first { $0.story.id == storyID }?.transcript }
+    static func duration(for storyID: String) -> Double? { bundled.first { $0.story.id == storyID }?.duration }
 }
 
 @MainActor final class Library: ObservableObject {
@@ -62,7 +96,17 @@ enum Episodes {
     @Published var history: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "history") ?? [])
     @Published var error: String?
     @Published var loading = false
+    @Published var following: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "following") ?? Show.all.map(\.id))
     @AppStorage("host") var hostID = "nova"
+    func isFollowing(_ show: Show) -> Bool { following.contains(show.id) }
+    func toggleFollow(_ show: Show) {
+        if following.contains(show.id) { following.remove(show.id) } else { following.insert(show.id) }
+        UserDefaults.standard.set(Array(following), forKey: "following")
+    }
+    func setFollowing(_ ids: Set<String>) { following = ids; UserDefaults.standard.set(Array(ids), forKey: "following") }
+    /// Newest first; undated samples last.
+    var latest: [Story] { stories.sorted { ($0.published ?? "") > ($1.published ?? "") } }
+    func episodes(of show: Show) -> [Story] { latest.filter { $0.hostID == show.id } }
     @AppStorage("feedURL") var feedURL = ""
     func toggle(_ story: Story) {
         if saved.contains(story.id) { saved.remove(story.id) } else { saved.insert(story.id) }

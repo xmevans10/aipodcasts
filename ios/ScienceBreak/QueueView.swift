@@ -4,21 +4,18 @@ struct QueueView: View {
     @EnvironmentObject var player: AudioPlayer
     @EnvironmentObject var library: Library
     private var suggestions: [Story] {
-        library.stories.filter { $0.id != player.story?.id && !player.listening.queue.contains($0.id) }
+        library.latest.filter { $0.id != player.story?.id && !player.listening.queue.contains($0.id) && player.progress(of: $0) < 1 }
     }
     var body: some View {
         List {
-            Section {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Stay in your orbit.").font(.system(size: 30, design: .serif))
-                    Text("Stories play in order. Make a little room for whatever catches your curiosity.").font(.subheadline).foregroundStyle(ScienceBreak.muted)
-                }.padding(.vertical, 8)
-            }.listRowBackground(Color.clear)
             if let current = player.story {
-                Section("Now in your ears") {
-                    HStack {
-                        HostAvatar(host: current.host, size: 38)
-                        Text(current.title).font(.subheadline.weight(.semibold))
+                Section("Now playing") {
+                    HStack(spacing: 12) {
+                        ShowCover(show: current.show).frame(width: 44)
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(current.title).font(.subheadline.weight(.semibold)).lineLimit(2)
+                            Text(current.show.title).font(.caption).foregroundStyle(Theme.secondary)
+                        }
                         Spacer()
                         Button { player.toggle() } label: { Image(systemName: player.playing ? "pause.fill" : "play.fill").frame(width: 44, height: 44) }
                             .buttonStyle(.borderless).accessibilityLabel(player.playing ? "Pause" : "Play")
@@ -27,14 +24,14 @@ struct QueueView: View {
             }
             Section("Up next · \(player.queuedStories.count)") {
                 if player.queuedStories.isEmpty {
-                    Text("A little breathing room. Add a story below or from its article.").font(.subheadline).foregroundStyle(ScienceBreak.muted).padding(.vertical, 12)
+                    Text("Nothing queued. Add an episode below or from its page.").font(.subheadline).foregroundStyle(Theme.secondary).padding(.vertical, 8)
                 }
                 ForEach(player.queuedStories) { story in
                     HStack(spacing: 12) {
-                        HostAvatar(host: story.host, size: 34)
-                        VStack(alignment: .leading, spacing: 5) {
-                            Text(story.title).font(.subheadline.weight(.semibold))
-                            Text("\(story.host.name) · \(story.minutes) min").font(.caption).foregroundStyle(ScienceBreak.muted)
+                        ShowCover(show: story.show).frame(width: 40)
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(story.title).font(.subheadline.weight(.semibold)).lineLimit(2)
+                            Text("\(story.show.title) · \(story.minutes) min").font(.caption).foregroundStyle(Theme.secondary)
                         }
                         Spacer()
                         Menu {
@@ -43,22 +40,29 @@ struct QueueView: View {
                             Button("Move down", systemImage: "arrow.down") { player.moveQueued(story.id, by: 1) }.disabled(player.queuedStories.last?.id == story.id)
                             Button("Remove", systemImage: "minus.circle", role: .destructive) { player.removeQueued(story.id) }
                         } label: { Image(systemName: "ellipsis").frame(width: 44, height: 44) }.accessibilityLabel("Queue options for \(story.title)")
-                    }.padding(.vertical, 6)
+                    }
                     .swipeActions { Button("Remove", role: .destructive) { player.removeQueued(story.id) } }
                 }
             }
             if !suggestions.isEmpty {
-                Section("A little more wonder") {
+                Section("Suggested") {
                     ForEach(suggestions) { story in
-                        HStack {
-                            VStack(alignment: .leading, spacing: 5) { Text(story.title).font(.subheadline); Text("\(story.topic.capitalized) · \(story.minutes) min").font(.caption).foregroundStyle(ScienceBreak.muted) }
+                        HStack(spacing: 12) {
+                            ShowCover(show: story.show).frame(width: 40)
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(story.title).font(.subheadline).lineLimit(2)
+                                Text("\(story.show.title) · \(story.minutes) min").font(.caption).foregroundStyle(Theme.secondary)
+                            }
                             Spacer()
-                            Button { player.enqueue(story) } label: { Image(systemName: "plus.circle.fill").font(.title2).frame(width: 44, height: 44) }.buttonStyle(.borderless).accessibilityLabel("Add \(story.title) to queue")
-                        }.padding(.vertical, 4)
+                            Button { player.enqueue(story) } label: { Image(systemName: "plus.circle").font(.title2).frame(width: 44, height: 44) }
+                                .buttonStyle(.borderless).accessibilityLabel("Add \(story.title) to queue")
+                        }
                     }
                 }
             }
-        }.scrollContentBackground(.hidden).background(ScienceBreak.paper).navigationTitle("Your queue").navigationBarTitleDisplayMode(.inline)
-            .toolbar { if !player.queuedStories.isEmpty { Button("Clear") { player.clearQueue() } } }
+        }
+        .scrollContentBackground(.hidden).background(Theme.canvas)
+        .navigationTitle("Up next").navigationBarTitleDisplayMode(.inline)
+        .toolbar { if !player.queuedStories.isEmpty { Button("Clear") { player.clearQueue() } } }
     }
 }

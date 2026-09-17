@@ -107,7 +107,7 @@ import SwiftUI
             speech.speak(utterance)
         } else { message = "Narration is not ready yet. You can still read this story."; playing = false; return }
         playing = true; onStarted?(item)
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = [MPMediaItemPropertyTitle: item.title, MPMediaItemPropertyArtist: "Science Break · \(item.host.name)"]
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = [MPMediaItemPropertyTitle: item.title, MPMediaItemPropertyArtist: "Sound Science · \(item.host.name)"]
     }
     func pause() { player?.pause(); speech.pauseSpeaking(at: .immediate); playing = false; checkpoint() }
     func resume() {

@@ -10,7 +10,7 @@ Model: Eleven v3 · Natural stability · original fictional presenter
 
 [curious] The Moon looks reassuringly finished. Craters in place. Dust settled. But while we were getting on with life, something punched a new hole in it, more than two hundred metres across.
 
-I'm Mira Vale, and this is Science Break. Today's headline: The Moon changed while we weren't looking.
+I'm Mira Vale, and this is Sound Science. Today's headline: The Moon changed while we weren't looking.
 
 On September sixteenth, NASA reported a newly identified lunar crater called McGetchin. The main study, by Mark S. Robinson and colleagues in Science Advances, is titled A new two-hundred-and-twenty-two-metre diameter lunar crater.
 

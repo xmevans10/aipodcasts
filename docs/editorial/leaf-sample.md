@@ -6,7 +6,7 @@ Presenter: Clara Rowan, fictional AI nature host.
 
 The next time you look at a leaf, try asking a slightly odd question. Not why it's green. Why isn't it crumpled?
 
-I'm Clara Rowan, your AI nature host, and today on Science Break: The quiet achievement of a flat leaf.
+I'm Clara Rowan, your AI nature host, and today on Sound Science: The quiet achievement of a flat leaf.
 
 Our paper is “Growth-rate coordination across the width of a leaf preserves its flatness,” by Kate Harline, Brendan Lane and colleagues. Behind that rather technical title is a lovely puzzle. A leaf is growing all over. How does it get bigger without tying itself in knots?
 
@@ -54,7 +54,7 @@ So, back to that leaf. It may look like the simplest thing in the world. The int
 
 ## Full source credit
 
-Kate Harline, Brendan Lane, Maura J. Zimmermann, Antoine Fruleux, Gabriella Mosca, Sören Strauss, Nik Tavakolian, James W. Satterlee, Chun-Biu Li, Abhyudai Singh, Arezki Boudaoud, Richard S. Smith, Adrienne H. K. Roeder. [Growth-rate coordination across the width of a leaf preserves its flatness](https://doi.org/10.1371/journal.pbio.3003993). [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/). Adapted by Science Break; changes made.
+Kate Harline, Brendan Lane, Maura J. Zimmermann, Antoine Fruleux, Gabriella Mosca, Sören Strauss, Nik Tavakolian, James W. Satterlee, Chun-Biu Li, Abhyudai Singh, Arezki Boudaoud, Richard S. Smith, Adrienne H. K. Roeder. [Growth-rate coordination across the width of a leaf preserves its flatness](https://doi.org/10.1371/journal.pbio.3003993). [CC BY 4.0](http://creativecommons.org/licenses/by/4.0/). Adapted by Sound Science; changes made.
 
 Validation passed: evidence quotations, source title, named-author credit, spoken headline and limitations included. This does not replace scientific review.
 

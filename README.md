@@ -1,4 +1,4 @@
-# Lilt
+# Sound Science
 
 **Big ideas. Easy listening.** A native iPhone science-listening demo and an editorial backend, built from scratch in SwiftUI and Python.
 
@@ -32,3 +32,7 @@ This is a runnable product demo and tested backend foundation, **not a deployed 
 ## Content trial update
 
 [Compact evidence selection](docs/CONTENT-EFFICIENCY.md) reduces the first paper’s source payload by 82.2% in characters. [Read the first editorial sample](docs/editorial/leaf-sample.md), written in this assistant session with five checked source quotations. It is not a live backend API result. Add provider credentials locally to backend/.env to run the separate API trial.
+
+## Voiced episodes (private preview)
+
+Three directed episodes are in [`demos/three-hosts-2026-09-17`](demos/three-hosts-2026-09-17) (`mira.m4a`, `clara.m4a`, `elias.m4a`; open `index.html` to listen). Voices were cast from a 19-voice Eleven v3 audition ([`backend/evals/voices`](backend/evals/voices)). [`backend/produce.py`](backend/produce.py) synthesizes one directed section at a time, caches by content hash so unchanged lines are never re-bought, and mixes locally (intro jingle, transition sting, loudness). [`backend/evals/qa_episodes.py`](backend/evals/qa_episodes.py) transcribes each episode back and diffs it against the script. Human listening and editorial approval are still pending.

@@ -11,3 +11,4 @@ build-*/
 *.asd
 *.xcodeproj/
 .generation.lock
+demos/*/beats/*.mp3

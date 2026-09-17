@@ -1,0 +1,192 @@
+[
+ {
+  "host": "mira",
+  "voice": "Florence",
+  "voice_id": "22N9cF8z0o7y23njdyaY",
+  "model": "eleven_v3",
+  "characters": 177,
+  "utc": 1789655771.968117,
+  "status": "ok",
+  "bytes": 195648
+ },
+ {
+  "host": "mira",
+  "voice": "Amelia",
+  "voice_id": "ZF6FPAbjXT4488VcRRnw",
+  "model": "eleven_v3",
+  "characters": 177,
+  "utc": 1789655786.717043,
+  "status": "ok",
+  "bytes": 203172
+ },
+ {
+  "host": "mira",
+  "voice": "Shelley",
+  "voice_id": "4CrZuIW9am7gYAxgo2Af",
+  "model": "eleven_v3",
+  "characters": 177,
+  "utc": 1789655800.6025379,
+  "status": "ok",
+  "bytes": 203172
+ },
+ {
+  "host": "mira",
+  "voice": "British (featured)",
+  "voice_id": "G17SuINrv2H9FC6nvetn",
+  "model": "eleven_v3",
+  "characters": 177,
+  "utc": 1789655814.0298529,
+  "status": "ok",
+  "bytes": 191887
+ },
+ {
+  "host": "mira",
+  "voice": "Alice",
+  "voice_id": "Xb7hH8MSUJpSbSDYk0k2",
+  "model": "eleven_v3",
+  "characters": 177,
+  "utc": 1789655827.219949,
+  "status": "ok",
+  "bytes": 173915
+ },
+ {
+  "host": "mira",
+  "voice": "Lily",
+  "voice_id": "pFZP5JQG7iQjIQuC4Bku",
+  "model": "eleven_v3",
+  "characters": 177,
+  "utc": 1789655831.8112729,
+  "status": "ok",
+  "bytes": 207351
+ },
+ {
+  "host": "clara",
+  "voice": "Maisie",
+  "voice_id": "QtY3JBOUKEB5xzrRfOKc",
+  "model": "eleven_v3",
+  "characters": 164,
+  "utc": 1789655836.590453,
+  "status": "ok",
+  "bytes": 166391
+ },
+ {
+  "host": "clara",
+  "voice": "Australian (featured)",
+  "voice_id": "tyepWYJJwJM9TTFIg5U7",
+  "model": "eleven_v3",
+  "characters": 164,
+  "utc": 1789655841.4780009,
+  "status": "ok",
+  "bytes": 195648
+ },
+ {
+  "host": "clara",
+  "voice": "Hope",
+  "voice_id": "zGjIP4SZlMnY9m93k97r",
+  "model": "eleven_v3",
+  "characters": 164,
+  "utc": 1789655854.572583,
+  "status": "ok",
+  "bytes": 180184
+ },
+ {
+  "host": "clara",
+  "voice": "Juniper",
+  "voice_id": "aMSt68OGf4xUZAnLpTU8",
+  "model": "eleven_v3",
+  "characters": 164,
+  "utc": 1789655866.945099,
+  "status": "ok",
+  "bytes": 158450
+ },
+ {
+  "host": "clara",
+  "voice": "Jessica Anne Bogart",
+  "voice_id": "g6xIsTj2HwM6VR4iXFCw",
+  "model": "eleven_v3",
+  "characters": 164,
+  "utc": 1789655879.652363,
+  "status": "ok",
+  "bytes": 171407
+ },
+ {
+  "host": "clara",
+  "voice": "Cassidy",
+  "voice_id": "56AoDkrOh6qfVPDXZ7Pt",
+  "model": "eleven_v3",
+  "characters": 164,
+  "utc": 1789655891.1287339,
+  "status": "ok",
+  "bytes": 141732
+ },
+ {
+  "host": "elias",
+  "voice": "Lawrence",
+  "voice_id": "ktkP7Nsj67dw2zcplQYt",
+  "model": "eleven_v3",
+  "characters": 161,
+  "utc": 1789655903.709684,
+  "status": "ok",
+  "bytes": 148419
+ },
+ {
+  "host": "elias",
+  "voice": "Archer",
+  "voice_id": "Fahco4VZzobUeiPqni1S",
+  "model": "eleven_v3",
+  "characters": 161,
+  "utc": 1789655914.0689878,
+  "status": "ok",
+  "bytes": 180184
+ },
+ {
+  "host": "elias",
+  "voice": "Chris",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 161,
+  "utc": 1789655926.196214,
+  "status": "ok",
+  "bytes": 144239
+ },
+ {
+  "host": "elias",
+  "voice": "Eric",
+  "voice_id": "cjVigY5qzO86Huf0OWal",
+  "model": "eleven_v3",
+  "characters": 161,
+  "utc": 1789655930.077739,
+  "status": "ok",
+  "bytes": 153435
+ },
+ {
+  "host": "elias",
+  "voice": "Otto",
+  "voice_id": "FTNCalFNG5bRnkkaP5Ug",
+  "model": "eleven_v3",
+  "characters": 161,
+  "utc": 1789655934.1282098,
+  "status": "ok",
+  "bytes": 142986
+ },
+ {
+  "host": "elias",
+  "voice": "Peter",
+  "voice_id": "TumdjBNWanlT3ysvclWh",
+  "model": "eleven_v3",
+  "characters": 161,
+  "utc": 1789655945.812365,
+  "status": "ok",
+  "bytes": 145911
+ },
+ {
+  "host": "elias",
+  "voice": "Liam",
+  "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+  "model": "eleven_v3",
+  "characters": 161,
+  "utc": 1789655956.5200589,
+  "status": "ok",
+  "bytes": 142986
+ }
+]

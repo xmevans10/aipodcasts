@@ -1,0 +1,129 @@
+{
+ "mira": {
+  "voice": "Shelley - Clear, Confident and British",
+  "match": 0.969,
+  "wpm": 136,
+  "seconds": 176.0,
+  "diffs": [
+   [
+    "replace",
+    "metres",
+    "meters"
+   ],
+   [
+    "replace",
+    "sixteenth",
+    "th"
+   ],
+   [
+    "replace",
+    "mcgetchin",
+    "mic getchin"
+   ],
+   [
+    "replace",
+    "two hundred and twenty two metre",
+    "meter"
+   ],
+   [
+    "replace",
+    "eleventh",
+    "th"
+   ],
+   [
+    "replace",
+    "twenty second",
+    "nd"
+   ],
+   [
+    "replace",
+    "metres",
+    "meters"
+   ],
+   [
+    "replace",
+    "metres",
+    "meters"
+   ],
+   [
+    "replace",
+    "kilometres",
+    "kilometers"
+   ]
+  ],
+  "transcript": "The Moon looks reassuringly finished: craters in place, dust settled. But while we were getting on with life, something punched a new hole in it more than two hundred meters across. I'm Mira Vale, and this is Sound Science. Today's headline: The Moon changed while we weren't looking. On September 16th, NASA reported a newly identified lunar crater called Mic Getchin. The main study by Mark S. Robinson and colleagues in Science Advances is titled A New 222 Meter-Diameter Lunar Crater. First, a small but important correction to the mental picture. This wasn't an impact last night. Comparing images puts the collision between April 11th and May 22nd twenty twenty-four. Researchers discovered the change in twenty twenty-five. The news this week is the research describing it. Here's the lovely part. The clue emerged from comparing broad maps rather than staring at one tiny patch in exquisite detail. Image specialist Robert Wagner noticed an unusual bright feature with a dark halo. Images taken before and after the collision made the change apparent. The Lunar Reconnaissance Orbiter's sharper camera then helped reveal what had happened. The resulting crater is about two hundred and twenty-two meters wide and forty-three meters deep. That's a substantial alteration to a landscape we tend to treat as permanent. And the hole isn't the whole story. A companion study by Tyler M. Powell and colleagues examined the surrounding ground using the orbiter's Diviner thermal instrument. Around the crater, an area roughly six kilometers across was cooler at night than nearby terrain. The explanation is that the collision loosened the surface material, changing how well it holds heat. An impact can rearrange far more ground than the neat circle we notice in a photograph. There's a limit to what we can say. The images bracket when the impact happened. They don't give us an eyewitness timestamp. And estimates that an event this size occurs roughly once a century or longer come from impact models. They aren't a lunar timetable or a prediction of the next collision. That's why fresh craters matter. They let scientists compare what their models predict with a real, newly changed surface. So the next time the Moon looks perfectly still, remember, still from here isn't the same as unchanged. I'm Mira Vale. Stay a little curious. Sources and full author credits accompany this episode. Your host and narration are AI generated."
+ },
+ "clara": {
+  "voice": "Maisie - Friendly Casual Neighbor",
+  "match": 0.991,
+  "wpm": 129,
+  "seconds": 198.8,
+  "diffs": [
+   [
+    "replace",
+    "behaviour",
+    "behavior"
+   ],
+   [
+    "replace",
+    "researchers'",
+    "researcher's"
+   ],
+   [
+    "replace",
+    "behaviour",
+    "behavior"
+   ],
+   [
+    "replace",
+    "judgement",
+    "judgment"
+   ]
+  ],
+  "transcript": "[on-hold music] A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal. The dolphin eats that instead and lets the fish swim away. An unconventional takeaway arrangement. I'm Clara Rowan, and this is Sound Science. Today's headline: The Dolphin Who Lets Dinner Escape. A paper published on September thirteenth in Ecology and Evolution describes this behavior off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title. Kleptoparasitism means taking food another animal has already acquired. The researcher's candidate is an adult male dolphin known locally as Bubbles. Across recordings collected between twenty twenty-one and twenty twenty-five, the team documented twenty foraging records. Eleven included a feeding event: a bigeye trevally regurgitated, and the dolphin consumed the expelled food. Distinctive scars and notches in his dorsal fin helped establish that they were watching the same individual over time. The sequence matters. Bubbles appeared to select a particular fish, pursue it, and then stop chasing when food became available. In those recorded interactions, he wasn't observed eating the trevally itself. Sometimes the process repeated. The dolphin returned to the school and began again. That makes this more interesting than an animal simply encountering somebody else's leftovers. The observations suggest a repeated feeding tactic. The team also recorded clicks and lower-frequency sounds during pursuit, raising questions about whether sound helps the dolphin select or pressure a fish. [whoosh sound] But here's where the story needs its brakes. This is one dolphin, observed opportunistically, not a controlled experiment. The recordings don't establish that sound causes regurgitation, that Bubbles can detect a fish's stomach contents, or that stealing this way saves energy. The researchers suggest those possibilities. They haven't demonstrated them. We also don't know how common this tactic is among other dolphins. Even with those limits, there's something wonderful here. Careful observation of an individual can uncover behavior we weren't looking for. Calling Bubbles a thief is our shorthand, of course. It's not a moral judgment, and it doesn't tell us what he's thinking. What we can see is a predator repeatedly getting food in an unexpected way. Sometimes the interesting question isn't whether the fish gets away, it's what the dolphin was chasing in the first place. I'm Clara Rowan. There's always more going on. Sources and full author credits accompany this episode. Your host and narration are AI generated"
+ },
+ "elias": {
+  "match": 0.984,
+  "expected_words": 436,
+  "heard_words": 436,
+  "wpm": 146,
+  "diffs": [
+   [
+    "replace",
+    "helped",
+    "help"
+   ],
+   [
+    "replace",
+    "odours",
+    "odors"
+   ],
+   [
+    "replace",
+    "behaviour",
+    "behavior"
+   ],
+   [
+    "replace",
+    "contained",
+    "contain"
+   ],
+   [
+    "replace",
+    "specialised",
+    "specialized"
+   ],
+   [
+    "replace",
+    "prioritise",
+    "prioritize"
+   ],
+   [
+    "replace",
+    "specialised",
+    "specialized"
+   ]
+  ],
+  "transcript": "To you, an exhaled breath is barely an event. To a mosquito, its carbon dioxide can be a useful clue that a potential meal is nearby. The interesting question is how that signal gets through a world full of other smells. I'm Elias Reed. This is Sound Science, and today's headline is Your Breath Has a Volume Knob. That's a metaphor. The volume knob is in the mosquito's neural circuitry. Jialu Bao, Wesley Alford, and colleagues describe the work in PLOS Biology, published September tenth. Their paper is called Recurrent Synapses Between Carbon Dioxide-Sensitive Olfactory Sensory Neurons Enable Robust Carbon Dioxide Detection in Aedes aegypti Mosquitoes. The team used electron microscopy to reconstruct part of an adult female mosquito's brain. They traced one hundred and thirty-six sensory neurons across three smell-processing regions, then mapped all the outgoing synapses of thirty selected neurons in detail. One region processes carbon dioxide. Its sensory neurons didn't simply pass messages onward. They made unusually many connections with one another. The researchers also compared the wiring with fruit fly data, finding particularly strong recurrent connectivity in the mosquito's carbon dioxide circuit. Think of a group passing a quiet message around until it becomes harder to miss. It's an analogy for the proposed amplification, not a description of tiny neurons having a conversation. To explore what those connections might do, the researchers built a computational model. In that model, recurrent connections help preserve detection of carbon dioxide when other odors created a challenging background. The proposed benefit is a stronger signal for a cue that helps activate host-seeking behavior. There was another intriguing detail. Some connection sites contain structures resembling ribbon synapses, specialized structures known from other sensory systems. Resembling is the important word. The team hasn't established that these structures function as ribbon synapses, and there are broader limits. The anatomical reconstruction came from one adult female mosquito, and it covers only part of the relevant circuit. The signal-boosting explanation draws on a computational model. This study didn't switch those connections off in a flying mosquito and measure whether it stopped finding people. It hasn't produced a new repellent or demonstrated disease prevention. What it offers is a detailed wiring map and a testable explanation for how a small nervous system might prioritize an important clue. Sensing the world isn't only about having a detector. What happens to the signal next can be just as interesting. Your ordinary breath, a rather specialized reception system. I'm Elias Reed. Let's keep asking how. Sources and full author credits accompany this episode. Your host and narration are AI-generated."
+ }
+}

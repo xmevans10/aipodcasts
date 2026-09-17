@@ -10,7 +10,7 @@ Model: Eleven v3 · Natural stability · original fictional presenter
 
 [curious] To you, an exhaled breath is barely an event. To a mosquito, its carbon dioxide can be a useful clue that a potential meal is nearby. The interesting question is how that signal gets through a world full of other smells.
 
-I'm Elias Reed. This is Science Break, and today's headline is: Your breath has a volume knob.
+I'm Elias Reed. This is Sound Science, and today's headline is: Your breath has a volume knob.
 
 That's a metaphor. The volume knob is in the mosquito's neural circuitry.
 

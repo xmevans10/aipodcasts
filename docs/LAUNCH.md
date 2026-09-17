@@ -2,7 +2,7 @@
 
 ## Positioning
 
-For curious people whose eyes are tired of feeds: Science Break turns worthwhile science into short, source-linked listening. Promise discovery, not productivity guilt. Start with English-speaking walkers and commuters, not “everyone who likes science.” No claim of scientific expertise by the synthetic hosts.
+For curious people whose eyes are tired of feeds: Sound Science turns worthwhile science into short, source-linked listening. Promise discovery, not productivity guilt. Start with English-speaking walkers and commuters, not “everyone who likes science.” No claim of scientific expertise by the synthetic hosts.
 
 > Engineering schedule and dispatch prompts: [Implementation plan](IMPLEMENTATION-PLAN.md). Its gated milestones replace the calendar below, which is retained as an earlier growth experiment sketch.
 
@@ -28,30 +28,30 @@ Events: `onboarding_completed`, `story_started`, `story_completed`, `source_open
 
 ## Ready-to-use copy
 
-App name: **Science Break: Science, out loud**
+App name: **Sound Science: Science, out loud**
 Subtitle: **Big ideas. Easy listening.**
 Promotional text: **Make your next walk a little more interesting. Discover short science stories, memorable hosts, and the evidence behind every idea.**
 
 Description draft:
-> There’s a whole world to wonder about. Science Break makes a little room for it.
+> There’s a whole world to wonder about. Sound Science makes a little room for it.
 >
 > Listen to short, thoughtfully explained science stories in space, nature, the mind and our changing planet. Find a favorite host, save an idea for later, or read along at your own pace.
 >
 > Every story includes links to its sources and a clear note about what the research can—and cannot—tell us. Stories are created with AI assistance and editorial review. Hosts use synthetic voices.
 >
-> Start with the free daily edition. Science Break Plus adds the archive and offline listening when available.
+> Start with the free daily edition. Sound Science Plus adds the archive and offline listening when available.
 
 Remove the Plus sentence until those features ship. Final store text must match the submitted binary. Category decision: Education primary, News secondary, subject to App Store setup. English launch first; localization after editorial and retention validation.
 
 Screenshot captions: “Make room for a little awe.” / “Your daily dose of discovery.” / “Find your kind of curious.” / “Listen. Read. Follow the evidence.” / “Keep a little wonder.”
 
 Three teaser concepts:
-1. Mira Vale: “When you look up, how far back are you looking?” → ancient light explainer → “Take a curious detour with Science Break.”
+1. Mira Vale: “When you look up, how far back are you looking?” → ancient light explainer → “Take a curious detour with Sound Science.”
 2. Clara Rowan: “The most interesting part of a forest might be under your shoes.” → fungi fact + limitation → “Big ideas. Easy listening.”
 3. Elias Reed: “A vivid memory is not always an accurate one.” → reconstruction caveat → “A little more curious.”
 
 Launch email draft (not sent):
 Subject: A little more wonder for your next walk
-Body: We’re building Science Break: short science stories for your ears, with distinctive hosts and sources you can follow. The first beta is ready for curious listeners. Try a story on your next walk and tell us what stayed with you. [Insert real TestFlight link after approval.]
+Body: We’re building Sound Science: short science stories for your ears, with distinctive hosts and sources you can follow. The first beta is ready for curious listeners. Try a story on your next walk and tell us what stayed with you. [Insert real TestFlight link after approval.]
 
 Retention approach: finite weekday edition, follow a host, saved stories, opt-in daily reminder after a second completed story. No streak loss, false urgency, or auto-enabled notifications. Reminder implementation is deferred until the content cadence is reliable.

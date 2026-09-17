@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "brand": "Science Break",
+  "brand": "Sound Science",
   "status": "preview",
   "model_id": "eleven_v3",
   "voice_settings": {
@@ -19,16 +19,16 @@
     {
       "id": "mira",
       "host": "Mira Vale",
-      "voice_id": "22N9cF8z0o7y23njdyaY",
-      "voice_name": "Florence - Atmospheric Storyteller",
+      "voice_id": "4CrZuIW9am7gYAxgo2Af",
+      "voice_name": "Shelley - Clear, Confident and British",
       "intro_asset": null,
       "beats": [
         {
           "id": "01",
           "title": "The hook",
           "speaker": "Mira Vale",
-          "text": "The Moon looks reassuringly finished. Craters in place. Dust settled. But while we were getting on with life, something punched a new hole in it, more than two hundred metres across.\n\nI'm Mira Vale, and this is Science Break. Today's headline: The Moon changed while we weren't looking.\n\nOn September sixteenth, NASA reported a newly identified lunar crater called McGetchin. The main study, by Mark S. Robinson and colleagues in Science Advances, is titled A new two-hundred-and-twenty-two-metre diameter lunar crater.",
-          "directed_text": "[curious] The Moon looks reassuringly finished. Craters in place. Dust settled. But while we were getting on with life, something punched a new hole in it, more than two hundred metres across.\n\nI'm Mira Vale, and this is Science Break. Today's headline: The Moon changed while we weren't looking.\n\nOn September sixteenth, NASA reported a newly identified lunar crater called McGetchin. The main study, by Mark S. Robinson and colleagues in Science Advances, is titled A new two-hundred-and-twenty-two-metre diameter lunar crater.",
+          "text": "The Moon looks reassuringly finished. Craters in place. Dust settled. But while we were getting on with life, something punched a new hole in it, more than two hundred metres across.\n\nI'm Mira Vale, and this is Sound Science. Today's headline: The Moon changed while we weren't looking.\n\nOn September sixteenth, NASA reported a newly identified lunar crater called McGetchin. The main study, by Mark S. Robinson and colleagues in Science Advances, is titled A new two-hundred-and-twenty-two-metre diameter lunar crater.",
+          "directed_text": "[curious] The Moon looks reassuringly finished. Craters in place. Dust settled. But while we were getting on with life, something punched a new hole in it, more than two hundred metres across.\n\nI'm Mira Vale, and this is Sound Science. Today's headline: The Moon changed while we weren't looking.\n\nOn September sixteenth, NASA reported a newly identified lunar crater called Mick-GETCH-in. The main study, by Mark S. Robinson and colleagues in Science Advances, is titled A new two-hundred-and-twenty-two-metre diameter lunar crater.",
           "direction": "Inviting curiosity; let the image land.",
           "pause_after_seconds": 0.4,
           "effect_after": null
@@ -63,7 +63,10 @@
           "pause_after_seconds": 0.4,
           "effect_after": null
         }
-      ]
+      ],
+      "casting_basis": "Chosen from a 19-voice Eleven v3 audition (backend/evals/voices): brief fit, 100% transcript match, no spoken tags, pace and pitch variation. Pending human listening approval.",
+      "audio_file": "mira.m4a",
+      "duration_seconds": 176.0
     },
     {
       "id": "clara",
@@ -76,8 +79,8 @@
           "id": "01",
           "title": "An unexpected meal",
           "speaker": "Clara Rowan",
-          "text": "A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal. The dolphin eats that instead, and lets the fish swim away.\n\nAn unconventional takeaway arrangement.\n\nI'm Clara Rowan, and this is Science Break. Today's headline: The dolphin who lets dinner escape.\n\nA paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.",
-          "directed_text": "[curious] A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal. The dolphin eats that instead, and lets the fish swim away.\n\n[mischievously] An unconventional takeaway arrangement.\n\n[curious]\n\nI'm Clara Rowan, and this is Science Break. Today's headline: The dolphin who lets dinner escape.\n\nA paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.",
+          "text": "A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal. The dolphin eats that instead, and lets the fish swim away.\n\nAn unconventional takeaway arrangement.\n\nI'm Clara Rowan, and this is Sound Science. Today's headline: The dolphin who lets dinner escape.\n\nA paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.",
+          "directed_text": "[curious] A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal. The dolphin eats that instead, and lets the fish swim away.\n\n[mischievously] An unconventional takeaway arrangement.\n\n[curious]\n\nI'm Clara Rowan, and this is Sound Science. Today's headline: The dolphin who lets dinner escape.\n\nA paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.",
           "direction": "Inviting curiosity; let the image land.",
           "pause_after_seconds": 0.4,
           "effect_after": null
@@ -112,21 +115,24 @@
           "pause_after_seconds": 0.4,
           "effect_after": null
         }
-      ]
+      ],
+      "casting_basis": "Chosen from a 19-voice Eleven v3 audition (backend/evals/voices): brief fit, 100% transcript match, no spoken tags, pace and pitch variation. Pending human listening approval. Recast from the featured Australian voice: it narrated at ~104 wpm (brief 140-155) and Eleven v3 ignores the speed setting.",
+      "audio_file": "clara.m4a",
+      "duration_seconds": 198.8
     },
     {
       "id": "elias",
       "host": "Elias Reed",
-      "voice_id": "ktkP7Nsj67dw2zcplQYt",
-      "voice_name": "Lawrence - Bright and Informative",
+      "voice_id": "iP95p4xoKVk53GoZ742B",
+      "voice_name": "Chris - Charming, Down-to-Earth (American)",
       "intro_asset": null,
       "beats": [
         {
           "id": "01",
           "title": "The signal",
           "speaker": "Elias Reed",
-          "text": "To you, an exhaled breath is barely an event. To a mosquito, its carbon dioxide can be a useful clue that a potential meal is nearby. The interesting question is how that signal gets through a world full of other smells.\n\nI'm Elias Reed. This is Science Break, and today's headline is: Your breath has a volume knob.\n\nThat's a metaphor. The volume knob is in the mosquito's neural circuitry.\n\nJialu Bao, Wesley Alford and colleagues describe the work in PLOS Biology, published September tenth. Their paper is called Recurrent synapses between carbon dioxide-sensitive olfactory sensory neurons enable robust carbon dioxide detection in Aedes aegypti mosquitoes.",
-          "directed_text": "[curious] To you, an exhaled breath is barely an event. To a mosquito, its carbon dioxide can be a useful clue that a potential meal is nearby. The interesting question is how that signal gets through a world full of other smells.\n\nI'm Elias Reed. This is Science Break, and today's headline is: Your breath has a volume knob.\n\nThat's a metaphor. The volume knob is in the mosquito's neural circuitry.\n\nJialu Bao, Wesley Alford and colleagues describe the work in PLOS Biology, published September tenth. Their paper is called Recurrent synapses between carbon dioxide-sensitive olfactory sensory neurons enable robust carbon dioxide detection in Aedes aegypti mosquitoes.",
+          "text": "To you, an exhaled breath is barely an event. To a mosquito, its carbon dioxide can be a useful clue that a potential meal is nearby. The interesting question is how that signal gets through a world full of other smells.\n\nI'm Elias Reed. This is Sound Science, and today's headline is: Your breath has a volume knob.\n\nThat's a metaphor. The volume knob is in the mosquito's neural circuitry.\n\nJialu Bao, Wesley Alford and colleagues describe the work in PLOS Biology, published September tenth. Their paper is called Recurrent synapses between carbon dioxide-sensitive olfactory sensory neurons enable robust carbon dioxide detection in Aedes aegypti mosquitoes.",
+          "directed_text": "[curious] To you, an exhaled breath is barely an event. To a mosquito, its carbon dioxide can be a useful clue that a potential meal is nearby. The interesting question is how that signal gets through a world full of other smells.\n\nI'm Elias Reed. This is Sound Science, and today's headline is: Your breath has a volume knob.\n\nThat's a metaphor. The volume knob is in the mosquito's neural circuitry.\n\nJialu Bao, Wesley Alford and colleagues describe the work in PLOS Biology, published September tenth. Their paper is called Recurrent synapses between carbon dioxide-sensitive olfactory sensory neurons enable robust carbon dioxide detection in Aedes aegypti mosquitoes.",
           "direction": "Inviting curiosity; let the image land.",
           "pause_after_seconds": 0.4,
           "effect_after": null
@@ -161,7 +167,10 @@
           "pause_after_seconds": 0.4,
           "effect_after": null
         }
-      ]
+      ],
+      "casting_basis": "Chosen from a 19-voice Eleven v3 audition (backend/evals/voices): brief fit, 100% transcript match, no spoken tags, pace and pitch variation. Pending human listening approval.",
+      "audio_file": "elias.m4a",
+      "duration_seconds": 179.2
     }
   ]
 }

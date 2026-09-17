@@ -1,0 +1,155 @@
+[
+ {
+  "host": "mira",
+  "beat": "01",
+  "voice_id": "4CrZuIW9am7gYAxgo2Af",
+  "model": "eleven_v3",
+  "characters": 529,
+  "utc": 1789656240.81507,
+  "status": "ok"
+ },
+ {
+  "host": "mira",
+  "beat": "02",
+  "voice_id": "4CrZuIW9am7gYAxgo2Af",
+  "model": "eleven_v3",
+  "characters": 888,
+  "utc": 1789656256.376735,
+  "status": "ok"
+ },
+ {
+  "host": "mira",
+  "beat": "03",
+  "voice_id": "4CrZuIW9am7gYAxgo2Af",
+  "model": "eleven_v3",
+  "characters": 734,
+  "utc": 1789656273.9132679,
+  "status": "ok"
+ },
+ {
+  "host": "mira",
+  "beat": "04",
+  "voice_id": "4CrZuIW9am7gYAxgo2Af",
+  "model": "eleven_v3",
+  "characters": 364,
+  "utc": 1789656290.10698,
+  "status": "ok"
+ },
+ {
+  "host": "clara",
+  "beat": "01",
+  "voice_id": "tyepWYJJwJM9TTFIg5U7",
+  "model": "eleven_v3",
+  "characters": 724,
+  "utc": 1789656298.571501,
+  "status": "ok"
+ },
+ {
+  "host": "clara",
+  "beat": "02",
+  "voice_id": "tyepWYJJwJM9TTFIg5U7",
+  "model": "eleven_v3",
+  "characters": 1099,
+  "utc": 1789656317.323482,
+  "status": "ok"
+ },
+ {
+  "host": "clara",
+  "beat": "03",
+  "voice_id": "tyepWYJJwJM9TTFIg5U7",
+  "model": "eleven_v3",
+  "characters": 577,
+  "utc": 1789656349.932558,
+  "status": "ok"
+ },
+ {
+  "host": "clara",
+  "beat": "04",
+  "voice_id": "tyepWYJJwJM9TTFIg5U7",
+  "model": "eleven_v3",
+  "characters": 469,
+  "utc": 1789656364.0427892,
+  "status": "ok"
+ },
+ {
+  "host": "elias",
+  "beat": "01",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 672,
+  "utc": 1789656377.0698838,
+  "status": "ok"
+ },
+ {
+  "host": "elias",
+  "beat": "02",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 1070,
+  "utc": 1789656392.353596,
+  "status": "ok"
+ },
+ {
+  "host": "elias",
+  "beat": "03",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 688,
+  "utc": 1789656415.975509,
+  "status": "ok"
+ },
+ {
+  "host": "elias",
+  "beat": "04",
+  "voice_id": "iP95p4xoKVk53GoZ742B",
+  "model": "eleven_v3",
+  "characters": 448,
+  "utc": 1789656430.0912268,
+  "status": "ok"
+ },
+ {
+  "host": "mira",
+  "beat": "01",
+  "voice_id": "4CrZuIW9am7gYAxgo2Af",
+  "model": "eleven_v3",
+  "characters": 533,
+  "utc": 1789656553.301583,
+  "status": "ok"
+ },
+ {
+  "host": "clara",
+  "beat": "01",
+  "voice_id": "QtY3JBOUKEB5xzrRfOKc",
+  "model": "eleven_v3",
+  "characters": 724,
+  "utc": 1789656566.317133,
+  "status": "ok"
+ },
+ {
+  "host": "clara",
+  "beat": "02",
+  "voice_id": "QtY3JBOUKEB5xzrRfOKc",
+  "model": "eleven_v3",
+  "characters": 1099,
+  "utc": 1789656585.2864819,
+  "status": "ok"
+ },
+ {
+  "host": "clara",
+  "beat": "03",
+  "voice_id": "QtY3JBOUKEB5xzrRfOKc",
+  "model": "eleven_v3",
+  "characters": 577,
+  "utc": 1789656607.777685,
+  "status": "ok"
+ },
+ {
+  "host": "clara",
+  "beat": "04",
+  "voice_id": "QtY3JBOUKEB5xzrRfOKc",
+  "model": "eleven_v3",
+  "characters": 469,
+  "utc": 1789656622.247371,
+  "status": "ok"
+ }
+]

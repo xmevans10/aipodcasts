@@ -16,7 +16,7 @@ Model: Eleven v3 · Natural stability · original fictional presenter
 
 [curious]
 
-I'm Clara Rowan, and this is Science Break. Today's headline: The dolphin who lets dinner escape.
+I'm Clara Rowan, and this is Sound Science. Today's headline: The dolphin who lets dinner escape.
 
 A paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.
 

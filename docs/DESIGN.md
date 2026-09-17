@@ -1,4 +1,4 @@
-# Science Break native design system
+# Sound Science native design system
 
 OpenAI Apps SDK UI is a React/CSS library, not a Swift package. This project adapts its semantic tokens and component conventions into native SwiftUI; it does not embed a web UI or claim an official Swift port.
 
@@ -18,7 +18,7 @@ Native implementation: `ios/ScienceBreak/OpenAIKit.swift`, `Design.swift`.
 | Search | Input and clear states | Native searchable with empty result state |
 | Feedback | Disabled/loading/error | Native states and explicit message text |
 
-Science Break overrides: paper #F5F2E8 (approx.), ink #1F2421, acid #E0F563; lavender space, sage nature, clay mind, seafoam earth. Serif editorial headlines, system sans body, monospaced overlines. Orbital artwork is original SwiftUI geometry, no downloaded image licensing dependency. Host avatars use SF Symbols inside colored circles; they are fictional editorial identities.
+Sound Science overrides: paper #F5F2E8 (approx.), ink #1F2421, acid #E0F563; lavender space, sage nature, clay mind, seafoam earth. Serif editorial headlines, system sans body, monospaced overlines. Orbital artwork is original SwiftUI geometry, no downloaded image licensing dependency. Host avatars use SF Symbols inside colored circles; they are fictional editorial identities.
 
 Screens: welcome → favorite host and device-voice introduction → first-story handoff → Today; tabs Today / Discover / Your hosts / Library; article → player / source links / save / share; settings → privacy / editorial policy / connected feed / Plus preview. Mini-player persists between tabs. Purchase surface is native StoreKit only when configured.
 

@@ -34,7 +34,7 @@ struct ArticleView: View {
                     }.padding(.vertical, 6)
                 }
                 Text(story.isDemo ? "An original demonstration, with background links. Not current science news or a journal summary." : "Adapted with AI assistance and reviewed before publication. Narrated by a synthetic voice.").font(.caption).foregroundStyle(ScienceBreak.muted)
-                ShareLink(item: story.title + " — Explore the science with Science Break.") { Label("Share this idea", systemImage: "square.and.arrow.up") }.buttonStyle(CapsuleButton())
+                ShareLink(item: story.title + " — Explore the science with Sound Science.") { Label("Share this idea", systemImage: "square.and.arrow.up") }.buttonStyle(CapsuleButton())
             }.padding(22)
         }.background(ScienceBreak.paper).navigationBarTitleDisplayMode(.inline)
     }
@@ -93,7 +93,7 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section("Your little daily ritual") {
-                    Button("Explore Science Break Plus") { plus = true }
+                    Button("Explore Sound Science Plus") { plus = true }
                     Text("Demo edition · Original sample stories").font(.caption)
                 }
                 Section("Connected edition") {
@@ -102,11 +102,11 @@ struct SettingsView: View {
                     if let error = library.error { Text(error).foregroundStyle(.red).font(.caption) }
                 }
                 Section("Trust & privacy") {
-                    NavigationLink("How Science Break makes a story") { PolicyView(title: "Curiosity, with receipts.", text: "We select sources with explicit reuse permission, create an original explanation, check its claims against the source, and require an editor’s approval before publishing.\n\nAI can make mistakes. Every published story includes attribution, an uncertainty note and links to the original evidence. Hosts are fictional synthetic narrators, never the researchers themselves.\n\nThe current app contains original educational demo scripts. Device voices stand in for licensed production narration.") }
+                    NavigationLink("How Sound Science makes a story") { PolicyView(title: "Curiosity, with receipts.", text: "We select sources with explicit reuse permission, create an original explanation, check its claims against the source, and require an editor’s approval before publishing.\n\nAI can make mistakes. Every published story includes attribution, an uncertainty note and links to the original evidence. Hosts are fictional synthetic narrators, never the researchers themselves.\n\nThe current app contains original educational demo scripts. Device voices stand in for licensed production narration.") }
                     NavigationLink("Privacy") { PolicyView(title: "Your curiosity is yours.", text: "This demo stores your saved story IDs, listening queue, playback positions, completed stories and preferred host on your device using UserDefaults. It does not contain advertising or analytics SDKs and does not create an account.\n\nConnecting a feed sends normal network requests, including your IP address, to the server you configure. Opening source links is subject to the destination’s privacy policy. Production privacy terms must name the operating company and its data processors before launch.") }
                     Button("Delete local listening data", role: .destructive) { reset = true }
                 }
-                Section { Button("Show welcome again") { onboarded = false; dismiss() }; Text("Science Break 0.1 · Stay a little curious.").font(.caption) }
+                Section { Button("Show welcome again") { onboarded = false; dismiss() }; Text("Sound Science 0.1 · Stay a little curious.").font(.caption) }
             }.navigationTitle("Settings").toolbar { Button("Done") { dismiss() } }
                 .sheet(isPresented: $plus) { PlusView() }
                 .confirmationDialog("Delete saved stories, queue and listening history?", isPresented: $reset, titleVisibility: .visible) { Button("Delete local data", role: .destructive) { player.clearListeningData(); library.saved = []; library.history = []; UserDefaults.standard.removeObject(forKey: "saved"); UserDefaults.standard.removeObject(forKey: "history") } }
@@ -123,7 +123,7 @@ struct PlusView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
-                Eyebrow(text: "LILT PLUS")
+                Eyebrow(text: "SOUND SCIENCE PLUS")
                 Text("A bigger orbit.").font(.system(size: 42, design: .serif))
                 Text("Planned for launch: the complete archive, longer listening sessions and offline audio.").multilineTextAlignment(.center).foregroundStyle(ScienceBreak.muted)
                 if let ids = Bundle.main.object(forInfoDictionaryKey: "ScienceBreakSubscriptionProducts") as? String, !ids.isEmpty {

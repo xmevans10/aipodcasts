@@ -1,5 +1,5 @@
 {
-  "title": "Science Break — three fresh discoveries",
+  "title": "Sound Science — three fresh discoveries",
   "created": "2026-09-17",
   "news_window": {
     "from": "2026-09-10",
@@ -20,7 +20,7 @@
       "title": "The Moon changed while we weren’t looking",
       "dek": "A fresh crater, an old collision, and a Moon that is still changing.",
       "script_file": "mira.txt",
-      "script_sha256": "e483f88ab8981f7256ce8ea00313c37d79828564ba9950bf57cc734bb85c2780",
+      "script_sha256": "61442586c5f7bcd9c2a9dc220be039320be57d81a3a7c7f6b678375f37e74d6a",
       "word_count": 394,
       "character_count": 2498,
       "sources": [
@@ -92,7 +92,7 @@
       "title": "The dolphin who lets dinner escape",
       "dek": "One dolphin, eleven feeding events, and an unexpected way to get a meal.",
       "script_file": "clara.txt",
-      "script_sha256": "1c39f60b37c976e2e28956ecc93c509dfb94f0ea95343665d041127ee0bef5d9",
+      "script_sha256": "ab5bcd2cd1950bf5123e9f1f423465d5a5f73c2b56b0c72e0c7c53e600df9f94",
       "word_count": 422,
       "character_count": 2825,
       "sources": [
@@ -136,7 +136,7 @@
       "title": "Your breath has a volume knob",
       "dek": "The neural circuitry that may make a mosquito take notice.",
       "script_file": "elias.txt",
-      "script_sha256": "8c61b35831baf612a68d6c01a3ae56cbc228fc09817f181576023e0ce5d7e42e",
+      "script_sha256": "5b584b96f76d78576ddc7a444c203eab9d2a135d4804f3f77952c2f0f8d26a97",
       "word_count": 428,
       "character_count": 2861,
       "sources": [

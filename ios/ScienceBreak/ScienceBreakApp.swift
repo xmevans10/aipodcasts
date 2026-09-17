@@ -61,7 +61,7 @@ struct MiniPlayerInset: ViewModifier {
                                 HostAvatar(host: story.host, size: 36)
                                 VStack(alignment: .leading, spacing: 3) {
                                     Text(story.title).font(.caption.weight(.semibold)).lineLimit(1)
-                                    Text(player.isPreview ? "DEVICE VOICE PREVIEW" : "\(story.host.name) · Science Break").font(.system(size: 8, weight: .medium, design: .monospaced))
+                                    Text(player.isPreview ? "DEVICE VOICE PREVIEW" : "\(story.host.name) · Sound Science").font(.system(size: 8, weight: .medium, design: .monospaced))
                                 }
                             }.foregroundStyle(ScienceBreak.paper)
                         }
@@ -86,7 +86,7 @@ struct TodayView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 25) {
                     HStack(alignment: .center) {
-                        Text("Science\nBreak").font(.system(size: 43, weight: .bold, design: .serif)).tracking(-3)
+                        Text("Sound\nScience").font(.system(size: 43, weight: .bold, design: .serif)).tracking(-3)
                         Circle().fill(ScienceBreak.ink).frame(width: 8, height: 8).offset(x: -6, y: 10)
                         Spacer()
                         Text("A LITTLE MORE CURIOUS.").font(.system(size: 8, weight: .semibold, design: .monospaced)).tracking(1)

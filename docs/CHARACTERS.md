@@ -1,4 +1,4 @@
-# Science Break presenters — voice and character bible
+# Sound Science presenters — voice and character bible
 
 Version 1 · 17 September 2026. These are original fictional editorial personas. Their names, interests and delivery make them recognisable; they do not claim degrees, employment, interviews, fieldwork or a human identity. Public UI should say “fictional AI presenter.” Voice performers/providers are credited separately and never presented as endorsing a story. No celebrity imitation is part of the brief.
 

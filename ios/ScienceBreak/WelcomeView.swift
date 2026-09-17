@@ -76,7 +76,7 @@ struct WelcomeView: View {
                     Image(systemName: "arrow.left").frame(width: 44, height: 44)
                 }.accessibilityLabel("Previous step")
             } else {
-                Text("Science Break.").font(.system(size: 25, weight: .bold, design: .serif)).tracking(-1).lineLimit(1).minimumScaleFactor(0.75)
+                Text("Sound Science.").font(.system(size: 25, weight: .bold, design: .serif)).tracking(-1).lineLimit(1).minimumScaleFactor(0.75)
             }
             Spacer()
             HStack(spacing: 6) {

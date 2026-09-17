@@ -1,0 +1,217 @@
+{
+ "mira": {
+  "Florence": {
+   "voice_id": "22N9cF8z0o7y23njdyaY",
+   "seconds": 12.2,
+   "wpm": 123,
+   "pause_share": 0.33,
+   "median_hz": 163,
+   "pitch_sd_semitones": 5.77,
+   "transcript": "The moon looks reassuringly finished, craters in place, dust settled. But while we were getting on with life, something punched a brand new hole in it.",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Amelia": {
+   "voice_id": "ZF6FPAbjXT4488VcRRnw",
+   "seconds": 12.7,
+   "wpm": 118,
+   "pause_share": 0.42,
+   "median_hz": 222,
+   "pitch_sd_semitones": 4.1,
+   "transcript": "The moon looks reassuringly finished, craters in place, dust settled. But while we were getting on with life, something punched a brand new hole in it",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Shelley": {
+   "voice_id": "4CrZuIW9am7gYAxgo2Af",
+   "seconds": 12.7,
+   "wpm": 118,
+   "pause_share": 0.41,
+   "median_hz": 219,
+   "pitch_sd_semitones": 5.76,
+   "transcript": "The Moon looks reassuringly finished: craters in place, dust settled. But while we were getting on with life, something punched a brand-new hole in it",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "British (featured)": {
+   "voice_id": "G17SuINrv2H9FC6nvetn",
+   "seconds": 12.0,
+   "wpm": 125,
+   "pause_share": 0.4,
+   "median_hz": 120,
+   "pitch_sd_semitones": 5.81,
+   "transcript": "The moon looks reassuringly finished. Craters in place, dust settled. But while we were getting on with life, something punched a brand new hole in it",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Alice": {
+   "voice_id": "Xb7hH8MSUJpSbSDYk0k2",
+   "seconds": 10.8,
+   "wpm": 138,
+   "pause_share": 0.29,
+   "median_hz": 235,
+   "pitch_sd_semitones": 5.53,
+   "transcript": "The moon looks reassuringly finished, craters in place, dust settled. But while we were getting on with life, something punched a brand new hole in it",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Lily": {
+   "voice_id": "pFZP5JQG7iQjIQuC4Bku",
+   "seconds": 12.9,
+   "wpm": 116,
+   "pause_share": 0.35,
+   "median_hz": 205,
+   "pitch_sd_semitones": 5.03,
+   "transcript": "The Moon looks reassuringly finished: craters in place, dust settled. But while we were getting on with life, something punched a brand new hole in it",
+   "word_match": 1.0,
+   "spoken_tags": []
+  }
+ },
+ "clara": {
+  "Maisie": {
+   "voice_id": "QtY3JBOUKEB5xzrRfOKc",
+   "seconds": 10.4,
+   "wpm": 145,
+   "pause_share": 0.31,
+   "median_hz": 188,
+   "pitch_sd_semitones": 4.41,
+   "transcript": "A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal, and the dolphin eats that instead",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Australian (featured)": {
+   "voice_id": "tyepWYJJwJM9TTFIg5U7",
+   "seconds": 12.2,
+   "wpm": 123,
+   "pause_share": 0.37,
+   "median_hz": 180,
+   "pitch_sd_semitones": 3.94,
+   "transcript": "A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal, and the dolphin eats that instead",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Hope": {
+   "voice_id": "zGjIP4SZlMnY9m93k97r",
+   "seconds": 11.2,
+   "wpm": 134,
+   "pause_share": 0.33,
+   "median_hz": 250,
+   "pitch_sd_semitones": 4.05,
+   "transcript": "A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal, and the dolphin eats that instead",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Juniper": {
+   "voice_id": "aMSt68OGf4xUZAnLpTU8",
+   "seconds": 9.9,
+   "wpm": 152,
+   "pause_share": 0.32,
+   "median_hz": 184,
+   "pitch_sd_semitones": 2.97,
+   "transcript": "A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal, and the dolphin eats that instead",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Jessica Anne Bogart": {
+   "voice_id": "g6xIsTj2HwM6VR4iXFCw",
+   "seconds": 10.7,
+   "wpm": 140,
+   "pause_share": 0.26,
+   "median_hz": 205,
+   "pitch_sd_semitones": 4.29,
+   "transcript": "A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal, and the dolphin eats that instead",
+   "word_match": 1.0,
+   "spoken_tags": []
+  },
+  "Cassidy": {
+   "voice_id": "56AoDkrOh6qfVPDXZ7Pt",
+   "seconds": 8.8,
+   "wpm": 170,
+   "pause_share": 0.24,
+   "median_hz": 186,
+   "pitch_sd_semitones": 3.63,
+   "transcript": "A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal, and the dolphin eats that instead",
+   "word_match": 1.0,
+   "spoken_tags": []
+  }
+ },
+ "elias": {
+  "Lawrence": {
+   "voice_id": "ktkP7Nsj67dw2zcplQYt",
+   "seconds": 9.2,
+   "wpm": 162,
+   "pause_share": 0.22,
+   "median_hz": 138,
+   "pitch_sd_semitones": 6.49,
+   "transcript": "Your ordinary breath is, for a mosquito, a rather specialized signal. So how does a brain the size of a poppy seed actually pay attention?",
+   "word_match": 0.96,
+   "spoken_tags": []
+  },
+  "Archer": {
+   "voice_id": "Fahco4VZzobUeiPqni1S",
+   "seconds": 11.2,
+   "wpm": 134,
+   "pause_share": 0.35,
+   "median_hz": 122,
+   "pitch_sd_semitones": 5.92,
+   "transcript": "Your ordinary breath is, for a mosquito, a rather specialized signal. So how does a brain the size of a poppy seed actually pay attention?",
+   "word_match": 0.96,
+   "spoken_tags": []
+  },
+  "Chris": {
+   "voice_id": "iP95p4xoKVk53GoZ742B",
+   "seconds": 9.0,
+   "wpm": 167,
+   "pause_share": 0.29,
+   "median_hz": 118,
+   "pitch_sd_semitones": 7.38,
+   "transcript": "Your ordinary breath is for a mosquito a rather specialized signal. So how does a brain the size of a poppy seed actually pay attention?",
+   "word_match": 0.96,
+   "spoken_tags": []
+  },
+  "Eric": {
+   "voice_id": "cjVigY5qzO86Huf0OWal",
+   "seconds": 9.6,
+   "wpm": 157,
+   "pause_share": 0.24,
+   "median_hz": 168,
+   "pitch_sd_semitones": 5.34,
+   "transcript": "Your ordinary breath is, for a mosquito, a rather specialized signal. So how does a brain the size of a poppy seed actually pay attention",
+   "word_match": 0.96,
+   "spoken_tags": []
+  },
+  "Otto": {
+   "voice_id": "FTNCalFNG5bRnkkaP5Ug",
+   "seconds": 8.9,
+   "wpm": 168,
+   "pause_share": 0.26,
+   "median_hz": 151,
+   "pitch_sd_semitones": 7.8,
+   "transcript": "Your ordinary breath is, for a mosquito, a rather specialized signal. So how does a brain the size of a poppy seed actually pay attention?",
+   "word_match": 0.96,
+   "spoken_tags": []
+  },
+  "Peter": {
+   "voice_id": "TumdjBNWanlT3ysvclWh",
+   "seconds": 9.1,
+   "wpm": 165,
+   "pause_share": 0.31,
+   "median_hz": 99,
+   "pitch_sd_semitones": 5.33,
+   "transcript": "Your ordinary breath is, for a mosquito, a rather specialized signal. So how does a brain the size of a poppy seed actually pay attention?",
+   "word_match": 0.96,
+   "spoken_tags": []
+  },
+  "Liam": {
+   "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+   "seconds": 8.9,
+   "wpm": 168,
+   "pause_share": 0.26,
+   "median_hz": 158,
+   "pitch_sd_semitones": 7.27,
+   "transcript": "Your ordinary breath is, for a mosquito, a rather specialized signal. So how does a brain the size of a poppy seed actually pay attention?",
+   "word_match": 0.96,
+   "spoken_tags": []
+  }
+ }
+}

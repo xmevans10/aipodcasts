@@ -1,4 +1,4 @@
-# Science Break — a little more curious
+# Sound Science — a little more curious
 
 Decision: an iPhone-first, English-language science audio publication, aimed at curious commuters and walkers who want a satisfying discovery in 3–5 minutes. Start with a free private beta. The product is a small daily ritual, not an endless feed or a general chatbot.
 

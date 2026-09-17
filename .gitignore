@@ -1,0 +1,13 @@
+build/
+.DS_Store
+.env
+.env.*
+!.env.example
+backend/data/
+__pycache__/
+*.xcuserstate
+xcuserdata/
+build-*/
+*.asd
+*.xcodeproj/
+.generation.lock

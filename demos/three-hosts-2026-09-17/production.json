@@ -1,0 +1,167 @@
+{
+  "version": 1,
+  "brand": "Science Break",
+  "status": "preview",
+  "model_id": "eleven_v3",
+  "voice_settings": {
+    "stability": 0.5
+  },
+  "max_characters": 10000,
+  "max_requests": 12,
+  "mix": {
+    "target_lufs": -16,
+    "true_peak_db": -1.5,
+    "stereo": true,
+    "transition_gain_db": -23,
+    "gap_seconds": 0.45
+  },
+  "episodes": [
+    {
+      "id": "mira",
+      "host": "Mira Vale",
+      "voice_id": "22N9cF8z0o7y23njdyaY",
+      "voice_name": "Florence - Atmospheric Storyteller",
+      "intro_asset": null,
+      "beats": [
+        {
+          "id": "01",
+          "title": "The hook",
+          "speaker": "Mira Vale",
+          "text": "The Moon looks reassuringly finished. Craters in place. Dust settled. But while we were getting on with life, something punched a new hole in it, more than two hundred metres across.\n\nI'm Mira Vale, and this is Science Break. Today's headline: The Moon changed while we weren't looking.\n\nOn September sixteenth, NASA reported a newly identified lunar crater called McGetchin. The main study, by Mark S. Robinson and colleagues in Science Advances, is titled A new two-hundred-and-twenty-two-metre diameter lunar crater.",
+          "directed_text": "[curious] The Moon looks reassuringly finished. Craters in place. Dust settled. But while we were getting on with life, something punched a new hole in it, more than two hundred metres across.\n\nI'm Mira Vale, and this is Science Break. Today's headline: The Moon changed while we weren't looking.\n\nOn September sixteenth, NASA reported a newly identified lunar crater called McGetchin. The main study, by Mark S. Robinson and colleagues in Science Advances, is titled A new two-hundred-and-twenty-two-metre diameter lunar crater.",
+          "direction": "Inviting curiosity; let the image land.",
+          "pause_after_seconds": 0.4,
+          "effect_after": null
+        },
+        {
+          "id": "02",
+          "title": "How they found it",
+          "speaker": "Mira Vale",
+          "text": "First, a small but important correction to the mental picture. This wasn't an impact last night. Comparing images puts the collision between April eleventh and May twenty-second, twenty twenty-four. Researchers discovered the change in twenty twenty-five. The news this week is the research describing it.\n\nHere's the lovely part. The clue emerged from comparing broad maps, rather than staring at one tiny patch in exquisite detail. Image specialist Robert Wagner noticed an unusual bright feature with a dark halo. Images taken before and after the collision made the change apparent. The Lunar Reconnaissance Orbiter's sharper camera then helped reveal what had happened.\n\nThe resulting crater is about two hundred and twenty-two metres wide and forty-three metres deep. That's a substantial alteration to a landscape we tend to treat as permanent.\n\nAnd the hole isn't the whole story.",
+          "directed_text": "First, a small but important correction to the mental picture. This wasn't an impact last night. Comparing images puts the collision between April eleventh and May twenty-second, twenty twenty-four. Researchers discovered the change in twenty twenty-five. The news this week is the research describing it.\n\nHere's the lovely part. The clue emerged from comparing broad maps, rather than staring at one tiny patch in exquisite detail. Image specialist Robert Wagner noticed an unusual bright feature with a dark halo. Images taken before and after the collision made the change apparent. The Lunar Reconnaissance Orbiter's sharper camera then helped reveal what had happened.\n\nThe resulting crater is about two hundred and twenty-two metres wide and forty-three metres deep. That's a substantial alteration to a landscape we tend to treat as permanent.\n\nAnd the hole isn't the whole story.",
+          "direction": "Conversational explanation; make the evidence easy to follow.",
+          "pause_after_seconds": 0.4,
+          "effect_after": "transition"
+        },
+        {
+          "id": "03",
+          "title": "Beyond the crater",
+          "speaker": "Mira Vale",
+          "text": "A companion study, by Tyler M. Powell and colleagues, examined the surrounding ground using the orbiter's Diviner thermal instrument. Around the crater, an area roughly six kilometres across was cooler at night than nearby terrain. The explanation is that the collision loosened the surface material, changing how well it holds heat. An impact can rearrange far more ground than the neat circle we notice in a photograph.\n\nThere's a limit to what we can say. The images bracket when the impact happened; they don't give us an eyewitness timestamp. And estimates that an event this size occurs roughly once a century or longer come from impact models. They aren't a lunar timetable, or a prediction of the next collision.",
+          "directed_text": "[short pause] A companion study, by Tyler M. Powell and colleagues, examined the surrounding ground using the orbiter's Diviner thermal instrument. Around the crater, an area roughly six kilometres across was cooler at night than nearby terrain. The explanation is that the collision loosened the surface material, changing how well it holds heat. An impact can rearrange far more ground than the neat circle we notice in a photograph.\n\nThere's a limit to what we can say. The images bracket when the impact happened; they don't give us an eyewitness timestamp. And estimates that an event this size occurs roughly once a century or longer come from impact models. They aren't a lunar timetable, or a prediction of the next collision.",
+          "direction": "Slow slightly at the evidence boundary; no melodrama.",
+          "pause_after_seconds": 0.55,
+          "effect_after": null
+        },
+        {
+          "id": "04",
+          "title": "The takeaway",
+          "speaker": "Mira Vale",
+          "text": "That's why fresh craters matter. They let scientists compare what their models predict with a real, newly changed surface.\n\nSo the next time the Moon looks perfectly still, remember: still from here isn't the same as unchanged.\n\nI'm Mira Vale. Stay a little curious. Sources and full author credits accompany this episode. Your host and narration are AI-generated.",
+          "directed_text": "That's why fresh craters matter. They let scientists compare what their models predict with a real, newly changed surface.\n\nSo the next time the Moon looks perfectly still, remember: still from here isn't the same as unchanged.\n\nI'm Mira Vale. Stay a little curious. Sources and full author credits accompany this episode. Your host and narration are AI-generated.",
+          "direction": "Warm, earned resolution; leave space before the signature.",
+          "pause_after_seconds": 0.4,
+          "effect_after": null
+        }
+      ]
+    },
+    {
+      "id": "clara",
+      "host": "Clara Rowan",
+      "voice_id": "QtY3JBOUKEB5xzrRfOKc",
+      "voice_name": "Maisie - Friendly Casual Neighbor",
+      "intro_asset": "../../assets/audio/clara-intro.wav",
+      "beats": [
+        {
+          "id": "01",
+          "title": "An unexpected meal",
+          "speaker": "Clara Rowan",
+          "text": "A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal. The dolphin eats that instead, and lets the fish swim away.\n\nAn unconventional takeaway arrangement.\n\nI'm Clara Rowan, and this is Science Break. Today's headline: The dolphin who lets dinner escape.\n\nA paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.",
+          "directed_text": "[curious] A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal. The dolphin eats that instead, and lets the fish swim away.\n\n[mischievously] An unconventional takeaway arrangement.\n\n[curious]\n\nI'm Clara Rowan, and this is Science Break. Today's headline: The dolphin who lets dinner escape.\n\nA paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.",
+          "direction": "Inviting curiosity; let the image land.",
+          "pause_after_seconds": 0.4,
+          "effect_after": null
+        },
+        {
+          "id": "02",
+          "title": "What researchers saw",
+          "speaker": "Clara Rowan",
+          "text": "Kleptoparasitism means taking food another animal has already acquired. The researchers' candidate is an adult male dolphin known locally as Bubbles.\n\nAcross recordings collected between twenty twenty-one and twenty twenty-five, the team documented twenty foraging records. Eleven included a feeding event: a bigeye trevally regurgitated, and the dolphin consumed the expelled food. Distinctive scars and notches in his dorsal fin helped establish that they were watching the same individual over time.\n\nThe sequence matters. Bubbles appeared to select a particular fish, pursue it, and then stop chasing when food became available. In those recorded interactions, he wasn't observed eating the trevally itself. Sometimes the process repeated: the dolphin returned to the school and began again.\n\nThat makes this more interesting than an animal simply encountering somebody else's leftovers. The observations suggest a repeated feeding tactic. The team also recorded clicks and lower-frequency sounds during pursuit, raising questions about whether sound helps the dolphin select or pressure a fish.",
+          "directed_text": "Kleptoparasitism means taking food another animal has already acquired. The researchers' candidate is an adult male dolphin known locally as Bubbles.\n\nAcross recordings collected between twenty twenty-one and twenty twenty-five, the team documented twenty foraging records. Eleven included a feeding event: a bigeye trevally regurgitated, and the dolphin consumed the expelled food. Distinctive scars and notches in his dorsal fin helped establish that they were watching the same individual over time.\n\nThe sequence matters. Bubbles appeared to select a particular fish, pursue it, and then stop chasing when food became available. In those recorded interactions, he wasn't observed eating the trevally itself. Sometimes the process repeated: the dolphin returned to the school and began again.\n\nThat makes this more interesting than an animal simply encountering somebody else's leftovers. The observations suggest a repeated feeding tactic. The team also recorded clicks and lower-frequency sounds during pursuit, raising questions about whether sound helps the dolphin select or pressure a fish.",
+          "direction": "Conversational explanation; make the evidence easy to follow.",
+          "pause_after_seconds": 0.4,
+          "effect_after": "transition"
+        },
+        {
+          "id": "03",
+          "title": "What we do not know",
+          "speaker": "Clara Rowan",
+          "text": "But here's where the story needs its brakes. This is one dolphin, observed opportunistically, not a controlled experiment. The recordings don't establish that sound causes regurgitation, that Bubbles can detect a fish's stomach contents, or that stealing this way saves energy. The researchers suggest those possibilities; they haven't demonstrated them. We also don't know how common this tactic is among other dolphins.\n\nEven with those limits, there's something wonderful here: careful observation of an individual can uncover behaviour we weren't looking for.",
+          "directed_text": "[short pause] But here's where the story needs its brakes. This is one dolphin, observed opportunistically, not a controlled experiment. The recordings don't establish that sound causes regurgitation, that Bubbles can detect a fish's stomach contents, or that stealing this way saves energy. The researchers suggest those possibilities; they haven't demonstrated them. We also don't know how common this tactic is among other dolphins.\n\nEven with those limits, there's something wonderful here: careful observation of an individual can uncover behaviour we weren't looking for.",
+          "direction": "Slow slightly at the evidence boundary; no melodrama.",
+          "pause_after_seconds": 0.55,
+          "effect_after": null
+        },
+        {
+          "id": "04",
+          "title": "The takeaway",
+          "speaker": "Clara Rowan",
+          "text": "Calling Bubbles a thief is our shorthand, of course. It's not a moral judgement, and it doesn't tell us what he's thinking. What we can see is a predator repeatedly getting food in an unexpected way.\n\nSometimes the interesting question isn't whether the fish gets away. It's what the dolphin was chasing in the first place.\n\nI'm Clara Rowan. There's always more going on. Sources and full author credits accompany this episode. Your host and narration are AI-generated.",
+          "directed_text": "Calling Bubbles a thief is our shorthand, of course. It's not a moral judgement, and it doesn't tell us what he's thinking. What we can see is a predator repeatedly getting food in an unexpected way.\n\nSometimes the interesting question isn't whether the fish gets away. It's what the dolphin was chasing in the first place.\n\nI'm Clara Rowan. There's always more going on. Sources and full author credits accompany this episode. Your host and narration are AI-generated.",
+          "direction": "Warm, earned resolution; leave space before the signature.",
+          "pause_after_seconds": 0.4,
+          "effect_after": null
+        }
+      ]
+    },
+    {
+      "id": "elias",
+      "host": "Elias Reed",
+      "voice_id": "ktkP7Nsj67dw2zcplQYt",
+      "voice_name": "Lawrence - Bright and Informative",
+      "intro_asset": null,
+      "beats": [
+        {
+          "id": "01",
+          "title": "The signal",
+          "speaker": "Elias Reed",
+          "text": "To you, an exhaled breath is barely an event. To a mosquito, its carbon dioxide can be a useful clue that a potential meal is nearby. The interesting question is how that signal gets through a world full of other smells.\n\nI'm Elias Reed. This is Science Break, and today's headline is: Your breath has a volume knob.\n\nThat's a metaphor. The volume knob is in the mosquito's neural circuitry.\n\nJialu Bao, Wesley Alford and colleagues describe the work in PLOS Biology, published September tenth. Their paper is called Recurrent synapses between carbon dioxide-sensitive olfactory sensory neurons enable robust carbon dioxide detection in Aedes aegypti mosquitoes.",
+          "directed_text": "[curious] To you, an exhaled breath is barely an event. To a mosquito, its carbon dioxide can be a useful clue that a potential meal is nearby. The interesting question is how that signal gets through a world full of other smells.\n\nI'm Elias Reed. This is Science Break, and today's headline is: Your breath has a volume knob.\n\nThat's a metaphor. The volume knob is in the mosquito's neural circuitry.\n\nJialu Bao, Wesley Alford and colleagues describe the work in PLOS Biology, published September tenth. Their paper is called Recurrent synapses between carbon dioxide-sensitive olfactory sensory neurons enable robust carbon dioxide detection in Aedes aegypti mosquitoes.",
+          "direction": "Inviting curiosity; let the image land.",
+          "pause_after_seconds": 0.4,
+          "effect_after": null
+        },
+        {
+          "id": "02",
+          "title": "Inside the circuit",
+          "speaker": "Elias Reed",
+          "text": "The team used electron microscopy to reconstruct part of an adult female mosquito's brain. They traced one hundred and thirty-six sensory neurons across three smell-processing regions, then mapped all the outgoing synapses of thirty selected neurons in detail.\n\nOne region processes carbon dioxide. Its sensory neurons didn't simply pass messages onward. They made unusually many connections with one another. The researchers also compared the wiring with fruit-fly data, finding particularly strong recurrent connectivity in the mosquito's carbon-dioxide circuit.\n\nThink of a group passing a quiet message around until it becomes harder to miss. It's an analogy for the proposed amplification, not a description of tiny neurons having a conversation.\n\nTo explore what those connections might do, the researchers built a computational model. In that model, recurrent connections helped preserve detection of carbon dioxide when other odours created a challenging background. The proposed benefit is a stronger signal for a cue that helps activate host-seeking behaviour.",
+          "directed_text": "The team used electron microscopy to reconstruct part of an adult female mosquito's brain. They traced one hundred and thirty-six sensory neurons across three smell-processing regions, then mapped all the outgoing synapses of thirty selected neurons in detail.\n\nOne region processes carbon dioxide. Its sensory neurons didn't simply pass messages onward. They made unusually many connections with one another. The researchers also compared the wiring with fruit-fly data, finding particularly strong recurrent connectivity in the mosquito's carbon-dioxide circuit.\n\nThink of a group passing a quiet message around until it becomes harder to miss. It's an analogy for the proposed amplification, not a description of tiny neurons having a conversation.\n\nTo explore what those connections might do, the researchers built a computational model. In that MODEL, recurrent connections helped preserve detection of carbon dioxide when other odours created a challenging background. The proposed benefit is a stronger signal for a cue that helps activate host-seeking behaviour.",
+          "direction": "Conversational explanation; make the evidence easy to follow.",
+          "pause_after_seconds": 0.4,
+          "effect_after": "transition"
+        },
+        {
+          "id": "03",
+          "title": "Evidence and limits",
+          "speaker": "Elias Reed",
+          "text": "There was another intriguing detail: some connection sites contained structures resembling ribbon synapses, specialised structures known from other sensory systems. Resembling is the important word. The team hasn't established that these structures function as ribbon synapses.\n\nAnd there are broader limits. The anatomical reconstruction came from one adult female mosquito, and it covers only part of the relevant circuit. The signal-boosting explanation draws on a computational model; this study didn't switch those connections off in a flying mosquito and measure whether it stopped finding people. It hasn't produced a new repellent or demonstrated disease prevention.",
+          "directed_text": "[short pause] There was another intriguing detail: some connection sites contained structures resembling ribbon synapses, specialised structures known from other sensory systems. Resembling is the important word. The team hasn't established that these structures function as ribbon synapses.\n\nAnd there are broader limits. The anatomical reconstruction came from one adult female mosquito, and it covers only part of the relevant circuit. The signal-boosting explanation draws on a computational model; this study didn't switch those connections off in a flying mosquito and measure whether it stopped finding people. It hasn't produced a new repellent or demonstrated disease prevention.",
+          "direction": "Slow slightly at the evidence boundary; no melodrama.",
+          "pause_after_seconds": 0.55,
+          "effect_after": null
+        },
+        {
+          "id": "04",
+          "title": "The takeaway",
+          "speaker": "Elias Reed",
+          "text": "What it offers is a detailed wiring map and a testable explanation for how a small nervous system might prioritise an important clue.\n\nSensing the world isn't only about having a detector. What happens to the signal next can be just as interesting.\n\nYour ordinary breath. A rather specialised reception system.\n\nI'm Elias Reed. Let's keep asking how. Sources and full author credits accompany this episode. Your host and narration are AI-generated.",
+          "directed_text": "What it offers is a detailed wiring map and a testable explanation for how a small nervous system might prioritise an important clue.\n\nSensing the world isn't only about having a detector. What happens to the signal next can be just as interesting.\n\nYour ordinary breath. A rather specialised reception system.\n\nI'm Elias Reed. Let's keep asking how. Sources and full author credits accompany this episode. Your host and narration are AI-generated.",
+          "direction": "Warm, earned resolution; leave space before the signature.",
+          "pause_after_seconds": 0.4,
+          "effect_after": null
+        }
+      ]
+    }
+  ]
+}

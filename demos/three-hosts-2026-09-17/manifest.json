@@ -1,0 +1,182 @@
+{
+  "title": "Science Break — three fresh discoveries",
+  "created": "2026-09-17",
+  "news_window": {
+    "from": "2026-09-10",
+    "through": "2026-09-17"
+  },
+  "status": "private_preview_not_published",
+  "writing_provenance": "Assistant-authored in this Codex session from retrieved sources; not a Luna/OpenAI API run. No OpenAI API key configured.",
+  "review_status": "Assistant source check only; no independent human editorial or listening approval recorded.",
+  "tts_model": "eleven_v3",
+  "max_total_characters": 10000,
+  "max_generation_attempts": 12,
+  "episodes": [
+    {
+      "id": "mira",
+      "host": "Mira Vale",
+      "host_id": "nova",
+      "niche": "Space",
+      "title": "The Moon changed while we weren’t looking",
+      "dek": "A fresh crater, an old collision, and a Moon that is still changing.",
+      "script_file": "mira.txt",
+      "script_sha256": "e483f88ab8981f7256ce8ea00313c37d79828564ba9950bf57cc734bb85c2780",
+      "word_count": 394,
+      "character_count": 2498,
+      "sources": [
+        {
+          "title": "NASA’s Moon Orbiter Spots New, ‘Once-in-Century’ Moon Crater",
+          "url": "https://science.nasa.gov/solar-system/moon/nasas-moon-orbiter-spots-new-once-in-century-moon-crater/",
+          "authors": [
+            "Lonnie Shekhtman / NASA"
+          ],
+          "published": "2026-09-16",
+          "license": "NASA authored reporting; no third-party images, quotations or branding reused",
+          "licenseURL": "https://www.nasa.gov/nasa-brand-center/images-and-media/"
+        },
+        {
+          "title": "A new 222-m diameter lunar crater",
+          "url": "https://doi.org/10.1126/sciadv.aeh7812",
+          "authors": [
+            "Mark S. Robinson",
+            "Aaron K. Boyd",
+            "Prasun Mahanti",
+            "Madeleine R. Manheim",
+            "Emerson J. Speyerer",
+            "Julie D. Stopar",
+            "Robert V. Wagner"
+          ],
+          "published": "2026-09-16",
+          "license": "Metadata/abstract only; no full-paper reuse claim",
+          "licenseURL": null,
+          "date_note": "Research released September 16 per NASA and USRA; Crossref issue date is September 18. Impact occurred April 11–May 22, 2024; discovered in 2025."
+        },
+        {
+          "title": "New lunar crater reveals extensive distal regolith modification",
+          "url": "https://doi.org/10.1126/sciadv.aeh9568",
+          "authors": [
+            "Tyler M. Powell",
+            "Benjamin T. Greenhagen",
+            "Tyler Horvath",
+            "Jean-Pierre Williams",
+            "Elisha Jhoti",
+            "Emerson J. Speyerer",
+            "Catherine M. Elder",
+            "David A. Paige"
+          ],
+          "published": "2026-09-16",
+          "license": "Metadata/abstract only; no full-paper reuse claim",
+          "licenseURL": null
+        }
+      ],
+      "evidence_snapshot": "../../backend/data/showcase-2026-09-17/moon-nasa-full.txt",
+      "voice": {
+        "name": "Florence - Atmospheric Storyteller",
+        "voice_id": "22N9cF8z0o7y23njdyaY",
+        "selection_basis": "Current ElevenLabs-recommended replacement voice; account access and usage popularity not yet verified due restricted read permissions. Provisional casting for private preview.",
+        "reference": "https://help.elevenlabs.io/hc/en-us/articles/26942950589969-What-are-Default-voices",
+        "commercial_status": "User confirmed paid-plan upgrade before successful narration. Voices/model/account read endpoints remain restricted; exact tier not inspected.",
+        "settings": {
+          "stability": 0.5
+        }
+      },
+      "audio_file": null,
+      "audio_status": "directed_version_pending",
+      "tts_model": "eleven_v3"
+    },
+    {
+      "id": "clara",
+      "host": "Clara Rowan",
+      "host_id": "fern",
+      "niche": "Nature",
+      "title": "The dolphin who lets dinner escape",
+      "dek": "One dolphin, eleven feeding events, and an unexpected way to get a meal.",
+      "script_file": "clara.txt",
+      "script_sha256": "1c39f60b37c976e2e28956ecc93c509dfb94f0ea95343665d041127ee0bef5d9",
+      "word_count": 422,
+      "character_count": 2825,
+      "sources": [
+        {
+          "title": "Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin (\n                    Tursiops truncatus\n                    ) on the Great Barrier Reef",
+          "url": "https://doi.org/10.1002/ece3.74270",
+          "authors": [
+            "Romney Edwards‐Francis",
+            "Jeremy J. Kiszka",
+            "Michael Ingram",
+            "Pieter Demmers",
+            "Jacinta Shackleton",
+            "Eric A. Ramos",
+            "Asia O. Armstrong"
+          ],
+          "published": "2026-09-13",
+          "license": "CC BY 4.0",
+          "licenseURL": "https://creativecommons.org/licenses/by/4.0/"
+        }
+      ],
+      "evidence_snapshot": "../../backend/data/showcase-2026-09-17/dolphin-full.txt",
+      "voice": {
+        "name": "Maisie - Friendly Casual Neighbor",
+        "voice_id": "QtY3JBOUKEB5xzrRfOKc",
+        "selection_basis": "Current ElevenLabs-recommended replacement voice; account access and usage popularity not yet verified due restricted read permissions. Provisional casting for private preview.",
+        "reference": "https://help.elevenlabs.io/hc/en-us/articles/26942950589969-What-are-Default-voices",
+        "commercial_status": "User confirmed paid-plan upgrade before successful narration. Voices/model/account read endpoints remain restricted; exact tier not inspected.",
+        "settings": {
+          "stability": 0.5
+        }
+      },
+      "audio_file": null,
+      "audio_status": "directed_version_pending",
+      "tts_model": "eleven_v3"
+    },
+    {
+      "id": "elias",
+      "host": "Elias Reed",
+      "host_id": "ada",
+      "niche": "Neuroscience",
+      "title": "Your breath has a volume knob",
+      "dek": "The neural circuitry that may make a mosquito take notice.",
+      "script_file": "elias.txt",
+      "script_sha256": "8c61b35831baf612a68d6c01a3ae56cbc228fc09817f181576023e0ce5d7e42e",
+      "word_count": 428,
+      "character_count": 2861,
+      "sources": [
+        {
+          "title": "Recurrent synapses between CO2-sensitive olfactory sensory neurons enable robust CO2 detection in Aedes aegypti mosquitoes",
+          "url": "https://doi.org/10.1371/journal.pbio.3003959",
+          "authors": [
+            "Jialu Bao",
+            "Wesley Alford",
+            "Avinash Khandelwal",
+            "Laurel Walsh",
+            "George Lantz",
+            "Santiago Poncio",
+            "Laia Serratosa Capdevila",
+            "Yervand Azatian",
+            "Brian DePasquale",
+            "David G. C. Hildebrand",
+            "Meg A. Younger",
+            "Wei-Chung Allen Lee"
+          ],
+          "published": "2026-09-10",
+          "license": "CC BY 4.0",
+          "licenseURL": "http://creativecommons.org/licenses/by/4.0/"
+        }
+      ],
+      "evidence_snapshot": "../../backend/data/showcase-2026-09-17/mosquito-full.txt",
+      "voice": {
+        "name": "Lawrence - Bright and Informative",
+        "voice_id": "ktkP7Nsj67dw2zcplQYt",
+        "selection_basis": "Current ElevenLabs-recommended replacement voice; account access and usage popularity not yet verified due restricted read permissions. Provisional casting for private preview.",
+        "reference": "https://help.elevenlabs.io/hc/en-us/articles/26942950589969-What-are-Default-voices",
+        "commercial_status": "User confirmed paid-plan upgrade before successful narration. Voices/model/account read endpoints remain restricted; exact tier not inspected.",
+        "settings": {
+          "stability": 0.5
+        }
+      },
+      "audio_file": null,
+      "audio_status": "directed_version_pending",
+      "tts_model": "eleven_v3"
+    }
+  ],
+  "production_plan": "production.json"
+}

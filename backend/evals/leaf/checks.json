@@ -1,0 +1,152 @@
+[
+  {
+    "id": "organism",
+    "priority": "core",
+    "meaning": "Arabidopsis and jaw-D, rather than a general survey of all leaves",
+    "evidence_ids": [
+      "p1"
+    ]
+  },
+  {
+    "id": "main_finding",
+    "priority": "core",
+    "meaning": "Slower mutant midrib versus blade; coordinated widthwise growth in wild type",
+    "evidence_ids": [
+      "p19",
+      "p37"
+    ]
+  },
+  {
+    "id": "direction",
+    "priority": "core",
+    "meaning": "Direction and spatial arrangement matter, not simply the amount of uneven growth",
+    "evidence_ids": [
+      "p22",
+      "p31"
+    ]
+  },
+  {
+    "id": "sample",
+    "priority": "core",
+    "meaning": "Repeated imaging: three leaves per genotype, days 3\u20138",
+    "evidence_ids": [
+      "p8"
+    ]
+  },
+  {
+    "id": "surface",
+    "priority": "core",
+    "meaning": "Primary live imaging measured lower epidermis",
+    "evidence_ids": [
+      "p8"
+    ]
+  },
+  {
+    "id": "undercount",
+    "priority": "core",
+    "meaning": "Curvature obscured proximal mutant cells, likely undercounting them",
+    "evidence_ids": [
+      "p10"
+    ]
+  },
+  {
+    "id": "maturity",
+    "priority": "context",
+    "meaning": "Mature-leaf sample is separate and larger (34/36 leaves)",
+    "evidence_ids": [
+      "p11"
+    ]
+  },
+  {
+    "id": "maturation",
+    "priority": "core",
+    "meaning": "Maturation is delayed in the mutant",
+    "evidence_ids": [
+      "p1",
+      "p38"
+    ]
+  },
+  {
+    "id": "negative_control",
+    "priority": "core",
+    "meaning": "Removing the longitudinal gradient did not change modeled curvature",
+    "evidence_ids": [
+      "p32"
+    ]
+  },
+  {
+    "id": "imaging_constraints",
+    "priority": "core",
+    "meaning": "Coverslip/agar mechanically constrained leaf shape; unconstrained leaves rolled",
+    "evidence_ids": [
+      "p29"
+    ]
+  },
+  {
+    "id": "model_assumptions",
+    "priority": "core",
+    "meaning": "Model growth rates/directions were manually set from qualitative imaging assessment",
+    "evidence_ids": [
+      "p60"
+    ]
+  },
+  {
+    "id": "upper_surface_limit",
+    "priority": "core",
+    "meaning": "Gaps from trichomes prevent a strong upper-surface coordination conclusion",
+    "evidence_ids": [
+      "p36"
+    ]
+  },
+  {
+    "id": "margin_alternative",
+    "priority": "core",
+    "meaning": "No observed early margin overgrowth; later leaves could differ",
+    "evidence_ids": [
+      "p19"
+    ]
+  },
+  {
+    "id": "species_scope",
+    "priority": "core",
+    "meaning": "Other species have other growth patterns; extension is prediction/future work",
+    "evidence_ids": [
+      "p40"
+    ]
+  },
+  {
+    "id": "two_sides",
+    "priority": "core",
+    "meaning": "Top/bottom growth differences occurred in both genotypes, arguing against that explanation",
+    "evidence_ids": [
+      "p36",
+      "p37"
+    ]
+  },
+  {
+    "id": "differentiation",
+    "priority": "context",
+    "meaning": "Stomatal patterning relatively preserved despite pavement-cell differences",
+    "evidence_ids": [
+      "p26",
+      "p27",
+      "p38"
+    ]
+  },
+  {
+    "id": "size_variability",
+    "priority": "context",
+    "meaning": "Mutant has more mature leaf-size outliers",
+    "evidence_ids": [
+      "p12"
+    ]
+  },
+  {
+    "id": "lineages",
+    "priority": "context",
+    "meaning": "Lineage tracking supports altered spatial contribution of progenitor cells",
+    "evidence_ids": [
+      "p23"
+    ]
+  }
+]

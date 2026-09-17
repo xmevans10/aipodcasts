@@ -1,0 +1,61 @@
+# Mira Vale — directed transcript
+
+Model: Eleven v3 · Natural stability · original fictional presenter
+
+## The hook
+
+**Direction:** Inviting curiosity; let the image land.
+
+**Mira Vale:**
+
+[curious] The Moon looks reassuringly finished. Craters in place. Dust settled. But while we were getting on with life, something punched a new hole in it, more than two hundred metres across.
+
+I'm Mira Vale, and this is Science Break. Today's headline: The Moon changed while we weren't looking.
+
+On September sixteenth, NASA reported a newly identified lunar crater called McGetchin. The main study, by Mark S. Robinson and colleagues in Science Advances, is titled A new two-hundred-and-twenty-two-metre diameter lunar crater.
+
+**EDIT: 0.40-second beat after speech.**
+
+## How they found it
+
+**Direction:** Conversational explanation; make the evidence easy to follow.
+
+**Mira Vale:**
+
+First, a small but important correction to the mental picture. This wasn't an impact last night. Comparing images puts the collision between April eleventh and May twenty-second, twenty twenty-four. Researchers discovered the change in twenty twenty-five. The news this week is the research describing it.
+
+Here's the lovely part. The clue emerged from comparing broad maps, rather than staring at one tiny patch in exquisite detail. Image specialist Robert Wagner noticed an unusual bright feature with a dark halo. Images taken before and after the collision made the change apparent. The Lunar Reconnaissance Orbiter's sharper camera then helped reveal what had happened.
+
+The resulting crater is about two hundred and twenty-two metres wide and forty-three metres deep. That's a substantial alteration to a landscape we tend to treat as permanent.
+
+And the hole isn't the whole story.
+
+**EDIT: 0.40-second beat after speech.**
+
+**SOUND: Quiet original transition cue, between speech segments.**
+
+## Beyond the crater
+
+**Direction:** Slow slightly at the evidence boundary; no melodrama.
+
+**Mira Vale:**
+
+[short pause] A companion study, by Tyler M. Powell and colleagues, examined the surrounding ground using the orbiter's Diviner thermal instrument. Around the crater, an area roughly six kilometres across was cooler at night than nearby terrain. The explanation is that the collision loosened the surface material, changing how well it holds heat. An impact can rearrange far more ground than the neat circle we notice in a photograph.
+
+There's a limit to what we can say. The images bracket when the impact happened; they don't give us an eyewitness timestamp. And estimates that an event this size occurs roughly once a century or longer come from impact models. They aren't a lunar timetable, or a prediction of the next collision.
+
+**EDIT: 0.55-second beat after speech.**
+
+## The takeaway
+
+**Direction:** Warm, earned resolution; leave space before the signature.
+
+**Mira Vale:**
+
+That's why fresh craters matter. They let scientists compare what their models predict with a real, newly changed surface.
+
+So the next time the Moon looks perfectly still, remember: still from here isn't the same as unchanged.
+
+I'm Mira Vale. Stay a little curious. Sources and full author credits accompany this episode. Your host and narration are AI-generated.
+
+**EDIT: 0.40-second beat after speech.**

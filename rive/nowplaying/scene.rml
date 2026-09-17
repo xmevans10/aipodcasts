@@ -60,6 +60,31 @@
             <DataBindContext sourcePathIds="0:40-0:50" propertyKey="17" converterId="0:91"/>
         </Shape>
 
+        <!-- Aurora: a scripted radial spectrum with sparks (aurora.luau). -->
+        <LayoutComponent width="500" height="500" styleId="0:81" name="AuroraBox" id="0:80">
+            <LayoutComponentStyle layoutWidthScaleType="1" layoutHeightScaleType="1" widthUnitsValue="3" heightUnitsValue="3" name="Aurora Style" id="0:81"/>
+            <ScriptedLayout scriptAssetId="0:85" name="Aurora" id="0:82">
+                <ScriptInputNumber propertyValue="0" name="band1">
+                    <DataBindContext sourcePathIds="0:40-0:45" propertyKey="243"/>
+                </ScriptInputNumber>
+                <ScriptInputNumber propertyValue="0" name="band2">
+                    <DataBindContext sourcePathIds="0:40-0:46" propertyKey="243"/>
+                </ScriptInputNumber>
+                <ScriptInputNumber propertyValue="0" name="band3">
+                    <DataBindContext sourcePathIds="0:40-0:47" propertyKey="243"/>
+                </ScriptInputNumber>
+                <ScriptInputNumber propertyValue="0" name="band4">
+                    <DataBindContext sourcePathIds="0:40-0:48" propertyKey="243"/>
+                </ScriptInputNumber>
+                <ScriptInputNumber propertyValue="0" name="band5">
+                    <DataBindContext sourcePathIds="0:40-0:49" propertyKey="243"/>
+                </ScriptInputNumber>
+                <ScriptInputNumber propertyValue="0" name="level">
+                    <DataBindContext sourcePathIds="0:40-0:50" propertyKey="243"/>
+                </ScriptInputNumber>
+            </ScriptedLayout>
+        </LayoutComponent>
+
         <!-- Two orbits, always turning. -->
         <Shape x="250" y="214" rotation="-0.45" name="OrbitOuter" id="0:72">
             <Ellipse width="420" height="196" name="Path" id="0:73"/>
@@ -144,4 +169,5 @@
             <ViewModelInstanceNumber propertyValue="0" viewModelPropertyId="0:50"/>
         </ViewModelInstance>
     </ViewModel>
+    <ScriptAsset file="aurora.luau" name="aurora" id="0:85"/>
 </Rive>

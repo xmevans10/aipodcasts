@@ -14,6 +14,7 @@ from pipeline import load_local_env
 ROOT = Path(__file__).resolve().parent.parent
 DEMO = ROOT / 'demos/three-hosts-2026-09-17'
 CACHE = DEMO / 'beats'
+_assets: dict = {}
 SR = 44100
 TARGET_RMS_DBFS = -20.0  # speech RMS; lands near -16 LUFS for dialogue
 
@@ -70,19 +71,50 @@ def trim_silence(s, threshold=0.004, keep=0.08):
 def silence(seconds): return array.array('f', bytes(4 * int(seconds * SR)))
 
 
-def mix_episode(episode, beat_files, transition, gap, transition_db):
+def asset(plan, name):
+    """Decoded, cached sound asset by name from the plan's asset table."""
+    if name not in _assets:
+        path = ROOT / plan['assets'][name]
+        _assets[name] = decode(path) if path.exists() else None
+    return _assets[name]
+
+
+def bed(source, length, gain_db):
+    """Loop/trim an ambience asset to `length` samples, fade it in and out, and set its level."""
+    if not source or length <= 0: return None
+    loops = array.array('f')
+    while len(loops) < length: loops += source
+    clip = fade(array.array('f', loops[:length]), 1.2, 1.8)
+    return gain(clip, TARGET_RMS_DBFS + gain_db - rms_db(source))
+
+
+def overlay(base, extra, at=0):
+    """Sum `extra` into `base` starting at sample `at`, extending base if needed."""
+    if not extra: return base
+    if len(base) < at + len(extra): base += silence((at + len(extra) - len(base)) / SR)
+    for i, x in enumerate(extra): base[at + i] += x
+    return base
+
+
+def mix_episode(episode, beat_files, plan, gap, transition_db):
     out = array.array('f')
     if episode.get('intro_asset'):
         intro = decode((DEMO / episode['intro_asset']).resolve())
         out += fade(gain(intro, TARGET_RMS_DBFS - 4 - rms_db(intro)), 0.02, 1.5)
         out += silence(0.35)
     for i, (beat, path) in enumerate(zip(episode['beats'], beat_files)):
-        voice = trim_silence(decode(path))
-        out += gain(voice, TARGET_RMS_DBFS - rms_db(voice))
+        voice = gain(trim_silence(decode(path)), 0)
+        voice = gain(voice, TARGET_RMS_DBFS - rms_db(voice))
+        start = len(out)
+        out += voice
+        if ambience := beat.get('ambience'):
+            out = overlay(out, bed(asset(plan, ambience['asset']), len(voice) + int(1.5 * SR), ambience.get('gain_db', -26)), start)
         if i < len(episode['beats']) - 1:
             out += silence(beat.get('pause_after_seconds', gap))
-            if beat.get('effect_after') == 'transition' and transition is not None:
-                out += gain(transition, TARGET_RMS_DBFS + transition_db + 12 - rms_db(transition)) + silence(0.25)
+            if effect := beat.get('effect_after'):
+                clip = asset(plan, effect)
+                if clip:
+                    out += gain(fade(clip, 0.01, 0.4), TARGET_RMS_DBFS + transition_db + 12 - rms_db(clip)) + silence(0.25)
     peak = max(abs(x) for x in out)
     if peak > 0.84: out = gain(out, 20 * math.log10(0.84 / peak))  # ~-1.5 dBTP ceiling
     return out
@@ -109,7 +141,7 @@ def main():
     ledger = json.loads(ledger_path.read_text()) if ledger_path.exists() else []
     episodes = [e for e in plan['episodes'] if not a.hosts or e['id'] in a.hosts]
     todo = [(e, b) for e in episodes for b in e['beats']
-            if not (CACHE / f"{e['id']}-{b['id']}-{beat_key(e['voice_id'], model, settings, b['directed_text'])}.mp3").exists()]
+            if not (CACHE / f"{e['id']}-{b['id']}-{beat_key(e['voice_id'], model, b.get('voice_settings', settings), b['directed_text'])}.mp3").exists()]
     cost = sum(len(b['directed_text']) for _, b in todo)
     print(json.dumps({'beats_to_generate': len(todo), 'characters': cost, 'cached_beats': sum(len(e['beats']) for e in episodes) - len(todo)}))
     if cost > a.max_chars: raise SystemExit(f'budget {a.max_chars} would be exceeded')
@@ -117,20 +149,18 @@ def main():
     if todo:
         load_local_env(); key = os.environ['ELEVENLABS_API_KEY']
         for e, b in todo:
-            path = CACHE / f"{e['id']}-{b['id']}-{beat_key(e['voice_id'], model, settings, b['directed_text'])}.mp3"
+            path = CACHE / f"{e['id']}-{b['id']}-{beat_key(e['voice_id'], model, b.get('voice_settings', settings), b['directed_text'])}.mp3"
             entry = {'host': e['id'], 'beat': b['id'], 'voice_id': e['voice_id'], 'model': model, 'characters': len(b['directed_text']), 'utc': time.time()}
             try:
-                synthesize(key, e['voice_id'], model, settings, b['directed_text'], path); entry['status'] = 'ok'
+                synthesize(key, e['voice_id'], model, b.get('voice_settings', settings), b['directed_text'], path); entry['status'] = 'ok'
             except urllib.error.HTTPError as err:
                 entry.update(status='http_error', http=err.code, error=err.read(300).decode(errors='replace').replace(key, '[K]'))
             ledger.append(entry); ledger_path.write_text(json.dumps(ledger, indent=1))
             print(e['id'], b['id'], entry['status'], entry.get('error', '')[:160], flush=True)
             if entry['status'] != 'ok': raise SystemExit(1)
-    sting = ROOT / 'assets/audio/transition.mp3'
-    transition = fade(decode(sting), 0.01, 0.4) if sting.exists() else None
     for e in episodes:
-        files = [CACHE / f"{e['id']}-{b['id']}-{beat_key(e['voice_id'], model, settings, b['directed_text'])}.mp3" for b in e['beats']]
-        samples = mix_episode(e, files, transition, mix['gap_seconds'], mix['transition_gain_db'])
+        files = [CACHE / f"{e['id']}-{b['id']}-{beat_key(e['voice_id'], model, b.get('voice_settings', settings), b['directed_text'])}.mp3" for b in e['beats']]
+        samples = mix_episode(e, files, plan, mix['gap_seconds'], mix['transition_gain_db'])
         dest = DEMO / f"{e['id']}.m4a"; write_m4a(samples, dest)
         e['audio_file'] = dest.name; e['duration_seconds'] = round(len(samples) / SR, 1)
         print(json.dumps({'host': e['id'], 'file': str(dest.relative_to(ROOT)), 'seconds': e['duration_seconds']}))

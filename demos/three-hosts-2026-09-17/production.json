@@ -79,46 +79,71 @@
           "id": "01",
           "title": "An unexpected meal",
           "speaker": "Clara Rowan",
-          "text": "A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal. The dolphin eats that instead, and lets the fish swim away.\n\nAn unconventional takeaway arrangement.\n\nI'm Clara Rowan, and this is Sound Science. Today's headline: The dolphin who lets dinner escape.\n\nA paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.",
-          "directed_text": "[curious] A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal. The dolphin eats that instead, and lets the fish swim away.\n\n[mischievously] An unconventional takeaway arrangement.\n\n[curious]\n\nI'm Clara Rowan, and this is Sound Science. Today's headline: The dolphin who lets dinner escape.\n\nA paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.",
-          "direction": "Inviting curiosity; let the image land.",
-          "pause_after_seconds": 0.4,
-          "effect_after": null
+          "direction": "Let the image land; delight, not astonishment. Lean on the turn at \"that instead\".",
+          "text": "A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal. The dolphin eats that instead, and lets the fish swim away.\n\nAn unconventional takeaway arrangement.",
+          "directed_text": "[warm] [curious] A dolphin chases a fish. So far... an entirely ordinary afternoon. [pause] Then the fish brings up its last meal.\n\n[amused] The dolphin eats that instead... and lets the fish swim away.\n\n[laughs softly] An unconventional takeaway arrangement.",
+          "voice_settings": {
+            "stability": 0.0
+          },
+          "pause_after_seconds": 0.5,
+          "effect_after": "bubbles-accent",
+          "ambience": {
+            "asset": "reef-ambience",
+            "gain_db": -30
+          }
         },
         {
           "id": "02",
-          "title": "What researchers saw",
+          "title": "The headline",
           "speaker": "Clara Rowan",
-          "text": "Kleptoparasitism means taking food another animal has already acquired. The researchers' candidate is an adult male dolphin known locally as Bubbles.\n\nAcross recordings collected between twenty twenty-one and twenty twenty-five, the team documented twenty foraging records. Eleven included a feeding event: a bigeye trevally regurgitated, and the dolphin consumed the expelled food. Distinctive scars and notches in his dorsal fin helped establish that they were watching the same individual over time.\n\nThe sequence matters. Bubbles appeared to select a particular fish, pursue it, and then stop chasing when food became available. In those recorded interactions, he wasn't observed eating the trevally itself. Sometimes the process repeated: the dolphin returned to the school and began again.\n\nThat makes this more interesting than an animal simply encountering somebody else's leftovers. The observations suggest a repeated feeding tactic. The team also recorded clicks and lower-frequency sounds during pursuit, raising questions about whether sound helps the dolphin select or pressure a fish.",
-          "directed_text": "Kleptoparasitism means taking food another animal has already acquired. The researchers' candidate is an adult male dolphin known locally as Bubbles.\n\nAcross recordings collected between twenty twenty-one and twenty twenty-five, the team documented twenty foraging records. Eleven included a feeding event: a bigeye trevally regurgitated, and the dolphin consumed the expelled food. Distinctive scars and notches in his dorsal fin helped establish that they were watching the same individual over time.\n\nThe sequence matters. Bubbles appeared to select a particular fish, pursue it, and then stop chasing when food became available. In those recorded interactions, he wasn't observed eating the trevally itself. Sometimes the process repeated: the dolphin returned to the school and began again.\n\nThat makes this more interesting than an animal simply encountering somebody else's leftovers. The observations suggest a repeated feeding tactic. The team also recorded clicks and lower-frequency sounds during pursuit, raising questions about whether sound helps the dolphin select or pressure a fish.",
-          "direction": "Conversational explanation; make the evidence easy to follow.",
-          "pause_after_seconds": 0.4,
-          "effect_after": "transition"
+          "direction": "Warm signature, then settle into careful attribution.",
+          "text": "I'm Clara Rowan, and this is Sound Science. Today's headline: The dolphin who lets dinner escape.\n\nA paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.",
+          "directed_text": "[warmly] I'm Clara Rowan, and this is Sound Science. Today's headline: [playfully] The dolphin who lets dinner escape.\n\n[measured] A paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.",
+          "voice_settings": {
+            "stability": 0.5
+          },
+          "pause_after_seconds": 0.45
         },
         {
           "id": "03",
-          "title": "What we do not know",
+          "title": "What researchers saw",
           "speaker": "Clara Rowan",
-          "text": "But here's where the story needs its brakes. This is one dolphin, observed opportunistically, not a controlled experiment. The recordings don't establish that sound causes regurgitation, that Bubbles can detect a fish's stomach contents, or that stealing this way saves energy. The researchers suggest those possibilities; they haven't demonstrated them. We also don't know how common this tactic is among other dolphins.\n\nEven with those limits, there's something wonderful here: careful observation of an individual can uncover behaviour we weren't looking for.",
-          "directed_text": "[short pause] But here's where the story needs its brakes. This is one dolphin, observed opportunistically, not a controlled experiment. The recordings don't establish that sound causes regurgitation, that Bubbles can detect a fish's stomach contents, or that stealing this way saves energy. The researchers suggest those possibilities; they haven't demonstrated them. We also don't know how common this tactic is among other dolphins.\n\nEven with those limits, there's something wonderful here: careful observation of an individual can uncover behaviour we weren't looking for.",
-          "direction": "Slow slightly at the evidence boundary; no melodrama.",
-          "pause_after_seconds": 0.55,
-          "effect_after": null
+          "direction": "Conversational explanation; land the numbers, keep the sequence easy to follow.",
+          "text": "Kleptoparasitism means taking food another animal has already acquired. The researchers' candidate is an adult male dolphin known locally as Bubbles.\n\nAcross recordings collected between twenty twenty-one and twenty twenty-five, the team documented twenty foraging records. Eleven included a feeding event: a bigeye trevally regurgitated, and the dolphin consumed the expelled food. Distinctive scars and notches in his dorsal fin helped establish that they were watching the same individual over time.\n\nThe sequence matters. Bubbles appeared to select a particular fish, pursue it, and then stop chasing when food became available. In those recorded interactions, he wasn't observed eating the trevally itself. Sometimes the process repeated: the dolphin returned to the school and began again.\n\nThat makes this more interesting than an animal simply encountering somebody else's leftovers. The observations suggest a repeated feeding tactic. The team also recorded clicks and lower-frequency sounds during pursuit, raising questions about whether sound helps the dolphin select or pressure a fish.",
+          "directed_text": "[curious] Kleptoparasitism means taking food another animal has already acquired. The researchers' candidate is an adult male dolphin known locally as [fondly] Bubbles.\n\n[measured] Across recordings collected between twenty twenty-one and twenty twenty-five, the team documented twenty foraging records. Eleven included a feeding event: a bigeye trevally regurgitated, and the dolphin consumed the expelled food. Distinctive scars and notches in his dorsal fin helped establish that they were watching the same individual over time.\n\n[intrigued] The sequence matters. Bubbles appeared to select a particular fish, pursue it... and then stop chasing when food became available. In those recorded interactions, he wasn't observed eating the trevally itself. Sometimes the process repeated: the dolphin returned to the school, and began again.\n\n[thoughtful] That makes this more interesting than an animal simply encountering somebody else's leftovers. The observations suggest a repeated feeding tactic. The team also recorded clicks and lower-frequency sounds during pursuit, raising questions about whether sound helps the dolphin select or pressure a fish.",
+          "voice_settings": {
+            "stability": 0.5
+          },
+          "pause_after_seconds": 0.5,
+          "effect_after": "water-transition"
         },
         {
           "id": "04",
+          "title": "What we do not know",
+          "speaker": "Clara Rowan",
+          "direction": "Slow at the evidence boundary; sober but not grim, then warm again.",
+          "text": "But here's where the story needs its brakes. This is one dolphin, observed opportunistically, not a controlled experiment. The recordings don't establish that sound causes regurgitation, that Bubbles can detect a fish's stomach contents, or that stealing this way saves energy. The researchers suggest those possibilities; they haven't demonstrated them. We also don't know how common this tactic is among other dolphins.\n\nEven with those limits, there's something wonderful here: careful observation of an individual can uncover behaviour we weren't looking for.",
+          "directed_text": "[serious] But here's where the story needs its brakes. [slowly] This is one dolphin, observed opportunistically... not a controlled experiment. The recordings don't establish that sound causes regurgitation, that Bubbles can detect a fish's stomach contents, or that stealing this way saves energy. The researchers suggest those possibilities; they haven't demonstrated them. [measured] We also don't know how common this tactic is among other dolphins.\n\n[gently] Even with those limits, there's something wonderful here: careful observation of an individual can uncover behaviour we weren't looking for.",
+          "voice_settings": {
+            "stability": 0.5
+          },
+          "pause_after_seconds": 0.6
+        },
+        {
+          "id": "05",
           "title": "The takeaway",
           "speaker": "Clara Rowan",
+          "direction": "Warm, earned resolution; a smile in the last line, then space before the credits. Natural stability: the creative setting slurred the name \"Bubbles\".",
           "text": "Calling Bubbles a thief is our shorthand, of course. It's not a moral judgement, and it doesn't tell us what he's thinking. What we can see is a predator repeatedly getting food in an unexpected way.\n\nSometimes the interesting question isn't whether the fish gets away. It's what the dolphin was chasing in the first place.\n\nI'm Clara Rowan. There's always more going on. Sources and full author credits accompany this episode. Your host and narration are AI-generated.",
-          "directed_text": "Calling Bubbles a thief is our shorthand, of course. It's not a moral judgement, and it doesn't tell us what he's thinking. What we can see is a predator repeatedly getting food in an unexpected way.\n\nSometimes the interesting question isn't whether the fish gets away. It's what the dolphin was chasing in the first place.\n\nI'm Clara Rowan. There's always more going on. Sources and full author credits accompany this episode. Your host and narration are AI-generated.",
-          "direction": "Warm, earned resolution; leave space before the signature.",
-          "pause_after_seconds": 0.4,
-          "effect_after": null
+          "directed_text": "[amused] Calling Bubbles a thief is our shorthand, of course. [warmly] It's not a moral judgement, and it doesn't tell us what he's thinking. What we can see is a predator repeatedly getting food in an unexpected way.\n\n[thoughtful] Sometimes the interesting question isn't whether the fish gets away... [smiling] It's what the dolphin was chasing in the first place.\n\n[warm] I'm Clara Rowan. There's always more going on. [softly] Sources and full author credits accompany this episode. Your host and narration are AI-generated.",
+          "voice_settings": {
+            "stability": 0.5
+          }
         }
       ],
       "casting_basis": "Chosen from a 19-voice Eleven v3 audition (backend/evals/voices): brief fit, 100% transcript match, no spoken tags, pace and pitch variation. Pending human listening approval. Recast from the featured Australian voice: it narrated at ~104 wpm (brief 140-155) and Eleven v3 ignores the speed setting.",
       "audio_file": "clara.m4a",
-      "duration_seconds": 198.8
+      "duration_seconds": 204.4
     },
     {
       "id": "elias",
@@ -172,5 +197,12 @@
       "audio_file": "elias.m4a",
       "duration_seconds": 179.2
     }
-  ]
+  ],
+  "assets": {
+    "transition": "assets/audio/transition.mp3",
+    "water-transition": "assets/audio/water-transition.mp3",
+    "bubbles-accent": "assets/audio/bubbles-accent.mp3",
+    "reef-ambience": "assets/audio/reef-ambience.mp3"
+  },
+  "sound_design_note": "All music and effects are AI-generated (ElevenLabs sound generation) or supplied by the user; none are field recordings of the animals or places described."
 }

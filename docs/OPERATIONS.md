@@ -92,3 +92,11 @@ Primary-author extraction now excludes peer-review sub-articles. Full source tex
 The app now persists queue order, current story, production-audio positions and completed stories locally. Today can queue an edition; the player and Library expose queue controls; Library separates saved, listening and finished stories. Sleep timers can be cancelled. Device-voice demos restart after relaunch because speech synthesis cannot seek. Queue restoration requires stories to be available in the loaded feed; offline feed caching is still pending. Full-name fictional presenters are shown throughout the app.
 
 Validation: standalone listening-state checks and an unsigned simulator-SDK build. The simulator remains shut down at the user’s request; the new screens and real-audio continuation still need runtime verification.
+
+## Sound design and direction (Eleven v3)
+
+`backend/produce.py` synthesizes one directed beat at a time and caches by content hash, so retouching a line re-buys only that line. Per beat you can set `voice_settings` (v3 stability: 0.0 creative, 0.5 natural, 1.0 robust), `pause_after_seconds`, `effect_after` (a named clip from the plan's `assets` table) and `ambience` (a looping bed mixed under the speech at a given gain). Effects come from ElevenLabs sound generation (`/v1/sound-generation`); all music and effects are generated or user-supplied, never field recordings of the animals or places described, and the plan records that.
+
+Direction is expressed in `directed_text` only; the canonical `text` stays word-for-word identical, so transcripts, timings and the source check stay valid. A word-count assertion guards this. Creative stability (0.0) is more expressive but riskier: it slurred the dolphin's name "Bubbles" into "Bustles" in a takeaway beat, caught by `backend/evals/qa_episodes.py` and fixed by moving that beat to natural stability. v3 ignores the `speed` setting; pace comes from voice casting, ellipses and inter-beat pauses.
+
+Also available on the current key and unused so far: text-to-dialogue (multi-speaker), music generation, voice design, forced alignment and speech-to-speech.

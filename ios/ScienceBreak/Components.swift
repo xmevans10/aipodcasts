@@ -87,12 +87,9 @@ struct ShowCard: View {
                             .foregroundStyle(show.dark).padding(10)
                     }
                 }
-            HStack(spacing: 8) {
-                HostAvatar(host: show.host, size: 26)
-                VStack(alignment: .leading, spacing: 1) {
-                    Text(show.title).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink).lineLimit(1)
-                    Text(show.host.name).font(.caption).foregroundStyle(Theme.secondary).lineLimit(1)
-                }
+            VStack(alignment: .leading, spacing: 1) {
+                Text(show.title).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink).lineLimit(1)
+                Text(show.host.name).font(.caption).foregroundStyle(Theme.secondary).lineLimit(1)
             }
         }
         .accessibilityElement(children: .combine)

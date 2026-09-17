@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 /// Headless unit tests for the app's pure logic: queue state, listening maths and the
 /// bundled episode data. Runs without a simulator — see scripts/run-ios-tests.sh.
@@ -155,6 +156,23 @@ private func testStoryHelpers() {
     checkEqual(undated.dateText, "Sample", "an undated demo is labelled a sample")
 }
 
+// MARK: - cover layout
+//
+// A cover that sizes itself to its decorative sheen stops being square and drags the
+// row's text across it. These render the real view and measure what comes out.
+
+@MainActor private func testCoverLayout() {
+    for width in [42.0, 60.0, 84.0, 160.0, 300.0] {
+        let renderer = ImageRenderer(content: ShowCover(show: Show.all[0]).frame(width: width))
+        renderer.scale = 1
+        guard let image = renderer.cgImage else {
+            failures.append("cover at \(Int(width))pt did not render"); checks += 1; continue
+        }
+        checkEqual(image.width, Int(width), "cover at \(Int(width))pt is the requested width")
+        checkEqual(image.height, Int(width), "cover at \(Int(width))pt is square")
+    }
+}
+
 @main struct LogicChecks {
     static func main() {
         let episodes = URL(fileURLWithPath: CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "ScienceBreak/Episodes")
@@ -163,6 +181,7 @@ private func testStoryHelpers() {
         testShowsAndHosts()
         testStoryHelpers()
         testEpisodes(directory: episodes)
+        MainActor.assumeIsolated { testCoverLayout() }
 
         if failures.isEmpty {
             print("✓ \(checks) checks passed")

@@ -106,10 +106,7 @@ struct BrowseView: View {
                                     Text(show.category.uppercased()).font(.caption2.weight(.semibold)).tracking(0.6).foregroundStyle(Theme.secondary)
                                     Text(show.title).font(.headline).foregroundStyle(Theme.ink)
                                     Text(show.tagline).font(.subheadline).foregroundStyle(Theme.secondary).lineLimit(2)
-                                    HStack(spacing: 6) {
-                                        HostAvatar(host: show.host, size: 20)
-                                        Text(show.host.name).font(.caption).foregroundStyle(Theme.secondary)
-                                    }
+                                    Text(show.host.name).font(.caption).foregroundStyle(Theme.secondary)
                                 }.multilineTextAlignment(.leading)
                                 Spacer(minLength: 0)
                                 Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary)

@@ -72,7 +72,9 @@ struct ShowCover: View {
     var show: Show
     var body: some View {
         GeometryReader { geometry in
-            let w = geometry.size.width
+            // Always square, whatever the parent proposes: a cover that stretches drags
+            // the row's text on top of it.
+            let w = min(geometry.size.width, geometry.size.height)
             ZStack(alignment: .bottomLeading) {
                 LinearGradient(colors: [show.light, show.mid, show.dark], startPoint: .topTrailing, endPoint: .bottomLeading)
                 RadialGradient(colors: [show.light.opacity(0.7), .clear], center: UnitPoint(x: 0.82, y: 0.14),
@@ -82,26 +84,40 @@ struct ShowCover: View {
                     .frame(width: w * 1.5, height: w * 0.42)
                     .rotationEffect(.degrees(-26))
                     .offset(x: -w * 0.18, y: w * 0.2)
-                // Below ~96pt the title is unreadable, so a thumbnail is colour, light and the host alone.
-                HostAvatar(host: show.host, size: w >= 96 ? w * 0.34 : w * 0.52)
-                    .overlay(Circle().strokeBorder(.white.opacity(0.65), lineWidth: max(1, w * 0.012)))
-                    .shadow(color: show.dark.opacity(0.35), radius: w * 0.04, y: w * 0.012)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity,
-                           alignment: w >= 96 ? .topTrailing : .center)
-                    .padding(w >= 96 ? w * 0.07 : 0)
+                    // Clamped to the cover: the sheen is wider than the art, and without this
+                    // the stack sizes itself to the sheen and shifts everything else off-centre.
+                    .frame(width: w, height: w)
                 if w >= 96 {
-                    VStack(alignment: .leading, spacing: w * 0.025) {
-                        Text(show.title).font(.system(size: w * 0.135, weight: .semibold, design: .serif)).tracking(-0.3)
-                            .lineLimit(2).minimumScaleFactor(0.8)
-                        Text(show.host.name.uppercased()).font(.system(size: max(7, w * 0.048), weight: .semibold)).tracking(0.9).opacity(0.85)
+                    // The trailing spacer pins the block left and stops a long title
+                    // laying itself out wider than the art and spilling past both edges.
+                    HStack(alignment: .bottom, spacing: 0) {
+                        VStack(alignment: .leading, spacing: w * 0.025) {
+                            Text(show.title).font(.system(size: w * 0.125, weight: .semibold, design: .serif)).tracking(-0.3)
+                                .lineLimit(2).minimumScaleFactor(0.7)
+                                .fixedSize(horizontal: false, vertical: true)
+                            Text(show.host.name.uppercased()).font(.system(size: max(7, w * 0.046), weight: .semibold))
+                                .tracking(0.9).opacity(0.85).lineLimit(1)
+                        }
+                        Spacer(minLength: 0)
                     }
                     .foregroundStyle(.white).shadow(color: show.dark.opacity(0.4), radius: w * 0.05, y: w * 0.01)
-                    .padding(w * 0.085)
+                    .frame(width: w * 0.86)
+                    .padding(.horizontal, w * 0.07)
+                    .padding(.bottom, w * 0.07)
                 }
+            }
+            .frame(width: w, height: w)
+            // An overlay cannot change the cover's size, so the host never stretches the art.
+            .overlay(alignment: w >= 96 ? .topTrailing : .center) {
+                HostAvatar(host: show.host, size: w >= 96 ? w * 0.3 : w * 0.46)
+                    .overlay(Circle().strokeBorder(.white.opacity(0.7), lineWidth: max(1, w * 0.012)))
+                    .shadow(color: show.dark.opacity(0.35), radius: w * 0.04, y: w * 0.012)
+                    .padding(w >= 96 ? w * 0.07 : 0)
             }
             // Keeps the bloom and sheen inside the cover instead of compositing with the card behind it.
             .compositingGroup()
             .clipShape(RoundedRectangle(cornerRadius: max(6, w * 0.11), style: .continuous))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .aspectRatio(1, contentMode: .fit)
         .accessibilityHidden(true)

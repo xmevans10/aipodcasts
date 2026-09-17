@@ -25,28 +25,10 @@ struct RootView: View {
     @State private var tab = 0
     var body: some View {
         TabView(selection: $tab) {
-            TodayView().tag(0).tabItem { Label("Today", systemImage: "sun.max") }
-            ExploreView().tag(1).tabItem { Label("Discover", systemImage: "circle.grid.2x2") }
-            HostsView().tag(2).tabItem { Label("Your hosts", systemImage: "waveform") }
-            LibraryView().tag(3).tabItem { Label("Library", systemImage: "books.vertical") }
-        }
-        .safeAreaInset(edge: .bottom) {
-            if let story = player.story {
-                HStack(spacing: 12) {
-                    Button { showPlayer = true } label: {
-                        HStack(spacing: 12) {
-                            HostAvatar(host: story.host, size: 36)
-                            VStack(alignment: .leading, spacing: 3) {
-                                Text(story.title).font(.caption.weight(.semibold)).lineLimit(1)
-                                Text(player.isPreview ? "DEVICE VOICE PREVIEW" : "\(story.host.name) · Science Break").font(.system(size: 8, weight: .medium, design: .monospaced))
-                            }
-                        }.foregroundStyle(ScienceBreak.paper)
-                    }
-                    Spacer(minLength: 0)
-                    Button { player.toggle() } label: { Image(systemName: player.playing ? "pause.fill" : "play.fill").frame(width: 44, height: 44) }
-                        .foregroundStyle(ScienceBreak.acid).accessibilityLabel(player.playing ? "Pause" : "Play")
-                }.padding(.horizontal, 15).padding(.vertical, 7).background(ScienceBreak.ink, in: RoundedRectangle(cornerRadius: OpenAIKit.Radius.panel)).padding(.horizontal, 12).padding(.bottom, 5)
-            }
+            TodayView().miniPlayerInset($showPlayer).tag(0).tabItem { Label("Today", systemImage: "sun.max") }
+            ExploreView().miniPlayerInset($showPlayer).tag(1).tabItem { Label("Discover", systemImage: "circle.grid.2x2") }
+            HostsView().miniPlayerInset($showPlayer).tag(2).tabItem { Label("Your hosts", systemImage: "waveform") }
+            LibraryView().miniPlayerInset($showPlayer).tag(3).tabItem { Label("Library", systemImage: "books.vertical") }
         }
         .onChange(of: scenePhase) { _, phase in if phase != .active { player.checkpoint() } }
         .onChange(of: library.stories) { _, stories in player.restore(stories) }
@@ -66,6 +48,33 @@ struct RootView: View {
             player.restore(library.stories)
         }
     }
+}
+struct MiniPlayerInset: ViewModifier {
+    @EnvironmentObject var player: AudioPlayer
+    @Binding var showPlayer: Bool
+    func body(content: Content) -> some View {
+        content.safeAreaInset(edge: .bottom) {
+        if let story = player.story {
+                    HStack(spacing: 12) {
+                        Button { showPlayer = true } label: {
+                            HStack(spacing: 12) {
+                                HostAvatar(host: story.host, size: 36)
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text(story.title).font(.caption.weight(.semibold)).lineLimit(1)
+                                    Text(player.isPreview ? "DEVICE VOICE PREVIEW" : "\(story.host.name) · Science Break").font(.system(size: 8, weight: .medium, design: .monospaced))
+                                }
+                            }.foregroundStyle(ScienceBreak.paper)
+                        }
+                        Spacer(minLength: 0)
+                        Button { player.toggle() } label: { Image(systemName: player.playing ? "pause.fill" : "play.fill").frame(width: 44, height: 44) }
+                            .foregroundStyle(ScienceBreak.acid).accessibilityLabel(player.playing ? "Pause" : "Play")
+                    }.padding(.horizontal, 15).padding(.vertical, 7).background(ScienceBreak.ink, in: RoundedRectangle(cornerRadius: OpenAIKit.Radius.panel)).padding(.horizontal, 12).padding(.bottom, 5)
+                }
+        }
+    }
+}
+extension View {
+    func miniPlayerInset(_ showPlayer: Binding<Bool>) -> some View { modifier(MiniPlayerInset(showPlayer: showPlayer)) }
 }
 struct TodayView: View {
     @EnvironmentObject var library: Library

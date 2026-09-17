@@ -12,7 +12,7 @@ struct Host: Identifiable, Codable, Hashable {
         Host(id: "nova", name: "Mira Vale", niche: "Space & physics", personality: "Big questions. A little cosmic perspective.", symbol: "sparkles", hue: 0.66),
         Host(id: "fern", name: "Clara Rowan", niche: "Our living planet", personality: "Wild connections, told with warmth.", symbol: "leaf", hue: 0.27),
         Host(id: "ada", name: "Elias Reed", niche: "Minds & machines", personality: "Curious, clear-eyed, delightfully nerdy.", symbol: "waveform.path", hue: 0.06),
-        Host(id: "atlas", name: "Theo Mercer", niche: "Human discovery", personality: "The human story behind the science.", symbol: "fingerprint", hue: 0.47)
+        Host(id: "atlas", name: "Theo Mercer", niche: "Human discovery", personality: "The human story behind the science.", symbol: "touchid", hue: 0.47)
     ]
 }
 struct Source: Codable, Hashable {

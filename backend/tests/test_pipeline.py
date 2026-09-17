@@ -1,4 +1,5 @@
 import json
+from hosts import HOSTS
 import os
 from pathlib import Path
 import tempfile
@@ -21,7 +22,7 @@ class PipelineTests(unittest.TestCase):
                        'url': 'https://doi.org/10.1371/journal.pbio.123', 'attribution': 'A. Researcher', 'license': 'CC BY 4.0',
                        'licenseURL': 'https://creativecommons.org/licenses/by/4.0/'}
         self.draft = {'title': 'A little scientific wonder', 'dek': 'An accessible explanation of the result.',
-                      'body': 'Today: A little scientific wonder. A source article, by A. Researcher. ' + 'Evidence is interesting and uncertainty matters. ' * 50 + 'This result has considerable uncertainty.',
+                      'body': 'Today: A little scientific wonder. A source article, by A. Researcher. ' + 'Evidence is interesting and uncertainty matters. ' * 50 + 'This result has considerable uncertainty. ' + HOSTS['nova'].sign_off,
                       'caveat': 'This result has considerable uncertainty.',
                       'claims': [{'claim': 'The result has uncertainty.', 'quote': 'This is a measured result with considerable uncertainty.'}]}
         self.id = 'a' * 20

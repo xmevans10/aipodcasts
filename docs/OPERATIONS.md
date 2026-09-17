@@ -104,3 +104,9 @@ Direction runs hot on purpose: two to four tags per paragraph, written as intens
 Direction is expressed in `directed_text` only; the canonical `text` stays word-for-word identical, so transcripts, timings and the source check stay valid. A word-count assertion guards this. Creative stability (0.0) is more expressive but riskier: it slurred the dolphin's name "Bubbles" into "Bustles" in a takeaway beat, caught by `backend/evals/qa_episodes.py` and fixed by moving that beat to natural stability. v3 ignores the `speed` setting; pace comes from voice casting, ellipses and inter-beat pauses.
 
 Also available on the current key and unused so far: text-to-dialogue (multi-speaker), music generation, voice design, forced alignment and speech-to-speech.
+
+## Host personality configuration
+
+`backend/hosts.py` is the single source of truth for each presenter: name, show, feed topic, beat, persona, delivery, opening style, exact sign-off, the domains their analogies may come from, what they must avoid, and the emotion palette used when directing narration. `writing_guide(host_id)` renders that profile into a block appended to the shared `PODCAST_INSTRUCTIONS`, so drafting is `shared editorial contract + one host personality` (prompt version `podcast-v2`). It also supplies the feed's topic label and the `ELEVENLABS_VOICE_*` variable name, so adding a host is one entry in one file.
+
+Each profile ends with the rule that personality changes delivery only and never a finding, number, limitation or attribution. Drafts are checked against that: `validate_podcast` now requires the host's exact sign-off in the closing sixty words, alongside the existing headline, paper-title, first-author and verbatim-limitations checks. `python3 backend/pipeline.py hosts` prints the configured profiles.

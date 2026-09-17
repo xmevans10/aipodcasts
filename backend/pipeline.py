@@ -16,14 +16,12 @@ import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from evidence import extract_passages, build_packet, evidence_text
+from hosts import HOSTS as HOST_PROFILES, writing_guide
 from podcast import DEFAULT_MODEL, PODCAST_INSTRUCTIONS, validate_podcast, narration_script
 
 ROOT = Path(__file__).resolve().parent
 DATA = Path(os.environ.get("LILT_DATA", ROOT / "data"))
-HOSTS = {"nova": ("SPACE", "Cosmic perspective; clear analogies, no hype."),
-         "fern": ("NATURE", "Warm and observant; no anthropomorphic claims."),
-         "ada": ("MIND", "Precise, curious and lightly playful."),
-         "atlas": ("EARTH", "Grounded, humane, interested in wider context.")}
+HOSTS = HOST_PROFILES  # personality config lives in hosts.py
 MAX_SOURCE_BYTES = 4_000_000
 
 
@@ -32,7 +30,7 @@ def load_local_env(path: Path | None = None) -> None:
     if not path.exists():
         return
     allowed = {"OPENAI_API_KEY", "OPENAI_MODEL", "OPENAI_REASONING_EFFORT", "ELEVENLABS_API_KEY", "ELEVENLABS_MODEL",
-               "LILT_MAX_PROVIDER_CALLS_PER_DAY", "LILT_MAX_SOURCE_CHARS", *["ELEVENLABS_VOICE_" + h.upper() for h in HOSTS]}
+               "LILT_MAX_PROVIDER_CALLS_PER_DAY", "LILT_MAX_SOURCE_CHARS", *[h.voice_env for h in HOSTS.values()]}
     for line in path.read_text().splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
@@ -240,7 +238,7 @@ def draft_story(db, story_id):
     if not source.get("attribution") or source["attribution"] == "Authors listed at source":
         raise ValueError("Named author metadata is required before generation")
     packet = build_packet(source, int(os.environ.get("LILT_MAX_SOURCE_CHARS", "18000")))
-    instructions = PODCAST_INSTRUCTIONS + "\nHost delivery: " + HOSTS[record["host"]][1]
+    instructions = PODCAST_INSTRUCTIONS + writing_guide(record["host"])
     effort = os.environ.get("OPENAI_REASONING_EFFORT", "low")
     if effort not in {"none", "low", "medium", "high", "xhigh", "max"}:
         raise ValueError("Unsupported reasoning effort")
@@ -265,7 +263,7 @@ def draft_story(db, story_id):
         raise ValueError("No draft returned, possibly refused")
     draft = json.loads("".join(outputs))
     validate_draft(draft, {"text": evidence_text(packet)})
-    validate_podcast(draft, source)
+    validate_podcast(draft, source, HOSTS[record["host"]])
     with db:
         db.execute("UPDATE stories SET draft=?,state='review' WHERE id=?", (json.dumps(draft), story_id))
     return draft
@@ -277,7 +275,7 @@ def review(db, story_id: str, reviewer: str):
         raise ValueError("Requires a draft awaiting review and a named reviewer")
     draft = json.loads(record["draft"])
     validate_draft(draft, json.loads(record["source"]))
-    validate_podcast(draft, json.loads(record["source"]))
+    validate_podcast(draft, json.loads(record["source"]), HOSTS[record["host"]])
     digest = hashlib.sha256(record["draft"].encode()).hexdigest()
     with db:
         db.execute("UPDATE stories SET state='approved',reviewer=?,review_hash=? WHERE id=?", (reviewer.strip(), digest, story_id))
@@ -332,7 +330,7 @@ def feed(db, origin: str) -> list[dict]:
     for r in db.execute("SELECT * FROM stories WHERE state='published' ORDER BY created DESC, id"):
         source, draft = json.loads(r["source"]), json.loads(r["draft"])
         result.append({"id": r["id"], "title": draft["title"], "dek": draft["dek"],
-            "topic": HOSTS[r["host"]][0], "hostID": r["host"],
+            "topic": HOSTS[r["host"]].topic, "hostID": r["host"],
             "minutes": max(1, round(len(draft["body"].split()) / 150)),
             "body": draft["body"], "caveat": draft["caveat"], "isDemo": False,
             "sources": [{"title": source["title"], "url": source["url"],
@@ -347,6 +345,7 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("discover")
     p = sub.add_parser("ingest"); p.add_argument("doi"); p.add_argument("--host", choices=HOSTS, required=True); p.add_argument("--refresh", action="store_true")
+    sub.add_parser("hosts")
     for command in ("draft", "inspect", "narrate", "publish", "withdraw", "packet"):
         p = sub.add_parser(command); p.add_argument("id")
     p = sub.add_parser("approve"); p.add_argument("id"); p.add_argument("--reviewer", required=True)
@@ -357,6 +356,8 @@ def main():
         if args.command == "discover": result = discover()
         elif args.command == "ingest": result = ingest(db, args.doi, args.host, args.refresh)
         elif args.command == "packet": result = build_packet(json.loads(row(db, args.id)["source"]), int(os.environ.get("LILT_MAX_SOURCE_CHARS", "18000")))
+        elif args.command == "hosts": result = [{"id": h.id, "name": h.name, "show": h.show, "topic": h.topic,
+            "beat": h.beat, "delivery": h.delivery, "sign_off": h.sign_off, "voice_env": h.voice_env} for h in HOSTS.values()]
         elif args.command == "usage": result = [dict(r) for r in db.execute("SELECT day,provider,count(*) AS attempts,sum(input_tokens) AS input_tokens,sum(output_tokens) AS output_tokens FROM calls GROUP BY day,provider")]
         elif args.command == "draft": result = draft_story(db, args.id)
         elif args.command == "inspect": result = dict(row(db, args.id))

@@ -98,6 +98,7 @@ enum Episodes {
     @Published var loading = false
     @Published var following: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "following") ?? Show.all.map(\.id))
     @AppStorage("host") var hostID = "nova"
+    @AppStorage("dailyGoalMinutes") var dailyGoalMinutes = 10
     func isFollowing(_ show: Show) -> Bool { following.contains(show.id) }
     func toggleFollow(_ show: Show) {
         if following.contains(show.id) { following.remove(show.id) } else { following.insert(show.id) }

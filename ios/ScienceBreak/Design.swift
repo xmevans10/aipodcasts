@@ -93,7 +93,7 @@ struct StatTile: View {
         VStack(alignment: .leading, spacing: 10) {
             Image(systemName: symbol).font(.footnote.weight(.semibold)).foregroundStyle(Theme.secondary)
             Text(value).font(.system(size: 26, weight: .semibold, design: .rounded)).monospacedDigit().foregroundStyle(Theme.ink)
-            Text(label).font(.caption).foregroundStyle(Theme.secondary).lineLimit(2, reservesSpace: true)
+            Text(label).font(.caption).foregroundStyle(Theme.secondary).lineLimit(1).minimumScaleFactor(0.75)
         }
         .padding(14).frame(maxWidth: .infinity, alignment: .leading)
         .background(Theme.surface, in: RoundedRectangle(cornerRadius: OpenAIKit.Radius.card, style: .continuous))

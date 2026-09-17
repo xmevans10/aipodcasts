@@ -28,7 +28,9 @@ struct RootView: View {
         TabView(selection: $tab) {
             HomeView().miniPlayerInset($showPlayer).tag(0).tabItem { Label("Home", systemImage: "house") }
             BrowseView().miniPlayerInset($showPlayer).tag(1).tabItem { Label("Browse", systemImage: "square.grid.2x2") }
-            LibraryView().miniPlayerInset($showPlayer).tag(2).tabItem { Label("Library", systemImage: "books.vertical") }
+            HostsView().miniPlayerInset($showPlayer).tag(2).tabItem { Label("Hosts", systemImage: "person.2") }
+            LibraryView().miniPlayerInset($showPlayer).tag(3).tabItem { Label("Library", systemImage: "books.vertical") }
+            YouView().miniPlayerInset($showPlayer).tag(4).tabItem { Label("You", systemImage: "chart.bar") }
         }
         .onChange(of: scenePhase) { _, phase in if phase != .active { player.checkpoint() } }
         .onChange(of: library.stories) { _, stories in player.restore(stories) }
@@ -38,7 +40,9 @@ struct RootView: View {
             #if DEBUG
             let args = ProcessInfo.processInfo.arguments
             if args.contains("--browse") { tab = 1 }
-            if args.contains("--library") { library.toggle(Story.demos[0]); tab = 2 }
+            if args.contains("--hosts") { tab = 2 }
+            if args.contains("--library") { library.toggle(Story.demos[0]); tab = 3 }
+            if args.contains("--you") { tab = 4 }
             if args.contains("--player") { player.story = Story.demos[0]; showPlayer = true }
             #endif
             player.onStarted = { library.heard($0) }

@@ -144,6 +144,14 @@ import SwiftUI
         return min(0.99, max(0, seconds / max(item.durationSeconds, 1)))
     }
     func minutesLeft(of item: Story) -> Int { max(1, Int(((1 - progress(of: item)) * item.durationSeconds / 60).rounded())) }
+    func minutes(on day: Date) -> Int { Int(((listenedSeconds[Story.dayFormatter.string(from: day)] ?? 0) / 60).rounded()) }
+    var minutesToday: Int { minutes(on: .now) }
+    /// Last seven days, oldest first.
+    var week: [(day: Date, minutes: Int)] {
+        (0..<7).reversed().compactMap { offset in
+            Calendar.current.date(byAdding: .day, value: -offset, to: Calendar.current.startOfDay(for: .now))
+        }.map { ($0, minutes(on: $0)) }
+    }
     var minutesThisWeek: Int {
         let days = (0..<7).compactMap { Calendar.current.date(byAdding: .day, value: -$0, to: .now) }.map { Story.dayFormatter.string(from: $0) }
         return Int((days.reduce(0) { $0 + (listenedSeconds[$1] ?? 0) } / 60).rounded())

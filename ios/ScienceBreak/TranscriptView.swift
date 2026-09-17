@@ -39,11 +39,20 @@ struct TranscriptView: View {
                 guard following, index >= 0 else { return }
                 withAnimation(.easeInOut(duration: 0.45)) { proxy.scrollTo(index, anchor: UnitPoint(x: 0.5, y: 0.28)) }
             }
-            .onAppear { if active > 0 { proxy.scrollTo(active, anchor: UnitPoint(x: 0.5, y: 0.28)) } }
+            .onAppear {
+                // after first layout, otherwise the scroll target isn't measurable yet
+                guard active > 0 else { return }
+                Task { @MainActor in
+                    try? await Task.sleep(for: .milliseconds(150))
+                    proxy.scrollTo(active, anchor: UnitPoint(x: 0.5, y: 0.28))
+                }
+            }
             .safeAreaInset(edge: .bottom) { controls(scrollBackTo: active, proxy: proxy) }
         }
         .background(Theme.canvas)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbarBackground(Theme.canvas, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
     }
 
     private func controls(scrollBackTo active: Int, proxy: ScrollViewProxy) -> some View {

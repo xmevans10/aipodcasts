@@ -31,5 +31,5 @@ All PNGs in this folder’s sibling `design/` are captures of the compiled iOS a
 - Each host fronts a show (`Show` in Models.swift): The Long View (Mira Vale), Wild Company (Clara Rowan), Signal & Noise (Elias Reed), Common Ground (Theo Mercer). Covers are code-drawn gradients with the show's symbol and serif title (`ShowCover`).
 - Tokens (`Theme` in Design.swift): warm-neutral canvas #FAF9F6, white surfaces with #E5E2DB hairlines, ink #161614; colour lives in show covers. SF Pro for UI, New York serif for display titles, Charter for reading and read-along. Radii from OpenAIKit.
 - Home: greeting and weekly summary, continue listening, show cards, latest episodes with play-all, listening stats (minutes this week, finished, day streak; stored on device only).
-- Tabs: Home, Browse (shows + episode search), Library (following, up next, saved / in progress / played).
+- Tabs: Home, Browse (shows + episode search), Hosts (persona pages), Library (following, up next, saved / in progress / played), You (daily goal, weekly Swift Charts bar chart, totals, follow toggles, settings). The daily goal is set during onboarding and stored on device.
 - Host portraits: DiceBear "Notionists" (CC0 1.0, https://www.dicebear.com/styles/notionists/), fetched once as 256px PNGs with fixed options (hair/lips variants, no glasses/beard/gesture) and bundled as `host-<id>` assets.

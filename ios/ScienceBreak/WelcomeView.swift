@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Three short steps: what this is, which shows to follow, and a first episode.
+/// Four short steps: what this is, which shows to follow, a daily goal, and a first episode.
 struct WelcomeView: View {
     @AppStorage("onboarded") private var onboarded = false
     @EnvironmentObject private var library: Library
@@ -22,6 +22,7 @@ struct WelcomeView: View {
                     switch step {
                     case 0: intro
                     case 1: pickShows
+                    case 2: pickGoal
                     default: firstListen
                     }
                 }
@@ -47,10 +48,10 @@ struct WelcomeView: View {
             }
             Spacer()
             HStack(spacing: 6) {
-                ForEach(0..<3) { index in
+                ForEach(0..<4) { index in
                     Capsule().fill(index <= step ? Theme.ink : Theme.hairline).frame(width: index == step ? 22 : 6, height: 6)
                 }
-            }.accessibilityElement(children: .ignore).accessibilityLabel("Step \(step + 1) of 3")
+            }.accessibilityElement(children: .ignore).accessibilityLabel("Step \(step + 1) of 4")
             Spacer()
             Button("Skip") { finish(play: false) }.font(.subheadline).foregroundStyle(Theme.secondary).frame(minWidth: 44, minHeight: 44)
         }
@@ -122,6 +123,46 @@ struct WelcomeView: View {
         }
     }
 
+    private var pickGoal: some View {
+        Group {
+            title("How much, most days?")
+            Text("A small daily goal keeps the streak honest. Episodes run about three minutes, so pick what fits your walk or commute.")
+                .font(.body).foregroundStyle(Theme.secondary)
+            VStack(spacing: 10) {
+                ForEach(goalOptions, id: \.minutes) { option in
+                    let isOn = library.dailyGoalMinutes == option.minutes
+                    Button { library.dailyGoalMinutes = option.minutes } label: {
+                        HStack(spacing: 14) {
+                            Text("\(option.minutes)").font(.system(size: 20, weight: .semibold, design: .rounded)).monospacedDigit()
+                                .frame(width: 46, height: 46).background(isOn ? Theme.ink : Theme.subtle, in: Circle())
+                                .foregroundStyle(isOn ? .white : Theme.ink)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(option.title).font(.subheadline.weight(.semibold))
+                                Text(option.detail).font(.caption).foregroundStyle(Theme.secondary)
+                            }
+                            Spacer(minLength: 0)
+                            Image(systemName: isOn ? "checkmark.circle.fill" : "circle").font(.title3)
+                                .foregroundStyle(isOn ? Theme.ink : Theme.tertiary.opacity(0.5))
+                        }
+                        .padding(14)
+                        .background(Theme.surface, in: RoundedRectangle(cornerRadius: OpenAIKit.Radius.card, style: .continuous))
+                        .overlay(RoundedRectangle(cornerRadius: OpenAIKit.Radius.card, style: .continuous).strokeBorder(isOn ? Theme.ink : Theme.hairline, lineWidth: isOn ? 1.5 : 1))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("\(option.minutes) minutes a day, \(option.title)")
+                    .accessibilityAddTraits(isOn ? .isSelected : [])
+                }
+            }
+            Text("You can change this anytime in the You tab.").font(.caption).foregroundStyle(Theme.secondary)
+        }
+    }
+
+    private var goalOptions: [(minutes: Int, title: String, detail: String)] {
+        [(3, "One episode", "A single story with your coffee."),
+         (10, "A short walk", "Three episodes, most days."),
+         (20, "The commute", "A proper listening habit.")]
+    }
+
     private var firstListen: some View {
         Group {
             title("Start with this one")
@@ -148,16 +189,19 @@ struct WelcomeView: View {
         VStack(spacing: 6) {
             Button {
                 switch step {
-                case 0, 1: go(to: step + 1)
+                case 0, 1, 2: go(to: step + 1)
                 default: finish(play: firstEpisode != nil)
                 }
             } label: {
-                Text(step == 0 ? "Get started" : step == 1 ? (selected.isEmpty ? "Pick at least one show" : "Follow \(selected.count) show\(selected.count == 1 ? "" : "s")") : firstEpisode == nil ? "Go to home" : "Play episode")
+                Text(step == 0 ? "Get started"
+                     : step == 1 ? (selected.isEmpty ? "Pick at least one show" : "Follow \(selected.count) show\(selected.count == 1 ? "" : "s")")
+                     : step == 2 ? "Set \(library.dailyGoalMinutes) min a day"
+                     : firstEpisode == nil ? "Go to home" : "Play episode")
             }
             .buttonStyle(PrimaryButtonStyle(fullWidth: true))
             .disabled(step == 1 && selected.isEmpty)
             .opacity(step == 1 && selected.isEmpty ? 0.4 : 1)
-            if step == 2 && firstEpisode != nil {
+            if step == 3 && firstEpisode != nil {
                 Button("Go to home") { finish(play: false) }.font(.subheadline).foregroundStyle(Theme.secondary).frame(minHeight: 44)
             }
         }

@@ -123,10 +123,10 @@ struct HomeView: View {
     private var statsSection: some View {
         VStack(alignment: .leading, spacing: 14) {
             SectionHeader(title: "Your listening")
-            HStack(spacing: 10) {
-                StatTile(value: "\(player.minutesThisWeek)", label: "minutes this week", symbol: "headphones")
-                StatTile(value: "\(player.listening.completed.count)", label: "episodes finished", symbol: "checkmark.circle")
-                StatTile(value: "\(player.streakDays)", label: player.streakDays == 1 ? "day streak" : "day streak", symbol: "flame")
+            HStack(alignment: .top, spacing: 10) {
+                StatTile(value: "\(player.minutesThisWeek)", label: "min this week", symbol: "headphones")
+                StatTile(value: "\(player.listening.completed.count)", label: "finished", symbol: "checkmark.circle")
+                StatTile(value: "\(player.streakDays)", label: "day streak", symbol: "flame")
             }
         }
     }

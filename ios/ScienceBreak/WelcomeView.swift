@@ -224,7 +224,7 @@ struct WelcomeView: View {
                 if step < 2 { navigate(to: step + 1) } else { finish(play: firstStory != nil) }
             } label: {
                 HStack {
-                    Text(step == 0 ? "Find my frequency" : step == 1 ? "Continue with \(host.name.components(separatedBy: " ")[0])" : firstStory == nil ? "Explore ScienceBreak" : "Start my first listen")
+                    Text(step == 0 ? "Find my frequency" : step == 1 ? "Continue with \(host.name.components(separatedBy: " ")[0])" : firstStory == nil ? "Explore Sound Science" : "Start my first listen")
                     Spacer(minLength: 12)
                     Image(systemName: step == 2 && firstStory != nil ? "play.fill" : "arrow.right")
                 }.frame(maxWidth: .infinity)

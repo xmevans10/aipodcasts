@@ -1,0 +1,1765 @@
+{
+ "story": {
+  "id": "episode-clara",
+  "title": "The dolphin who lets dinner escape",
+  "dek": "One dolphin, eleven feeding events, and an unexpected way to get a meal.",
+  "topic": "NATURE",
+  "hostID": "fern",
+  "minutes": 3,
+  "body": "A dolphin chases a fish. So far, an entirely ordinary afternoon. Then the fish brings up its last meal. The dolphin eats that instead, and lets the fish swim away.\n\nAn unconventional takeaway arrangement.\n\nI'm Clara Rowan, and this is Sound Science. Today's headline: The dolphin who lets dinner escape.\n\nA paper published on September thirteenth in Ecology and Evolution describes this behaviour off Lady Elliot Island on Australia's Great Barrier Reef. Romney Edwards-Francis and colleagues call it Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin on the Great Barrier Reef. The scientific species name, Tursiops truncatus, is also in the paper's title.\n\nKleptoparasitism means taking food another animal has already acquired. The researchers' candidate is an adult male dolphin known locally as Bubbles.\n\nAcross recordings collected between twenty twenty-one and twenty twenty-five, the team documented twenty foraging records. Eleven included a feeding event: a bigeye trevally regurgitated, and the dolphin consumed the expelled food. Distinctive scars and notches in his dorsal fin helped establish that they were watching the same individual over time.\n\nThe sequence matters. Bubbles appeared to select a particular fish, pursue it, and then stop chasing when food became available. In those recorded interactions, he wasn't observed eating the trevally itself. Sometimes the process repeated: the dolphin returned to the school and began again.\n\nThat makes this more interesting than an animal simply encountering somebody else's leftovers. The observations suggest a repeated feeding tactic. The team also recorded clicks and lower-frequency sounds during pursuit, raising questions about whether sound helps the dolphin select or pressure a fish.\n\nBut here's where the story needs its brakes. This is one dolphin, observed opportunistically, not a controlled experiment. The recordings don't establish that sound causes regurgitation, that Bubbles can detect a fish's stomach contents, or that stealing this way saves energy. The researchers suggest those possibilities; they haven't demonstrated them. We also don't know how common this tactic is among other dolphins.\n\nEven with those limits, there's something wonderful here: careful observation of an individual can uncover behaviour we weren't looking for.\n\nCalling Bubbles a thief is our shorthand, of course. It's not a moral judgement, and it doesn't tell us what he's thinking. What we can see is a predator repeatedly getting food in an unexpected way.\n\nSometimes the interesting question isn't whether the fish gets away. It's what the dolphin was chasing in the first place.\n\nI'm Clara Rowan. There's always more going on. Sources and full author credits accompany this episode. Your host and narration are AI-generated.",
+  "caveat": "AI-assisted preview episode. Sources checked by the assistant; independent editorial approval is still pending. Host and narration are AI-generated.",
+  "sources": [
+   {
+    "title": "Repeated Observations Suggesting Kleptoparasitism by a Common Bottlenose Dolphin (\n                    Tursiops truncatus\n                    ) on the Great Barrier Reef",
+    "url": "https://doi.org/10.1002/ece3.74270",
+    "attribution": "Romney Edwards‐Francis, Jeremy J. Kiszka, Michael Ingram, Pieter Demmers, Jacinta Shackleton, Eric A. Ramos, Asia O. Armstrong",
+    "license": "CC BY 4.0"
+   }
+  ],
+  "audioURL": "bundle:clara.m4a",
+  "isDemo": false
+ },
+ "duration": 198.8,
+ "transcript": [
+  {
+   "words": [
+    {
+     "text": "A",
+     "start": 9.46
+    },
+    {
+     "text": "dolphin",
+     "start": 9.64
+    },
+    {
+     "text": "chases",
+     "start": 10.14
+    },
+    {
+     "text": "a",
+     "start": 10.58
+    },
+    {
+     "text": "fish.",
+     "start": 10.72
+    },
+    {
+     "text": "So",
+     "start": 11.9
+    },
+    {
+     "text": "far,",
+     "start": 12.12
+    },
+    {
+     "text": "an",
+     "start": 12.42
+    },
+    {
+     "text": "entirely",
+     "start": 12.54
+    },
+    {
+     "text": "ordinary",
+     "start": 13.14
+    },
+    {
+     "text": "afternoon.",
+     "start": 13.62
+    },
+    {
+     "text": "Then",
+     "start": 15.22
+    },
+    {
+     "text": "the",
+     "start": 15.4
+    },
+    {
+     "text": "fish",
+     "start": 15.56
+    },
+    {
+     "text": "brings",
+     "start": 15.88
+    },
+    {
+     "text": "up",
+     "start": 16.2
+    },
+    {
+     "text": "its",
+     "start": 16.34
+    },
+    {
+     "text": "last",
+     "start": 16.56
+    },
+    {
+     "text": "meal.",
+     "start": 16.94
+    },
+    {
+     "text": "The",
+     "start": 17.94
+    },
+    {
+     "text": "dolphin",
+     "start": 18.06
+    },
+    {
+     "text": "eats",
+     "start": 18.46
+    },
+    {
+     "text": "that",
+     "start": 18.72
+    },
+    {
+     "text": "instead,",
+     "start": 18.94
+    },
+    {
+     "text": "and",
+     "start": 19.92
+    },
+    {
+     "text": "lets",
+     "start": 20.08
+    },
+    {
+     "text": "the",
+     "start": 20.34
+    },
+    {
+     "text": "fish",
+     "start": 20.52
+    },
+    {
+     "text": "swim",
+     "start": 20.82
+    },
+    {
+     "text": "away.",
+     "start": 21.06
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "An",
+     "start": 22.6
+    },
+    {
+     "text": "unconventional",
+     "start": 22.84
+    },
+    {
+     "text": "takeaway",
+     "start": 23.72
+    },
+    {
+     "text": "arrangement.",
+     "start": 24.16
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "I'm",
+     "start": 25.98
+    },
+    {
+     "text": "Clara",
+     "start": 26.18
+    },
+    {
+     "text": "Rowan,",
+     "start": 26.52
+    },
+    {
+     "text": "and",
+     "start": 26.94
+    },
+    {
+     "text": "this",
+     "start": 27.14
+    },
+    {
+     "text": "is",
+     "start": 27.58
+    },
+    {
+     "text": "Sound",
+     "start": 27.8
+    },
+    {
+     "text": "Science.",
+     "start": 28.2
+    },
+    {
+     "text": "Today's",
+     "start": 29.3
+    },
+    {
+     "text": "headline:",
+     "start": 29.64
+    },
+    {
+     "text": "The",
+     "start": 30.52
+    },
+    {
+     "text": "dolphin",
+     "start": 30.7
+    },
+    {
+     "text": "who",
+     "start": 31.22
+    },
+    {
+     "text": "lets",
+     "start": 31.42
+    },
+    {
+     "text": "dinner",
+     "start": 31.78
+    },
+    {
+     "text": "escape.",
+     "start": 32.16
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "A",
+     "start": 33.7
+    },
+    {
+     "text": "paper",
+     "start": 33.82
+    },
+    {
+     "text": "published",
+     "start": 34.16
+    },
+    {
+     "text": "on",
+     "start": 34.58
+    },
+    {
+     "text": "September",
+     "start": 34.74
+    },
+    {
+     "text": "thirteenth",
+     "start": 35.24
+    },
+    {
+     "text": "in",
+     "start": 35.9
+    },
+    {
+     "text": "Ecology",
+     "start": 36.1
+    },
+    {
+     "text": "and",
+     "start": 36.74
+    },
+    {
+     "text": "Evolution",
+     "start": 36.88
+    },
+    {
+     "text": "describes",
+     "start": 37.9
+    },
+    {
+     "text": "this",
+     "start": 38.48
+    },
+    {
+     "text": "behaviour",
+     "start": 38.66
+    },
+    {
+     "text": "off",
+     "start": 39.26
+    },
+    {
+     "text": "Lady",
+     "start": 39.56
+    },
+    {
+     "text": "Elliot",
+     "start": 39.96
+    },
+    {
+     "text": "Island",
+     "start": 40.42
+    },
+    {
+     "text": "on",
+     "start": 41.16
+    },
+    {
+     "text": "Australia's",
+     "start": 41.28
+    },
+    {
+     "text": "Great",
+     "start": 41.96
+    },
+    {
+     "text": "Barrier",
+     "start": 42.24
+    },
+    {
+     "text": "Reef.",
+     "start": 42.66
+    },
+    {
+     "text": "Romney",
+     "start": 44.04
+    },
+    {
+     "text": "Edwards-Francis",
+     "start": 44.54
+    },
+    {
+     "text": "and",
+     "start": 45.52
+    },
+    {
+     "text": "colleagues",
+     "start": 45.68
+    },
+    {
+     "text": "call",
+     "start": 46.22
+    },
+    {
+     "text": "it",
+     "start": 46.48
+    },
+    {
+     "text": "Repeated",
+     "start": 47.16
+    },
+    {
+     "text": "Observations",
+     "start": 47.82
+    },
+    {
+     "text": "Suggesting",
+     "start": 48.66
+    },
+    {
+     "text": "Kleptoparasitism",
+     "start": 49.34
+    },
+    {
+     "text": "by",
+     "start": 50.98
+    },
+    {
+     "text": "a",
+     "start": 51.14
+    },
+    {
+     "text": "Common",
+     "start": 51.28
+    },
+    {
+     "text": "Bottlenose",
+     "start": 51.8
+    },
+    {
+     "text": "Dolphin",
+     "start": 52.42
+    },
+    {
+     "text": "on",
+     "start": 52.98
+    },
+    {
+     "text": "the",
+     "start": 53.1
+    },
+    {
+     "text": "Great",
+     "start": 53.2
+    },
+    {
+     "text": "Barrier",
+     "start": 53.5
+    },
+    {
+     "text": "Reef.",
+     "start": 53.92
+    },
+    {
+     "text": "The",
+     "start": 55.2
+    },
+    {
+     "text": "scientific",
+     "start": 55.36
+    },
+    {
+     "text": "species",
+     "start": 56.06
+    },
+    {
+     "text": "name,",
+     "start": 56.52
+    },
+    {
+     "text": "Tursiops",
+     "start": 57.3
+    },
+    {
+     "text": "truncatus,",
+     "start": 58.02
+    },
+    {
+     "text": "is",
+     "start": 59.2
+    },
+    {
+     "text": "also",
+     "start": 59.46
+    },
+    {
+     "text": "in",
+     "start": 59.8
+    },
+    {
+     "text": "the",
+     "start": 59.9
+    },
+    {
+     "text": "paper's",
+     "start": 60.0
+    },
+    {
+     "text": "title.",
+     "start": 60.4
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "Kleptoparasitism",
+     "start": 61.26
+    },
+    {
+     "text": "means",
+     "start": 62.52
+    },
+    {
+     "text": "taking",
+     "start": 62.92
+    },
+    {
+     "text": "food",
+     "start": 63.38
+    },
+    {
+     "text": "another",
+     "start": 63.62
+    },
+    {
+     "text": "animal",
+     "start": 64.0
+    },
+    {
+     "text": "has",
+     "start": 64.4
+    },
+    {
+     "text": "already",
+     "start": 64.58
+    },
+    {
+     "text": "acquired.",
+     "start": 64.94
+    },
+    {
+     "text": "The",
+     "start": 66.22
+    },
+    {
+     "text": "researchers'",
+     "start": 66.34
+    },
+    {
+     "text": "candidate",
+     "start": 66.94
+    },
+    {
+     "text": "is",
+     "start": 67.5
+    },
+    {
+     "text": "an",
+     "start": 67.6
+    },
+    {
+     "text": "adult",
+     "start": 67.7
+    },
+    {
+     "text": "male",
+     "start": 68.1
+    },
+    {
+     "text": "dolphin",
+     "start": 68.36
+    },
+    {
+     "text": "known",
+     "start": 68.82
+    },
+    {
+     "text": "locally",
+     "start": 69.08
+    },
+    {
+     "text": "as",
+     "start": 69.66
+    },
+    {
+     "text": "Bubbles.",
+     "start": 69.84
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "Across",
+     "start": 71.22
+    },
+    {
+     "text": "recordings",
+     "start": 71.62
+    },
+    {
+     "text": "collected",
+     "start": 72.18
+    },
+    {
+     "text": "between",
+     "start": 72.62
+    },
+    {
+     "text": "twenty",
+     "start": 73.04
+    },
+    {
+     "text": "twenty-one",
+     "start": 73.38
+    },
+    {
+     "text": "and",
+     "start": 74.0
+    },
+    {
+     "text": "twenty",
+     "start": 74.16
+    },
+    {
+     "text": "twenty-five,",
+     "start": 74.48
+    },
+    {
+     "text": "the",
+     "start": 75.64
+    },
+    {
+     "text": "team",
+     "start": 75.78
+    },
+    {
+     "text": "documented",
+     "start": 76.04
+    },
+    {
+     "text": "twenty",
+     "start": 76.76
+    },
+    {
+     "text": "foraging",
+     "start": 77.22
+    },
+    {
+     "text": "records.",
+     "start": 77.68
+    },
+    {
+     "text": "Eleven",
+     "start": 79.0
+    },
+    {
+     "text": "included",
+     "start": 79.46
+    },
+    {
+     "text": "a",
+     "start": 79.9
+    },
+    {
+     "text": "feeding",
+     "start": 80.04
+    },
+    {
+     "text": "event:",
+     "start": 80.34
+    },
+    {
+     "text": "a",
+     "start": 81.38
+    },
+    {
+     "text": "bigeye",
+     "start": 81.52
+    },
+    {
+     "text": "trevally",
+     "start": 81.96
+    },
+    {
+     "text": "regurgitated,",
+     "start": 82.56
+    },
+    {
+     "text": "and",
+     "start": 83.84
+    },
+    {
+     "text": "the",
+     "start": 83.96
+    },
+    {
+     "text": "dolphin",
+     "start": 84.06
+    },
+    {
+     "text": "consumed",
+     "start": 84.52
+    },
+    {
+     "text": "the",
+     "start": 85.1
+    },
+    {
+     "text": "expelled",
+     "start": 85.22
+    },
+    {
+     "text": "food.",
+     "start": 85.74
+    },
+    {
+     "text": "Distinctive",
+     "start": 87.04
+    },
+    {
+     "text": "scars",
+     "start": 87.66
+    },
+    {
+     "text": "and",
+     "start": 88.08
+    },
+    {
+     "text": "notches",
+     "start": 88.24
+    },
+    {
+     "text": "in",
+     "start": 88.7
+    },
+    {
+     "text": "his",
+     "start": 88.82
+    },
+    {
+     "text": "dorsal",
+     "start": 89.02
+    },
+    {
+     "text": "fin",
+     "start": 89.46
+    },
+    {
+     "text": "helped",
+     "start": 90.06
+    },
+    {
+     "text": "establish",
+     "start": 90.3
+    },
+    {
+     "text": "that",
+     "start": 90.88
+    },
+    {
+     "text": "they",
+     "start": 91.0
+    },
+    {
+     "text": "were",
+     "start": 91.14
+    },
+    {
+     "text": "watching",
+     "start": 91.3
+    },
+    {
+     "text": "the",
+     "start": 91.66
+    },
+    {
+     "text": "same",
+     "start": 91.86
+    },
+    {
+     "text": "individual",
+     "start": 92.1
+    },
+    {
+     "text": "over",
+     "start": 92.68
+    },
+    {
+     "text": "time.",
+     "start": 92.92
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "The",
+     "start": 94.28
+    },
+    {
+     "text": "sequence",
+     "start": 94.44
+    },
+    {
+     "text": "matters.",
+     "start": 94.96
+    },
+    {
+     "text": "Bubbles",
+     "start": 96.32
+    },
+    {
+     "text": "appeared",
+     "start": 96.7
+    },
+    {
+     "text": "to",
+     "start": 97.04
+    },
+    {
+     "text": "select",
+     "start": 97.2
+    },
+    {
+     "text": "a",
+     "start": 97.58
+    },
+    {
+     "text": "particular",
+     "start": 97.66
+    },
+    {
+     "text": "fish,",
+     "start": 98.26
+    },
+    {
+     "text": "pursue",
+     "start": 98.96
+    },
+    {
+     "text": "it,",
+     "start": 99.4
+    },
+    {
+     "text": "and",
+     "start": 100.08
+    },
+    {
+     "text": "then",
+     "start": 100.2
+    },
+    {
+     "text": "stop",
+     "start": 100.46
+    },
+    {
+     "text": "chasing",
+     "start": 100.72
+    },
+    {
+     "text": "when",
+     "start": 101.14
+    },
+    {
+     "text": "food",
+     "start": 101.4
+    },
+    {
+     "text": "became",
+     "start": 101.6
+    },
+    {
+     "text": "available.",
+     "start": 101.94
+    },
+    {
+     "text": "In",
+     "start": 103.42
+    },
+    {
+     "text": "those",
+     "start": 103.56
+    },
+    {
+     "text": "recorded",
+     "start": 103.8
+    },
+    {
+     "text": "interactions,",
+     "start": 104.28
+    },
+    {
+     "text": "he",
+     "start": 105.44
+    },
+    {
+     "text": "wasn't",
+     "start": 105.58
+    },
+    {
+     "text": "observed",
+     "start": 105.92
+    },
+    {
+     "text": "eating",
+     "start": 106.4
+    },
+    {
+     "text": "the",
+     "start": 106.66
+    },
+    {
+     "text": "trevally",
+     "start": 106.78
+    },
+    {
+     "text": "itself.",
+     "start": 107.28
+    },
+    {
+     "text": "Sometimes",
+     "start": 108.82
+    },
+    {
+     "text": "the",
+     "start": 109.28
+    },
+    {
+     "text": "process",
+     "start": 109.4
+    },
+    {
+     "text": "repeated:",
+     "start": 109.88
+    },
+    {
+     "text": "the",
+     "start": 110.98
+    },
+    {
+     "text": "dolphin",
+     "start": 111.1
+    },
+    {
+     "text": "returned",
+     "start": 111.48
+    },
+    {
+     "text": "to",
+     "start": 111.86
+    },
+    {
+     "text": "the",
+     "start": 111.96
+    },
+    {
+     "text": "school",
+     "start": 112.12
+    },
+    {
+     "text": "and",
+     "start": 112.56
+    },
+    {
+     "text": "began",
+     "start": 112.68
+    },
+    {
+     "text": "again.",
+     "start": 113.04
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "That",
+     "start": 114.42
+    },
+    {
+     "text": "makes",
+     "start": 114.62
+    },
+    {
+     "text": "this",
+     "start": 114.88
+    },
+    {
+     "text": "more",
+     "start": 115.12
+    },
+    {
+     "text": "interesting",
+     "start": 115.32
+    },
+    {
+     "text": "than",
+     "start": 115.84
+    },
+    {
+     "text": "an",
+     "start": 115.98
+    },
+    {
+     "text": "animal",
+     "start": 116.14
+    },
+    {
+     "text": "simply",
+     "start": 116.54
+    },
+    {
+     "text": "encountering",
+     "start": 116.88
+    },
+    {
+     "text": "somebody",
+     "start": 117.64
+    },
+    {
+     "text": "else's",
+     "start": 118.0
+    },
+    {
+     "text": "leftovers.",
+     "start": 118.36
+    },
+    {
+     "text": "The",
+     "start": 119.98
+    },
+    {
+     "text": "observations",
+     "start": 120.14
+    },
+    {
+     "text": "suggest",
+     "start": 120.9
+    },
+    {
+     "text": "a",
+     "start": 121.38
+    },
+    {
+     "text": "repeated",
+     "start": 121.44
+    },
+    {
+     "text": "feeding",
+     "start": 122.04
+    },
+    {
+     "text": "tactic.",
+     "start": 122.38
+    },
+    {
+     "text": "The",
+     "start": 123.78
+    },
+    {
+     "text": "team",
+     "start": 123.92
+    },
+    {
+     "text": "also",
+     "start": 124.22
+    },
+    {
+     "text": "recorded",
+     "start": 124.52
+    },
+    {
+     "text": "clicks",
+     "start": 125.08
+    },
+    {
+     "text": "and",
+     "start": 125.52
+    },
+    {
+     "text": "lower-frequency",
+     "start": 125.7
+    },
+    {
+     "text": "sounds",
+     "start": 126.58
+    },
+    {
+     "text": "during",
+     "start": 126.94
+    },
+    {
+     "text": "pursuit,",
+     "start": 127.2
+    },
+    {
+     "text": "raising",
+     "start": 128.3
+    },
+    {
+     "text": "questions",
+     "start": 128.68
+    },
+    {
+     "text": "about",
+     "start": 129.18
+    },
+    {
+     "text": "whether",
+     "start": 129.42
+    },
+    {
+     "text": "sound",
+     "start": 129.78
+    },
+    {
+     "text": "helps",
+     "start": 130.14
+    },
+    {
+     "text": "the",
+     "start": 130.4
+    },
+    {
+     "text": "dolphin",
+     "start": 130.52
+    },
+    {
+     "text": "select",
+     "start": 130.98
+    },
+    {
+     "text": "or",
+     "start": 131.64
+    },
+    {
+     "text": "pressure",
+     "start": 131.86
+    },
+    {
+     "text": "a",
+     "start": 132.28
+    },
+    {
+     "text": "fish.",
+     "start": 132.42
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "But",
+     "start": 135.2
+    },
+    {
+     "text": "here's",
+     "start": 135.32
+    },
+    {
+     "text": "where",
+     "start": 135.56
+    },
+    {
+     "text": "the",
+     "start": 135.7
+    },
+    {
+     "text": "story",
+     "start": 135.82
+    },
+    {
+     "text": "needs",
+     "start": 136.14
+    },
+    {
+     "text": "its",
+     "start": 136.34
+    },
+    {
+     "text": "brakes.",
+     "start": 136.52
+    },
+    {
+     "text": "This",
+     "start": 137.66
+    },
+    {
+     "text": "is",
+     "start": 137.84
+    },
+    {
+     "text": "one",
+     "start": 138.14
+    },
+    {
+     "text": "dolphin,",
+     "start": 138.36
+    },
+    {
+     "text": "observed",
+     "start": 139.04
+    },
+    {
+     "text": "opportunistically,",
+     "start": 139.5
+    },
+    {
+     "text": "not",
+     "start": 140.56
+    },
+    {
+     "text": "a",
+     "start": 140.84
+    },
+    {
+     "text": "controlled",
+     "start": 140.92
+    },
+    {
+     "text": "experiment.",
+     "start": 141.36
+    },
+    {
+     "text": "The",
+     "start": 142.84
+    },
+    {
+     "text": "recordings",
+     "start": 142.94
+    },
+    {
+     "text": "don't",
+     "start": 143.48
+    },
+    {
+     "text": "establish",
+     "start": 143.64
+    },
+    {
+     "text": "that",
+     "start": 144.16
+    },
+    {
+     "text": "sound",
+     "start": 144.38
+    },
+    {
+     "text": "causes",
+     "start": 144.74
+    },
+    {
+     "text": "regurgitation,",
+     "start": 145.1
+    },
+    {
+     "text": "that",
+     "start": 146.38
+    },
+    {
+     "text": "Bubbles",
+     "start": 146.54
+    },
+    {
+     "text": "can",
+     "start": 146.92
+    },
+    {
+     "text": "detect",
+     "start": 147.04
+    },
+    {
+     "text": "a",
+     "start": 147.4
+    },
+    {
+     "text": "fish's",
+     "start": 147.5
+    },
+    {
+     "text": "stomach",
+     "start": 147.86
+    },
+    {
+     "text": "contents,",
+     "start": 148.16
+    },
+    {
+     "text": "or",
+     "start": 149.22
+    },
+    {
+     "text": "that",
+     "start": 149.42
+    },
+    {
+     "text": "stealing",
+     "start": 149.64
+    },
+    {
+     "text": "this",
+     "start": 149.98
+    },
+    {
+     "text": "way",
+     "start": 150.16
+    },
+    {
+     "text": "saves",
+     "start": 150.4
+    },
+    {
+     "text": "energy.",
+     "start": 150.68
+    },
+    {
+     "text": "The",
+     "start": 152.12
+    },
+    {
+     "text": "researchers",
+     "start": 152.22
+    },
+    {
+     "text": "suggest",
+     "start": 152.78
+    },
+    {
+     "text": "those",
+     "start": 153.18
+    },
+    {
+     "text": "possibilities;",
+     "start": 153.4
+    },
+    {
+     "text": "they",
+     "start": 154.7
+    },
+    {
+     "text": "haven't",
+     "start": 154.82
+    },
+    {
+     "text": "demonstrated",
+     "start": 155.08
+    },
+    {
+     "text": "them.",
+     "start": 155.68
+    },
+    {
+     "text": "We",
+     "start": 156.78
+    },
+    {
+     "text": "also",
+     "start": 156.92
+    },
+    {
+     "text": "don't",
+     "start": 157.18
+    },
+    {
+     "text": "know",
+     "start": 157.34
+    },
+    {
+     "text": "how",
+     "start": 157.52
+    },
+    {
+     "text": "common",
+     "start": 157.72
+    },
+    {
+     "text": "this",
+     "start": 158.08
+    },
+    {
+     "text": "tactic",
+     "start": 158.26
+    },
+    {
+     "text": "is",
+     "start": 158.66
+    },
+    {
+     "text": "among",
+     "start": 158.78
+    },
+    {
+     "text": "other",
+     "start": 159.06
+    },
+    {
+     "text": "dolphins.",
+     "start": 159.26
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "Even",
+     "start": 160.8
+    },
+    {
+     "text": "with",
+     "start": 161.04
+    },
+    {
+     "text": "those",
+     "start": 161.2
+    },
+    {
+     "text": "limits,",
+     "start": 161.46
+    },
+    {
+     "text": "there's",
+     "start": 162.04
+    },
+    {
+     "text": "something",
+     "start": 162.26
+    },
+    {
+     "text": "wonderful",
+     "start": 162.7
+    },
+    {
+     "text": "here:",
+     "start": 163.24
+    },
+    {
+     "text": "careful",
+     "start": 164.4
+    },
+    {
+     "text": "observation",
+     "start": 164.84
+    },
+    {
+     "text": "of",
+     "start": 165.46
+    },
+    {
+     "text": "an",
+     "start": 165.54
+    },
+    {
+     "text": "individual",
+     "start": 165.66
+    },
+    {
+     "text": "can",
+     "start": 166.3
+    },
+    {
+     "text": "uncover",
+     "start": 166.5
+    },
+    {
+     "text": "behaviour",
+     "start": 166.92
+    },
+    {
+     "text": "we",
+     "start": 167.38
+    },
+    {
+     "text": "weren't",
+     "start": 167.54
+    },
+    {
+     "text": "looking",
+     "start": 167.78
+    },
+    {
+     "text": "for.",
+     "start": 168.12
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "Calling",
+     "start": 169.14
+    },
+    {
+     "text": "Bubbles",
+     "start": 169.5
+    },
+    {
+     "text": "a",
+     "start": 169.86
+    },
+    {
+     "text": "thief",
+     "start": 169.98
+    },
+    {
+     "text": "is",
+     "start": 170.44
+    },
+    {
+     "text": "our",
+     "start": 170.58
+    },
+    {
+     "text": "shorthand,",
+     "start": 170.74
+    },
+    {
+     "text": "of",
+     "start": 171.22
+    },
+    {
+     "text": "course.",
+     "start": 171.34
+    },
+    {
+     "text": "It's",
+     "start": 172.12
+    },
+    {
+     "text": "not",
+     "start": 172.28
+    },
+    {
+     "text": "a",
+     "start": 172.44
+    },
+    {
+     "text": "moral",
+     "start": 172.62
+    },
+    {
+     "text": "judgement,",
+     "start": 172.98
+    },
+    {
+     "text": "and",
+     "start": 173.76
+    },
+    {
+     "text": "it",
+     "start": 173.88
+    },
+    {
+     "text": "doesn't",
+     "start": 173.98
+    },
+    {
+     "text": "tell",
+     "start": 174.26
+    },
+    {
+     "text": "us",
+     "start": 174.46
+    },
+    {
+     "text": "what",
+     "start": 174.62
+    },
+    {
+     "text": "he's",
+     "start": 174.76
+    },
+    {
+     "text": "thinking.",
+     "start": 174.96
+    },
+    {
+     "text": "What",
+     "start": 176.34
+    },
+    {
+     "text": "we",
+     "start": 176.48
+    },
+    {
+     "text": "can",
+     "start": 176.68
+    },
+    {
+     "text": "see",
+     "start": 177.02
+    },
+    {
+     "text": "is",
+     "start": 177.28
+    },
+    {
+     "text": "a",
+     "start": 177.4
+    },
+    {
+     "text": "predator",
+     "start": 177.56
+    },
+    {
+     "text": "repeatedly",
+     "start": 178.08
+    },
+    {
+     "text": "getting",
+     "start": 178.76
+    },
+    {
+     "text": "food",
+     "start": 179.16
+    },
+    {
+     "text": "in",
+     "start": 179.54
+    },
+    {
+     "text": "an",
+     "start": 179.64
+    },
+    {
+     "text": "unexpected",
+     "start": 179.82
+    },
+    {
+     "text": "way.",
+     "start": 180.48
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "Sometimes",
+     "start": 181.88
+    },
+    {
+     "text": "the",
+     "start": 182.32
+    },
+    {
+     "text": "interesting",
+     "start": 182.46
+    },
+    {
+     "text": "question",
+     "start": 182.9
+    },
+    {
+     "text": "isn't",
+     "start": 183.4
+    },
+    {
+     "text": "whether",
+     "start": 183.66
+    },
+    {
+     "text": "the",
+     "start": 183.92
+    },
+    {
+     "text": "fish",
+     "start": 184.06
+    },
+    {
+     "text": "gets",
+     "start": 184.32
+    },
+    {
+     "text": "away.",
+     "start": 184.54
+    },
+    {
+     "text": "It's",
+     "start": 185.54
+    },
+    {
+     "text": "what",
+     "start": 185.7
+    },
+    {
+     "text": "the",
+     "start": 185.88
+    },
+    {
+     "text": "dolphin",
+     "start": 186.0
+    },
+    {
+     "text": "was",
+     "start": 186.38
+    },
+    {
+     "text": "chasing",
+     "start": 186.56
+    },
+    {
+     "text": "in",
+     "start": 186.92
+    },
+    {
+     "text": "the",
+     "start": 187.02
+    },
+    {
+     "text": "first",
+     "start": 187.14
+    },
+    {
+     "text": "place.",
+     "start": 187.4
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "I'm",
+     "start": 188.88
+    },
+    {
+     "text": "Clara",
+     "start": 189.04
+    },
+    {
+     "text": "Rowan.",
+     "start": 189.38
+    },
+    {
+     "text": "There's",
+     "start": 190.44
+    },
+    {
+     "text": "always",
+     "start": 190.66
+    },
+    {
+     "text": "more",
+     "start": 190.98
+    },
+    {
+     "text": "going",
+     "start": 191.18
+    },
+    {
+     "text": "on.",
+     "start": 191.5
+    },
+    {
+     "text": "Sources",
+     "start": 192.76
+    },
+    {
+     "text": "and",
+     "start": 193.2
+    },
+    {
+     "text": "full",
+     "start": 193.46
+    },
+    {
+     "text": "author",
+     "start": 193.78
+    },
+    {
+     "text": "credits",
+     "start": 194.1
+    },
+    {
+     "text": "accompany",
+     "start": 194.5
+    },
+    {
+     "text": "this",
+     "start": 194.96
+    },
+    {
+     "text": "episode.",
+     "start": 195.16
+    },
+    {
+     "text": "Your",
+     "start": 196.22
+    },
+    {
+     "text": "host",
+     "start": 196.38
+    },
+    {
+     "text": "and",
+     "start": 196.7
+    },
+    {
+     "text": "narration",
+     "start": 196.84
+    },
+    {
+     "text": "are",
+     "start": 197.5
+    },
+    {
+     "text": "AI-generated.",
+     "start": 197.76
+    }
+   ]
+  }
+ ]
+}

@@ -20,7 +20,9 @@ import SwiftUI
     private var observer: Any?
     private var endObserver: NSObjectProtocol?
     private var sleepTask: Task<Void, Never>?
+    private var lastCheckpointAt = 0.0
     var isPreview: Bool { story?.audioURL == nil }
+    var hasLoadedAudio: Bool { player != nil }
     override init() {
         super.init(); speech.delegate = self
         if let data = UserDefaults.standard.data(forKey: "listeningState"), let stored = try? JSONDecoder().decode(ListeningState.self, from: data) { listening = stored }
@@ -81,14 +83,14 @@ import SwiftUI
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
             try AVAudioSession.sharedInstance().setActive(true)
         } catch { message = "Audio couldn't start. Please try again."; playing = false; return }
-        if let raw = item.audioURL, let url = URL(string: raw), url.scheme == "https" {
+        if let raw = item.audioURL, let url = Self.resolve(raw) {
             let av = AVPlayer(url: url); player = av
             if resumePosition > 0 { av.seek(to: CMTime(seconds: resumePosition, preferredTimescale: 600)) }
-            observer = av.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.5, preferredTimescale: 600), queue: .main) { [weak self] time in
+            observer = av.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.1, preferredTimescale: 600), queue: .main) { [weak self] time in
                 Task { @MainActor in
                     guard let self, self.story?.id == item.id else { return }
                     self.position = time.seconds.isFinite ? time.seconds : 0
-                    if Int(self.position) % 5 == 0 { self.checkpoint() }
+                    if abs(self.position - self.lastCheckpointAt) >= 5 { self.lastCheckpointAt = self.position; self.checkpoint() }
                     if let seconds = self.player?.currentItem?.duration.seconds, seconds.isFinite, seconds > 0 { self.duration = seconds }
                     if self.player?.currentItem?.status == .failed { self.message = "This audio is unavailable. You can still read the story."; self.playing = false }
                 }
@@ -108,6 +110,15 @@ import SwiftUI
         } else { message = "Narration is not ready yet. You can still read this story."; playing = false; return }
         playing = true; onStarted?(item)
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [MPMediaItemPropertyTitle: item.title, MPMediaItemPropertyArtist: "Sound Science · \(item.host.name)"]
+    }
+    /// Remote audio must be HTTPS; `bundle:name.ext` plays a file shipped with the app.
+    static func resolve(_ raw: String) -> URL? {
+        if raw.hasPrefix("bundle:") {
+            let file = String(raw.dropFirst("bundle:".count)) as NSString
+            return Bundle.main.url(forResource: file.deletingPathExtension, withExtension: file.pathExtension)
+        }
+        guard let url = URL(string: raw), url.scheme == "https" else { return nil }
+        return url
     }
     func pause() { player?.pause(); speech.pauseSpeaking(at: .immediate); playing = false; checkpoint() }
     func resume() {

@@ -36,3 +36,7 @@ This is a runnable product demo and tested backend foundation, **not a deployed 
 ## Voiced episodes (private preview)
 
 Three directed episodes are in [`demos/three-hosts-2026-09-17`](demos/three-hosts-2026-09-17) (`mira.m4a`, `clara.m4a`, `elias.m4a`; open `index.html` to listen). Voices were cast from a 19-voice Eleven v3 audition ([`backend/evals/voices`](backend/evals/voices)). [`backend/produce.py`](backend/produce.py) synthesizes one directed section at a time, caches by content hash so unchanged lines are never re-bought, and mixes locally (intro jingle, transition sting, loudness). [`backend/evals/qa_episodes.py`](backend/evals/qa_episodes.py) transcribes each episode back and diffs it against the script. Human listening and editorial approval are still pending.
+
+## In the app
+
+The three voiced episodes ship inside the app (`ios/ScienceBreak/Episodes`, built by [`backend/bundle_episodes.py`](backend/bundle_episodes.py)) and replace the earlier device-voice demos for Mira, Clara and Elias; Theo keeps a device-voice demo. From the player, **Read along** opens a transcript set in Charter that highlights each word as it is spoken, follows the narrator and plays from any tapped paragraph. Word timings come from ElevenLabs Scribe on the final mix, aligned onto the reviewed script text.

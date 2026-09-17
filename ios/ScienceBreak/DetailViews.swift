@@ -33,7 +33,7 @@ struct ArticleView: View {
                         Text(source.license).font(.caption).foregroundStyle(ScienceBreak.muted)
                     }.padding(.vertical, 6)
                 }
-                Text(story.isDemo ? "An original demonstration, with background links. Not current science news or a journal summary." : "Adapted with AI assistance and reviewed before publication. Narrated by a synthetic voice.").font(.caption).foregroundStyle(ScienceBreak.muted)
+                Text(story.isDemo ? "An original demonstration, with background links. Not current science news or a journal summary." : "Adapted with AI assistance and narrated by a synthetic voice. See the note below on review status.").font(.caption).foregroundStyle(ScienceBreak.muted)
                 ShareLink(item: story.title + " — Explore the science with Sound Science.") { Label("Share this idea", systemImage: "square.and.arrow.up") }.buttonStyle(CapsuleButton())
             }.padding(22)
         }.background(ScienceBreak.paper).navigationBarTitleDisplayMode(.inline)
@@ -52,6 +52,11 @@ struct PlayerView: View {
                         OrbitalArt(hue: story.host.hue).frame(height: 300).clipShape(RoundedRectangle(cornerRadius: 30))
                         Text(story.title).font(.system(size: 32, design: .serif)).multilineTextAlignment(.center)
                         Label("\(story.host.name) · \(story.host.niche)", systemImage: story.host.symbol).font(.subheadline).foregroundStyle(ScienceBreak.muted)
+                        if let transcript = Episodes.transcript(for: story.id) {
+                            NavigationLink { TranscriptView(story: story, paragraphs: transcript) } label: {
+                                Label("Read along", systemImage: "text.quote").font(.subheadline.weight(.semibold)).padding(.horizontal, 18).frame(height: 40).background(ScienceBreak.acid, in: Capsule())
+                            }.foregroundStyle(ScienceBreak.ink)
+                        }
                         if !player.isPreview {
                             Slider(value: Binding(get: { min(player.position, player.duration) }, set: { player.seek($0) }), in: 0...max(player.duration, 1)).accessibilityLabel("Playback position")
                             HStack { Text(clock(player.position)); Spacer(); Text(clock(player.duration)) }.font(.caption.monospacedDigit())

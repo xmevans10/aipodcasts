@@ -1,0 +1,1793 @@
+{
+ "story": {
+  "id": "episode-elias",
+  "title": "Your breath has a volume knob",
+  "dek": "The neural circuitry that may make a mosquito take notice.",
+  "topic": "NEUROSCIENCE",
+  "hostID": "ada",
+  "minutes": 3,
+  "body": "To you, an exhaled breath is barely an event. To a mosquito, its carbon dioxide can be a useful clue that a potential meal is nearby. The interesting question is how that signal gets through a world full of other smells.\n\nI'm Elias Reed. This is Sound Science, and today's headline is: Your breath has a volume knob.\n\nThat's a metaphor. The volume knob is in the mosquito's neural circuitry.\n\nJialu Bao, Wesley Alford and colleagues describe the work in PLOS Biology, published September tenth. Their paper is called Recurrent synapses between carbon dioxide-sensitive olfactory sensory neurons enable robust carbon dioxide detection in Aedes aegypti mosquitoes.\n\nThe team used electron microscopy to reconstruct part of an adult female mosquito's brain. They traced one hundred and thirty-six sensory neurons across three smell-processing regions, then mapped all the outgoing synapses of thirty selected neurons in detail.\n\nOne region processes carbon dioxide. Its sensory neurons didn't simply pass messages onward. They made unusually many connections with one another. The researchers also compared the wiring with fruit-fly data, finding particularly strong recurrent connectivity in the mosquito's carbon-dioxide circuit.\n\nThink of a group passing a quiet message around until it becomes harder to miss. It's an analogy for the proposed amplification, not a description of tiny neurons having a conversation.\n\nTo explore what those connections might do, the researchers built a computational model. In that model, recurrent connections helped preserve detection of carbon dioxide when other odours created a challenging background. The proposed benefit is a stronger signal for a cue that helps activate host-seeking behaviour.\n\nThere was another intriguing detail: some connection sites contained structures resembling ribbon synapses, specialised structures known from other sensory systems. Resembling is the important word. The team hasn't established that these structures function as ribbon synapses.\n\nAnd there are broader limits. The anatomical reconstruction came from one adult female mosquito, and it covers only part of the relevant circuit. The signal-boosting explanation draws on a computational model; this study didn't switch those connections off in a flying mosquito and measure whether it stopped finding people. It hasn't produced a new repellent or demonstrated disease prevention.\n\nWhat it offers is a detailed wiring map and a testable explanation for how a small nervous system might prioritise an important clue.\n\nSensing the world isn't only about having a detector. What happens to the signal next can be just as interesting.\n\nYour ordinary breath. A rather specialised reception system.\n\nI'm Elias Reed. Let's keep asking how. Sources and full author credits accompany this episode. Your host and narration are AI-generated.",
+  "caveat": "AI-assisted preview episode. Sources checked by the assistant; independent editorial approval is still pending. Host and narration are AI-generated.",
+  "sources": [
+   {
+    "title": "Recurrent synapses between CO2-sensitive olfactory sensory neurons enable robust CO2 detection in Aedes aegypti mosquitoes",
+    "url": "https://doi.org/10.1371/journal.pbio.3003959",
+    "attribution": "Jialu Bao, Wesley Alford, Avinash Khandelwal, Laurel Walsh, George Lantz, Santiago Poncio, Laia Serratosa Capdevila, Yervand Azatian, Brian DePasquale, David G. C. Hildebrand, Meg A. Younger, Wei-Chung Allen Lee",
+    "license": "CC BY 4.0"
+   }
+  ],
+  "audioURL": "bundle:elias.m4a",
+  "isDemo": false
+ },
+ "duration": 179.2,
+ "transcript": [
+  {
+   "words": [
+    {
+     "text": "To",
+     "start": 0.12
+    },
+    {
+     "text": "you,",
+     "start": 0.26
+    },
+    {
+     "text": "an",
+     "start": 0.58
+    },
+    {
+     "text": "exhaled",
+     "start": 0.7
+    },
+    {
+     "text": "breath",
+     "start": 1.1
+    },
+    {
+     "text": "is",
+     "start": 1.34
+    },
+    {
+     "text": "barely",
+     "start": 1.6
+    },
+    {
+     "text": "an",
+     "start": 1.9
+    },
+    {
+     "text": "event.",
+     "start": 2.0
+    },
+    {
+     "text": "To",
+     "start": 3.12
+    },
+    {
+     "text": "a",
+     "start": 3.2
+    },
+    {
+     "text": "mosquito,",
+     "start": 3.28
+    },
+    {
+     "text": "its",
+     "start": 4.08
+    },
+    {
+     "text": "carbon",
+     "start": 4.24
+    },
+    {
+     "text": "dioxide",
+     "start": 4.5
+    },
+    {
+     "text": "can",
+     "start": 4.98
+    },
+    {
+     "text": "be",
+     "start": 5.14
+    },
+    {
+     "text": "a",
+     "start": 5.28
+    },
+    {
+     "text": "useful",
+     "start": 5.46
+    },
+    {
+     "text": "clue",
+     "start": 5.88
+    },
+    {
+     "text": "that",
+     "start": 6.22
+    },
+    {
+     "text": "a",
+     "start": 6.34
+    },
+    {
+     "text": "potential",
+     "start": 6.42
+    },
+    {
+     "text": "meal",
+     "start": 6.98
+    },
+    {
+     "text": "is",
+     "start": 7.22
+    },
+    {
+     "text": "nearby.",
+     "start": 7.36
+    },
+    {
+     "text": "The",
+     "start": 8.6
+    },
+    {
+     "text": "interesting",
+     "start": 8.68
+    },
+    {
+     "text": "question",
+     "start": 9.1
+    },
+    {
+     "text": "is",
+     "start": 9.46
+    },
+    {
+     "text": "how",
+     "start": 9.74
+    },
+    {
+     "text": "that",
+     "start": 9.96
+    },
+    {
+     "text": "signal",
+     "start": 10.24
+    },
+    {
+     "text": "gets",
+     "start": 10.64
+    },
+    {
+     "text": "through",
+     "start": 10.9
+    },
+    {
+     "text": "a",
+     "start": 11.22
+    },
+    {
+     "text": "world",
+     "start": 11.38
+    },
+    {
+     "text": "full",
+     "start": 11.9
+    },
+    {
+     "text": "of",
+     "start": 12.06
+    },
+    {
+     "text": "other",
+     "start": 12.32
+    },
+    {
+     "text": "smells.",
+     "start": 12.64
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "I'm",
+     "start": 13.94
+    },
+    {
+     "text": "Elias",
+     "start": 14.04
+    },
+    {
+     "text": "Reed.",
+     "start": 14.4
+    },
+    {
+     "text": "This",
+     "start": 15.12
+    },
+    {
+     "text": "is",
+     "start": 15.28
+    },
+    {
+     "text": "Sound",
+     "start": 15.42
+    },
+    {
+     "text": "Science,",
+     "start": 15.7
+    },
+    {
+     "text": "and",
+     "start": 16.44
+    },
+    {
+     "text": "today's",
+     "start": 16.58
+    },
+    {
+     "text": "headline",
+     "start": 16.88
+    },
+    {
+     "text": "is:",
+     "start": 17.28
+    },
+    {
+     "text": "Your",
+     "start": 18.1
+    },
+    {
+     "text": "breath",
+     "start": 18.3
+    },
+    {
+     "text": "has",
+     "start": 18.9
+    },
+    {
+     "text": "a",
+     "start": 19.12
+    },
+    {
+     "text": "volume",
+     "start": 19.34
+    },
+    {
+     "text": "knob.",
+     "start": 19.84
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "That's",
+     "start": 21.08
+    },
+    {
+     "text": "a",
+     "start": 21.24
+    },
+    {
+     "text": "metaphor.",
+     "start": 21.32
+    },
+    {
+     "text": "The",
+     "start": 22.4
+    },
+    {
+     "text": "volume",
+     "start": 22.52
+    },
+    {
+     "text": "knob",
+     "start": 22.82
+    },
+    {
+     "text": "is",
+     "start": 23.06
+    },
+    {
+     "text": "in",
+     "start": 23.18
+    },
+    {
+     "text": "the",
+     "start": 23.26
+    },
+    {
+     "text": "mosquito's",
+     "start": 23.34
+    },
+    {
+     "text": "neural",
+     "start": 24.08
+    },
+    {
+     "text": "circuitry.",
+     "start": 24.46
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "Jialu",
+     "start": 25.74
+    },
+    {
+     "text": "Bao,",
+     "start": 26.16
+    },
+    {
+     "text": "Wesley",
+     "start": 26.64
+    },
+    {
+     "text": "Alford",
+     "start": 27.02
+    },
+    {
+     "text": "and",
+     "start": 27.34
+    },
+    {
+     "text": "colleagues",
+     "start": 27.5
+    },
+    {
+     "text": "describe",
+     "start": 28.4
+    },
+    {
+     "text": "the",
+     "start": 28.78
+    },
+    {
+     "text": "work",
+     "start": 28.88
+    },
+    {
+     "text": "in",
+     "start": 29.08
+    },
+    {
+     "text": "PLOS",
+     "start": 29.28
+    },
+    {
+     "text": "Biology,",
+     "start": 29.6
+    },
+    {
+     "text": "published",
+     "start": 30.56
+    },
+    {
+     "text": "September",
+     "start": 30.92
+    },
+    {
+     "text": "tenth.",
+     "start": 31.4
+    },
+    {
+     "text": "Their",
+     "start": 32.68
+    },
+    {
+     "text": "paper",
+     "start": 32.84
+    },
+    {
+     "text": "is",
+     "start": 33.06
+    },
+    {
+     "text": "called",
+     "start": 33.2
+    },
+    {
+     "text": "Recurrent",
+     "start": 33.72
+    },
+    {
+     "text": "synapses",
+     "start": 34.24
+    },
+    {
+     "text": "between",
+     "start": 34.78
+    },
+    {
+     "text": "carbon",
+     "start": 35.18
+    },
+    {
+     "text": "dioxide-sensitive",
+     "start": 35.5
+    },
+    {
+     "text": "olfactory",
+     "start": 36.96
+    },
+    {
+     "text": "sensory",
+     "start": 37.68
+    },
+    {
+     "text": "neurons",
+     "start": 38.14
+    },
+    {
+     "text": "enable",
+     "start": 39.18
+    },
+    {
+     "text": "robust",
+     "start": 39.6
+    },
+    {
+     "text": "carbon",
+     "start": 40.18
+    },
+    {
+     "text": "dioxide",
+     "start": 40.52
+    },
+    {
+     "text": "detection",
+     "start": 41.1
+    },
+    {
+     "text": "in",
+     "start": 42.06
+    },
+    {
+     "text": "Aedes",
+     "start": 42.26
+    },
+    {
+     "text": "aegypti",
+     "start": 42.62
+    },
+    {
+     "text": "mosquitoes.",
+     "start": 43.22
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "The",
+     "start": 44.4
+    },
+    {
+     "text": "team",
+     "start": 44.54
+    },
+    {
+     "text": "used",
+     "start": 44.86
+    },
+    {
+     "text": "electron",
+     "start": 45.14
+    },
+    {
+     "text": "microscopy",
+     "start": 45.56
+    },
+    {
+     "text": "to",
+     "start": 46.2
+    },
+    {
+     "text": "reconstruct",
+     "start": 46.44
+    },
+    {
+     "text": "part",
+     "start": 47.08
+    },
+    {
+     "text": "of",
+     "start": 47.24
+    },
+    {
+     "text": "an",
+     "start": 47.32
+    },
+    {
+     "text": "adult",
+     "start": 47.44
+    },
+    {
+     "text": "female",
+     "start": 47.92
+    },
+    {
+     "text": "mosquito's",
+     "start": 48.24
+    },
+    {
+     "text": "brain.",
+     "start": 48.8
+    },
+    {
+     "text": "They",
+     "start": 49.82
+    },
+    {
+     "text": "traced",
+     "start": 49.98
+    },
+    {
+     "text": "one",
+     "start": 50.42
+    },
+    {
+     "text": "hundred",
+     "start": 50.58
+    },
+    {
+     "text": "and",
+     "start": 50.8
+    },
+    {
+     "text": "thirty-six",
+     "start": 51.02
+    },
+    {
+     "text": "sensory",
+     "start": 51.62
+    },
+    {
+     "text": "neurons",
+     "start": 52.08
+    },
+    {
+     "text": "across",
+     "start": 52.82
+    },
+    {
+     "text": "three",
+     "start": 53.3
+    },
+    {
+     "text": "smell-processing",
+     "start": 53.78
+    },
+    {
+     "text": "regions,",
+     "start": 54.62
+    },
+    {
+     "text": "then",
+     "start": 55.62
+    },
+    {
+     "text": "mapped",
+     "start": 55.82
+    },
+    {
+     "text": "all",
+     "start": 56.22
+    },
+    {
+     "text": "the",
+     "start": 56.44
+    },
+    {
+     "text": "outgoing",
+     "start": 56.56
+    },
+    {
+     "text": "synapses",
+     "start": 57.0
+    },
+    {
+     "text": "of",
+     "start": 57.52
+    },
+    {
+     "text": "thirty",
+     "start": 58.1
+    },
+    {
+     "text": "selected",
+     "start": 58.5
+    },
+    {
+     "text": "neurons",
+     "start": 59.0
+    },
+    {
+     "text": "in",
+     "start": 59.42
+    },
+    {
+     "text": "detail.",
+     "start": 59.58
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "One",
+     "start": 60.74
+    },
+    {
+     "text": "region",
+     "start": 60.92
+    },
+    {
+     "text": "processes",
+     "start": 61.26
+    },
+    {
+     "text": "carbon",
+     "start": 61.9
+    },
+    {
+     "text": "dioxide.",
+     "start": 62.16
+    },
+    {
+     "text": "Its",
+     "start": 63.38
+    },
+    {
+     "text": "sensory",
+     "start": 63.56
+    },
+    {
+     "text": "neurons",
+     "start": 63.9
+    },
+    {
+     "text": "didn't",
+     "start": 64.28
+    },
+    {
+     "text": "simply",
+     "start": 64.56
+    },
+    {
+     "text": "pass",
+     "start": 64.94
+    },
+    {
+     "text": "messages",
+     "start": 65.22
+    },
+    {
+     "text": "onward.",
+     "start": 65.7
+    },
+    {
+     "text": "They",
+     "start": 66.9
+    },
+    {
+     "text": "made",
+     "start": 67.04
+    },
+    {
+     "text": "unusually",
+     "start": 67.32
+    },
+    {
+     "text": "many",
+     "start": 67.94
+    },
+    {
+     "text": "connections",
+     "start": 68.18
+    },
+    {
+     "text": "with",
+     "start": 68.66
+    },
+    {
+     "text": "one",
+     "start": 68.82
+    },
+    {
+     "text": "another.",
+     "start": 68.94
+    },
+    {
+     "text": "The",
+     "start": 70.06
+    },
+    {
+     "text": "researchers",
+     "start": 70.16
+    },
+    {
+     "text": "also",
+     "start": 70.74
+    },
+    {
+     "text": "compared",
+     "start": 71.0
+    },
+    {
+     "text": "the",
+     "start": 71.32
+    },
+    {
+     "text": "wiring",
+     "start": 71.46
+    },
+    {
+     "text": "with",
+     "start": 71.88
+    },
+    {
+     "text": "fruit-fly",
+     "start": 72.1
+    },
+    {
+     "text": "data,",
+     "start": 72.62
+    },
+    {
+     "text": "finding",
+     "start": 73.48
+    },
+    {
+     "text": "particularly",
+     "start": 73.86
+    },
+    {
+     "text": "strong",
+     "start": 74.62
+    },
+    {
+     "text": "recurrent",
+     "start": 74.94
+    },
+    {
+     "text": "connectivity",
+     "start": 75.42
+    },
+    {
+     "text": "in",
+     "start": 76.44
+    },
+    {
+     "text": "the",
+     "start": 76.52
+    },
+    {
+     "text": "mosquito's",
+     "start": 76.6
+    },
+    {
+     "text": "carbon-dioxide",
+     "start": 77.18
+    },
+    {
+     "text": "circuit.",
+     "start": 78.14
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "Think",
+     "start": 79.34
+    },
+    {
+     "text": "of",
+     "start": 79.5
+    },
+    {
+     "text": "a",
+     "start": 79.6
+    },
+    {
+     "text": "group",
+     "start": 79.7
+    },
+    {
+     "text": "passing",
+     "start": 79.98
+    },
+    {
+     "text": "a",
+     "start": 80.36
+    },
+    {
+     "text": "quiet",
+     "start": 80.5
+    },
+    {
+     "text": "message",
+     "start": 80.84
+    },
+    {
+     "text": "around",
+     "start": 81.18
+    },
+    {
+     "text": "until",
+     "start": 81.46
+    },
+    {
+     "text": "it",
+     "start": 81.7
+    },
+    {
+     "text": "becomes",
+     "start": 81.78
+    },
+    {
+     "text": "harder",
+     "start": 82.1
+    },
+    {
+     "text": "to",
+     "start": 82.4
+    },
+    {
+     "text": "miss.",
+     "start": 82.54
+    },
+    {
+     "text": "It's",
+     "start": 83.7
+    },
+    {
+     "text": "an",
+     "start": 83.84
+    },
+    {
+     "text": "analogy",
+     "start": 83.96
+    },
+    {
+     "text": "for",
+     "start": 84.5
+    },
+    {
+     "text": "the",
+     "start": 84.62
+    },
+    {
+     "text": "proposed",
+     "start": 84.72
+    },
+    {
+     "text": "amplification,",
+     "start": 85.2
+    },
+    {
+     "text": "not",
+     "start": 86.46
+    },
+    {
+     "text": "a",
+     "start": 86.62
+    },
+    {
+     "text": "description",
+     "start": 86.7
+    },
+    {
+     "text": "of",
+     "start": 87.24
+    },
+    {
+     "text": "tiny",
+     "start": 87.44
+    },
+    {
+     "text": "neurons",
+     "start": 87.8
+    },
+    {
+     "text": "having",
+     "start": 88.18
+    },
+    {
+     "text": "a",
+     "start": 88.4
+    },
+    {
+     "text": "conversation.",
+     "start": 88.5
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "To",
+     "start": 90.1
+    },
+    {
+     "text": "explore",
+     "start": 90.2
+    },
+    {
+     "text": "what",
+     "start": 90.64
+    },
+    {
+     "text": "those",
+     "start": 90.78
+    },
+    {
+     "text": "connections",
+     "start": 90.98
+    },
+    {
+     "text": "might",
+     "start": 91.52
+    },
+    {
+     "text": "do,",
+     "start": 91.78
+    },
+    {
+     "text": "the",
+     "start": 92.46
+    },
+    {
+     "text": "researchers",
+     "start": 92.58
+    },
+    {
+     "text": "built",
+     "start": 93.14
+    },
+    {
+     "text": "a",
+     "start": 93.34
+    },
+    {
+     "text": "computational",
+     "start": 93.42
+    },
+    {
+     "text": "model.",
+     "start": 94.14
+    },
+    {
+     "text": "In",
+     "start": 95.34
+    },
+    {
+     "text": "that",
+     "start": 95.46
+    },
+    {
+     "text": "model,",
+     "start": 95.66
+    },
+    {
+     "text": "recurrent",
+     "start": 96.42
+    },
+    {
+     "text": "connections",
+     "start": 96.92
+    },
+    {
+     "text": "helped",
+     "start": 97.44
+    },
+    {
+     "text": "preserve",
+     "start": 97.68
+    },
+    {
+     "text": "detection",
+     "start": 98.12
+    },
+    {
+     "text": "of",
+     "start": 98.62
+    },
+    {
+     "text": "carbon",
+     "start": 98.78
+    },
+    {
+     "text": "dioxide",
+     "start": 99.06
+    },
+    {
+     "text": "when",
+     "start": 100.04
+    },
+    {
+     "text": "other",
+     "start": 100.28
+    },
+    {
+     "text": "odours",
+     "start": 100.56
+    },
+    {
+     "text": "created",
+     "start": 101.02
+    },
+    {
+     "text": "a",
+     "start": 101.38
+    },
+    {
+     "text": "challenging",
+     "start": 101.58
+    },
+    {
+     "text": "background.",
+     "start": 102.16
+    },
+    {
+     "text": "The",
+     "start": 103.58
+    },
+    {
+     "text": "proposed",
+     "start": 103.7
+    },
+    {
+     "text": "benefit",
+     "start": 104.12
+    },
+    {
+     "text": "is",
+     "start": 104.82
+    },
+    {
+     "text": "a",
+     "start": 104.94
+    },
+    {
+     "text": "stronger",
+     "start": 105.1
+    },
+    {
+     "text": "signal",
+     "start": 105.52
+    },
+    {
+     "text": "for",
+     "start": 105.82
+    },
+    {
+     "text": "a",
+     "start": 105.98
+    },
+    {
+     "text": "cue",
+     "start": 106.14
+    },
+    {
+     "text": "that",
+     "start": 106.8
+    },
+    {
+     "text": "helps",
+     "start": 106.92
+    },
+    {
+     "text": "activate",
+     "start": 107.24
+    },
+    {
+     "text": "host-seeking",
+     "start": 107.72
+    },
+    {
+     "text": "behaviour.",
+     "start": 108.38
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "There",
+     "start": 111.22
+    },
+    {
+     "text": "was",
+     "start": 111.34
+    },
+    {
+     "text": "another",
+     "start": 111.46
+    },
+    {
+     "text": "intriguing",
+     "start": 111.84
+    },
+    {
+     "text": "detail:",
+     "start": 112.32
+    },
+    {
+     "text": "some",
+     "start": 113.26
+    },
+    {
+     "text": "connection",
+     "start": 113.44
+    },
+    {
+     "text": "sites",
+     "start": 113.84
+    },
+    {
+     "text": "contained",
+     "start": 114.08
+    },
+    {
+     "text": "structures",
+     "start": 114.44
+    },
+    {
+     "text": "resembling",
+     "start": 114.84
+    },
+    {
+     "text": "ribbon",
+     "start": 115.7
+    },
+    {
+     "text": "synapses,",
+     "start": 116.14
+    },
+    {
+     "text": "specialised",
+     "start": 117.26
+    },
+    {
+     "text": "structures",
+     "start": 117.76
+    },
+    {
+     "text": "known",
+     "start": 118.22
+    },
+    {
+     "text": "from",
+     "start": 118.42
+    },
+    {
+     "text": "other",
+     "start": 118.7
+    },
+    {
+     "text": "sensory",
+     "start": 118.96
+    },
+    {
+     "text": "systems.",
+     "start": 119.34
+    },
+    {
+     "text": "Resembling",
+     "start": 120.54
+    },
+    {
+     "text": "is",
+     "start": 121.38
+    },
+    {
+     "text": "the",
+     "start": 121.62
+    },
+    {
+     "text": "important",
+     "start": 121.72
+    },
+    {
+     "text": "word.",
+     "start": 122.2
+    },
+    {
+     "text": "The",
+     "start": 123.1
+    },
+    {
+     "text": "team",
+     "start": 123.22
+    },
+    {
+     "text": "hasn't",
+     "start": 123.4
+    },
+    {
+     "text": "established",
+     "start": 123.64
+    },
+    {
+     "text": "that",
+     "start": 124.12
+    },
+    {
+     "text": "these",
+     "start": 124.3
+    },
+    {
+     "text": "structures",
+     "start": 124.52
+    },
+    {
+     "text": "function",
+     "start": 125.08
+    },
+    {
+     "text": "as",
+     "start": 125.56
+    },
+    {
+     "text": "ribbon",
+     "start": 126.0
+    },
+    {
+     "text": "synapses.",
+     "start": 126.36
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "And",
+     "start": 127.6
+    },
+    {
+     "text": "there",
+     "start": 127.76
+    },
+    {
+     "text": "are",
+     "start": 127.92
+    },
+    {
+     "text": "broader",
+     "start": 128.1
+    },
+    {
+     "text": "limits.",
+     "start": 128.44
+    },
+    {
+     "text": "The",
+     "start": 129.48
+    },
+    {
+     "text": "anatomical",
+     "start": 129.66
+    },
+    {
+     "text": "reconstruction",
+     "start": 130.26
+    },
+    {
+     "text": "came",
+     "start": 130.96
+    },
+    {
+     "text": "from",
+     "start": 131.14
+    },
+    {
+     "text": "one",
+     "start": 131.5
+    },
+    {
+     "text": "adult",
+     "start": 131.84
+    },
+    {
+     "text": "female",
+     "start": 132.3
+    },
+    {
+     "text": "mosquito,",
+     "start": 132.58
+    },
+    {
+     "text": "and",
+     "start": 133.48
+    },
+    {
+     "text": "it",
+     "start": 133.56
+    },
+    {
+     "text": "covers",
+     "start": 133.68
+    },
+    {
+     "text": "only",
+     "start": 133.98
+    },
+    {
+     "text": "part",
+     "start": 134.3
+    },
+    {
+     "text": "of",
+     "start": 134.48
+    },
+    {
+     "text": "the",
+     "start": 134.58
+    },
+    {
+     "text": "relevant",
+     "start": 134.7
+    },
+    {
+     "text": "circuit.",
+     "start": 135.1
+    },
+    {
+     "text": "The",
+     "start": 136.24
+    },
+    {
+     "text": "signal-boosting",
+     "start": 136.4
+    },
+    {
+     "text": "explanation",
+     "start": 137.04
+    },
+    {
+     "text": "draws",
+     "start": 137.58
+    },
+    {
+     "text": "on",
+     "start": 137.84
+    },
+    {
+     "text": "a",
+     "start": 137.96
+    },
+    {
+     "text": "computational",
+     "start": 138.1
+    },
+    {
+     "text": "model;",
+     "start": 138.9
+    },
+    {
+     "text": "this",
+     "start": 139.72
+    },
+    {
+     "text": "study",
+     "start": 139.86
+    },
+    {
+     "text": "didn't",
+     "start": 140.12
+    },
+    {
+     "text": "switch",
+     "start": 140.5
+    },
+    {
+     "text": "those",
+     "start": 140.76
+    },
+    {
+     "text": "connections",
+     "start": 140.96
+    },
+    {
+     "text": "off",
+     "start": 141.46
+    },
+    {
+     "text": "in",
+     "start": 141.7
+    },
+    {
+     "text": "a",
+     "start": 141.78
+    },
+    {
+     "text": "flying",
+     "start": 141.92
+    },
+    {
+     "text": "mosquito",
+     "start": 142.18
+    },
+    {
+     "text": "and",
+     "start": 143.08
+    },
+    {
+     "text": "measure",
+     "start": 143.26
+    },
+    {
+     "text": "whether",
+     "start": 143.76
+    },
+    {
+     "text": "it",
+     "start": 144.0
+    },
+    {
+     "text": "stopped",
+     "start": 144.16
+    },
+    {
+     "text": "finding",
+     "start": 144.48
+    },
+    {
+     "text": "people.",
+     "start": 144.84
+    },
+    {
+     "text": "It",
+     "start": 145.86
+    },
+    {
+     "text": "hasn't",
+     "start": 145.96
+    },
+    {
+     "text": "produced",
+     "start": 146.24
+    },
+    {
+     "text": "a",
+     "start": 146.56
+    },
+    {
+     "text": "new",
+     "start": 146.64
+    },
+    {
+     "text": "repellent",
+     "start": 146.76
+    },
+    {
+     "text": "or",
+     "start": 147.58
+    },
+    {
+     "text": "demonstrated",
+     "start": 147.72
+    },
+    {
+     "text": "disease",
+     "start": 148.36
+    },
+    {
+     "text": "prevention.",
+     "start": 148.86
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "What",
+     "start": 149.92
+    },
+    {
+     "text": "it",
+     "start": 150.06
+    },
+    {
+     "text": "offers",
+     "start": 150.28
+    },
+    {
+     "text": "is",
+     "start": 150.64
+    },
+    {
+     "text": "a",
+     "start": 150.78
+    },
+    {
+     "text": "detailed",
+     "start": 150.96
+    },
+    {
+     "text": "wiring",
+     "start": 151.5
+    },
+    {
+     "text": "map",
+     "start": 151.96
+    },
+    {
+     "text": "and",
+     "start": 152.58
+    },
+    {
+     "text": "a",
+     "start": 152.68
+    },
+    {
+     "text": "testable",
+     "start": 152.82
+    },
+    {
+     "text": "explanation",
+     "start": 153.28
+    },
+    {
+     "text": "for",
+     "start": 154.2
+    },
+    {
+     "text": "how",
+     "start": 154.34
+    },
+    {
+     "text": "a",
+     "start": 154.54
+    },
+    {
+     "text": "small",
+     "start": 154.78
+    },
+    {
+     "text": "nervous",
+     "start": 155.2
+    },
+    {
+     "text": "system",
+     "start": 155.52
+    },
+    {
+     "text": "might",
+     "start": 156.2
+    },
+    {
+     "text": "prioritise",
+     "start": 156.42
+    },
+    {
+     "text": "an",
+     "start": 157.18
+    },
+    {
+     "text": "important",
+     "start": 157.28
+    },
+    {
+     "text": "clue.",
+     "start": 157.86
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "Sensing",
+     "start": 159.5
+    },
+    {
+     "text": "the",
+     "start": 159.82
+    },
+    {
+     "text": "world",
+     "start": 159.92
+    },
+    {
+     "text": "isn't",
+     "start": 160.3
+    },
+    {
+     "text": "only",
+     "start": 160.66
+    },
+    {
+     "text": "about",
+     "start": 160.92
+    },
+    {
+     "text": "having",
+     "start": 161.18
+    },
+    {
+     "text": "a",
+     "start": 161.44
+    },
+    {
+     "text": "detector.",
+     "start": 161.54
+    },
+    {
+     "text": "What",
+     "start": 162.54
+    },
+    {
+     "text": "happens",
+     "start": 162.74
+    },
+    {
+     "text": "to",
+     "start": 163.14
+    },
+    {
+     "text": "the",
+     "start": 163.24
+    },
+    {
+     "text": "signal",
+     "start": 163.4
+    },
+    {
+     "text": "next",
+     "start": 163.8
+    },
+    {
+     "text": "can",
+     "start": 164.12
+    },
+    {
+     "text": "be",
+     "start": 164.28
+    },
+    {
+     "text": "just",
+     "start": 164.5
+    },
+    {
+     "text": "as",
+     "start": 164.78
+    },
+    {
+     "text": "interesting.",
+     "start": 164.92
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "Your",
+     "start": 166.24
+    },
+    {
+     "text": "ordinary",
+     "start": 166.44
+    },
+    {
+     "text": "breath.",
+     "start": 166.88
+    },
+    {
+     "text": "A",
+     "start": 168.02
+    },
+    {
+     "text": "rather",
+     "start": 168.1
+    },
+    {
+     "text": "specialised",
+     "start": 168.48
+    },
+    {
+     "text": "reception",
+     "start": 169.14
+    },
+    {
+     "text": "system.",
+     "start": 169.66
+    }
+   ]
+  },
+  {
+   "words": [
+    {
+     "text": "I'm",
+     "start": 170.88
+    },
+    {
+     "text": "Elias",
+     "start": 171.0
+    },
+    {
+     "text": "Reed.",
+     "start": 171.44
+    },
+    {
+     "text": "Let's",
+     "start": 171.98
+    },
+    {
+     "text": "keep",
+     "start": 172.2
+    },
+    {
+     "text": "asking",
+     "start": 172.42
+    },
+    {
+     "text": "how.",
+     "start": 172.78
+    },
+    {
+     "text": "Sources",
+     "start": 174.1
+    },
+    {
+     "text": "and",
+     "start": 174.44
+    },
+    {
+     "text": "full",
+     "start": 174.62
+    },
+    {
+     "text": "author",
+     "start": 174.86
+    },
+    {
+     "text": "credits",
+     "start": 175.12
+    },
+    {
+     "text": "accompany",
+     "start": 175.42
+    },
+    {
+     "text": "this",
+     "start": 175.82
+    },
+    {
+     "text": "episode.",
+     "start": 176.0
+    },
+    {
+     "text": "Your",
+     "start": 176.88
+    },
+    {
+     "text": "host",
+     "start": 177.0
+    },
+    {
+     "text": "and",
+     "start": 177.26
+    },
+    {
+     "text": "narration",
+     "start": 177.38
+    },
+    {
+     "text": "are",
+     "start": 178.22
+    },
+    {
+     "text": "AI-generated.",
+     "start": 178.48
+    }
+   ]
+  }
+ ]
+}

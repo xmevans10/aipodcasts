@@ -16,6 +16,8 @@ import UIKit
     @Published var isPlayerPresented = false
     var onStarted: ((Story) -> Void)?
     private var catalog: [String: Story] = [:]
+    private var feed: [String] = []
+    private var history: [String] = []
     var queuedStories: [Story] { listening.queue.compactMap { catalog[$0] } }
     private var activeUtterance: AVSpeechUtterance?
     private let speech = AVSpeechSynthesizer()
@@ -135,8 +137,29 @@ import UIKit
     }
 
     func skip(by seconds: Double) { seek(position + seconds) }
-    /// No play history is kept, so previous restarts the current episode.
-    func previous() { if story != nil { seek(0) } }
+
+    /// Lock-screen "previous": restart the episode unless we are already near its start.
+    func previous() {
+        if position > 5 { seek(0); return }
+        previousEpisode()
+    }
+
+    /// Swipe right / previous: the last episode played, then the previous feed item.
+    func previousEpisode() {
+        if let id = history.popLast(), let item = catalog[id] { play(item, pushHistory: false); return }
+        if let id = story?.id, let index = feed.firstIndex(of: id), index > 0, let item = catalog[feed[index - 1]] {
+            play(item, pushHistory: false); return
+        }
+        seek(0)
+    }
+
+    /// Swipe left / next: the queued episode if any, otherwise the next feed item.
+    func nextEpisode() {
+        if !listening.queue.isEmpty { next(); return }
+        guard let id = story?.id, let index = feed.firstIndex(of: id),
+              feed.indices.contains(index + 1), let item = catalog[feed[index + 1]] else { return }
+        play(item)
+    }
     func persist() {
         if let data = try? JSONEncoder().encode(listening) { UserDefaults.standard.set(data, forKey: "listeningState") }
         UserDefaults.standard.set(listenedSeconds, forKey: "listenedSeconds")
@@ -144,6 +167,7 @@ import UIKit
     func checkpoint() { if !isPreview && !listening.completed.contains(story?.id ?? "") { listening.checkpoint(position) }; persist() }
     func restore(_ stories: [Story]) {
         for item in stories { catalog[item.id] = item }
+        feed = stories.map(\.id)
         if story == nil, let id = listening.currentID, let item = catalog[id] {
             story = item; position = listening.positions[id] ?? 0; duration = Double(item.minutes * 60)
         }
@@ -176,10 +200,14 @@ import UIKit
         if let observer { player?.removeTimeObserver(observer) }; observer = nil
         if let endObserver { NotificationCenter.default.removeObserver(endObserver) }; endObserver = nil
         player = nil; activeUtterance = nil; speech.stopSpeaking(at: .immediate)
-        listening = ListeningState(); listenedSeconds = [:]; story = nil; position = 0; cancelSleep(); persist()
+        listening = ListeningState(); listenedSeconds = [:]; story = nil; position = 0; history = []; cancelSleep(); persist()
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
     }
-    func play(_ item: Story, host: Host? = nil) {
+    func play(_ item: Story, host: Host? = nil, pushHistory: Bool = true) {
+        if pushHistory, let current = story, current.id != item.id {
+            history.append(current.id)
+            if history.count > 25 { history.removeFirst() }
+        }
         checkpoint()
         catalog[item.id] = item
         let resumePosition = listening.positions[item.id] ?? 0

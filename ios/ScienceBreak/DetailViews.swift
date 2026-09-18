@@ -142,7 +142,22 @@ struct PlayerView: View {
     @EnvironmentObject var player: AudioPlayer
     @EnvironmentObject var library: Library
     @Environment(\.dismiss) var dismiss
+    @State private var swipeWidth: CGFloat = 0
     private let soft = Color.white.opacity(0.75)
+    /// Edge swipes move between episodes: right from the left edge, left from the right edge.
+    private var episodeSwipe: some Gesture {
+        DragGesture(minimumDistance: 24)
+            .onEnded { value in
+                let dx = value.translation.width, dy = value.translation.height
+                guard swipeWidth > 0, abs(dx) > 60, abs(dx) > abs(dy) * 1.5 else { return }
+                let edge: CGFloat = 48
+                if dx > 0, value.startLocation.x <= edge {
+                    Haptics.tap(); player.previousEpisode()
+                } else if dx < 0, value.startLocation.x >= swipeWidth - edge {
+                    Haptics.tap(); player.nextEpisode()
+                }
+            }
+    }
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -246,6 +261,12 @@ struct PlayerView: View {
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .animation(.easeInOut(duration: 0.4), value: player.story?.show.id)
+            .background(GeometryReader { proxy in
+                Color.clear
+                    .onAppear { swipeWidth = proxy.size.width }
+                    .onChange(of: proxy.size.width) { _, new in swipeWidth = new }
+            })
+            .simultaneousGesture(episodeSwipe)
         }
     }
     func clock(_ time: Double) -> String { "\(Int(time) / 60):\(String(format: "%02d", Int(time) % 60))" }

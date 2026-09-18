@@ -240,6 +240,8 @@ struct PlayerView: View {
                         }
                     }
                     .padding(.horizontal, 24).padding(.bottom, 24)
+                    .id(story.id)
+                    .transition(.push(from: player.lastMove < 0 ? .leading : .trailing))
                 }
             }
             .background {
@@ -260,6 +262,7 @@ struct PlayerView: View {
             }
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
+            .animation(.snappy(duration: 0.35), value: player.story?.id)
             .animation(.easeInOut(duration: 0.4), value: player.story?.show.id)
             .background(GeometryReader { proxy in
                 Color.clear

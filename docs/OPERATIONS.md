@@ -114,7 +114,7 @@ Each profile ends with the rule that personality changes delivery only and never
 ## Tests
 
 - Backend: `python3 -m pytest -q backend/tests` (42 tests) covers the pipeline, evidence packet, host personalities, the podcast contract and newsletter rendering.
-- App logic: `./scripts/run-ios-tests.sh` (107 checks, no simulator needed) compiles the pure-logic files with `swiftc` and runs [`ios/Tests/LogicChecks.swift`](../ios/Tests/LogicChecks.swift): queue and resume state, `ListeningMath` (progress, minutes left, streaks including broken and stale ones), show/host wiring, story date and duration helpers, and every bundled episode — audio present, sources HTTPS, transcript word-for-word identical to the body, word timings monotonic and inside the episode, and the audio envelope five-band, in range, the right length and actually peaking.
+- App logic: `./scripts/run-ios-tests.sh` (117 checks, no simulator needed) compiles the pure-logic files with `swiftc` and runs [`ios/Tests/LogicChecks.swift`](../ios/Tests/LogicChecks.swift): queue and resume state, `ListeningMath` (progress, minutes left, streaks including broken and stale ones), show/host wiring, story date and duration helpers, and every bundled episode — audio present, sources HTTPS, transcript word-for-word identical to the body, word timings monotonic and inside the episode, and the audio envelope five-band, in range, the right length and actually peaking.
 - UI behaviour still needs a device or simulator; these checks deliberately avoid SwiftUI rendering.
 
 ## Writing experiments and the AI judge

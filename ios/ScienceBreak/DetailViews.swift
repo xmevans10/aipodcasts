@@ -33,7 +33,7 @@ struct EpisodeView: View {
                 }
 
                 if story.audioURL == nil {
-                    Label("Device voice sample. A produced episode of \(story.show.title) is coming soon.", systemImage: "waveform")
+                    Label("Device voice sample. This preview is narrated on your device.", systemImage: "waveform")
                         .font(.caption).foregroundStyle(Theme.secondary)
                 }
 
@@ -261,10 +261,12 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
+                #if DEBUG
                 Section("Membership") {
                     Button("Sound Science Plus") { plus = true }
                     Text("Preview build · All episodes are free").font(.caption).foregroundStyle(Theme.secondary)
                 }
+                #endif
                 Section("Connected feed") {
                     TextField("HTTPS feed URL", text: $library.feedURL).keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
                     Button(library.loading ? "Refreshing…" : "Refresh episodes") { Task { await library.refresh() } }.disabled(library.loading)
@@ -281,7 +283,13 @@ struct SettingsView: View {
                 Section { Button("Show welcome again") { onboarded = false; dismiss() }; Text("Sound Science 0.1").font(.caption).foregroundStyle(Theme.secondary) }
             }
             .navigationTitle("Settings").toolbar { Button("Done") { dismiss() } }
-            .sheet(isPresented: $plus) { PlusView() }
+            .sheet(isPresented: $plus) {
+                #if DEBUG
+                PlusView()
+                #else
+                EmptyView()
+                #endif
+            }
             .confirmationDialog("Delete saved episodes, queue and listening history?", isPresented: $reset, titleVisibility: .visible) {
                 Button("Delete local data", role: .destructive) { player.clearListeningData(); library.saved = []; library.history = []; UserDefaults.standard.removeObject(forKey: "saved"); UserDefaults.standard.removeObject(forKey: "history") }
             }

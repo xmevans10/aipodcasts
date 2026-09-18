@@ -142,26 +142,57 @@ struct PlayerView: View {
     @EnvironmentObject var player: AudioPlayer
     @EnvironmentObject var library: Library
     @Environment(\.dismiss) var dismiss
-    @State private var swipeWidth: CGFloat = 0
     private let soft = Color.white.opacity(0.75)
-    /// Edge swipes move between episodes: right from the left edge, left from the right edge.
-    private var episodeSwipe: some Gesture {
-        DragGesture(minimumDistance: 24)
-            .onEnded { value in
-                let dx = value.translation.width, dy = value.translation.height
-                guard swipeWidth > 0, abs(dx) > 60, abs(dx) > abs(dy) * 1.5 else { return }
-                let edge: CGFloat = 48
-                if dx > 0, value.startLocation.x <= edge {
-                    Haptics.tap(); player.previousEpisode()
-                } else if dx < 0, value.startLocation.x >= swipeWidth - edge {
-                    Haptics.tap(); player.nextEpisode()
-                }
+
+    /// Swiping a page plays that episode; selection tracks the current story.
+    private var selection: Binding<Int> {
+        Binding(
+            get: { player.playlistIndex(of: player.story?.id) ?? 0 },
+            set: { index in
+                let list = player.playlist
+                guard list.indices.contains(index), list[index].id != player.story?.id else { return }
+                Haptics.tap()
+                player.play(list[index])
             }
+        )
     }
+
     var body: some View {
         NavigationStack {
-            ScrollView {
-                if let story = player.story {
+            Group {
+                if player.playlist.isEmpty {
+                    Theme.canvas.ignoresSafeArea()
+                } else {
+                    TabView(selection: selection) {
+                        ForEach(Array(player.playlist.enumerated()), id: \.element.id) { index, story in
+                            page(story).tag(index)
+                        }
+                    }
+                    .tabViewStyle(.page(indexDisplayMode: .never))
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button { dismiss() } label: {
+                        Image(systemName: "chevron.down").font(.body.weight(.semibold)).foregroundStyle(.white)
+                            .frame(width: 34, height: 34).background(.white.opacity(0.14), in: Circle())
+                            .frame(minWidth: 44, minHeight: 44)
+                    }.accessibilityLabel("Close")
+                }
+            }
+            .toolbarBackground(.hidden, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+            .animation(.easeInOut(duration: 0.4), value: player.story?.show.id)
+        }
+    }
+
+    private func page(_ story: Story) -> some View {
+        let active = player.story?.id == story.id
+        let preview = story.audioURL == nil
+        let playing = active && player.playing
+        let position = active ? player.position : (player.listening.positions[story.id] ?? 0)
+        let duration = active ? player.duration : Double(story.minutes * 60)
+        return ScrollView {
                     VStack(spacing: 24) {
                         ZStack {
                             CoverGlow(show: story.show, size: 300)
@@ -181,28 +212,28 @@ struct PlayerView: View {
                             }
                             Text(story.title).font(.system(size: 24, weight: .semibold, design: .serif)).foregroundStyle(.white).multilineTextAlignment(.center)
                         }
-                        if !player.isPreview {
+                        if !preview {
                             VStack(spacing: 4) {
-                                Slider(value: Binding(get: { min(player.position, player.duration) }, set: { player.seek($0) }), in: 0...max(player.duration, 1))
+                                Slider(value: Binding(get: { min(position, duration) }, set: { if active { player.seek($0) } }), in: 0...max(duration, 1))
                                     .tint(.white).accessibilityLabel("Playback position")
-                                HStack { Text(clock(player.position)); Spacer(); Text("-" + clock(max(0, player.duration - player.position))) }
+                                HStack { Text(clock(position)); Spacer(); Text("-" + clock(max(0, duration - position))) }
                                     .font(.caption.monospacedDigit()).foregroundStyle(soft)
                             }
                         } else {
                             Text("Device voice sample. Produced episodes use licensed ElevenLabs narration.").font(.caption).foregroundStyle(soft).multilineTextAlignment(.center)
                         }
                         HStack(spacing: 44) {
-                            Button { player.seek(player.position - 15) } label: { Image(systemName: "gobackward.15").font(.title2) }.disabled(player.isPreview).accessibilityLabel("Back 15 seconds")
-                            Button { player.toggle() } label: {
-                                Image(systemName: player.playing ? "pause.fill" : "play.fill").font(.title).foregroundStyle(story.show.dark)
+                            Button { if active { player.seek(position - 15) } } label: { Image(systemName: "gobackward.15").font(.title2) }.disabled(preview || !active).accessibilityLabel("Back 15 seconds")
+                            Button { if active { player.toggle() } else { player.play(story) } } label: {
+                                Image(systemName: playing ? "pause.fill" : "play.fill").font(.title).foregroundStyle(story.show.dark)
                                     .frame(width: 76, height: 76)
                                     .background(Circle().fill(.white))
                                     .shadow(color: .black.opacity(0.3), radius: 14, y: 6)
-                            }.accessibilityLabel(player.playing ? "Pause" : "Play")
-                            Button { player.seek(player.position + 15) } label: { Image(systemName: "goforward.15").font(.title2) }.disabled(player.isPreview).accessibilityLabel("Forward 15 seconds")
+                            }.accessibilityLabel(playing ? "Pause" : "Play")
+                            Button { if active { player.seek(position + 15) } } label: { Image(systemName: "goforward.15").font(.title2) }.disabled(preview || !active).accessibilityLabel("Forward 15 seconds")
                         }.foregroundStyle(.white)
                         HStack {
-                            Button { player.cycleRate() } label: { Text(String(format: "%.2gx", player.rate)).font(.subheadline.weight(.semibold)).frame(width: 52, height: 44) }.accessibilityLabel("Playback speed")
+                            Button { if active { player.cycleRate() } } label: { Text(String(format: "%.2gx", active ? player.rate : 1)).font(.subheadline.weight(.semibold)).frame(width: 52, height: 44) }.accessibilityLabel("Playback speed")
                             Spacer()
                             Menu {
                                 if player.sleepUntil != nil { Button("Cancel sleep timer") { player.cancelSleep() } }
@@ -222,7 +253,7 @@ struct PlayerView: View {
                             Button { library.toggle(story) } label: { Image(systemName: library.saved.contains(story.id) ? "bookmark.fill" : "bookmark").frame(width: 44, height: 44) }
                                 .accessibilityLabel(library.saved.contains(story.id) ? "Unsave" : "Save")
                         }.font(.title3).foregroundStyle(.white)
-                        if let message = player.message { Text(message).font(.caption).foregroundStyle(soft) }
+                        if active, let message = player.message { Text(message).font(.caption).foregroundStyle(soft) }
                         VStack(spacing: 10) {
                             if let transcript = Episodes.transcript(for: story.id) {
                                 NavigationLink { TranscriptView(story: story, paragraphs: transcript) } label: {
@@ -231,7 +262,7 @@ struct PlayerView: View {
                             }
                             NavigationLink { EpisodeView(story: story) } label: { Label("Episode details & sources", systemImage: "doc.text") }
                                 .buttonStyle(OnColorSecondaryButtonStyle(fullWidth: true))
-                            if let next = player.queuedStories.first {
+                            if active, let next = player.queuedStories.first {
                                 Button { player.next() } label: {
                                     HStack { Text("Up next").foregroundStyle(soft); Text(next.title).lineLimit(1); Spacer(); Image(systemName: "forward.end.fill") }
                                         .font(.subheadline).foregroundStyle(.white).padding(.top, 4)
@@ -240,37 +271,8 @@ struct PlayerView: View {
                         }
                     }
                     .padding(.horizontal, 24).padding(.bottom, 24)
-                    .id(story.id)
-                    .transition(.push(from: player.lastMove < 0 ? .leading : .trailing))
-                }
-            }
-            .background {
-                if let show = player.story?.show {
-                    PlayerBackdrop(show: show).ignoresSafeArea()
-                } else {
-                    Theme.canvas.ignoresSafeArea()
-                }
-            }
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button { dismiss() } label: {
-                        Image(systemName: "chevron.down").font(.body.weight(.semibold)).foregroundStyle(.white)
-                            .frame(width: 34, height: 34).background(.white.opacity(0.14), in: Circle())
-                            .frame(minWidth: 44, minHeight: 44)
-                    }.accessibilityLabel("Close")
-                }
-            }
-            .toolbarBackground(.hidden, for: .navigationBar)
-            .toolbarColorScheme(.dark, for: .navigationBar)
-            .animation(.snappy(duration: 0.35), value: player.story?.id)
-            .animation(.easeInOut(duration: 0.4), value: player.story?.show.id)
-            .background(GeometryReader { proxy in
-                Color.clear
-                    .onAppear { swipeWidth = proxy.size.width }
-                    .onChange(of: proxy.size.width) { _, new in swipeWidth = new }
-            })
-            .simultaneousGesture(episodeSwipe)
         }
+        .background { PlayerBackdrop(show: story.show).ignoresSafeArea() }
     }
     func clock(_ time: Double) -> String { "\(Int(time) / 60):\(String(format: "%02d", Int(time) % 60))" }
 }

@@ -14,13 +14,21 @@ import UIKit
     @Published var sleepUntil: Date?
     /// Set to present the full player sheet from anywhere.
     @Published var isPlayerPresented = false
-    /// Direction of the last episode change: -1 previous, 1 next. Drives the player transition.
-    @Published var lastMove = 1
     var onStarted: ((Story) -> Void)?
     private var catalog: [String: Story] = [:]
     private var feed: [String] = []
     private var history: [String] = []
     var queuedStories: [Story] { listening.queue.compactMap { catalog[$0] } }
+    /// Feed order, with the current story and any queued extras appended. Drives the player pager.
+    var playlist: [Story] {
+        var ids = feed
+        for id in ([story?.id] + listening.queue).compactMap({ $0 }) where !ids.contains(id) { ids.append(id) }
+        return ids.compactMap { catalog[$0] }
+    }
+    func playlistIndex(of id: String?) -> Int? {
+        guard let id else { return nil }
+        return playlist.firstIndex { $0.id == id }
+    }
     private var activeUtterance: AVSpeechUtterance?
     private let speech = AVSpeechSynthesizer()
     private var player: AVPlayer?
@@ -146,23 +154,18 @@ import UIKit
         previousEpisode()
     }
 
-    /// Swipe right / previous: the last episode played, then the previous feed item.
+    /// Previous in the player playlist: the last episode played, then the feed item before it.
     func previousEpisode() {
-        lastMove = -1
         if let id = history.popLast(), let item = catalog[id] { play(item, pushHistory: false); return }
-        if let id = story?.id, let index = feed.firstIndex(of: id), index > 0, let item = catalog[feed[index - 1]] {
-            play(item, pushHistory: false); return
-        }
-        seek(0)
+        guard let id = story?.id, let index = playlistIndex(of: id), index > 0 else { seek(0); return }
+        play(playlist[index - 1], pushHistory: false)
     }
 
-    /// Swipe left / next: the queued episode if any, otherwise the next feed item.
+    /// Next in the player playlist: the queued episode if any, otherwise the next feed item.
     func nextEpisode() {
-        lastMove = 1
         if !listening.queue.isEmpty { next(); return }
-        guard let id = story?.id, let index = feed.firstIndex(of: id),
-              feed.indices.contains(index + 1), let item = catalog[feed[index + 1]] else { return }
-        play(item)
+        guard let id = story?.id, let index = playlistIndex(of: id), index + 1 < playlist.count else { return }
+        play(playlist[index + 1])
     }
     func persist() {
         if let data = try? JSONEncoder().encode(listening) { UserDefaults.standard.set(data, forKey: "listeningState") }
@@ -185,7 +188,6 @@ import UIKit
         restore(items); listening.queue = Array(items.dropFirst().map(\.id)); play(first)
     }
     func next() {
-        lastMove = 1
         checkpoint()
         while let id = listening.next() {
             if let item = catalog[id] { play(item); return }
@@ -193,7 +195,6 @@ import UIKit
         persist()
     }
     private func finished() {
-        lastMove = 1
         playing = false; updateNowPlaying(); listening.finish(); persist()
         // Pop before play so a completed item's checkpoint cannot be restored.
         while let id = listening.next() {
@@ -210,7 +211,6 @@ import UIKit
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
     }
     func play(_ item: Story, host: Host? = nil, pushHistory: Bool = true) {
-        if pushHistory { lastMove = 1 }
         if pushHistory, let current = story, current.id != item.id {
             history.append(current.id)
             if history.count > 25 { history.removeFirst() }

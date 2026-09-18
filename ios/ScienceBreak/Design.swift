@@ -12,6 +12,63 @@ enum Theme {
     static let tertiary = Color(hex: 0xA3A09A)
     static let display = Font.system(size: 30, weight: .semibold, design: .serif)
     static func reading(_ size: CGFloat) -> Font { .custom("Charter", size: size, relativeTo: .body) }
+    /// Warm umber used for shadows so elevation reads as light on paper, not grey smudge.
+    static let shadow = Color(hex: 0x3A2E1F)
+    /// Faint top-edge light that makes a raised surface read as a physical sheet.
+    static let highlight = Color.white
+}
+
+/// Elevation levels: each pairs a tight contact shadow with a wide ambient one.
+enum Elevation {
+    case flat, raised, floating
+
+    var contact: (opacity: Double, radius: CGFloat, y: CGFloat) {
+        switch self {
+        case .flat: (0, 0, 0)
+        case .raised: (0.06, 1.5, 1)
+        case .floating: (0.08, 3, 2)
+        }
+    }
+    var ambient: (opacity: Double, radius: CGFloat, y: CGFloat) {
+        switch self {
+        case .flat: (0, 0, 0)
+        case .raised: (0.06, 14, 6)
+        case .floating: (0.10, 28, 14)
+        }
+    }
+}
+
+extension View {
+    /// Two stacked warm shadows: a crisp contact shadow plus a soft ambient falloff.
+    func elevation(_ level: Elevation, tint: Color = Theme.shadow) -> some View {
+        let c = level.contact, a = level.ambient
+        return self
+            .shadow(color: tint.opacity(c.opacity), radius: c.radius, x: 0, y: c.y)
+            .shadow(color: tint.opacity(a.opacity), radius: a.radius, x: 0, y: a.y)
+    }
+}
+
+/// A white sheet with a whisper of top light and an inner edge that catches it.
+/// Flat surfaces keep the hairline since no shadow separates them.
+struct SurfaceBackground: View {
+    var radius: CGFloat
+    var elevation: Elevation = .raised
+    var body: some View {
+        let shape = RoundedRectangle(cornerRadius: radius, style: .continuous)
+        shape.fill(Theme.surface)
+            .overlay(shape.fill(LinearGradient(colors: [Theme.highlight.opacity(0), Theme.canvas.opacity(0.55)],
+                                               startPoint: .top, endPoint: .bottom)))
+            .overlay {
+                if elevation == .flat {
+                    shape.strokeBorder(Theme.hairline)
+                } else {
+                    // Brighter along the top edge, fading to a barely-there warm edge below.
+                    shape.strokeBorder(LinearGradient(colors: [Theme.highlight, Theme.hairline.opacity(0.35)],
+                                                      startPoint: .top, endPoint: .bottom), lineWidth: 0.75)
+                }
+            }
+            .elevation(elevation)
+    }
 }
 
 extension Color {
@@ -35,7 +92,13 @@ struct PrimaryButtonStyle: ButtonStyle {
                     Capsule().fill(Theme.ink)
                 }
             }
-            .opacity(configuration.isPressed ? 0.75 : 1)
+            .overlay(Capsule().strokeBorder(LinearGradient(colors: [.white.opacity(0.28), .white.opacity(0)],
+                                                           startPoint: .top, endPoint: .center), lineWidth: 0.75))
+            .shadow(color: (show?.dark ?? Theme.ink).opacity(configuration.isPressed ? 0.14 : 0.22),
+                    radius: configuration.isPressed ? 3 : 10, y: configuration.isPressed ? 1 : 5)
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .brightness(configuration.isPressed ? -0.04 : 0)
+            .animation(.spring(response: 0.28, dampingFraction: 0.7), value: configuration.isPressed)
     }
 }
 
@@ -44,9 +107,14 @@ struct SecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label.font(.subheadline.weight(.semibold))
             .padding(.horizontal, 20).frame(minHeight: 46).frame(maxWidth: fullWidth ? .infinity : nil)
-            .foregroundStyle(Theme.ink).background(Theme.surface, in: Capsule())
-            .overlay(Capsule().strokeBorder(Theme.hairline))
-            .opacity(configuration.isPressed ? 0.7 : 1)
+            .foregroundStyle(Theme.ink)
+            .background(.ultraThinMaterial, in: Capsule())
+            .background(Theme.surface.opacity(0.5), in: Capsule())
+            .overlay(Capsule().strokeBorder(LinearGradient(colors: [Theme.highlight.opacity(0.9), Theme.hairline.opacity(0.8)],
+                                                           startPoint: .top, endPoint: .bottom), lineWidth: 0.75))
+            .elevation(configuration.isPressed ? .flat : .raised)
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .animation(.spring(response: 0.28, dampingFraction: 0.7), value: configuration.isPressed)
     }
 }
 
@@ -135,17 +203,15 @@ struct StatTile: View {
             Text(label).font(.caption).foregroundStyle(Theme.secondary).lineLimit(1).minimumScaleFactor(0.75)
         }
         .padding(14).frame(maxWidth: .infinity, alignment: .leading)
-        .background(Theme.surface, in: RoundedRectangle(cornerRadius: OpenAIKit.Radius.card, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: OpenAIKit.Radius.card, style: .continuous).strokeBorder(Theme.hairline))
+        .background(SurfaceBackground(radius: OpenAIKit.Radius.card, elevation: .raised))
         .accessibilityElement(children: .combine)
     }
 }
 
 extension View {
-    /// White card with a hairline border.
-    func card(padding: CGFloat = 16, radius: CGFloat = OpenAIKit.Radius.panel) -> some View {
+    /// White card lifted off the canvas by a soft two-layer shadow (hairline only when `.flat`).
+    func card(padding: CGFloat = 16, radius: CGFloat = OpenAIKit.Radius.panel, elevation: Elevation = .raised) -> some View {
         self.padding(padding)
-            .background(Theme.surface, in: RoundedRectangle(cornerRadius: radius, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).strokeBorder(Theme.hairline))
+            .background(SurfaceBackground(radius: radius, elevation: elevation))
     }
 }

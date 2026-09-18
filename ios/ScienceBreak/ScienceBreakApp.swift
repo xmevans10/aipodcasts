@@ -8,6 +8,14 @@ import SwiftUI
         if ProcessInfo.processInfo.arguments.contains("--demo") { UserDefaults.standard.set(true, forKey: "onboarded") }
         if ProcessInfo.processInfo.arguments.contains("--onboarding") { UserDefaults.standard.set(false, forKey: "onboarded") }
         #endif
+        // Frosted tab bar: content scrolls softly beneath it, separated by a warm hairline.
+        let tabBar = UITabBarAppearance()
+        tabBar.configureWithTransparentBackground()
+        tabBar.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialLight)
+        tabBar.backgroundColor = UIColor(red: 0.98, green: 0.976, blue: 0.965, alpha: 0.6)
+        tabBar.shadowColor = UIColor(red: 0.227, green: 0.18, blue: 0.122, alpha: 0.08)
+        UITabBar.appearance().standardAppearance = tabBar
+        UITabBar.appearance().scrollEdgeAppearance = tabBar
     }
     var body: some Scene {
         WindowGroup {

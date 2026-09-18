@@ -1,6 +1,7 @@
 import AVFoundation
 import MediaPlayer
 import SwiftUI
+import UIKit
 
 @MainActor final class AudioPlayer: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     @Published var story: Story?
@@ -22,6 +23,11 @@ import SwiftUI
     private var sleepTask: Task<Void, Never>?
     private var lastCheckpointAt = 0.0
     private var lastTick: Date?
+    private var interruptionObserver: NSObjectProtocol?
+    private var routeObserver: NSObjectProtocol?
+    private var wasPlayingBeforeInterruption = false
+    private var artworkCache: [String: MPMediaItemArtwork] = [:]
+    private var lastSyncedSecond = -1
     /// Seconds of real audio listened, keyed by local day ("yyyy-MM-dd").
     @Published private(set) var listenedSeconds: [String: Double] = UserDefaults.standard.dictionary(forKey: "listenedSeconds") as? [String: Double] ?? [:]
     var isPreview: Bool { story?.audioURL == nil }
@@ -29,9 +35,106 @@ import SwiftUI
     override init() {
         super.init(); speech.delegate = self
         if let data = UserDefaults.standard.data(forKey: "listeningState"), let stored = try? JSONDecoder().decode(ListeningState.self, from: data) { listening = stored }
-        MPRemoteCommandCenter.shared().playCommand.addTarget { [weak self] _ in Task { @MainActor in self?.resume() }; return .success }
-        MPRemoteCommandCenter.shared().pauseCommand.addTarget { [weak self] _ in Task { @MainActor in self?.pause() }; return .success }
+        configureRemoteCommands()
+        observeAudioSession()
     }
+
+    /// Lock-screen and Control Center controls, wired to the queue and transport.
+    private func configureRemoteCommands() {
+        let center = MPRemoteCommandCenter.shared()
+        center.playCommand.addTarget { [weak self] _ in Task { @MainActor in self?.resume() }; return .success }
+        center.pauseCommand.addTarget { [weak self] _ in Task { @MainActor in self?.pause() }; return .success }
+        center.togglePlayPauseCommand.addTarget { [weak self] _ in Task { @MainActor in self?.toggle() }; return .success }
+        center.nextTrackCommand.addTarget { [weak self] _ in Task { @MainActor in self?.next() }; return .success }
+        center.previousTrackCommand.addTarget { [weak self] _ in Task { @MainActor in self?.previous() }; return .success }
+        center.skipForwardCommand.preferredIntervals = [NSNumber(value: 15)]
+        center.skipBackwardCommand.preferredIntervals = [NSNumber(value: 15)]
+        center.skipForwardCommand.addTarget { [weak self] _ in Task { @MainActor in self?.skip(by: 15) }; return .success }
+        center.skipBackwardCommand.addTarget { [weak self] _ in Task { @MainActor in self?.skip(by: -15) }; return .success }
+        center.changePlaybackPositionCommand.addTarget { [weak self] event in
+            let time = (event as? MPChangePlaybackPositionCommandEvent)?.positionTime
+            Task { @MainActor in if let time { self?.seek(time) } }
+            return .success
+        }
+    }
+
+    private func observeAudioSession() {
+        let session = AVAudioSession.sharedInstance()
+        interruptionObserver = NotificationCenter.default.addObserver(forName: AVAudioSession.interruptionNotification, object: session, queue: .main) { [weak self] note in
+            Task { @MainActor in self?.handleInterruption(note) }
+        }
+        routeObserver = NotificationCenter.default.addObserver(forName: AVAudioSession.routeChangeNotification, object: session, queue: .main) { [weak self] note in
+            Task { @MainActor in self?.handleRouteChange(note) }
+        }
+    }
+
+    /// Pause for calls/Siri and resume only when the system says it is safe.
+    private func handleInterruption(_ note: Notification) {
+        guard let raw = note.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
+              let type = AVAudioSession.InterruptionType(rawValue: raw) else { return }
+        switch type {
+        case .began:
+            wasPlayingBeforeInterruption = playing
+            if playing { pause() }
+        case .ended:
+            let rawOptions = note.userInfo?[AVAudioSessionInterruptionOptionKey] as? UInt ?? 0
+            if AVAudioSession.InterruptionOptions(rawValue: rawOptions).contains(.shouldResume), wasPlayingBeforeInterruption { resume() }
+            wasPlayingBeforeInterruption = false
+        default:
+            break
+        }
+    }
+
+    /// Stop when headphones are unplugged or a Bluetooth route drops.
+    private func handleRouteChange(_ note: Notification) {
+        guard let raw = note.userInfo?[AVAudioSessionRouteChangeReasonKey] as? UInt,
+              let reason = AVAudioSession.RouteChangeReason(rawValue: raw) else { return }
+        if reason == .oldDeviceUnavailable, playing { pause() }
+    }
+
+    /// Refresh lock-screen metadata: title, show, elapsed time, duration and rate.
+    func updateNowPlaying() {
+        guard let story else { MPNowPlayingInfoCenter.default().nowPlayingInfo = nil; return }
+        var info: [String: Any] = [
+            MPMediaItemPropertyTitle: story.title,
+            MPMediaItemPropertyArtist: "Sound Science · \(story.host.name)",
+            MPMediaItemPropertyAlbumTitle: story.show.title,
+            MPNowPlayingInfoPropertyMediaType: MPNowPlayingInfoMediaType.audio.rawValue,
+        ]
+        if !isPreview {
+            info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = position
+            info[MPMediaItemPropertyPlaybackDuration] = duration
+            info[MPNowPlayingInfoPropertyPlaybackRate] = playing ? Double(rate) : 0
+        }
+        if let art = artwork(for: story.show) { info[MPMediaItemPropertyArtwork] = art }
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+    }
+
+    private func artwork(for show: Show) -> MPMediaItemArtwork? {
+        if let cached = artworkCache[show.id] { return cached }
+        let size = CGSize(width: 600, height: 600)
+        let image = UIGraphicsImageRenderer(size: size).image { context in
+            let colors = [UIColor(show.light).cgColor, UIColor(show.mid).cgColor, UIColor(show.dark).cgColor] as CFArray
+            if let gradient = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors, locations: [0, 0.55, 1]) {
+                context.cgContext.drawLinearGradient(gradient, start: .zero, end: CGPoint(x: size.width, y: size.height), options: [])
+            }
+            let style = NSMutableParagraphStyle(); style.alignment = .left
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 54, weight: .bold),
+                .foregroundColor: UIColor.white,
+                .paragraphStyle: style,
+            ]
+            let label = show.title + "\n" + show.host.name
+            (label as NSString).draw(in: CGRect(x: 48, y: size.height - 232, width: size.width - 96, height: 184), withAttributes: attributes)
+        }
+        let artwork = MPMediaItemArtwork(boundsSize: size) { _ in image }
+        artworkCache[show.id] = artwork
+        return artwork
+    }
+
+    func skip(by seconds: Double) { seek(position + seconds) }
+    /// No play history is kept, so previous restarts the current episode.
+    func previous() { if story != nil { seek(0) } }
     func persist() {
         if let data = try? JSONEncoder().encode(listening) { UserDefaults.standard.set(data, forKey: "listeningState") }
         UserDefaults.standard.set(listenedSeconds, forKey: "listenedSeconds")
@@ -59,7 +162,7 @@ import SwiftUI
         persist()
     }
     private func finished() {
-        playing = false; listening.finish(); persist()
+        playing = false; updateNowPlaying(); listening.finish(); persist()
         // Pop before play so a completed item's checkpoint cannot be restored.
         while let id = listening.next() {
             if let item = catalog[id] { play(item); return }
@@ -82,7 +185,7 @@ import SwiftUI
         if let observer { player?.removeTimeObserver(observer) }; observer = nil
         if let endObserver { NotificationCenter.default.removeObserver(endObserver) }; endObserver = nil
         player?.pause(); player = nil; activeUtterance = nil; speech.stopSpeaking(at: .immediate)
-        story = item; position = item.audioURL == nil ? 0 : resumePosition; duration = Double(item.minutes * 60); message = nil
+        story = item; position = item.audioURL == nil ? 0 : resumePosition; duration = Double(item.minutes * 60); message = nil; lastSyncedSecond = -1
         do {
             try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
             try AVAudioSession.sharedInstance().setActive(true)
@@ -100,6 +203,7 @@ import SwiftUI
                         self.lastTick = now
                     } else { self.lastTick = nil }
                     if abs(self.position - self.lastCheckpointAt) >= 5 { self.lastCheckpointAt = self.position; self.checkpoint() }
+                    if Int(self.position) != self.lastSyncedSecond { self.lastSyncedSecond = Int(self.position); self.updateNowPlaying() }
                     if let seconds = self.player?.currentItem?.duration.seconds, seconds.isFinite, seconds > 0 { self.duration = seconds }
                     if self.player?.currentItem?.status == .failed { self.message = "This audio is unavailable. You can still read the story."; self.playing = false }
                 }
@@ -118,7 +222,7 @@ import SwiftUI
             speech.speak(utterance)
         } else { message = "Narration is not ready yet. You can still read this story."; playing = false; return }
         playing = true; onStarted?(item)
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = [MPMediaItemPropertyTitle: item.title, MPMediaItemPropertyArtist: "Sound Science · \(item.host.name)"]
+        updateNowPlaying()
     }
     /// Remote audio must be HTTPS; `bundle:name.ext` plays a file shipped with the app.
     static func resolve(_ raw: String) -> URL? {
@@ -129,13 +233,14 @@ import SwiftUI
         guard let url = URL(string: raw), url.scheme == "https" else { return nil }
         return url
     }
-    func pause() { player?.pause(); speech.pauseSpeaking(at: .immediate); playing = false; checkpoint() }
+    func pause() { player?.pause(); speech.pauseSpeaking(at: .immediate); playing = false; checkpoint(); updateNowPlaying() }
     func resume() {
         guard story != nil else { return }
         if let player, !listening.completed.contains(story?.id ?? "") { player.playImmediately(atRate: rate) }
         else if speech.isPaused { speech.continueSpeaking() }
         else if let story { play(story); return }
         playing = true
+        updateNowPlaying()
     }
     /// 0 = not started, 1 = finished.
     func progress(of item: Story) -> Double {
@@ -165,8 +270,9 @@ import SwiftUI
         guard player != nil else { return }
         position = min(max(0, value), duration)
         player?.seek(to: CMTime(seconds: position, preferredTimescale: 600))
+        updateNowPlaying()
     }
-    func cycleRate() { rate = rate == 1 ? 1.25 : rate == 1.25 ? 1.5 : 1; if playing { player?.rate = rate }; if isPreview { message = "Preview speed applies the next time you start a story." } }
+    func cycleRate() { rate = rate == 1 ? 1.25 : rate == 1.25 ? 1.5 : 1; if playing { player?.rate = rate }; if isPreview { message = "Preview speed applies the next time you start a story." }; updateNowPlaying() }
     func sleep(minutes: Int) {
         sleepTask?.cancel(); sleepUntil = Date.now.addingTimeInterval(Double(minutes * 60))
         sleepTask = Task { try? await Task.sleep(for: .seconds(minutes * 60)); guard !Task.isCancelled else { return }; pause(); sleepUntil = nil }

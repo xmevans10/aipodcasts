@@ -7,6 +7,8 @@ in [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md).
 
 ## Current state
 
+Progress: Phase 1 shipped; Phase 2 implemented, device verification pending.
+
 - One `AudioPlayer` ([`Player.swift`](../ios/ScienceBreak/Player.swift)) with
   `AVAudioSession.playback` and play/pause remote commands, and Now Playing set
   to title/artist only. No interruption or route-change handling.

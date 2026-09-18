@@ -8,16 +8,35 @@ struct Host: Identifiable, Codable, Hashable {
     let symbol: String
     let hue: Double
     var color: Color { Color(hue: hue, saturation: 0.28, brightness: 0.88) }
+    /// The single show this host fronts.
+    var show: Show { Show.forHost(id) ?? Show.all[0] }
+    var showID: String { show.id }
     static let all = [
         Host(id: "nova", name: "Mira Vale", niche: "Space & physics", personality: "Big questions. A little cosmic perspective.", symbol: "sparkles", hue: 0.66),
         Host(id: "fern", name: "Clara Rowan", niche: "Our living planet", personality: "Wild connections, told with warmth.", symbol: "leaf", hue: 0.27),
         Host(id: "ada", name: "Elias Reed", niche: "Minds & machines", personality: "Curious, clear-eyed, delightfully nerdy.", symbol: "waveform.path", hue: 0.06),
-        Host(id: "atlas", name: "Theo Mercer", niche: "Earth & climate", personality: "The planet beneath the headlines, told patiently.", symbol: "touchid", hue: 0.47)
+        Host(id: "atlas", name: "Theo Mercer", niche: "Earth & climate", personality: "The planet beneath the headlines, told patiently.", symbol: "touchid", hue: 0.47),
+        Host(id: "spinner", name: "Dr. Priya Nandakumar", niche: "Spiders & silk", personality: "Reads a web like a blueprint, one thread at a time.", symbol: "point.3.connected.trianglepath.dotted", hue: 0.76),
+        Host(id: "yusuf", name: "Dr. Yusuf Adeyemi", niche: "Stars & astrochemistry", personality: "The atoms in you were forged in stars, and he can show you how.", symbol: "atom", hue: 0.10),
+        Host(id: "noor", name: "Dr. Noor Haddad", niche: "AI & machine learning", personality: "Clear about what a model learned, and what it didn't.", symbol: "cpu", hue: 0.58),
+        Host(id: "marek", name: "Marek Novak", niche: "3D printing & materials", personality: "Prints the part, then tests the part.", symbol: "cube.transparent", hue: 0.03),
+        Host(id: "tomas", name: "Dr. Tomas Iversen", niche: "Sports science", personality: "Marginal gains, measured honestly.", symbol: "figure.run", hue: 0.30),
+        Host(id: "lena", name: "Dr. Lena Petrova", niche: "Sleep & circadian", personality: "Takes rest seriously, one rhythm at a time.", symbol: "moon.zzz", hue: 0.62),
+        Host(id: "rosa", name: "Dr. Rosa Ibarra", niche: "Fungi & networks", personality: "Follows the network underground.", symbol: "network", hue: 0.82),
+        Host(id: "amara", name: "Dr. Amara Okafor", niche: "Bees & pollinators", personality: "Small pollinators, large consequences.", symbol: "hexagon", hue: 0.14),
+        Host(id: "kenji", name: "Dr. Kenji Watanabe", niche: "Deep sea", personality: "Pressure, darkness and patience.", symbol: "water.waves", hue: 0.52),
+        Host(id: "freya", name: "Dr. Freya Lindqvist", niche: "Ancient DNA", personality: "Deep time, read from a fragment of bone.", symbol: "fossil.shell", hue: 0.36),
+        Host(id: "ines", name: "Ines Marlowe", niche: "Methods & evidence", personality: "Precise, gently sceptical, always checking the method.", symbol: "checkmark.seal", hue: 0.00),
+        Host(id: "dev", name: "Dev Raman", niche: "Methods & evidence", personality: "Warm translator from a result to what it changes.", symbol: "text.bubble", hue: 0.41),
+        Host(id: "jax", name: "Jax Moreno", niche: "Astrophysics", personality: "Loud questions, quick jokes, real science.", symbol: "star", hue: 0.72),
+        Host(id: "kai", name: "Kai Nakamura", niche: "Astrophysics", personality: "The quiet one who does the maths.", symbol: "function", hue: 0.20),
+        Host(id: "benny", name: "Benny Osei", niche: "Astrophysics", personality: "Allergic to a boring comparison.", symbol: "flame", hue: 0.88),
+        Host(id: "chase", name: "Chase Delacroix", niche: "Astrophysics", personality: "The sceptic with the best punchlines.", symbol: "star.fill", hue: 0.96)
     ]
 }
-/// Each host fronts their own show; the app is the platform that carries all of them.
+/// A show may be fronted by one host or a small cast; `id` is a stable slug.
 struct Show: Identifiable, Hashable {
-    let id: String  // matches Host.id
+    let id: String  // stable slug, not a host id
     let title: String
     let category: String
     let tagline: String
@@ -26,20 +45,60 @@ struct Show: Identifiable, Hashable {
     let light: Color
     let mid: Color
     let dark: Color
-    var host: Host { Host.all.first { $0.id == id } ?? Host.all[0] }
+    let hostIDs: [String]
+    /// The first host listed is the show's primary voice.
+    var host: Host { Host.all.first { hostIDs.contains($0.id) } ?? Host.all[0] }
+    /// The first show a host appears on, if any.
+    static func forHost(_ id: String) -> Show? { all.first { $0.hostIDs.contains(id) } }
     static let all = [
-        Show(id: "nova", title: "The Long View", category: "Space & Physics", tagline: "Space, time and the stuff in between.",
+        Show(id: "the-long-view", title: "The Long View", category: "Space & Physics", tagline: "Space, time and the stuff in between.",
              about: "New findings from telescopes, orbiters and physics labs, explained calmly and without the hype. Each episode follows how we know, not just what was found.",
-             symbol: "moon.stars", light: Color(hex: 0x8F7CFF), mid: Color(hex: 0x4B49C8), dark: Color(hex: 0x151A52)),
-        Show(id: "fern", title: "Wild Company", category: "Nature & Wildlife", tagline: "The living world, up close.",
+             symbol: "moon.stars", light: Color(hex: 0x8F7CFF), mid: Color(hex: 0x4B49C8), dark: Color(hex: 0x151A52), hostIDs: ["nova"]),
+        Show(id: "wild-company", title: "Wild Company", category: "Nature & Wildlife", tagline: "The living world, up close.",
              about: "Animals, plants and ecosystems doing surprising things. Stories come from field observations and peer-reviewed studies, with their limits kept in view.",
-             symbol: "leaf", light: Color(hex: 0xA8E063), mid: Color(hex: 0x2FA46B), dark: Color(hex: 0x0C3B2E)),
-        Show(id: "ada", title: "Signal & Noise", category: "Brain & Technology", tagline: "How minds and machines make sense of things.",
+             symbol: "leaf", light: Color(hex: 0xA8E063), mid: Color(hex: 0x2FA46B), dark: Color(hex: 0x0C3B2E), hostIDs: ["fern"]),
+        Show(id: "signal-and-noise", title: "Signal & Noise", category: "Brain & Technology", tagline: "How minds and machines make sense of things.",
              about: "Neuroscience, perception and computing, taken apart one mechanism at a time. Expect careful distinctions between what was measured and what was modelled.",
-             symbol: "waveform.path.ecg", light: Color(hex: 0xFF9A5A), mid: Color(hex: 0xE4572E), dark: Color(hex: 0x5B1A12)),
-        Show(id: "atlas", title: "Common Ground", category: "Earth & Climate", tagline: "The planet beneath the headlines.",
+             symbol: "waveform.path.ecg", light: Color(hex: 0xFF9A5A), mid: Color(hex: 0xE4572E), dark: Color(hex: 0x5B1A12), hostIDs: ["ada"]),
+        Show(id: "common-ground", title: "Common Ground", category: "Earth & Climate", tagline: "The planet beneath the headlines.",
              about: "Oceans, weather, geology and climate, with the patience these slow systems deserve. New episodes are on the way; a sample is available now.",
-             symbol: "globe.americas", light: Color(hex: 0x59D8D0), mid: Color(hex: 0x139BB0), dark: Color(hex: 0x07374A)),
+             symbol: "globe.americas", light: Color(hex: 0x59D8D0), mid: Color(hex: 0x139BB0), dark: Color(hex: 0x07374A), hostIDs: ["atlas"]),
+        Show(id: "webwork", title: "Webwork", category: "Spiders & Arachnids", tagline: "Eight legs, one extraordinary material.",
+             about: "Spiders, their webs and the silk they spin, from garden orb-weavers to the physics of a thread thinner than a hair. Every claim is traced back to the study that made it.",
+             symbol: "circle.hexagonpath", light: Color(hex: 0xA98CFF), mid: Color(hex: 0x6A3FC0), dark: Color(hex: 0x241246), hostIDs: ["spinner"]),
+        Show(id: "star-stuff", title: "Star Stuff", category: "Stars & Astrochemistry", tagline: "The chemistry that built the elements.",
+             about: "Stars forge the atoms we are made of, and astrochemists read that history in spectra and dust. New episodes follow the molecules, not the mystique.",
+             symbol: "atom", light: Color(hex: 0xFF9FD8), mid: Color(hex: 0xC93F9B), dark: Color(hex: 0x3E0A32), hostIDs: ["yusuf"]),
+        Show(id: "gradient", title: "Gradient", category: "AI & Machine Learning", tagline: "What machine learning actually learns.",
+             about: "Neural networks, training data and the difference between a benchmark and the world. Careful explanations of what models do, and where their confidence stops.",
+             symbol: "cpu", light: Color(hex: 0x6FC8E8), mid: Color(hex: 0x1F6FA8), dark: Color(hex: 0x0A2440), hostIDs: ["noor"]),
+        Show(id: "layer-by-layer", title: "Layer by Layer", category: "3D Printing & Materials", tagline: "Building things one layer at a time.",
+             about: "3D printing, new materials and the engineering between a digital file and a physical part. Prints are tested, not just demonstrated.",
+             symbol: "cube.transparent", light: Color(hex: 0xE8B48A), mid: Color(hex: 0x9A5426), dark: Color(hex: 0x35190A), hostIDs: ["marek"]),
+        Show(id: "marginal-gains", title: "Marginal Gains", category: "Sports Science", tagline: "Small edges, honestly measured.",
+             about: "Sports science, training and recovery, where a one-percent change is the whole game. Effect sizes and study limits are kept in plain sight.",
+             symbol: "figure.run", light: Color(hex: 0xBEE05A), mid: Color(hex: 0x5A9A22), dark: Color(hex: 0x1E3608), hostIDs: ["tomas"]),
+        Show(id: "slow-wave", title: "Slow Wave", category: "Sleep & Circadian", tagline: "The science of sleep and rhythm.",
+             about: "Sleep, circadian clocks and what rest does to body and mind. Evidence first; no miracle routines.",
+             symbol: "moon.zzz", light: Color(hex: 0x9AA6FF), mid: Color(hex: 0x4453B0), dark: Color(hex: 0x11143A), hostIDs: ["lena"]),
+        Show(id: "mycelium", title: "Mycelium", category: "Fungi & Networks", tagline: "The network beneath the forest floor.",
+             about: "Fungi, mycelium and the partnerships they run underground. A quiet world of connections, explained from the field and the lab.",
+             symbol: "network", light: Color(hex: 0xD99BCB), mid: Color(hex: 0x8F4580), dark: Color(hex: 0x33122B), hostIDs: ["rosa"]),
+        Show(id: "hive-mind", title: "Hive Mind", category: "Bees & Pollinators", tagline: "Small pollinators, planetary stakes.",
+             about: "Bees, wasps and the pollination webs they hold together. Colony life and its pressures, told with the evidence attached.",
+             symbol: "hexagon", light: Color(hex: 0xFFC24D), mid: Color(hex: 0xCC7400), dark: Color(hex: 0x401F00), hostIDs: ["amara"]),
+        Show(id: "the-deep", title: "The Deep", category: "Deep Sea", tagline: "Life and pressure at the bottom.",
+             about: "The deep sea: dark, cold and stranger than fiction. Explorations and the instruments that make them possible.",
+             symbol: "water.waves", light: Color(hex: 0x5FB8D8), mid: Color(hex: 0x19648F), dark: Color(hex: 0x051A33), hostIDs: ["kenji"]),
+        Show(id: "old-bones", title: "Old Bones", category: "Ancient DNA", tagline: "Deep time, written in DNA.",
+             about: "Ancient DNA and what bones and sediments reveal about the deep past. Reconstructions are careful, and their uncertainties named.",
+             symbol: "fossil.shell", light: Color(hex: 0xDCC79A), mid: Color(hex: 0xA07C40), dark: Color(hex: 0x33250F), hostIDs: ["freya"]),
+        Show(id: "ground-truth", title: "Ground Truth", category: "Methods & Evidence", tagline: "Two hosts, one question: how do we know?",
+             about: "Ines Marlowe and Dev Raman take a single result and pull it apart: how it was measured, what it means and where it stops holding. A co-hosted show about evidence.",
+             symbol: "chart.xyaxis.line", light: Color(hex: 0x8FA6BC), mid: Color(hex: 0x3F5C76), dark: Color(hex: 0x101B26), hostIDs: ["ines", "dev"]),
+        Show(id: "star-bros", title: "Star Bros", category: "Astrophysics", tagline: "Four friends, one enormous universe.",
+             about: "Jax, Kai, Benny and Chase argue, joke and explain their way through astrophysics. Warm, silly and genuinely rigorous, with the science always landing.",
+             symbol: "star", light: Color(hex: 0xFF8F6B), mid: Color(hex: 0xB23A6E), dark: Color(hex: 0x3A0C29), hostIDs: ["jax", "kai", "benny", "chase"])
     ]
 }
 struct Source: Codable, Hashable {
@@ -48,6 +107,8 @@ struct Source: Codable, Hashable {
     let attribution: String
     let license: String
 }
+/// One spoken turn in a co-hosted episode.
+struct DialogueTurn: Codable, Hashable { let speaker: String; let text: String }
 struct Story: Identifiable, Codable, Hashable {
     let id: String
     let title: String
@@ -61,8 +122,13 @@ struct Story: Identifiable, Codable, Hashable {
     let audioURL: String?
     let isDemo: Bool
     var published: String? = nil
-    var host: Host { Host.all.first { $0.id == hostID } ?? Host.all[0] }
-    var show: Show { Show.all.first { $0.id == hostID } ?? Show.all[0] }
+    /// Spoken conversation when an episode is co-hosted. Optional so older
+    /// single-host JSON without the key keeps decoding.
+    let turns: [DialogueTurn]?
+    /// Every host heard on a multi-host episode; the primary stays `hostID`.
+    let hostIDs: [String]?
+    var host: Host { Host.all.first { $0.id == hostID } ?? Show.forHost(hostID)?.host ?? Host.all[0] }
+    var show: Show { Show.forHost(hostID) ?? Show.all[0] }
     var durationSeconds: Double { Episodes.duration(for: id) ?? Double(minutes * 60) }
     var publishedDate: Date? { published.flatMap { Story.dayFormatter.date(from: $0) } }
     /// "Sep 17", or "Sample" for device-voice demos without a date.
@@ -148,7 +214,7 @@ enum Episodes {
     func setFollowing(_ ids: Set<String>) { following = ids; UserDefaults.standard.set(Array(ids), forKey: "following") }
     /// Newest first; undated samples last.
     var latest: [Story] { stories.sorted { ($0.published ?? "") > ($1.published ?? "") } }
-    func episodes(of show: Show) -> [Story] { latest.filter { $0.hostID == show.id } }
+    func episodes(of show: Show) -> [Story] { latest.filter { show.hostIDs.contains($0.hostID) } }
     @AppStorage("feedURL") var feedURL = ""
     func toggle(_ story: Story) {
         if saved.contains(story.id) { saved.remove(story.id) } else { saved.insert(story.id) }

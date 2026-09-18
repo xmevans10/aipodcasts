@@ -79,7 +79,7 @@ struct CoverWash: View {
     }
 
     private var points: [SIMD2<Float>] {
-        var rng = CoverTexture.Random(seed: CoverTexture.seed(show.id))
+        var rng = CoverTexture.Random(seed: CoverTexture.seed(show.hostIDs.first ?? show.id))
         func j(_ amount: Double) -> Float { Float(rng.range(-amount...amount)) }
         return [
             [0, 0], [0.5 + j(0.15), 0], [1, 0],
@@ -95,7 +95,7 @@ struct CoverWashFallback: View {
     var body: some View {
         GeometryReader { geometry in
             let w = geometry.size.width
-            var rng = CoverTexture.Random(seed: CoverTexture.seed(show.id))
+            var rng = CoverTexture.Random(seed: CoverTexture.seed(show.hostIDs.first ?? show.id))
             let pool = UnitPoint(x: 0.42 + rng.range(-0.12...0.12), y: 0.5 + rng.range(-0.12...0.12))
             ZStack {
                 LinearGradient(colors: [show.light, show.mid, show.dark], startPoint: .topTrailing, endPoint: .bottomLeading)
@@ -128,8 +128,8 @@ struct CoverMotif: View {
         Canvas { context, size in
             let w = size.width
             let line = max(0.5, w * 0.0045)
-            var rng = CoverTexture.Random(seed: CoverTexture.seed(show.id) ^ 0xA5A5)
-            switch show.id {
+            var rng = CoverTexture.Random(seed: CoverTexture.seed(show.hostIDs.first ?? show.id) ^ 0xA5A5)
+            switch show.hostIDs.first ?? show.id {
             case "nova": // The Long View: tilted orbits around a point off the top-right corner
                 let centre = CGPoint(x: w * 0.92, y: w * 0.08)
                 context.translateBy(x: centre.x, y: centre.y)

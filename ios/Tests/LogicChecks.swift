@@ -90,15 +90,22 @@ private func testListeningMath() {
 // MARK: - shows and hosts
 
 private func testShowsAndHosts() {
-    checkEqual(Show.all.count, 4, "four shows")
-    checkEqual(Set(Show.all.map(\.id)).count, 4, "show ids are unique")
-    checkEqual(Set(Show.all.map(\.title)).count, 4, "show titles are unique")
+    checkEqual(Show.all.count, 16, "sixteen shows")
+    checkEqual(Set(Show.all.map(\.id)).count, 16, "show ids are unique")
+    checkEqual(Set(Show.all.map(\.title)).count, 16, "show titles are unique")
+    checkEqual(Set(Host.all.map(\.id)).count, Host.all.count, "host ids are unique")
     for show in Show.all {
-        checkEqual(show.host.id, show.id, "\(show.title) resolves its own host")
+        check(!show.hostIDs.isEmpty, "\(show.title) names at least one host")
+        check(show.hostIDs.allSatisfy { id in Host.all.contains { $0.id == id } },
+              "\(show.title) hostIDs resolve to real hosts")
+        check(show.hostIDs.contains(show.host.id), "\(show.title) exposes a primary host")
         check(!show.tagline.isEmpty && !show.about.isEmpty, "\(show.title) has copy for its page")
+        check(Show.forHost(show.hostIDs[0])?.id == show.id, "\(show.title) resolves from its primary host")
     }
     for host in Host.all {
-        check(Show.all.contains { $0.id == host.id }, "\(host.name) fronts a show")
+        let shows = Show.all.filter { $0.hostIDs.contains(host.id) }
+        checkEqual(shows.count, 1, "\(host.name) maps to exactly one show")
+        checkEqual(host.show.id, shows.first?.id, "\(host.name) resolves its show")
     }
 }
 
@@ -116,7 +123,7 @@ private func testEpisodes(directory: URL) {
         checkEqual(story.audioURL, "bundle:\(name).m4a", "\(name) points at its bundled audio")
         check(FileManager.default.fileExists(atPath: directory.appendingPathComponent("\(name).m4a").path),
               "\(name).m4a ships beside its metadata")
-        check(Show.all.contains { $0.id == story.hostID }, "\(name) belongs to a real show")
+        check(Show.forHost(story.hostID) != nil, "\(name) belongs to a real show")
         check(!story.sources.isEmpty, "\(name) cites at least one source")
         check(story.sources.allSatisfy { $0.url.hasPrefix("https://") }, "\(name) source links are HTTPS")
         check(!story.caveat.isEmpty, "\(name) carries its limitations note")
@@ -147,13 +154,40 @@ private func testEpisodes(directory: URL) {
 
 private func testStoryHelpers() {
     let story = Story(id: "x", title: "T", dek: "D", topic: "SPACE", hostID: "nova", minutes: 3,
-                      body: "b", caveat: "c", sources: [], audioURL: nil, isDemo: false, published: "2026-09-17")
+                      body: "b", caveat: "c", sources: [], audioURL: nil, isDemo: false, published: "2026-09-17",
+                      turns: nil, hostIDs: nil)
     checkEqual(story.publishedDate.map { Story.dayFormatter.string(from: $0) }, "2026-09-17", "published dates parse")
     check(story.dateText.contains("17"), "a published episode shows its date")
     checkEqual(story.durationSeconds, 180, "an unbundled episode falls back to its minute count")
     let undated = Story(id: "y", title: "T", dek: "D", topic: "EARTH", hostID: "atlas", minutes: 1,
-                        body: "b", caveat: "c", sources: [], audioURL: nil, isDemo: true)
+                        body: "b", caveat: "c", sources: [], audioURL: nil, isDemo: true,
+                        turns: nil, hostIDs: nil)
     checkEqual(undated.dateText, "Sample", "an undated demo is labelled a sample")
+}
+
+// MARK: - dialogue decoding
+
+private func testDialogueFields() {
+    let legacy = """
+    {"id":"l","title":"T","dek":"D","topic":"SPACE","hostID":"nova","minutes":3,"body":"b","caveat":"c","sources":[],"isDemo":false}
+    """.data(using: .utf8)!
+    guard let old = try? JSONDecoder().decode(Story.self, from: legacy) else {
+        failures.append("a story without dialogue keys no longer decodes"); checks += 1; return
+    }
+    checkEqual(old.turns, nil, "legacy stories have no dialogue turns")
+    checkEqual(old.hostIDs, nil, "legacy stories keep just the primary host")
+    checkEqual(old.show.id, "the-long-view", "legacy stories still resolve their show")
+
+    let dialogue = """
+    {"id":"d","title":"T","dek":"D","topic":"METHODS","hostID":"ines","minutes":4,"body":"b","caveat":"c","sources":[],"isDemo":false,"hostIDs":["ines","dev"],"turns":[{"speaker":"Ines Marlowe","text":"Hi."},{"speaker":"Dev Raman","text":"Hello."}]}
+    """.data(using: .utf8)!
+    guard let decoded = try? JSONDecoder().decode(Story.self, from: dialogue) else {
+        failures.append("a dialogue story does not decode"); checks += 1; return
+    }
+    checkEqual(decoded.turns?.count, 2, "dialogue turns decode in order")
+    checkEqual(decoded.turns?.first?.speaker, "Ines Marlowe", "a turn keeps its speaker")
+    checkEqual(decoded.hostIDs, ["ines", "dev"], "co-hosts decode")
+    checkEqual(decoded.show.id, "ground-truth", "a co-hosted story resolves its show")
 }
 
 // MARK: - cover layout
@@ -180,6 +214,7 @@ private func testStoryHelpers() {
         testListeningMath()
         testShowsAndHosts()
         testStoryHelpers()
+        testDialogueFields()
         testEpisodes(directory: episodes)
         MainActor.assumeIsolated { testCoverLayout() }
 

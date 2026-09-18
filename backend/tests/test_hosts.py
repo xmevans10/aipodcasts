@@ -7,7 +7,12 @@ from podcast import PODCAST_INSTRUCTIONS, validate_podcast
 
 class HostPersonalityTests(unittest.TestCase):
     def test_every_host_is_distinct_and_complete(self):
-        self.assertEqual(set(HOSTS), {'nova', 'fern', 'ada', 'atlas', 'ines', 'dev'})
+        self.assertEqual(set(HOSTS), {
+            'nova', 'fern', 'ada', 'atlas', 'ines', 'dev',
+            'spinner', 'yusuf', 'noor', 'marek', 'tomas', 'lena',
+            'rosa', 'amara', 'kenji', 'freya',
+            'jax', 'kai', 'benny', 'chase',
+        })
         for key, host in HOSTS.items():
             self.assertEqual(key, host.id)
             self.assertTrue(host.analogies_from and host.avoid and host.emotion_palette)

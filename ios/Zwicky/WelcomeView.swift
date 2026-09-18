@@ -11,7 +11,7 @@ struct WelcomeView: View {
     @AccessibilityFocusState private var headingFocused: Bool
 
     private var firstEpisode: Story? {
-        library.latest.first { selected.contains($0.hostID) }
+        library.latest.first { selected.contains($0.show.id) }
     }
 
     var body: some View {
@@ -217,7 +217,7 @@ struct WelcomeView: View {
 
     private func finish(play: Bool) {
         if !selected.isEmpty { library.setFollowing(selected) }
-        if let first = Show.all.first(where: { selected.contains($0.id) }) { library.hostID = first.id }
+        if let first = Show.all.first(where: { selected.contains($0.id) }) { library.hostID = first.hostIDs.first ?? first.id }
         if play, let story = firstEpisode { player.play(story) }
         onboarded = true
     }

@@ -84,7 +84,45 @@ HOSTS: dict[str, Host] = {
         avoid=["alarm or doom framing", "policy advocacy", "blending projection with observation", "treating one season or study as a trend"],
         emotion_palette=["steady and grounded", "quietly impressed", "measured", "reflective", "firm", "warm, unhurried"],
     ),
+    # Ground Truth is the two-host show: a methodologist and an explainer trade the mic.
+    "ines": Host(
+        id="ines", name="Ines Marlowe", show="Ground Truth", topic="METHODS", beat="evidence, measurement and statistics",
+        persona="A precise, gently sceptical methodologist who cares how a number was obtained and where it stops meaning anything.",
+        delivery="Measured, dry and exact. Asks the clarifying question a careful listener would, and is happy to say 'we don't know yet'. Never smug.",
+        hook_style="Open by putting a single number on the table, then immediately asking how it was measured.",
+        sign_off="I'm Ines Marlowe. Check the method.",
+        analogies_from=["measurement and instruments", "recipes and reproducibility", "maps and scale"],
+        avoid=["statistical pedantry without a point", "dismissing a study outright", "jargon left unexplained", "false balance"],
+        emotion_palette=["dry", "gently sceptical", "quietly delighted", "careful", "firm", "warm surprise"],
+    ),
+    "dev": Host(
+        id="dev", name="Dev Raman", show="Ground Truth", topic="METHODS", beat="how findings land in the world",
+        persona="An enthusiastic translator between a result and its consequences, always asking what it changes outside the lab.",
+        delivery="Warm, quick and curious. Builds the big picture, offers the analogy, and hands the scepticism to his co-host with good humour.",
+        hook_style="Open with why anyone outside the lab should care about this particular result.",
+        sign_off="I'm Dev Raman. Keep asking what it changes.",
+        analogies_from=["city life and transport", "sport and practice", "cooking and craft"],
+        avoid=["overclaiming applications", "hype", "talking over the evidence", "ignoring the limits his co-host raises"],
+        emotion_palette=["eager", "amused", "impressed", "good-naturedly deflating", "sincere", "brisk"],
+    ),
 }
+
+# Shows carried by two presenters in turn. A story ingested under any member host
+# is drafted and narrated as dialogue.
+DIALOGUE_SHOWS: dict[str, dict] = {
+    "ground-truth": {"name": "Ground Truth", "topic": "METHODS", "hosts": ("ines", "dev")},
+}
+
+
+def dialogue_hosts(host_id: str) -> list[Host] | None:
+    """The two presenters when `host_id` belongs to a dialogue show, else None."""
+    show = HOSTS.get(host_id)
+    if show is None:
+        return None
+    for profile in DIALOGUE_SHOWS.values():
+        if host_id in profile["hosts"] and show.show == profile["name"]:
+            return [HOSTS[member] for member in profile["hosts"]]
+    return None
 
 
 def writing_guide(host_id: str) -> str:

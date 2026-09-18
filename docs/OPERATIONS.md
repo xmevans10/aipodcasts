@@ -143,3 +143,9 @@ python3 backend/newsletter.py send --to you@example.com --attach-audio
 ```
 
 `send` stages one RFC 822 `.eml` per recipient under `build/newsletter/outbox/` (open them in any mail client). To deliver over SMTP instead, set `SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/`SMTP_PASSWORD` and pass `--deliver`; `--audio-url` replaces the local preview audio path with an absolute hosted URL. Deterministic checks live in `backend/tests/test_newsletter.py`.
+
+## Two-host dialogue (Ground Truth)
+
+A show can be carried by two presenters. `backend/hosts.py` lists `ines` (Ines Marlowe, methods) and `dev` (Dev Raman, consequences) under the show **Ground Truth**, and `DIALOGUE_SHOWS` names the pair. `dialogue_hosts(host_id)` returns both presenters for any member host, and `pipeline.draft_story` then uses `DIALOGUE_INSTRUCTIONS` + `dialogue_guide` + `DIALOGUE_SCHEMA` from `backend/dialogue.py` instead of the single-host contract. `validate_dialogue` enforces both presenters speaking, no more than two turns in a row, the exact headline/paper-title/first-author opening, the verbatim limitations paragraph, both sign-offs in the close, and verbatim evidence quotes.
+
+Narration uses ElevenLabs **Text to Dialogue** (`/v1/text-to-dialogue`, `eleven_v3`), which renders multiple voices in one generation; `_narrate_dialogue` chunks turns to respect the ~2,000-character request budget and concatenates the MP3 parts. Configure `ELEVENLABS_VOICE_INES`, `ELEVENLABS_VOICE_DEV` and optionally `ELEVENLABS_DIALOGUE_MODEL`. The feed emits `turns` and `hostIDs` for dialogue stories. Voice providers are swappable; see [VOICE-OPTIONS.md](VOICE-OPTIONS.md). Real narration is blocked until licensed/cloned voice IDs exist (the current key has no paid plan); `backend/tests/test_dialogue.py` covers the contract without any provider calls.

@@ -11,14 +11,15 @@ from pathlib import Path
 import re
 import sqlite3
 import tempfile
-import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from evidence import extract_passages, build_packet, evidence_text
-from hosts import HOSTS as HOST_PROFILES, writing_guide
+from hosts import HOSTS as HOST_PROFILES, writing_guide, dialogue_hosts
 from anti_slop import ANTI_SLOP_GUIDE
+from dialogue import DIALOGUE_INSTRUCTIONS, DIALOGUE_SCHEMA, dialogue_guide, validate_dialogue, turns_body, turns_narration_inputs
+from provenance import provenance_text, quotes_in_source
 from podcast import DEFAULT_MODEL, PODCAST_INSTRUCTIONS, validate_podcast, narration_script
 
 ROOT = Path(__file__).resolve().parent
@@ -32,6 +33,7 @@ def load_local_env(path: Path | None = None) -> None:
     if not path.exists():
         return
     allowed = {"OPENAI_API_KEY", "OPENAI_MODEL", "OPENAI_REASONING_EFFORT", "ELEVENLABS_API_KEY", "ELEVENLABS_MODEL",
+               "ELEVENLABS_DIALOGUE_MODEL",
                "LILT_MAX_PROVIDER_CALLS_PER_DAY", "LILT_MAX_SOURCE_CHARS", *[h.voice_env for h in HOSTS.values()]}
     for line in path.read_text().splitlines():
         line = line.strip()
@@ -182,31 +184,6 @@ SCHEMA = {"type": "object", "additionalProperties": False,
           "required": ["title", "dek", "body", "caveat", "claims"]}
 
 
-def provenance_text(value: str) -> str:
-    """Normalize typography so a verbatim quote matches across encodings.
-
-    Models routinely return straight quotes/dashes where JATS uses curly ones.
-    This does not forgive paraphrasing: only punctuation and spacing differ.
-    """
-    value = unicodedata.normalize("NFKC", value)
-    for source, target in (("\u2018", "'"), ("\u2019", "'"), ("\u201c", '"'), ("\u201d", '"'),
-                           ("\u2010", "-"), ("\u2011", "-"), ("\u2012", "-"), ("\u2013", "-"),
-                           ("\u2014", "-"), ("\u2212", "-"), ("\u2026", "...")):
-        value = value.replace(source, target)
-    return " ".join(value.split())
-
-
-def quotes_in_source(quote: str, normalized_source: str) -> bool:
-    """A quote may omit interior text, but every retained fragment must be verbatim.
-
-    Comparison is case- and typography-insensitive only: a model may capitalise the
-    first word of a quote, but it may not change or reorder words.
-    """
-    fragments = [f.strip() for f in provenance_text(quote).split("...")]
-    haystack = normalized_source.casefold()
-    return bool(fragments) and all(fragment.casefold() in haystack for fragment in fragments)
-
-
 def validate_draft(draft: dict, source: dict) -> None:
     if set(draft) != set(SCHEMA["required"]):
         raise ValueError("Draft has unexpected fields")
@@ -265,7 +242,11 @@ def draft_story(db, story_id):
     if not source.get("attribution") or source["attribution"] == "Authors listed at source":
         raise ValueError("Named author metadata is required before generation")
     packet = build_packet(source, int(os.environ.get("LILT_MAX_SOURCE_CHARS", "18000")))
-    instructions = PODCAST_INSTRUCTIONS + writing_guide(record["host"]) + "\n\n" + ANTI_SLOP_GUIDE
+    duo = dialogue_hosts(record["host"])
+    if duo:
+        instructions = DIALOGUE_INSTRUCTIONS + dialogue_guide(duo) + "\n\n" + ANTI_SLOP_GUIDE
+    else:
+        instructions = PODCAST_INSTRUCTIONS + writing_guide(record["host"]) + "\n\n" + ANTI_SLOP_GUIDE
     effort = os.environ.get("OPENAI_REASONING_EFFORT", "low")
     if effort not in {"none", "low", "medium", "high", "xhigh", "max"}:
         raise ValueError("Unsupported reasoning effort")
@@ -276,8 +257,9 @@ def draft_story(db, story_id):
     response = json.loads(request("https://api.openai.com/v1/responses", payload={
         "model": model, "store": False, "instructions": instructions, **reasoning,
         "input": json.dumps(packet, ensure_ascii=False, separators=(",", ":")),
-        "max_output_tokens": 3500,
-        "text": {"format": {"type": "json_schema", "name": "science_story", "strict": True, "schema": SCHEMA}}
+        "max_output_tokens": 4500 if duo else 3500,
+        "text": {"format": {"type": "json_schema", "name": "science_story", "strict": True,
+                            "schema": DIALOGUE_SCHEMA if duo else SCHEMA}}
     }, headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"}))
     usage = response.get("usage") or {}
     with db:
@@ -289,8 +271,11 @@ def draft_story(db, story_id):
     if not outputs:
         raise ValueError("No draft returned, possibly refused")
     draft = json.loads("".join(outputs))
-    validate_draft(draft, {"text": evidence_text(packet)})
-    validate_podcast(draft, source, HOSTS[record["host"]])
+    if duo:
+        validate_dialogue(draft, {"text": evidence_text(packet)}, duo)
+    else:
+        validate_draft(draft, {"text": evidence_text(packet)})
+        validate_podcast(draft, source, HOSTS[record["host"]])
     with db:
         db.execute("UPDATE stories SET draft=?,state='review' WHERE id=?", (json.dumps(draft), story_id))
     return draft
@@ -301,11 +286,69 @@ def review(db, story_id: str, reviewer: str):
     if record["state"] != "review" or not reviewer.strip():
         raise ValueError("Requires a draft awaiting review and a named reviewer")
     draft = json.loads(record["draft"])
-    validate_draft(draft, json.loads(record["source"]))
-    validate_podcast(draft, json.loads(record["source"]), HOSTS[record["host"]])
+    source = json.loads(record["source"])
+    duo = dialogue_hosts(record["host"])
+    if duo:
+        validate_dialogue(draft, source, duo)
+    else:
+        validate_draft(draft, source)
+        validate_podcast(draft, source, HOSTS[record["host"]])
     digest = hashlib.sha256(record["draft"].encode()).hexdigest()
     with db:
         db.execute("UPDATE stories SET state='approved',reviewer=?,review_hash=? WHERE id=?", (reviewer.strip(), digest, story_id))
+
+
+def _strip_id3(data: bytes) -> bytes:
+    """Drop a leading ID3v2 tag so concatenated dialogue chunks join cleanly."""
+    if data[:3] != b"ID3" or len(data) < 10:
+        return data
+    size = ((data[6] & 0x7F) << 21) | ((data[7] & 0x7F) << 14) | ((data[8] & 0x7F) << 7) | (data[9] & 0x7F)
+    return data[10 + size:]
+
+
+def _dialogue_chunks(inputs: list[dict], budget: int = 1900) -> list[list[dict]]:
+    """Group consecutive turns so each text-to-dialogue request stays inside the safe budget."""
+    chunks, current, size = [], [], 0
+    for item in inputs:
+        length = len(item["text"])
+        if current and size + length > budget:
+            chunks.append(current); current, size = [], 0
+        current.append(item); size += length
+    if current:
+        chunks.append(current)
+    return chunks
+
+
+def _narrate_single(key: str, voice: str, script: str) -> bytes:
+    return request("https://api.elevenlabs.io/v1/text-to-speech/" + voice + "?output_format=mp3_44100_128", payload={
+        "text": script, "model_id": os.environ.get("ELEVENLABS_MODEL", "eleven_multilingual_v2"),
+        "voice_settings": {"stability": 0.55, "similarity_boost": 0.75}
+    }, headers={"xi-api-key": key, "Content-Type": "application/json", "Accept": "audio/mpeg"}, limit=30_000_000)
+
+
+def _narrate_dialogue(key: str, draft: dict, source: dict, duo) -> bytes:
+    """One ElevenLabs text-to-dialogue take per chunk, concatenated into a single MP3.
+
+    eleven_v3 handles multiple speakers in one generation, so no per-voice splicing is
+    required; chunking only respects the API's ~2,000-character request guidance.
+    """
+    validate_dialogue(draft, source, duo)
+    inputs = turns_narration_inputs(draft, duo)
+    voices: dict[str, str] = {}
+    for item in inputs:
+        voice = os.environ.get(item["voice_env"])
+        if not voice or not re.fullmatch(r"[A-Za-z0-9_-]+", voice):
+            raise ValueError("Configure a licensed ElevenLabs voice for both hosts (" + item["voice_env"] + ")")
+        voices[item["speaker"]] = voice
+    model = os.environ.get("ELEVENLABS_DIALOGUE_MODEL", "eleven_v3")
+    parts = []
+    for chunk in _dialogue_chunks(inputs):
+        payload = {"inputs": [{"text": item["text"], "voice_id": voices[item["speaker"]]} for item in chunk],
+                   "model_id": model}
+        parts.append(request("https://api.elevenlabs.io/v1/text-to-dialogue?output_format=mp3_44100_128", payload=payload,
+                             headers={"xi-api-key": key, "Content-Type": "application/json", "Accept": "audio/mpeg"},
+                             limit=30_000_000))
+    return parts[0] + b"".join(_strip_id3(part) for part in parts[1:])
 
 
 def narrate(db, story_id):
@@ -317,17 +360,20 @@ def narrate(db, story_id):
     if hashlib.sha256(record["draft"].encode()).hexdigest() != record["review_hash"]:
         raise ValueError("Draft changed after review")
     key = os.environ.get("ELEVENLABS_API_KEY")
-    voice = os.environ.get("ELEVENLABS_VOICE_" + record["host"].upper())
-    if not key or not voice or not re.fullmatch(r"[A-Za-z0-9_-]+", voice):
-        raise ValueError("Configure a licensed ElevenLabs voice and API key")
+    if not key:
+        raise ValueError("Configure a licensed ElevenLabs API key")
     draft = json.loads(record["draft"])
-    validate_podcast(draft, json.loads(record["source"]))
-    script = narration_script(draft)
+    source = json.loads(record["source"])
+    duo = dialogue_hosts(record["host"])
     reserve_call(db, "elevenlabs", story_id)
-    audio = request("https://api.elevenlabs.io/v1/text-to-speech/" + voice + "?output_format=mp3_44100_128", payload={
-        "text": script, "model_id": os.environ.get("ELEVENLABS_MODEL", "eleven_multilingual_v2"),
-        "voice_settings": {"stability": 0.55, "similarity_boost": 0.75}
-    }, headers={"xi-api-key": key, "Content-Type": "application/json", "Accept": "audio/mpeg"}, limit=30_000_000)
+    if duo:
+        audio = _narrate_dialogue(key, draft, source, duo)
+    else:
+        voice = os.environ.get("ELEVENLABS_VOICE_" + record["host"].upper())
+        if not voice or not re.fullmatch(r"[A-Za-z0-9_-]+", voice):
+            raise ValueError("Configure a licensed ElevenLabs voice and API key")
+        validate_podcast(draft, source)
+        audio = _narrate_single(key, voice, narration_script(draft))
     if len(audio) < 1000 or not (audio[:3] == b"ID3" or (audio[0] == 255 and audio[1] & 224 == 224)):
         raise ValueError("Provider did not return valid MP3 audio")
     audio_dir = DATA / "audio"; audio_dir.mkdir(parents=True, exist_ok=True)
@@ -356,14 +402,20 @@ def feed(db, origin: str) -> list[dict]:
     result = []
     for r in db.execute("SELECT * FROM stories WHERE state='published' ORDER BY created DESC, id"):
         source, draft = json.loads(r["source"]), json.loads(r["draft"])
-        result.append({"id": r["id"], "title": draft["title"], "dek": draft["dek"],
+        duo = dialogue_hosts(r["host"])
+        body = turns_body(draft) if duo else draft["body"]
+        entry = {"id": r["id"], "title": draft["title"], "dek": draft["dek"],
             "topic": HOSTS[r["host"]].topic, "hostID": r["host"],
-            "minutes": max(1, round(len(draft["body"].split()) / 150)),
-            "body": draft["body"], "caveat": draft["caveat"], "isDemo": False,
+            "minutes": max(1, round(len(body.split()) / 150)),
+            "body": body, "caveat": draft["caveat"], "isDemo": False,
             "sources": [{"title": source["title"], "url": source["url"],
                          "attribution": source["attribution"] + ". Adapted by Zwicky; changes made.",
                          "license": source["license"] + " · " + source["licenseURL"]}],
-            "audioURL": origin.rstrip("/") + "/audio/" + r["audio"]})
+            "audioURL": origin.rstrip("/") + "/audio/" + r["audio"]}
+        if duo:
+            entry["turns"] = draft["turns"]
+            entry["hostIDs"] = [host.id for host in duo]
+        result.append(entry)
     return result
 
 

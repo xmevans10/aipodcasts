@@ -1,0 +1,1060 @@
+{
+ "61e5ffb643571838edb3ced44cffc8ee16a4bd5c592ce395f13ac77c9bbff77a": {
+  "hook": 9,
+  "clarity": 9,
+  "fidelity": null,
+  "spoken_rhythm": 9,
+  "human_voice": 9,
+  "host_fit": 9,
+  "overall": 9,
+  "ai_tells": [],
+  "rationale": "The script opens with a concrete, intriguing scene, explains the study and its limitations clearly, and maintains a warm, wry, conversational tone that fits Clara Rowan's persona.",
+  "_usage": {
+   "prompt_tokens": 1062,
+   "completion_tokens": 108,
+   "total_tokens": 1170,
+   "prompt_tokens_details": {
+    "cached_tokens": 0
+   },
+   "prompt_cache_hit_tokens": 0,
+   "prompt_cache_miss_tokens": 1062
+  }
+ },
+ "3bc290642f2ddddb5331e29702f77d51de6179145a4aeb9e75f28bf27160b793": {
+  "hook": 8,
+  "clarity": 8,
+  "fidelity": null,
+  "spoken_rhythm": 7,
+  "human_voice": 7,
+  "host_fit": 6,
+  "overall": 7,
+  "ai_tells": [
+   "Today's headline:",
+   "But here's where the story needs its brakes.",
+   "there's something wonderful here",
+   "Sometimes the interesting question isn't whether... It's what..."
+  ],
+  "rationale": "A vivid, well-structured script with a strong opening and clear caveats, but it leans on familiar podcast-reveal phrasing and a slightly generic sign-off that dilute Clara's specific wry, field-naturalist voice.",
+  "_usage": {
+   "prompt_tokens": 1065,
+   "completion_tokens": 161,
+   "total_tokens": 1226,
+   "prompt_tokens_details": {
+    "cached_tokens": 0
+   },
+   "prompt_cache_hit_tokens": 0,
+   "prompt_cache_miss_tokens": 1065
+  }
+ },
+ "6f15503568b1e526e64fa6ac417045e1faaf7c57b2d0325dda774c48a2dfcd1f": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": null,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 9,
+  "overall": 8,
+  "ai_tells": [
+   "The phrase 'That's a metaphor.' is a bit explanatory and could be seen as a slight AI tell.",
+   "The final line 'Your host and narration are AI-generated.' is a direct disclosure, not a tell, but it's a meta-comment that might be considered a tell if not expected."
+  ],
+  "rationale": "The script is clear, engaging, and well-matched to the host's mechanism-hunting style, with a strong hook and careful boundary-marking between measured and modeled.",
+  "_usage": {
+   "prompt_tokens": 1031,
+   "completion_tokens": 172,
+   "total_tokens": 1203,
+   "prompt_tokens_details": {
+    "cached_tokens": 0
+   },
+   "prompt_cache_hit_tokens": 0,
+   "prompt_cache_miss_tokens": 1031
+  }
+ },
+ "beaef6346773ad141121075d3277bba2b6397c5adca2b128a53c483864b612ae": {
+  "hook": 7,
+  "clarity": 8,
+  "fidelity": null,
+  "spoken_rhythm": 7,
+  "human_voice": 6,
+  "host_fit": 6,
+  "overall": 7,
+  "ai_tells": [
+   "That's a metaphor.",
+   "Think of a group passing a quiet message around",
+   "Resembling is the important word.",
+   "Your ordinary breath. A rather specialised reception system.",
+   "Let's keep asking how."
+  ],
+  "rationale": "A clear, well-structured explanation of the mosquito CO2 circuit study with good boundary-marking, but the voice leans on staged reveals and repeated 'that's a metaphor/analogy' disclaimers that feel more like a template than Elias's quick, precise mechanism-hunting.",
+  "_usage": {
+   "prompt_tokens": 1034,
+   "completion_tokens": 180,
+   "total_tokens": 1214,
+   "prompt_tokens_details": {
+    "cached_tokens": 128
+   },
+   "prompt_cache_hit_tokens": 128,
+   "prompt_cache_miss_tokens": 906
+  }
+ },
+ "abd2cb732df7f69b34f2e3f2cb33f23f2b3a69333b11afa1c03d38bd23a0e69c": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": null,
+  "spoken_rhythm": 9,
+  "human_voice": 8,
+  "host_fit": 9,
+  "overall": 8,
+  "ai_tells": [
+   "The phrase 'Here's the lovely part' feels slightly staged.",
+   "The closing 'Stay a little curious' is a generic sign-off.",
+   "The final disclosure 'Your host and narration are AI-generated' is a meta tell."
+  ],
+  "rationale": "The script is clear, well-paced, and fits Mira's calm, human-scale style, though a few phrases feel slightly polished and the AI disclosure undercuts the human voice.",
+  "_usage": {
+   "prompt_tokens": 1020,
+   "completion_tokens": 160,
+   "total_tokens": 1180,
+   "prompt_tokens_details": {
+    "cached_tokens": 256
+   },
+   "prompt_cache_hit_tokens": 256,
+   "prompt_cache_miss_tokens": 764
+  }
+ },
+ "1f6585712cb4575b9630bcbeec983bcba53145a19a20ad6897e086fa2f9f5408": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": null,
+  "spoken_rhythm": 8,
+  "human_voice": 7,
+  "host_fit": 8,
+  "overall": 8,
+  "ai_tells": [
+   "Here's the lovely part",
+   "And the hole isn't the whole story",
+   "So the next time the Moon looks perfectly still, remember",
+   "Stay a little curious"
+  ],
+  "rationale": "A strong, concrete opening and clear, well-paced explanation of the study and its limits, though a few staged-reveal and sign-off phrases slightly undercut the otherwise natural, host-appropriate voice.",
+  "_usage": {
+   "prompt_tokens": 1023,
+   "completion_tokens": 156,
+   "total_tokens": 1179,
+   "prompt_tokens_details": {
+    "cached_tokens": 128
+   },
+   "prompt_cache_hit_tokens": 128,
+   "prompt_cache_miss_tokens": 895
+  }
+ },
+ "b411753ecda9fc9254ea20b9d820af26e6ec2059a2efb6e5fa49cfaedf7aee58": {
+  "hook": 6,
+  "clarity": 7,
+  "fidelity": null,
+  "spoken_rhythm": 8,
+  "human_voice": 7,
+  "host_fit": 8,
+  "overall": 7,
+  "ai_tells": [
+   "The final sentence explicitly states AI generation, which breaks immersion.",
+   "Some sentences are generic and could be from any science explainer."
+  ],
+  "rationale": "The script is clear and fits the host's steady, patient style, but the hook is somewhat generic and the explicit AI disclosure undercuts the human voice.",
+  "_usage": {
+   "prompt_tokens": 651,
+   "completion_tokens": 135,
+   "total_tokens": 786,
+   "prompt_tokens_details": {
+    "cached_tokens": 256
+   },
+   "prompt_cache_hit_tokens": 256,
+   "prompt_cache_miss_tokens": 395
+  }
+ },
+ "a9b5170bd6037603d0dd68763d3cb28eb89f3192167fbf96a93e06341f083041": {
+  "hook": 3,
+  "clarity": 4,
+  "fidelity": null,
+  "spoken_rhythm": 5,
+  "human_voice": 3,
+  "host_fit": 4,
+  "overall": 3,
+  "ai_tells": [
+   "I'm Theo Mercer, and this is Sound Science (show name mismatch with host profile)",
+   "generic declarative openers with no concrete image",
+   "Each method has limitations \u2014 vague hedge with no specifics",
+   "staged sign-off catchphrase 'Take the long way round'",
+   "no numbers, no study, no scene \u2014 pure abstraction"
+  ],
+  "rationale": "The script gestures at a topic but never grounds it in a concrete measurement, study, or image, so it reads as filler rather than a story a listener would stay for.",
+  "_usage": {
+   "prompt_tokens": 654,
+   "completion_tokens": 167,
+   "total_tokens": 821,
+   "prompt_tokens_details": {
+    "cached_tokens": 128
+   },
+   "prompt_cache_hit_tokens": 128,
+   "prompt_cache_miss_tokens": 526
+  }
+ },
+ "397f11e1b0e857f7b7a9da7747c4d6d65e94b74dbaafdbe31b6a831bdfe4484e": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 8,
+  "overall": 8,
+  "ai_tells": [
+   "That's a comparison, not a claim about plants.",
+   "if you will",
+   "It's growth that has learned to agree with itself across the whole blade."
+  ],
+  "rationale": "The script opens with a concrete, vivid image and explains the study clearly, with only minor AI-sounding asides that slightly undercut the natural voice.",
+  "_usage": {
+   "prompt_tokens": 6954,
+   "completion_tokens": 143,
+   "total_tokens": 7097,
+   "prompt_tokens_details": {
+    "cached_tokens": 256
+   },
+   "prompt_cache_hit_tokens": 256,
+   "prompt_cache_miss_tokens": 6698
+  }
+ },
+ "3a854c66774e417473e79d5b28c9c5ed416daed2e40ed2884825c6982177bfc3": {
+  "hook": 7,
+  "clarity": 8,
+  "fidelity": 5,
+  "spoken_rhythm": 8,
+  "human_voice": 7,
+  "host_fit": 8,
+  "overall": 7,
+  "ai_tells": [
+   "Think of a choir, if you will",
+   "That's a comparison, not a claim about plants",
+   "deceptively simple question",
+   "What's striking is that",
+   "But there are limits"
+  ],
+  "rationale": "A warm, well-paced script with a strong closing image and good plain-language explanation, but it invents an author byline and journal placement not in the packet, and its choir simile and self-aware asides read as staged rather than earned.",
+  "_usage": {
+   "prompt_tokens": 6957,
+   "completion_tokens": 154,
+   "total_tokens": 7111,
+   "prompt_tokens_details": {
+    "cached_tokens": 256
+   },
+   "prompt_cache_hit_tokens": 256,
+   "prompt_cache_miss_tokens": 6701
+  }
+ },
+ "664c1338b0c11a04b434e36035fd746b0900c19701ae0de34872c9dd8a3141ac": {
+  "hook": 9,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 9,
+  "human_voice": 9,
+  "host_fit": 9,
+  "overall": 9,
+  "ai_tells": [],
+  "rationale": "The script opens with a vivid, concrete image, explains the study clearly, stays faithful to the evidence, and reads naturally with a warm, wry voice that fits Clara Rowan perfectly.",
+  "_usage": {
+   "prompt_tokens": 6864,
+   "completion_tokens": 111,
+   "total_tokens": 6975,
+   "prompt_tokens_details": {
+    "cached_tokens": 384
+   },
+   "prompt_cache_hit_tokens": 384,
+   "prompt_cache_miss_tokens": 6480
+  }
+ },
+ "4dc13241b191cdb47fc10554505aea488355e560ab27c5880f39325686983b96": {
+  "hook": 8,
+  "clarity": 8,
+  "fidelity": 7,
+  "spoken_rhythm": 9,
+  "human_voice": 8,
+  "host_fit": 9,
+  "overall": 8,
+  "ai_tells": [
+   "staged reveal: 'Here's the puzzle.'",
+   "formulaic sign-off: 'There's always more going on.'"
+  ],
+  "rationale": "A warm, well-paced script that captures Clara's field-naturalist curiosity and explains the study clearly, though it invents a few specifics (author name, journal, exact sample size) not present in the evidence packet.",
+  "_usage": {
+   "prompt_tokens": 6867,
+   "completion_tokens": 151,
+   "total_tokens": 7018,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 723
+  }
+ },
+ "518e24669901a1dff0478444ed506fad1e3b4828d8ec046bb03e2cf3152a40b2": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 9,
+  "host_fit": 9,
+  "overall": 9,
+  "ai_tells": [],
+  "rationale": "The script opens with a concrete, vivid image and maintains clear, conversational explanations of the study's methods and findings, with a warm, wry tone that fits Clara Rowan's persona.",
+  "_usage": {
+   "prompt_tokens": 6933,
+   "completion_tokens": 111,
+   "total_tokens": 7044,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 661
+  }
+ },
+ "bf77a29f094654b8abc14af24c00c6f46bf61d7d3c6c7d17c30a5ecc824018cc": {
+  "hook": 7,
+  "clarity": 8,
+  "fidelity": 6,
+  "spoken_rhythm": 8,
+  "human_voice": 7,
+  "host_fit": 7,
+  "overall": 7,
+  "ai_tells": [
+   "Here's the interesting part",
+   "One more wrinkle",
+   "the image to keep is",
+   "There's always more going on"
+  ],
+  "rationale": "A warm, well-paced script with a strong central metaphor, but it invents a named author ('Kate Harline') and a paper title not present in the packet, and leans on a few staged-reveal tics.",
+  "_usage": {
+   "prompt_tokens": 6936,
+   "completion_tokens": 137,
+   "total_tokens": 7073,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 792
+  }
+ },
+ "6ccae4896cbe5f23456443b3e026e7abf3f63b111f048891ac12664c4ad80ffa": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 9,
+  "human_voice": 9,
+  "host_fit": 9,
+  "overall": 9,
+  "ai_tells": [],
+  "rationale": "The script opens with a concrete, vivid image, explains the study clearly, stays faithful to the evidence, and reads naturally with a warm, wry voice that fits Clara Rowan.",
+  "_usage": {
+   "prompt_tokens": 6928,
+   "completion_tokens": 110,
+   "total_tokens": 7038,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 656
+  }
+ },
+ "40c8677c13923ef814d65145a7596496be5ca2feb5145ef59f02c24800444f0a": {
+  "hook": 7,
+  "clarity": 8,
+  "fidelity": 5,
+  "spoken_rhythm": 8,
+  "human_voice": 7,
+  "host_fit": 7,
+  "overall": 7,
+  "ai_tells": [
+   "staged reveal framing: 'That quiet trick is the subject of today's episode'",
+   "formulaic sign-off: 'There's always more going on'",
+   "neighbourhood/house-by-house analogy feels slightly over-explained"
+  ],
+  "rationale": "A warm, well-paced and mostly accurate telling of the leaf-flatness study, but it invents an author name and journal not present in the packet and leans on a couple of podcast-template tics.",
+  "_usage": {
+   "prompt_tokens": 6931,
+   "completion_tokens": 155,
+   "total_tokens": 7086,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 787
+  }
+ },
+ "bc6401c17352c5f16cb2d496b962457dcea711749ff582c75e017504a214d733": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 8,
+  "overall": 8,
+  "ai_tells": [
+   "The phrase 'That small drama is the subject of a study titled...' feels slightly formal.",
+   "The closing 'There's always more going on' is a bit of a stock sign-off."
+  ],
+  "rationale": "The script opens with a concrete image, explains the study clearly, and maintains a conversational tone with a few dry asides, fitting Clara's persona.",
+  "_usage": {
+   "prompt_tokens": 6963,
+   "completion_tokens": 148,
+   "total_tokens": 7111,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 691
+  }
+ },
+ "5a7833dbd5bbbfd6cf1666830a76e588de9e38e27fc878187d1d21acfc189bff": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 6,
+  "spoken_rhythm": 9,
+  "human_voice": 8,
+  "host_fit": 9,
+  "overall": 8,
+  "ai_tells": [
+   "What did they find?",
+   "It is worth noting that",
+   "So back to that pinhead leaf"
+  ],
+  "rationale": "A warm, clear and well-paced script that fits Clara's field-naturalist voice, but it invents author names and a few details not present in the evidence packet, which weakens fidelity.",
+  "_usage": {
+   "prompt_tokens": 6966,
+   "completion_tokens": 142,
+   "total_tokens": 7108,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 822
+  }
+ },
+ "1e8af3b30a6539ae3dc95118837a73d2a7f697b1a0091a847affa31d3acc7459": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 9,
+  "host_fit": 9,
+  "overall": 9,
+  "ai_tells": [],
+  "rationale": "The script opens with a concrete, vivid image and maintains clear, conversational explanations of the science, with a personal, wry voice that fits Clara Rowan's naturalist persona.",
+  "_usage": {
+   "prompt_tokens": 6983,
+   "completion_tokens": 109,
+   "total_tokens": 7092,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 711
+  }
+ },
+ "dd0d7f8a22562e06af755ea77a05c1fb52290a7f58dbe9f90725bd044d13b422": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 9,
+  "human_voice": 8,
+  "host_fit": 8,
+  "overall": 8,
+  "ai_tells": [
+   "There's always more going on.",
+   "That quiet trick is the subject of a paper called..."
+  ],
+  "rationale": "A concrete, well-paced script that explains the study accurately and in plain language, with only a couple of slightly formulaic closing phrases and a minor attribution issue.",
+  "_usage": {
+   "prompt_tokens": 6986,
+   "completion_tokens": 130,
+   "total_tokens": 7116,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 842
+  }
+ },
+ "7106eea13a53db3524109cc977c02281e2ecd7305bf5416de4fcca5fbb98d514": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 9,
+  "overall": 8,
+  "ai_tells": [
+   "That is the comparison.",
+   "Back to that small green paddle under the microscope."
+  ],
+  "rationale": "The script opens with a concrete image, explains the study clearly, and maintains fidelity to the evidence, though a few phrases feel slightly staged.",
+  "_usage": {
+   "prompt_tokens": 6859,
+   "completion_tokens": 123,
+   "total_tokens": 6982,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 587
+  }
+ },
+ "ae91eb766b8e1a49f03457882c8ef5f46d83bbc81ebd90aec3dc3e7adc4a0b4f": {
+  "hook": 7,
+  "clarity": 8,
+  "fidelity": 6,
+  "spoken_rhythm": 8,
+  "human_voice": 7,
+  "host_fit": 6,
+  "overall": 7,
+  "ai_tells": [
+   "That is the comparison.",
+   "its headline is this:",
+   "Back to that small green paddle under the microscope."
+  ],
+  "rationale": "A warm, well-paced script with a strong concrete opening and clear explanation, but it invents an author name and journal not in the packet, and its staged reveal and sign-off feel more generic than Clara's dry, field-noticing voice.",
+  "_usage": {
+   "prompt_tokens": 6862,
+   "completion_tokens": 136,
+   "total_tokens": 6998,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 718
+  }
+ },
+ "d9d5f329450e1369ed1e356b6853f3bf5f0c5e8b7e235bca2c2dab1ba564248c": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 9,
+  "host_fit": 9,
+  "overall": 9,
+  "ai_tells": [],
+  "rationale": "The script opens with a concrete, relatable image and maintains a warm, wry, conversational tone that fits Clara Rowan's persona, while clearly explaining the study and staying faithful to the evidence.",
+  "_usage": {
+   "prompt_tokens": 6937,
+   "completion_tokens": 112,
+   "total_tokens": 7049,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 665
+  }
+ },
+ "d722f171d6e28a88bf285dd18ef734819ba9067eaf6c157c70a75551b1219476": {
+  "hook": 7,
+  "clarity": 8,
+  "fidelity": 6,
+  "spoken_rhythm": 8,
+  "human_voice": 7,
+  "host_fit": 7,
+  "overall": 7,
+  "ai_tells": [
+   "So what's going on beneath that green surface?",
+   "Today: how a leaf keeps its cool and stays flat",
+   "Think of it like a group of people rolling out a bedsheet",
+   "But the takeaway is rather lovely",
+   "There's always more going on"
+  ],
+  "rationale": "A warm, clear and mostly faithful adaptation with a strong central metaphor, but it invents the author name, overstates the imaging sample as a limitation, and leans on a few familiar podcast tics.",
+  "_usage": {
+   "prompt_tokens": 6940,
+   "completion_tokens": 179,
+   "total_tokens": 7119,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 796
+  }
+ },
+ "bcc2e235cb79b9e60ba80d27272fe298e5e28c47a99924f86a90644ac9d24ba7": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 8,
+  "overall": 8,
+  "ai_tells": [],
+  "rationale": "The script opens with a concrete, engaging image and explains the study clearly, with accurate details and a natural, conversational tone that fits Clara Rowan's persona.",
+  "_usage": {
+   "prompt_tokens": 6833,
+   "completion_tokens": 105,
+   "total_tokens": 6938,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 561
+  }
+ },
+ "7053b64efe86b2efa843ee279766c6d90211b5df97c18b6d0987ddcaae9ff7f8": {
+  "hook": 7,
+  "clarity": 8,
+  "fidelity": 8,
+  "spoken_rhythm": 8,
+  "human_voice": 7,
+  "host_fit": 7,
+  "overall": 7,
+  "ai_tells": [
+   "the leaf remembers it in every curve",
+   "the picture is clear",
+   "less ordinary than it looks"
+  ],
+  "rationale": "A solid, accurate and clearly explained piece with a good dough-rolling analogy, but it leans on a few polished aphorisms and a slightly generic sign-off rather than Clara's specific wry, field-noticing voice.",
+  "_usage": {
+   "prompt_tokens": 6836,
+   "completion_tokens": 130,
+   "total_tokens": 6966,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 692
+  }
+ },
+ "ef7c73763d8775462811bad960acf9f0e4fd7fad8eaf98ee08574284a06e5aac": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 8,
+  "overall": 8,
+  "ai_tells": [
+   "The phrase 'It\u2019s a bit like a sheet of pastry that rises unevenly in one spot while the rest stays flat, the tension has to go somewhere.' is a bit clunky and could be tightened.",
+   "The ending 'There\u2019s always more going on.' is a bit of a generic sign-off."
+  ],
+  "rationale": "The script is clear, engaging, and faithful to the evidence, with a strong hook and natural spoken rhythm, though a few phrases feel slightly clunky.",
+  "_usage": {
+   "prompt_tokens": 6911,
+   "completion_tokens": 174,
+   "total_tokens": 7085,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 639
+  }
+ },
+ "71ae82fdea9d57ed4c4805970ba47cae0eb49747d38831411965820b83afcc3e": {
+  "hook": 8,
+  "clarity": 8,
+  "fidelity": 7,
+  "spoken_rhythm": 8,
+  "human_voice": 7,
+  "host_fit": 8,
+  "overall": 8,
+  "ai_tells": [
+   "It\u2019s the kind of small oddity you might miss on an ordinary afternoon",
+   "It\u2019s a bit like a sheet of pastry that rises unevenly in one spot while the rest stays flat, the tension has to go somewhere",
+   "Still, the picture is clear",
+   "There\u2019s always more going on"
+  ],
+  "rationale": "A warm, clear and mostly faithful adaptation that fits Clara's field-naturalist curiosity, though it invents a few small details and leans on a couple of familiar podcast cadences.",
+  "_usage": {
+   "prompt_tokens": 6914,
+   "completion_tokens": 183,
+   "total_tokens": 7097,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 770
+  }
+ },
+ "16eb2f0c44d90528a6a833b119a469d6d46515d86bd470401838cf5b8d6fc159": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 9,
+  "overall": 8,
+  "ai_tells": [],
+  "rationale": "The script opens with a concrete, engaging image and explains the study clearly in plain language, with accurate details and a natural, conversational tone that fits Clara Rowan's persona.",
+  "_usage": {
+   "prompt_tokens": 6828,
+   "completion_tokens": 108,
+   "total_tokens": 6936,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 556
+  }
+ },
+ "2f04ebb0336b4a38f2b4e78b33331211ca06251e54ad3f6571e6e037c51b150f": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 8,
+  "overall": 8,
+  "ai_tells": [
+   "The paper is '...' by ...",
+   "It's a bit like a neighbourhood where everyone adds an extension at their own pace",
+   "So the next time you see a flat leaf, consider the quiet agreement among its cells",
+   "There's always more going on"
+  ],
+  "rationale": "A clear, accurate and well-paced script that captures the study's core finding and limitations, though it leans on a few familiar podcast formulas and a slightly generic sign-off.",
+  "_usage": {
+   "prompt_tokens": 6831,
+   "completion_tokens": 169,
+   "total_tokens": 7000,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 687
+  }
+ },
+ "c6b40406d3334ee5da75b0452abe3d890f111c8d61242ecc60ea7152d9eae5aa": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 9,
+  "overall": 8,
+  "ai_tells": [],
+  "rationale": "The script opens with a concrete, vivid image and explains the study clearly, with accurate details and a natural, conversational tone that fits Clara Rowan's persona.",
+  "_usage": {
+   "prompt_tokens": 6957,
+   "completion_tokens": 105,
+   "total_tokens": 7062,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 685
+  }
+ },
+ "705cb3f6b01b9ed5ab68028b9fc59fe14349e60a55604f1da28a83e401b906e9": {
+  "hook": 8,
+  "clarity": 8,
+  "fidelity": 7,
+  "spoken_rhythm": 8,
+  "human_voice": 7,
+  "host_fit": 7,
+  "overall": 7,
+  "ai_tells": [
+   "Here's the question:",
+   "Now the limits.",
+   "That's a comparison.",
+   "Back to that pinhead leaf."
+  ],
+  "rationale": "A warm, concrete opening and clear explanation of the leaf-flatness study, but it invents author names and a few details not in the packet, and its staged transitions and signposting slightly undercut the host's naturalistic voice.",
+  "_usage": {
+   "prompt_tokens": 6960,
+   "completion_tokens": 155,
+   "total_tokens": 7115,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 816
+  }
+ },
+ "58b47cf39b1b0fa12e6729df045ff8d974eb2cc0dba315544aca5dcfc1a80b43": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 9,
+  "host_fit": 9,
+  "overall": 9,
+  "ai_tells": [],
+  "rationale": "The script opens with a concrete image, explains the study clearly, stays faithful to the evidence, and sounds like Clara Rowan's warm, wry, conversational voice.",
+  "_usage": {
+   "prompt_tokens": 6976,
+   "completion_tokens": 107,
+   "total_tokens": 7083,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 704
+  }
+ },
+ "a8aa7df0bd0a323b57819a400b0b3846fc41f3d93683d284ed7863f49c5f4ad7": {
+  "hook": 7,
+  "clarity": 8,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 7,
+  "host_fit": 8,
+  "overall": 8,
+  "ai_tells": [
+   "'Then came the growth maps.' \u2014 mild staged-reveal transition",
+   "'So back to that green speck.' \u2014 slightly formulaic callback",
+   "The bus-stop analogy is a touch tidy/explainer-ish"
+  ],
+  "rationale": "A faithful, clearly explained and warmly delivered script that matches Clara's field-naturalist curiosity, though a few transitions and the closing callback carry a faint explainer-template flavour.",
+  "_usage": {
+   "prompt_tokens": 6979,
+   "completion_tokens": 142,
+   "total_tokens": 7121,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 835
+  }
+ },
+ "919f74070b2ec18ab0bc635a3fc27ed00a5b88619692221bbb390d0c4fee0560": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 8,
+  "overall": 8,
+  "ai_tells": [],
+  "rationale": "The script opens with a vivid, concrete image and explains the study's methods and findings in clear, conversational language, with a dry aside that fits Clara's wry naturalist persona.",
+  "_usage": {
+   "prompt_tokens": 6966,
+   "completion_tokens": 111,
+   "total_tokens": 7077,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 694
+  }
+ },
+ "1387691bf37d8224dee9e7bd415de9a6e896aa2635379ff1965dbe71425790b1": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 8,
+  "overall": 8,
+  "ai_tells": [
+   "So, back to that tiny construction site",
+   "nature's geometry, with fewer snacks",
+   "There's always more going on"
+  ],
+  "rationale": "A clear, faithful and well-paced account of the leaf-flatness study that fits Clara's warm, wry naturalist voice, though a few closing lines feel like staged callbacks rather than spontaneous asides.",
+  "_usage": {
+   "prompt_tokens": 6969,
+   "completion_tokens": 149,
+   "total_tokens": 7118,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 825
+  }
+ },
+ "2b1ae71c53d43ffc7bcbe7c2cf9cb73d77ad8028487f9bf89afa23d856722d63": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 9,
+  "overall": 8,
+  "ai_tells": [
+   "The phrase 'As a comparison' feels slightly formal and could be more conversational.",
+   "The opening 'Watch a young leaf at the microscope...' is engaging but slightly generic."
+  ],
+  "rationale": "The script is clear, accurate, and engaging, with a strong hook and a natural, conversational tone that fits Clara Rowan's persona, though a few phrases could be more colloquial.",
+  "_usage": {
+   "prompt_tokens": 6892,
+   "completion_tokens": 151,
+   "total_tokens": 7043,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 620
+  }
+ },
+ "654d9a3a260a5364758e6d82ee50bb1f2a2d5cbc795b5c5926553c169a9a9efe": {
+  "hook": 8,
+  "clarity": 8,
+  "fidelity": 9,
+  "spoken_rhythm": 7,
+  "human_voice": 7,
+  "host_fit": 7,
+  "overall": 8,
+  "ai_tells": [
+   "This is **Growth-rate coordination across the width of a leaf preserves its flatness**. The study, titled \u201cGrowth-rate coordination across the width of a leaf preserves its flatness\u201d",
+   "**As a comparison**",
+   "Not a leaf standing still, but a leaf negotiating its shape while it grows"
+  ],
+  "rationale": "A clear, accurate and well-structured account with a strong opening and a useful analogy, though it leans on a few staged or repetitive phrasings and doesn't fully inhabit Clara's wry, field-naturalist voice.",
+  "_usage": {
+   "prompt_tokens": 6895,
+   "completion_tokens": 186,
+   "total_tokens": 7081,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 751
+  }
+ },
+ "04740a5f06ad6968faaaf839142a88a7fd5758b70c717021dad444bd74b00e6b": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 8,
+  "overall": 8,
+  "ai_tells": [
+   "The opening line 'A young leaf is meant to be a rather good piece of engineering' is slightly generic.",
+   "The phrase 'Comparison: it's a bit like extending a tablecloth...' feels like a forced analogy.",
+   "The sentence 'The study has important limits.' is a bit abrupt and list-like."
+  ],
+  "rationale": "The script is clear, faithful to the evidence, and reads naturally with a warm, wry tone that fits Clara Rowan, though a few phrases feel slightly staged.",
+  "_usage": {
+   "prompt_tokens": 6930,
+   "completion_tokens": 176,
+   "total_tokens": 7106,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 658
+  }
+ },
+ "9e7a7493e3ee17ee7670f928a80304fd1ecc5338b1f37159c1432d1ea43131e6": {
+  "hook": 7,
+  "clarity": 8,
+  "fidelity": 6,
+  "spoken_rhythm": 7,
+  "human_voice": 6,
+  "host_fit": 6,
+  "overall": 7,
+  "ai_tells": [
+   "This is \u201cGrowth-rate coordination across the width of a leaf preserves its flatness\u201d. The study, titled \u201cGrowth-rate coordination across the width of a leaf preserves its flatness\u201d",
+   "Comparison: it\u2019s a bit like",
+   "rather like a carefully managed neighbourhood where everyone can renovate without pushing the next house sideways",
+   "There's always more going on"
+  ],
+  "rationale": "A clear and mostly faithful account of a complex study, but the opening is generic, the title repetition and staged analogy feel machine-made, and the closing sign-off doesn't quite land as Clara's dry, field-noticing voice.",
+  "_usage": {
+   "prompt_tokens": 6933,
+   "completion_tokens": 201,
+   "total_tokens": 7134,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 789
+  }
+ },
+ "92ea9e85bf26abe85a0e60fc7bf36f854dce5b4dda66d26b598a5a9b72035fa2": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 9,
+  "overall": 8,
+  "ai_tells": [],
+  "rationale": "The script opens with a concrete, engaging image, explains the study clearly, and stays faithful to the evidence, with a warm, wry tone that fits Clara Rowan.",
+  "_usage": {
+   "prompt_tokens": 6853,
+   "completion_tokens": 108,
+   "total_tokens": 6961,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 581
+  }
+ },
+ "31b795e08281ee418fcf50e310153239f560a57564f2078ce5b6aa90548e684b": {
+  "hook": 7,
+  "clarity": 8,
+  "fidelity": 8,
+  "spoken_rhythm": 8,
+  "human_voice": 7,
+  "host_fit": 7,
+  "overall": 7,
+  "ai_tells": [
+   "The paper has no journal listed in the supplied material.",
+   "There's always more going on."
+  ],
+  "rationale": "A clear, well-paced explanation of a complex study with a decent opening, but it includes a meta-comment about the evidence packet and a generic sign-off that slightly undercut the host's natural voice.",
+  "_usage": {
+   "prompt_tokens": 6856,
+   "completion_tokens": 139,
+   "total_tokens": 6995,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 712
+  }
+ },
+ "17368c1b37be7bacda72c910372ceb7f655627241e0c58c84339c0c32f4c8b5d": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 8,
+  "overall": 8,
+  "ai_tells": [
+   "The phrase 'botanical crisp' is a bit forced.",
+   "The transition 'Comparison: it\u2019s a little like...' is slightly clunky.",
+   "The closing line 'There's always more going on' feels like a generic sign-off."
+  ],
+  "rationale": "The script is clear, accurate, and engaging, with a strong hook and good explanation of the science, though a few phrases feel slightly artificial.",
+  "_usage": {
+   "prompt_tokens": 6887,
+   "completion_tokens": 159,
+   "total_tokens": 7046,
+   "prompt_tokens_details": {
+    "cached_tokens": 6272
+   },
+   "prompt_cache_hit_tokens": 6272,
+   "prompt_cache_miss_tokens": 615
+  }
+ },
+ "3f8d0b748fa2f93745d33b3a45ac930cb9da1a1698d0ba4d3dbc97c3d1bf1555": {
+  "hook": 8,
+  "clarity": 9,
+  "fidelity": 9,
+  "spoken_rhythm": 8,
+  "human_voice": 8,
+  "host_fit": 8,
+  "overall": 8,
+  "ai_tells": [
+   "Comparison: it\u2019s a little like...",
+   "So, that little leaf...",
+   "There's always more going on."
+  ],
+  "rationale": "A clear, faithful and well-paced script that explains the study in plain language and mostly matches Clara's warm, field-minded voice, though a few staged signposts and a slightly generic closing keep it from feeling fully natural.",
+  "_usage": {
+   "prompt_tokens": 6890,
+   "completion_tokens": 150,
+   "total_tokens": 7040,
+   "prompt_tokens_details": {
+    "cached_tokens": 6144
+   },
+   "prompt_cache_hit_tokens": 6144,
+   "prompt_cache_miss_tokens": 746
+  }
+ }
+}

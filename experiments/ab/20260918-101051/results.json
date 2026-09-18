@@ -1,0 +1,100 @@
+{
+ "meta": {
+  "timestamp": "20260918-101051",
+  "host": "fern",
+  "title": "Growth-rate coordination across the width of a leaf preserves its flatness",
+  "characters": 30944,
+  "peak": false
+ },
+ "results": [
+  {
+   "variant": "flash-baseline",
+   "model": "deepseek-flash",
+   "prompt": "baseline",
+   "thinking": false,
+   "temperature": 0.8,
+   "host": "fern",
+   "usage": {
+    "input_tokens": 7380,
+    "output_tokens": 1351,
+    "reasoning_tokens": null,
+    "cache_hit_tokens": 0,
+    "total_tokens": 8731
+   },
+   "cost_usd_offpeak": 0.000959,
+   "cost_usd_peak": 0.001918,
+   "finish_reason": "stop",
+   "reasoning_chars": 0,
+   "draft": {
+    "title": "Growth-rate coordination across the width of a leaf preserves its flatness",
+    "dek": "Live imaging of Arabidopsis leaves shows that flatness depends on growth being matched across the leaf's width, not just on the top and bottom growing in step.",
+    "body": "Picture a young Arabidopsis leaf three days after sowing. It's barely more than a green smudge under the microscope, but it's already busy. Every cell is quietly swelling and dividing, and none of them can wander off \u2014 plant cells are glued to their neighbours for life. So whatever shape the leaf ends up, it has to be built by negotiation, not migration. That negotiation is the subject of a paper titled Growth-rate coordination across the width of a leaf preserves its flatness, by Kate Harline and colleagues. Their work appears in the pages of a study on the jagged and wavy mutant, jaw-D, and it asks a deceptively simple question: how does a leaf stay flat?\n\nThe team took wild-type Arabidopsis and the jaw-D mutant \u2014 a plant whose leaves ripple instead of lying smooth \u2014 and imaged the same living leaves every day from three to eight days after sowing. Three leaves per genotype, tracked cell by cell, using confocal microscopy and software that turns the curved surface into a workable map. The jaw-D mutation is known to overexpress a microRNA that represses TCP transcription factors, delaying the leaf's maturation. That delay, it turns out, has consequences for geometry.\n\nThink of a choir, if you will, where every singer must swell at the same rate to keep the sound even. That's a comparison, not a claim about plants. In wild-type leaves, growth along the length of the leaf is carefully matched across its width. The midrib and the blade grow at nearly the same pace, so no internal tug-of-war develops, and the blade stays flat. In jaw-D, the midrib grows more slowly than the blade, and the growth gradient that normally sweeps from base to tip is flattened out. The result is a growth conflict \u2014 a mechanical mismatch \u2014 and the leaf curves. Curvature becomes strong around six days after sowing. Modelling with finite element simulations supported the idea: uniform growth across the width kept the model leaf flat, while uneven growth produced curvature, and uneven growth on both axes could even generate a twisted or saddle-like form.\n\nWhat's striking is that the usual suspect \u2014 differential growth between the top and bottom of the leaf \u2014 doesn't explain it. Both wild type and jaw-D grow faster on the upper side, consistent with unfurling, and the difference between them isn't significant there.\n\nBut there are limits. The jaw-D leaves were grown between a cover slip and agar, which likely flattened the leaf tip artificially, and unconstrained jaw-D leaves rolled back on themselves, making them impossible to image. Cell segmentation failed in some proximal regions of jaw-D, so those cells are probably undercounted. And the study used a single mutant in one species \u2014 Arabidopsis \u2014 so whether the same coordination holds in other leaf forms remains an open question.\n\nStill, back to that three-day-old smudge. Flatness isn't the absence of growth. It's growth that has learned to agree with itself across the whole blade. I'm Clara Rowan. There's always more going on.",
+    "caveat": "But there are limits. The jaw-D leaves were grown between a cover slip and agar, which likely flattened the leaf tip artificially, and unconstrained jaw-D leaves rolled back on themselves, making them impossible to image. Cell segmentation failed in some proximal regions of jaw-D, so those cells are probably undercounted. And the study used a single mutant in one species \u2014 Arabidopsis \u2014 so whether the same coordination holds in other leaf forms remains an open question.",
+    "claims": [
+     {
+      "claim": "Wild-type leaves maintain flatness through coordinated growth across the width of the leaf blade, preventing growth conflicts.",
+      "quote": "With this work, we show that coordination of growth rates across the width of wild-type leaves prevents the formation of growth conflicts, allowing the leaves to develop flat blades"
+     },
+     {
+      "claim": "In jaw-D, the midrib grows more slowly than the leaf blade, unlike wild type where growth is more even.",
+      "quote": "The jaw-D midrib (middle of the leaf overlying the central vascular bundle) grows more slowly than the leaf blade from 4 to 8 DAS (Fig 3B). In contrast, the wild-type midrib and blade have nearly equivalent growth rates along the same latitudinal level"
+     },
+     {
+      "claim": "Curvature in jaw-D is caused by a lack of coordination in proximal\u2013distal growth across the mediolateral axis, not by differential adaxial\u2013abaxial growth.",
+      "quote": "Overall, our results support the conclusion that curvature in jaw-D mutants is caused by a lack of coordination in proximal\u2013distal growth across the mediolateral axis, rather than by differential growth between the adaxial and abaxial tissues."
+     },
+     {
+      "claim": "Modelling showed that uniform proximal\u2013distal growth across the leaf width keeps the leaf flat, while non-uniform growth produces curvature.",
+      "quote": "Simulations of this growth change reveal that uniform proximal\u2013distal cell growth rates across the width of the leaf are essential for maintaining flatness in wild type and unequal proximal\u2013distal cell growth rates between midrib and blade generate positive curvature in jaw-D"
+     },
+     {
+      "claim": "Curvature in jaw-D becomes strong at 6 days after sowing.",
+      "quote": "We found that disruptions in tissue curvature in jaw-D become strong at 6 DAS"
+     },
+     {
+      "claim": "jaw-D leaves are constrained during imaging by cover slip and agar, which likely altered their natural form.",
+      "quote": "Unlike the model, the real jaw-D leaf was grown between the mechanical constraints of a cover slip and the agar growth media, which is likely to cause the flattening of the tip of the leaf."
+     },
+     {
+      "claim": "Proximal jaw-D cells are likely undercounted because enhanced curvature prevented cell segmentation in some regions.",
+      "quote": "However, the enhanced curvature of jaw-D prevented cell segmentation in some of the proximal leaf blade regions, so it is likely that proximal jaw-D cells are undercounted."
+     },
+     {
+      "claim": "The study's findings are based on one species and one mutant, leaving open whether other leaf growth patterns follow the same mechanism.",
+      "quote": "It would be interesting if the growth patterns we measured had corollaries in these species where the miR396 pattern differs from Arabidopsis."
+     }
+    ]
+   },
+   "style": {
+    "findings": {
+     "tier1a_vocab": [],
+     "tier1b_copula": [],
+     "significance_phrases": [],
+     "transition_words": [],
+     "chatbot_artifacts": [],
+     "not_x_but_y": 0,
+     "hedge_stack": 0,
+     "scenario_opener": 0,
+     "staged_reveal": 0,
+     "this_matters_because": 0,
+     "vague_attribution": 0,
+     "em_dash": 9,
+     "rhetorical_questions": 1,
+     "markdown_or_bold": 0
+    },
+    "stats": {
+     "words": 496,
+     "sentences": 29,
+     "mean_sentence_len": 17.1,
+     "sentence_len_stdev": 9.1,
+     "longest_sentence": 37,
+     "em_dash_per_1k": 18.15
+    }
+   },
+   "style_penalty": 9.5,
+   "valid_draft": true,
+   "valid_podcast": true,
+   "run": 1
+  }
+ ]
+}

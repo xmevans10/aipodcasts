@@ -1,0 +1,333 @@
+{
+ "meta": {
+  "timestamp": "20260918-150841",
+  "host": "fern",
+  "title": "Growth-rate coordination across the width of a leaf preserves its flatness",
+  "characters": 30944,
+  "peak": false
+ },
+ "results": [
+  {
+   "variant": "luna-baseline",
+   "model": "gpt-5.6-luna",
+   "prompt": "baseline",
+   "provider": "openai",
+   "effort": "low",
+   "max_tokens": 3500,
+   "host": "fern",
+   "usage": {
+    "input_tokens": 7454,
+    "output_tokens": 1182,
+    "reasoning_tokens": 85,
+    "cache_hit_tokens": 7451,
+    "total_tokens": 8636
+   },
+   "cost_usd_offpeak": 0.002909,
+   "cost_usd_peak": 0.002909,
+   "finish_reason": "completed",
+   "reasoning_chars": 0,
+   "draft": {
+    "title": "Growth-rate coordination across the width of a leaf preserves its flatness",
+    "dek": "A tiny Arabidopsis mutant reveals that keeping a leaf flat depends on coordinating growth across its width, not simply on synchronising its top and bottom surfaces.",
+    "body": "Watch a young leaf at the microscope and it looks less like a quiet green plate than a busy construction site. Cells are growing, dividing and changing shape, yet none can simply slide past its neighbours. So how does the whole thing avoid buckling?\n\nThis is **Growth-rate coordination across the width of a leaf preserves its flatness**. The study, titled \u201cGrowth-rate coordination across the width of a leaf preserves its flatness\u201d, comes from Kate Harline and colleagues. They worked with the small flowering plant *Arabidopsis thaliana*, comparing ordinary plants with a mutant called jaw-D, whose young leaves become jagged and wavy rather than staying flat.\n\nThe researchers repeatedly imaged living first leaves from three to eight days after sowing. Using confocal microscopy, they tracked cell boundaries and lineages across nearly the entire lower surface. They also built computer models to test which growth patterns would make a leaf bend.\n\nAt first, the mutant seems puzzling. Its leaves ended up roughly the same size as ordinary leaves. But their growth was arranged differently. In normal leaves, growth changes from the base towards the tip, while growth at each level is relatively even across the leaf\u2019s width. In jaw-D, that lengthwise gradient was flattened. More importantly, the central midrib grew more slowly than the surrounding blade.\n\nThat mismatch matters. **As a comparison**, imagine a neighbourhood where the roads on either side of the high street suddenly lengthen at different speeds. The street map may still cover the same area, but something has to give. In the leaf, the result is a mechanical conflict: parts of the tissue are trying to extend at different rates, and the sheet curves. The researchers found that curvature became especially clear around day six.\n\nThe models supported that interpretation. When growth along the length of the simulated leaf was matched across its width, the leaf stayed flat. When it varied across the width, the model curved\u2014even when the overall length could remain similar. The familiar top-versus-bottom explanation for leaf shape wasn\u2019t enough here: the study points to coordination across the blade as a crucial part of flatness.\n\nThere are boundaries to this conclusion. The work examined early first leaves of one *Arabidopsis* mutant under controlled laboratory conditions, and some curved regions were difficult to segment. The finite-element models used manually specified growth patterns and simplified mechanical assumptions. The authors also note that gaps caused by trichomes prevent a strong conclusion about coordination on the upper surface, and leaves from other species may use different lengthwise growth patterns.\n\nSo, that apparently simple green plane is being kept level by a choreography spread across its width. Not a leaf standing still, but a leaf negotiating its shape while it grows. I'm Clara Rowan. There's always more going on.",
+    "caveat": "There are boundaries to this conclusion. The work examined early first leaves of one *Arabidopsis* mutant under controlled laboratory conditions, and some curved regions were difficult to segment. The finite-element models used manually specified growth patterns and simplified mechanical assumptions. The authors also note that gaps caused by trichomes prevent a strong conclusion about coordination on the upper surface, and leaves from other species may use different lengthwise growth patterns.",
+    "claims": [
+     {
+      "claim": "The study used live imaging to track developing wild-type and jaw-D Arabidopsis leaves at cellular resolution.",
+      "quote": "We repeatedly imaged the same living wild-type and jaw-D mutant first leaves every day from 3 days after sowing (DAS) to 8 DAS (n = 3 leaves for each genotype"
+     },
+     {
+      "claim": "Jaw-D leaves became curved while wild-type leaves flattened, with curvature initiated around 6 DAS.",
+      "quote": "At 6 DAS, jaw-D leaves establish a strong positive curvature across the proximal end of the leaf lamina as the whole leaf curves"
+     },
+     {
+      "claim": "The jaw-D mutant had slower growth at the midrib than in the surrounding blade.",
+      "quote": "The jaw-D midrib (middle of the leaf overlying the central vascular bundle) grows more slowly than the leaf blade from 4 to 8 DAS"
+     },
+     {
+      "claim": "The researchers attributed the curvature to growth conflicts across the mediolateral axis rather than simply to overall size differences.",
+      "quote": "Our data is consistent with the hypothesis that differences in growth rate between the midrib and the leaf blade in the mediolateral axis create mechanical conflicts that cause the rippling of the whole jaw-D leaf."
+     },
+     {
+      "claim": "Finite-element modelling indicated that uniform growth across the leaf width preserves flatness, while non-uniform growth produces curvature.",
+      "quote": "In the simulation of this model, each region of the leaf grew different amounts, but since the amount was equal across the width of the leaf, it did not create any growth conflict and the leaf remained perfectly flat"
+     },
+     {
+      "claim": "The study concerns Arabidopsis and does not establish that all plant species use the same growth pattern.",
+      "quote": "leaves from some species exhibit acropetal (growth slowing progressively from base to tip), diffuse (growth throughout) or bidirectional (growth from the center of the leaf) growth patterns."
+     }
+    ]
+   },
+   "style": {
+    "findings": {
+     "tier1a_vocab": [],
+     "tier1b_copula": [],
+     "significance_phrases": [],
+     "transition_words": [],
+     "chatbot_artifacts": [],
+     "not_x_but_y": 0,
+     "hedge_stack": 0,
+     "scenario_opener": 0,
+     "staged_reveal": 0,
+     "this_matters_because": 0,
+     "vague_attribution": 0,
+     "em_dash": 1,
+     "rhetorical_questions": 1,
+     "markdown_or_bold": 4
+    },
+    "stats": {
+     "words": 462,
+     "sentences": 32,
+     "mean_sentence_len": 14.4,
+     "sentence_len_stdev": 7.3,
+     "longest_sentence": 30,
+     "em_dash_per_1k": 2.16
+    }
+   },
+   "style_penalty": 21.5,
+   "valid_draft": true,
+   "valid_podcast": true,
+   "run": 1
+  },
+  {
+   "variant": "luna-baseline",
+   "model": "gpt-5.6-luna",
+   "prompt": "baseline",
+   "provider": "openai",
+   "effort": "low",
+   "max_tokens": 3500,
+   "host": "fern",
+   "usage": {
+    "input_tokens": 7454,
+    "output_tokens": 1221,
+    "reasoning_tokens": 89,
+    "cache_hit_tokens": 7451,
+    "total_tokens": 8675
+   },
+   "cost_usd_offpeak": 0.002956,
+   "cost_usd_peak": 0.002956,
+   "finish_reason": "completed",
+   "reasoning_chars": 0,
+   "draft": {
+    "title": "Growth-rate coordination across the width of a leaf preserves its flatness",
+    "dek": "How a tiny Arabidopsis mutant reveals that keeping a leaf flat depends on growth coordination across its width.",
+    "body": "A young leaf is meant to be a rather good piece of engineering: expanding, dividing, and still managing to stay flat. But in one small laboratory plant, the leaf develops ripples instead. Why?\n\nThis is \u201cGrowth-rate coordination across the width of a leaf preserves its flatness\u201d. The study, titled \u201cGrowth-rate coordination across the width of a leaf preserves its flatness\u201d, comes from Kate Harline and colleagues. It examines Arabidopsis thaliana, the small mustard plant that has become a regular in plant biology\u2019s neighbourhood.\n\nThe researchers compared ordinary wild-type plants with a mutant called jaw-D. In this mutant, a microRNA is overproduced, delaying part of the leaf\u2019s maturation. The team repeatedly imaged the same developing leaves from three to eight days after sowing, tracking cell boundaries, growth, division and differentiation with confocal microscopy. There were three leaves of each genotype in this live-imaging experiment.\n\nAt first glance, the two kinds of leaf were surprisingly alike. Their area, length, cell number and density weren\u2019t statistically different during the imaging window. At maturity, they also had similar median size. Yet by six days, jaw-D leaves had begun to curve, eventually forming two ripples, while wild-type leaves flattened out.\n\nThe important difference wasn\u2019t simply that one region grew more quickly. In a normal leaf, growth along its length changes from base to tip, but at each level it\u2019s coordinated across the width. The midrib and the surrounding blade grow at broadly similar rates. In jaw-D, the midrib grows more slowly than the blade. That mismatch creates what the researchers describe as mechanical conflicts.\n\nComparison: it\u2019s a bit like extending a tablecloth when the middle and edges are being pulled at different speeds. The cloth doesn\u2019t politely remain a plane; it buckles. The leaf\u2019s version is more elegant, but the geometry is unforgiving.\n\nFinite-element models supported this explanation. When growth was even across the width, the simulated leaf stayed flat. When it varied across the width, the model curved. The models also suggested that the familiar base-to-tip growth gradient alone couldn\u2019t explain the waviness. It was the lack of coordination perpendicular to that main direction that mattered most.\n\nThe study has important limits. It examined early first leaves of one Arabidopsis mutant and wild-type background, with only three leaves per genotype in the live-imaging experiment. The mechanical simulations used manually specified growth rates based on qualitative assessment of imaging data, and the real leaves were grown under imaging constraints that could flatten parts of the mutant leaves. The packet also provides selected passages rather than the complete paper, so additional limitations may be described elsewhere.\n\nSo, a flat leaf isn\u2019t merely growing evenly. It\u2019s growing unevenly, but in a coordinated way\u2014rather like a carefully managed neighbourhood where everyone can renovate without pushing the next house sideways. I'm Clara Rowan. There's always more going on.",
+    "caveat": "The study has important limits. It examined early first leaves of one Arabidopsis mutant and wild-type background, with only three leaves per genotype in the live-imaging experiment. The mechanical simulations used manually specified growth rates based on qualitative assessment of imaging data, and the real leaves were grown under imaging constraints that could flatten parts of the mutant leaves. The packet also provides selected passages rather than the complete paper, so additional limitations may be described elsewhere.",
+    "claims": [
+     {
+      "claim": "The researchers used repeated live imaging to track developing wild-type and jaw-D Arabidopsis leaves at cellular resolution.",
+      "quote": "We repeatedly imaged the same living wild-type and jaw-D mutant first leaves every day from 3 days after sowing (DAS) to 8 DAS (n = 3 leaves for each genotype; Figs 1A and S1\u2013S6)."
+     },
+     {
+      "claim": "The mutant and wild-type leaves had similar broad size measurements during early development, despite developing different shapes.",
+      "quote": "Organ-wide morphological features of the 3\u20138 DAS leaves, including area, length, width, cell number, and cell density, were not statistically different between wild-type and jaw-D"
+     },
+     {
+      "claim": "Curvature in jaw-D leaves became apparent at six days after sowing.",
+      "quote": "At 6 DAS, jaw-D leaves establish a strong positive curvature across the proximal end of the leaf lamina as the whole leaf curves"
+     },
+     {
+      "claim": "The jaw-D midrib grew more slowly than the surrounding blade, unlike the more even growth of wild type.",
+      "quote": "The jaw-D midrib (middle of the leaf overlying the central vascular bundle) grows more slowly than the leaf blade from 4 to 8 DAS ... In contrast, the wild-type midrib and blade have nearly equivalent growth rates along the same latitudinal level"
+     },
+     {
+      "claim": "The modelling indicated that uneven growth across the leaf\u2019s width can generate curvature.",
+      "quote": "In contrast, when we altered the proximal\u2013distal growth rate, so that it was non-uniform across the leaf, growth conflicts were created and the leaf curved similar to the jaw-D leaf"
+     },
+     {
+      "claim": "The authors conclude that coordinated growth across the width helps maintain a flat leaf blade.",
+      "quote": "Overall, we conclude that cell growth is coordinated across the width of the wild-type leaf to maintain flatness of the leaf blade."
+     }
+    ]
+   },
+   "style": {
+    "findings": {
+     "tier1a_vocab": [],
+     "tier1b_copula": [],
+     "significance_phrases": [],
+     "transition_words": [],
+     "chatbot_artifacts": [],
+     "not_x_but_y": 0,
+     "hedge_stack": 0,
+     "scenario_opener": 0,
+     "staged_reveal": 0,
+     "this_matters_because": 0,
+     "vague_attribution": 0,
+     "em_dash": 1,
+     "rhetorical_questions": 1,
+     "markdown_or_bold": 0
+    },
+    "stats": {
+     "words": 481,
+     "sentences": 35,
+     "mean_sentence_len": 13.7,
+     "sentence_len_stdev": 6.8,
+     "longest_sentence": 32,
+     "em_dash_per_1k": 2.08
+    }
+   },
+   "style_penalty": 1.5,
+   "valid_draft": true,
+   "valid_podcast": true,
+   "run": 2
+  },
+  {
+   "variant": "luna-antislop",
+   "model": "gpt-5.6-luna",
+   "prompt": "antislop",
+   "provider": "openai",
+   "effort": "low",
+   "max_tokens": 3500,
+   "host": "fern",
+   "usage": {
+    "input_tokens": 8118,
+    "output_tokens": 1062,
+    "reasoning_tokens": 96,
+    "cache_hit_tokens": 0,
+    "total_tokens": 9180
+   },
+   "cost_usd_offpeak": 0.002898,
+   "cost_usd_peak": 0.002898,
+   "finish_reason": "completed",
+   "reasoning_chars": 0,
+   "draft": {
+    "title": "Growth-rate coordination across the width of a leaf preserves its flatness",
+    "dek": "Live imaging and modelling in Arabidopsis thaliana suggest that a leaf stays flat when growth is coordinated across its width.",
+    "body": "A young leaf is quietly building itself, cell by cell. Along the middle, the midrib grows. Out towards the edges, the blade expands. The whole thing sounds like a recipe for a crumple, yet most leaves manage a remarkably good impression of flatness.\n\n\u201cGrowth-rate coordination across the width of a leaf preserves its flatness\u201d is the study by Kate Harline and colleagues. It examines the plant Arabidopsis thaliana, using a mutant called jagged and wavy, or jaw-D, whose leaves develop ripples instead of staying flat. The paper has no journal listed in the supplied material.\n\nThe researchers repeatedly imaged living first leaves from three to eight days after sowing. They tracked individual epidermal cells, measuring their growth, division and changing position. They compared ordinary, wild-type plants with jaw-D plants, whose overproduction of a small regulatory RNA delays aspects of leaf maturation.\n\nThe leaves were similar in overall size. Their shapes were not. In wild type, growth along the length of the leaf formed a gradient, with growth slowing towards the tip. Crucially, at each level along that length, growth across the width was relatively even. The midrib and the surrounding blade kept pace.\n\nIn jaw-D, the midrib grew more slowly than the blade. That difference set up what the researchers call a growth conflict. A comparison might be a sheet of pastry being stretched more in the middle than at the edges: the material has to bend somewhere. In the simulations, uneven growth across the width produced curvature, while more evenly coordinated growth allowed the model leaf to remain flat.\n\nThe team also found that the jaw-D leaf\u2019s length could stay similar to wild type despite having a different pattern of growth along its length. That matters because overall size alone can hide how a shape was made. The models suggested that the lengthwise growth gradient itself didn\u2019t explain the curvature. The key was whether growth was coordinated across the width.\n\nThere are limits to this picture. The live imaging covered only three leaves of each genotype, the work used one Arabidopsis mutant and early leaves, and the mechanical simulations were based on manually specified growth rates and an idealised material model. Imaging constraints affected some jaw-D leaves, and gaps caused by trichomes prevented a strong conclusion about growth on one leaf surface.\n\nSo the flat leaf isn\u2019t simply growing at one uniform pace. It\u2019s keeping different parts in step, like a very disciplined neighbourhood where every extension agrees on the building schedule. Back at the bench, a ripple begins when that agreement slips. I'm Clara Rowan. There's always more going on.",
+    "caveat": "There are limits to this picture. The live imaging covered only three leaves of each genotype, the work used one Arabidopsis mutant and early leaves, and the mechanical simulations were based on manually specified growth rates and an idealised material model. Imaging constraints affected some jaw-D leaves, and gaps caused by trichomes prevented a strong conclusion about growth on one leaf surface.",
+    "claims": [
+     {
+      "claim": "The study used live imaging to track developing wild-type and jaw-D Arabidopsis leaves at cellular resolution.",
+      "quote": "We repeatedly imaged the same living wild-type and jaw-D mutant first leaves every day from 3 days after sowing (DAS) to 8 DAS (n = 3 leaves for each genotype)"
+     },
+     {
+      "claim": "Wild-type and jaw-D leaves had similar overall size, although jaw-D leaves became curved.",
+      "quote": "Organ-wide morphological features of the 3\u20138 DAS leaves, including area, length, width, cell number, and cell density, were not statistically different between wild-type and jaw-D"
+     },
+     {
+      "claim": "The jaw-D midrib grew more slowly than the surrounding blade, unlike the more even growth of wild type.",
+      "quote": "The jaw-D midrib (middle of the leaf overlying the central vascular bundle) grows more slowly than the leaf blade from 4 to 8 DAS"
+     },
+     {
+      "claim": "Modelling indicated that uneven growth across the width of the leaf can create curvature.",
+      "quote": "when we altered the proximal\u2013distal growth rate, so that it was non-uniform across the leaf, growth conflicts were created and the leaf curved similar to the jaw-D leaf"
+     },
+     {
+      "claim": "The authors conclude that coordination across the leaf width helps maintain flatness.",
+      "quote": "coordination of growth rates across the width of wild-type leaves prevents the formation of growth conflicts, allowing the leaves to develop flat blades"
+     }
+    ]
+   },
+   "style": {
+    "findings": {
+     "tier1a_vocab": [],
+     "tier1b_copula": [],
+     "significance_phrases": [],
+     "transition_words": [],
+     "chatbot_artifacts": [],
+     "not_x_but_y": 0,
+     "hedge_stack": 0,
+     "scenario_opener": 0,
+     "staged_reveal": 0,
+     "this_matters_because": 0,
+     "vague_attribution": 0,
+     "em_dash": 0,
+     "rhetorical_questions": 0,
+     "markdown_or_bold": 0
+    },
+    "stats": {
+     "words": 436,
+     "sentences": 31,
+     "mean_sentence_len": 14.1,
+     "sentence_len_stdev": 7.4,
+     "longest_sentence": 35,
+     "em_dash_per_1k": 0.0
+    }
+   },
+   "style_penalty": 0.0,
+   "valid_draft": false,
+   "draft_error": "Evidence quote not found in original source",
+   "valid_podcast": true,
+   "run": 1
+  },
+  {
+   "variant": "luna-antislop",
+   "model": "gpt-5.6-luna",
+   "prompt": "antislop",
+   "provider": "openai",
+   "effort": "low",
+   "max_tokens": 3500,
+   "host": "fern",
+   "usage": {
+    "input_tokens": 8118,
+    "output_tokens": 1165,
+    "reasoning_tokens": 84,
+    "cache_hit_tokens": 8115,
+    "total_tokens": 9283
+   },
+   "cost_usd_offpeak": 0.003022,
+   "cost_usd_peak": 0.003022,
+   "finish_reason": "completed",
+   "reasoning_chars": 0,
+   "draft": {
+    "title": "Growth-rate coordination across the width of a leaf preserves its flatness",
+    "dek": "Live imaging and modelling of Arabidopsis leaves suggest that flatness depends on growth staying coordinated across the leaf\u2019s width, not simply on growth from tip to base.",
+    "body": "A young leaf is quietly building itself, cell by cell. Its cells can\u2019t shuffle past their neighbours, yet the finished leaf still has to spread into a remarkably flat blade. What keeps it from buckling into a botanical crisp?\n\nThe paper is titled \u201cGrowth-rate coordination across the width of a leaf preserves its flatness\u201d. Kate Harline and colleagues studied the question in Arabidopsis thaliana, using a mutant called jagged and wavy, or jaw-D. In this mutant, the leaves develop ripples and curves instead of staying flat.\n\nThe researchers repeatedly imaged the same developing leaves from three to eight days after sowing. They used confocal microscopy to follow cell boundaries and track individual cell lineages. They compared normal plants with jaw-D plants, then used computer models to test which patterns of growth could produce the observed shapes.\n\nThe overall leaf size was surprisingly similar between the two groups. The difference was in how growth was distributed. In normal leaves, the midrib and the surrounding blade grew at broadly similar rates across the width. In jaw-D leaves, the midrib grew more slowly than the blade. That mismatch created what the researchers call growth conflicts, bending the whole leaf rather than just its edges.\n\nComparison: it\u2019s a little like stretching a sheet of dough while one strip through the middle lags behind. The sheet has to accommodate the disagreement somehow, and a flat surface becomes a difficult arrangement.\n\nThe team also found that jaw-D leaves had a flattened pattern of growth from base towards tip, along with delayed cell maturation. But their models suggested that this tip-to-base pattern alone didn\u2019t explain the curvature. Curvature appeared when growth was uneven across the leaf in the direction perpendicular to its main growth. When the simulated midrib and blade grew differently, the model curved in a way that resembled the mutant leaves.\n\nThis was a study of early leaves in one Arabidopsis mutant, not a survey of leaf shapes across plants. The live-imaging set was small, with three leaves of each genotype, and the jaw-D curvature sometimes prevented cells near the base from being segmented. The finite-element models used manually specified growth rates based on qualitative assessment of imaging data, and the real leaves were grown under mechanical constraints from the cover slip and agar. Trichomes also obscured parts of the upper leaf surface, so the researchers could not make a strong conclusion about growth coordination there. These limits mean the work supports a mechanism for this mutant and developmental window, rather than proving the same process explains flatness in every species or leaf.\n\nSo, that little leaf stays flat through agreement across its width. Its cells don\u2019t need to move house. They need to grow in step. I'm Clara Rowan. There's always more going on.",
+    "caveat": "This was a study of early leaves in one Arabidopsis mutant, not a survey of leaf shapes across plants. The live-imaging set was small, with three leaves of each genotype, and the jaw-D curvature sometimes prevented cells near the base from being segmented. The finite-element models used manually specified growth rates based on qualitative assessment of imaging data, and the real leaves were grown under mechanical constraints from the cover slip and agar. Trichomes also obscured parts of the upper leaf surface, so the researchers could not make a strong conclusion about growth coordination there. These limits mean the work supports a mechanism for this mutant and developmental window, rather than proving the same process explains flatness in every species or leaf.",
+    "claims": [
+     {
+      "claim": "The study examined the jaw-D mutant of Arabidopsis thaliana, whose leaves do not remain flat.",
+      "quote": "Here we explored the phenotype of the jagged and wavy (jaw-D) mutant in Arabidopsis thaliana, in which the leaves do not remain flat."
+     },
+     {
+      "claim": "The researchers used repeated live imaging of developing leaves and tracked cell lineages.",
+      "quote": "We repeatedly imaged the same living wild-type and jaw-D mutant first leaves every day from 3 days after sowing (DAS) to 8 DAS (n = 3 leaves for each genotype; Figs 1A and S1\u2013S6)."
+     },
+     {
+      "claim": "Jaw-D leaves had slower midrib growth than blade growth, unlike wild type.",
+      "quote": "The jaw-D midrib ... grows more slowly than the leaf blade from 4 to 8 DAS ... In contrast, the wild-type midrib and blade have nearly equivalent growth rates along the same latitudinal level."
+     },
+     {
+      "claim": "Modelling linked uneven growth across the leaf to curvature.",
+      "quote": "In contrast, when we altered the proximal\u2013distal growth rate, so that it was non-uniform across the leaf, growth conflicts were created and the leaf curved similar to the jaw-D leaf."
+     },
+     {
+      "claim": "The study argues that coordination across the leaf width preserves flatness.",
+      "quote": "Overall, we conclude that cell growth is coordinated across the width of the wild-type leaf to maintain flatness of the leaf blade."
+     }
+    ]
+   },
+   "style": {
+    "findings": {
+     "tier1a_vocab": [],
+     "tier1b_copula": [],
+     "significance_phrases": [],
+     "transition_words": [],
+     "chatbot_artifacts": [],
+     "not_x_but_y": 0,
+     "hedge_stack": 0,
+     "scenario_opener": 0,
+     "staged_reveal": 0,
+     "this_matters_because": 0,
+     "vague_attribution": 0,
+     "em_dash": 0,
+     "rhetorical_questions": 1,
+     "markdown_or_bold": 0
+    },
+    "stats": {
+     "words": 464,
+     "sentences": 30,
+     "mean_sentence_len": 15.5,
+     "sentence_len_stdev": 6.5,
+     "longest_sentence": 30,
+     "em_dash_per_1k": 0.0
+    }
+   },
+   "style_penalty": 0.5,
+   "valid_draft": false,
+   "draft_error": "Evidence quote not found in original source",
+   "valid_podcast": true,
+   "run": 2
+  }
+ ]
+}

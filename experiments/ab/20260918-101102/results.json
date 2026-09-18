@@ -1,0 +1,271 @@
+{
+ "meta": {
+  "timestamp": "20260918-101102",
+  "host": "fern",
+  "title": "Growth-rate coordination across the width of a leaf preserves its flatness",
+  "characters": 30944,
+  "peak": false
+ },
+ "results": [
+  {
+   "variant": "flash-baseline",
+   "model": "deepseek-flash",
+   "prompt": "baseline",
+   "thinking": false,
+   "temperature": 0.8,
+   "host": "fern",
+   "usage": {
+    "input_tokens": 7380,
+    "output_tokens": 1118,
+    "reasoning_tokens": null,
+    "cache_hit_tokens": 7168,
+    "total_tokens": 8498
+   },
+   "cost_usd_offpeak": 0.000889,
+   "cost_usd_peak": 0.001778,
+   "finish_reason": "stop",
+   "reasoning_chars": 0,
+   "draft": {
+    "title": "Growth-rate coordination across the width of a leaf preserves its flatness",
+    "dek": "Live imaging of Arabidopsis leaves shows that flatness depends on growth rates matching across the leaf's width, not just top to bottom.",
+    "body": "Picture a young Arabidopsis leaf at six days old. Under the microscope, it's a small green paddle, and you'd swear it was pressed flat between two panes of glass. Then there's its mutant cousin, jaw-D. Same age, same size, but the base has begun to curl, like a crisp left too long in the sun. Watching that curl appear, day by day, is the subject of \"Growth-rate coordination across the width of a leaf preserves its flatness.\" Kate Harline and colleagues, writing in the journal, imaged the same living leaves every day from three to eight days after sowing, tracking every epidermal cell as it grew and divided.\n\nHere's the puzzle. Plant cells are glued to their neighbours. They can't shuffle past each other to smooth out a wrinkle, the way you might tug a rumpled tablecloth straight. So shape has to come from coordination. The older idea was that a leaf stays flat because its top and bottom surfaces grow at matching rates. But when the team compared wild type with jaw-D, they found the top still outpaced the bottom in both, which is normal for an unfurling leaf. That wasn't the difference.\n\nThe difference was across the width. In wild-type leaves, at any given height along the leaf, the middle rib and the blade beside it grow at nearly the same rate. It's a bit like a rowing crew, where it doesn't matter that the boat is moving fast or slow, only that both oars pull together. In jaw-D, the midrib grows more slowly than the blade, and that mismatch builds up. Think of the comparison as a seam sewn with two different tensions: something has to buckle. Their models agreed, producing flat sheets when growth was even across the width, and curling ones when it wasn't. Curiously, a second defect in jaw-D, a flattened growth gradient from base to tip, turned out to make no difference to curvature at all.\n\nThe team also watched a wave of cell maturation travel from tip to base, delayed in jaw-D, and saw that the most proximal cells of a wild-type leaf contribute around thirty per cent of the final blade, against roughly fifteen per cent in jaw-D.\n\nNow the caveats. This is Arabidopsis, first leaves, three plants per genotype, imaged under a cover slip that flattens the very tip the researchers wanted to watch. The model is a model.\n\nSo back to that curling leaf. Flatness isn't passive. It's an agreement, renewed daily across the width of the blade. I'm Clara Rowan. There's always more going on.",
+    "caveat": "This is Arabidopsis, first leaves, three plants per genotype, imaged under a cover slip that flattens the very tip the researchers wanted to watch. The model is a model.",
+    "claims": [
+     {
+      "claim": "Live imaging tracked the same leaves from 3 to 8 days after sowing at cellular resolution.",
+      "quote": "we repeatedly imaged the same living wild-type and jaw-D mutant first leaves every day from 3 days after sowing (DAS) to 8 DAS (n = 3 leaves for each genotype"
+     },
+     {
+      "claim": "Organ-wide size and cell measures did not differ statistically between wild type and jaw-D in the imaging window.",
+      "quote": "Organ-wide morphological features of the 3\u20138 DAS leaves, including area, length, width, cell number, and cell density, were not statistically different between wild-type and jaw-D"
+     },
+     {
+      "claim": "jaw-D curvature is initiated at 6 DAS and extends across the whole leaf, not only the margins.",
+      "quote": "At 6 DAS, jaw-D leaves establish a strong positive curvature across the proximal end of the leaf lamina as the whole leaf curves"
+     },
+     {
+      "claim": "In jaw-D the midrib grows more slowly than the blade, while wild-type growth is more even across the width.",
+      "quote": "The jaw-D midrib (middle of the leaf overlying the central vascular bundle) grows more slowly than the leaf blade from 4 to 8 DAS"
+     },
+     {
+      "claim": "Differential growth between the top and bottom leaf surfaces was similar in wild type and jaw-D, so it does not explain the mutant curvature.",
+      "quote": "there are no obvious differences in rates of adaxial growth between the wild type and jaw-D, suggesting this is not the cause of the abnormal curvature in the jaw-D leaf"
+     },
+     {
+      "claim": "Finite element modelling showed uniform growth across the leaf width keeps the blade flat, while non-uniform growth produces curvature.",
+      "quote": "when we altered the proximal\u2013distal growth rate, so that it was non-uniform across the leaf, growth conflicts were created and the leaf curved similar to the jaw-D leaf"
+     },
+     {
+      "claim": "Removing the basipetal growth gradient in the models left flatness and curvature unchanged.",
+      "quote": "The removal of the basipetal growth gradient had no effect: the wild-type model remained flat"
+     },
+     {
+      "claim": "The study concludes that cell growth is coordinated across the width of the wild-type leaf to maintain flatness.",
+      "quote": "we conclude that cell growth is coordinated across the width of the wild-type leaf to maintain flatness of the leaf blade"
+     }
+    ]
+   },
+   "style": {
+    "findings": {
+     "tier1a_vocab": [],
+     "tier1b_copula": [],
+     "significance_phrases": [],
+     "transition_words": [],
+     "chatbot_artifacts": [],
+     "not_x_but_y": 0,
+     "hedge_stack": 0,
+     "scenario_opener": 0,
+     "staged_reveal": 0,
+     "this_matters_because": 0,
+     "vague_attribution": 0,
+     "em_dash": 0,
+     "rhetorical_questions": 0,
+     "markdown_or_bold": 0
+    },
+    "stats": {
+     "words": 427,
+     "sentences": 29,
+     "mean_sentence_len": 14.7,
+     "sentence_len_stdev": 10.2,
+     "longest_sentence": 44,
+     "em_dash_per_1k": 0.0
+    }
+   },
+   "style_penalty": 0.0,
+   "valid_draft": true,
+   "valid_podcast": true,
+   "run": 1
+  },
+  {
+   "variant": "flash-baseline",
+   "model": "deepseek-flash",
+   "prompt": "baseline",
+   "thinking": false,
+   "temperature": 0.8,
+   "host": "fern",
+   "usage": {
+    "input_tokens": 7380,
+    "output_tokens": 1398,
+    "reasoning_tokens": null,
+    "cache_hit_tokens": 7168,
+    "total_tokens": 8778
+   },
+   "cost_usd_offpeak": 0.000973,
+   "cost_usd_peak": 0.001946,
+   "finish_reason": "stop",
+   "reasoning_chars": 0,
+   "draft": {
+    "title": "Growth-rate coordination across the width of a leaf preserves its flatness",
+    "dek": "Live imaging of Arabidopsis leaves shows that staying flat isn't about the top and bottom doing the same thing \u2014 it's about neighbours across the blade growing at matching rates.",
+    "body": "Picture a young Arabidopsis leaf under a confocal microscope, roughly three days after sowing. It's a scrap of green smaller than a pinhead, and it will get about four hundred times bigger in area before it's done. Every day for six days, researchers imaged the very same living leaves \u2014 three wild-type, three of a mutant called jaw-D \u2014 at cellular resolution, tagging the cell membranes so each cell's outline glowed. What they were chasing is the puzzle behind the paper's title: Growth-rate coordination across the width of a leaf preserves its flatness.\n\nKate Harline and colleagues, publishing in this study, tracked individual cell lineages across nearly the whole bottom surface of those leaves, then modelled what the growth patterns would do mechanically. The wild-type leaves flattened out. The jaw-D leaves didn't. They rippled.\n\nHere's the interesting part. Leaf flatness is usually framed as a two-sided problem: keep the top and bottom surfaces growing at compatible rates and the blade stays smooth. But when the team compared the two sides in wild type and jaw-D, both grew with the top faster than the bottom, and there was no obvious difference between them. That wasn't the culprit.\n\nInstead, the trouble ran across the leaf. In wild type, at any given height along the leaf, the midrib and the blade grow at nearly the same rate \u2014 think of a row of people walking abreast, a comparison worth holding onto, because if everyone in the row keeps pace, the line stays straight. In jaw-D, the cells along the midrib grew more slowly than those in the blade beside them. Same row, mismatched strides. Modelling showed that growth that's uneven in the direction perpendicular to the main direction of growth creates conflicts and bends the leaf, while the basipetal gradient \u2014 growth slowing from base to tip \u2014 turned out to have no effect on curvature at all.\n\nOne more wrinkle: jaw-D leaves also show a flattened version of that base-to-tip growth gradient, with growth spread more evenly along the length rather than concentrated near the base. That's a real difference from wild type, but the models suggest it isn't what bends the leaf.\n\nThe caveats matter here. This is one mutant in one species, imaged under a cover slip and on agar \u2014 constraints that likely flattened the leaf tip, while unconstrained jaw-D leaves rolled back on themselves and couldn't be imaged at all. The enhanced curvature also prevented cell segmentation in some proximal regions of jaw-D, so those cells are probably undercounted. And the deepest conclusions about how growth maps onto curvature come from finite element simulations, not from direct measurement of the forces involved.\n\nStill, the image to keep is that row of walkers. Flatness, it seems, is a neighbourhood achievement \u2014 not one surface pulling its weight, but everyone across the width keeping step. I'm Clara Rowan. There's always more going on.",
+    "caveat": "This is one mutant in one species, imaged under a cover slip and on agar \u2014 constraints that likely flattened the leaf tip, while unconstrained jaw-D leaves rolled back on themselves and couldn't be imaged at all. The enhanced curvature also prevented cell segmentation in some proximal regions of jaw-D, so those cells are probably undercounted. And the deepest conclusions about how growth maps onto curvature come from finite element simulations, not from direct measurement of the forces involved.",
+    "claims": [
+     {
+      "claim": "Wild-type and jaw-D leaves had comparable organ-wide size and cell metrics during the imaging window, so they could be compared at matched stages.",
+      "quote": "Organ-wide morphological features of the 3\u20138 DAS leaves, including area, length, width, cell number, and cell density, were not statistically different between wild-type and jaw-D (paired Student's t tests with Bonferroni correction, Figs 1C\u20131F and S7A)."
+     },
+     {
+      "claim": "Curvature in jaw-D is established at 6 days after sowing, while wild-type leaves flatten.",
+      "quote": "At 6 DAS, jaw-D leaves establish a strong positive curvature across the proximal end of the leaf lamina as the whole leaf curves (Figs 2B and S8A)."
+     },
+     {
+      "claim": "In jaw-D, the midrib grows more slowly than the leaf blade, whereas wild-type growth is more even across the mediolateral axis.",
+      "quote": "The jaw-D midrib (middle of the leaf overlying the central vascular bundle) grows more slowly than the leaf blade from 4 to 8 DAS (Fig 3B). In contrast, the wild-type midrib and blade have nearly equivalent growth rates along the same latitudinal level (Fig 3A)."
+     },
+     {
+      "claim": "Differential growth between the top and bottom of the leaf is similar in wild type and jaw-D and so is unlikely to explain the curvature.",
+      "quote": "However, there are no obvious differences in rates of adaxial growth between the wild type and jaw-D, suggesting this is not the cause of the abnormal curvature in the jaw-D leaf."
+     },
+     {
+      "claim": "Simulations show that uniform growth across the width of the leaf keeps it flat, while non-uniform growth across that width produces curvature.",
+      "quote": "In the simulation of this model, each region of the leaf grew different amounts, but since the amount was equal across the width of the leaf, it did not create any growth conflict and the leaf remained perfectly flat, similar to wild type (Fig 8F)."
+     },
+     {
+      "claim": "The base-to-tip growth gradient does not affect curvature in the models.",
+      "quote": "The removal of the basipetal growth gradient had no effect: the wild-type model remained flat (Fig 9C and S8 Video) and the jaw-D model remained curved (Fig 9D and S9 Video)."
+     },
+     {
+      "claim": "The study's overall conclusion is that coordinated growth across the leaf width maintains flatness.",
+      "quote": "Overall, we conclude that cell growth is coordinated across the width of the wild-type leaf to maintain flatness of the leaf blade."
+     },
+     {
+      "claim": "The authors note that these growth patterns may differ across species, and predict the general mechanism could still hold.",
+      "quote": "We predict these cases would follow our general mechanism\u2014that the proximal\u2013distal growth across the width of the leaf at each height remains uniform to ensure development of a flat blade, though the specific distributions of growth rate zones may vary."
+     }
+    ]
+   },
+   "style": {
+    "findings": {
+     "tier1a_vocab": [],
+     "tier1b_copula": [],
+     "significance_phrases": [],
+     "transition_words": [],
+     "chatbot_artifacts": [],
+     "not_x_but_y": 0,
+     "hedge_stack": 0,
+     "scenario_opener": 0,
+     "staged_reveal": 0,
+     "this_matters_because": 0,
+     "vague_attribution": 0,
+     "em_dash": 7,
+     "rhetorical_questions": 0,
+     "markdown_or_bold": 0
+    },
+    "stats": {
+     "words": 476,
+     "sentences": 27,
+     "mean_sentence_len": 17.6,
+     "sentence_len_stdev": 12.8,
+     "longest_sentence": 46,
+     "em_dash_per_1k": 14.71
+    }
+   },
+   "style_penalty": 7.0,
+   "valid_draft": true,
+   "valid_podcast": true,
+   "run": 2
+  },
+  {
+   "variant": "flash-antislop",
+   "model": "deepseek-flash",
+   "prompt": "antislop",
+   "thinking": false,
+   "temperature": 0.8,
+   "host": "fern",
+   "error": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+   "run": 1
+  },
+  {
+   "variant": "flash-antislop",
+   "model": "deepseek-flash",
+   "prompt": "antislop",
+   "thinking": false,
+   "temperature": 0.8,
+   "host": "fern",
+   "error": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+   "run": 2
+  },
+  {
+   "variant": "flash-antislop-think",
+   "model": "deepseek-flash",
+   "prompt": "antislop",
+   "thinking": true,
+   "effort": "high",
+   "temperature": null,
+   "host": "fern",
+   "error": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+   "run": 1
+  },
+  {
+   "variant": "flash-antislop-think",
+   "model": "deepseek-flash",
+   "prompt": "antislop",
+   "thinking": true,
+   "effort": "high",
+   "temperature": null,
+   "host": "fern",
+   "error": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+   "run": 2
+  },
+  {
+   "variant": "pro-baseline",
+   "model": "deepseek-v4-pro",
+   "prompt": "baseline",
+   "thinking": false,
+   "temperature": 0.8,
+   "host": "fern",
+   "error": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+   "run": 1
+  },
+  {
+   "variant": "pro-baseline",
+   "model": "deepseek-v4-pro",
+   "prompt": "baseline",
+   "thinking": false,
+   "temperature": 0.8,
+   "host": "fern",
+   "error": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+   "run": 2
+  },
+  {
+   "variant": "pro-antislop",
+   "model": "deepseek-v4-pro",
+   "prompt": "antislop",
+   "thinking": false,
+   "temperature": 0.8,
+   "host": "fern",
+   "error": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+   "run": 1
+  },
+  {
+   "variant": "pro-antislop",
+   "model": "deepseek-v4-pro",
+   "prompt": "antislop",
+   "thinking": false,
+   "temperature": 0.8,
+   "host": "fern",
+   "error": "<urlopen error [Errno 8] nodename nor servname provided, or not known>",
+   "run": 2
+  }
+ ]
+}

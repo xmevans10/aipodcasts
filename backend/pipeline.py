@@ -11,12 +11,14 @@ from pathlib import Path
 import re
 import sqlite3
 import tempfile
+import unicodedata
 import urllib.error
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
 from evidence import extract_passages, build_packet, evidence_text
 from hosts import HOSTS as HOST_PROFILES, writing_guide
+from anti_slop import ANTI_SLOP_GUIDE
 from podcast import DEFAULT_MODEL, PODCAST_INSTRUCTIONS, validate_podcast, narration_script
 
 ROOT = Path(__file__).resolve().parent
@@ -180,6 +182,31 @@ SCHEMA = {"type": "object", "additionalProperties": False,
           "required": ["title", "dek", "body", "caveat", "claims"]}
 
 
+def provenance_text(value: str) -> str:
+    """Normalize typography so a verbatim quote matches across encodings.
+
+    Models routinely return straight quotes/dashes where JATS uses curly ones.
+    This does not forgive paraphrasing: only punctuation and spacing differ.
+    """
+    value = unicodedata.normalize("NFKC", value)
+    for source, target in (("\u2018", "'"), ("\u2019", "'"), ("\u201c", '"'), ("\u201d", '"'),
+                           ("\u2010", "-"), ("\u2011", "-"), ("\u2012", "-"), ("\u2013", "-"),
+                           ("\u2014", "-"), ("\u2212", "-"), ("\u2026", "...")):
+        value = value.replace(source, target)
+    return " ".join(value.split())
+
+
+def quotes_in_source(quote: str, normalized_source: str) -> bool:
+    """A quote may omit interior text, but every retained fragment must be verbatim.
+
+    Comparison is case- and typography-insensitive only: a model may capitalise the
+    first word of a quote, but it may not change or reorder words.
+    """
+    fragments = [f.strip() for f in provenance_text(quote).split("...")]
+    haystack = normalized_source.casefold()
+    return bool(fragments) and all(fragment.casefold() in haystack for fragment in fragments)
+
+
 def validate_draft(draft: dict, source: dict) -> None:
     if set(draft) != set(SCHEMA["required"]):
         raise ValueError("Draft has unexpected fields")
@@ -190,13 +217,13 @@ def validate_draft(draft: dict, source: dict) -> None:
         raise ValueError("Narration must be between 180 and 1000 words")
     if not isinstance(draft["claims"], list) or not 1 <= len(draft["claims"]) <= 15:
         raise ValueError("Claim evidence is required")
-    normalized = " ".join(source["text"].split())
+    normalized = provenance_text(source["text"])
     for claim in draft["claims"]:
         if not isinstance(claim, dict) or set(claim) != {"claim", "quote"}:
             raise ValueError("Invalid claim format")
         if not all(isinstance(claim[key], str) and len(claim[key]) >= 15 for key in ("claim", "quote")):
             raise ValueError("Empty or insufficient evidence")
-        if " ".join(claim["quote"].split()) not in normalized:
+        if not quotes_in_source(claim["quote"], normalized):
             raise ValueError("Evidence quote not found in original source")
 
 
@@ -238,7 +265,7 @@ def draft_story(db, story_id):
     if not source.get("attribution") or source["attribution"] == "Authors listed at source":
         raise ValueError("Named author metadata is required before generation")
     packet = build_packet(source, int(os.environ.get("LILT_MAX_SOURCE_CHARS", "18000")))
-    instructions = PODCAST_INSTRUCTIONS + writing_guide(record["host"])
+    instructions = PODCAST_INSTRUCTIONS + writing_guide(record["host"]) + "\n\n" + ANTI_SLOP_GUIDE
     effort = os.environ.get("OPENAI_REASONING_EFFORT", "low")
     if effort not in {"none", "low", "medium", "high", "xhigh", "max"}:
         raise ValueError("Unsupported reasoning effort")

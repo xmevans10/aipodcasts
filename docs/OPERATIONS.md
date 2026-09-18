@@ -107,12 +107,39 @@ Also available on the current key and unused so far: text-to-dialogue (multi-spe
 
 ## Host personality configuration
 
-`backend/hosts.py` is the single source of truth for each presenter: name, show, feed topic, beat, persona, delivery, opening style, exact sign-off, the domains their analogies may come from, what they must avoid, and the emotion palette used when directing narration. `writing_guide(host_id)` renders that profile into a block appended to the shared `PODCAST_INSTRUCTIONS`, so drafting is `shared editorial contract + one host personality` (prompt version `podcast-v2`). It also supplies the feed's topic label and the `ELEVENLABS_VOICE_*` variable name, so adding a host is one entry in one file.
+`backend/hosts.py` is the single source of truth for each presenter: name, show, feed topic, beat, persona, delivery, opening style, exact sign-off, the domains their analogies may come from, what they must avoid, and the emotion palette used when directing narration. `writing_guide(host_id)` renders that profile into a block appended to the shared `PODCAST_INSTRUCTIONS`, so drafting is `shared editorial contract + anti-slop surface rules + one host personality` (prompt version `podcast-v3`). It also supplies the feed's topic label and the `ELEVENLABS_VOICE_*` variable name, so adding a host is one entry in one file.
 
 Each profile ends with the rule that personality changes delivery only and never a finding, number, limitation or attribution. Drafts are checked against that: `validate_podcast` now requires the host's exact sign-off in the closing sixty words, alongside the existing headline, paper-title, first-author and verbatim-limitations checks. `python3 backend/pipeline.py hosts` prints the configured profiles.
 
 ## Tests
 
-- Backend: `python3 -m pytest -q backend/tests` (39 tests) covers the pipeline, evidence packet, host personalities and the podcast contract.
+- Backend: `python3 -m pytest -q backend/tests` (42 tests) covers the pipeline, evidence packet, host personalities, the podcast contract and newsletter rendering.
 - App logic: `./scripts/run-ios-tests.sh` (107 checks, no simulator needed) compiles the pure-logic files with `swiftc` and runs [`ios/Tests/LogicChecks.swift`](../ios/Tests/LogicChecks.swift): queue and resume state, `ListeningMath` (progress, minutes left, streaks including broken and stale ones), show/host wiring, story date and duration helpers, and every bundled episode — audio present, sources HTTPS, transcript word-for-word identical to the body, word timings monotonic and inside the episode, and the audio envelope five-band, in range, the right length and actually peaking.
 - UI behaviour still needs a device or simulator; these checks deliberately avoid SwiftUI rendering.
+
+## Writing experiments and the AI judge
+
+`backend/anti_slop.py` holds a distilled anti-AI-slop guide (prompt text) and a deterministic detector, adapted for spoken science from the MIT-licensed `conorbronsdon/avoid-ai-writing` pattern catalog. The guide is now part of the production draft prompt (`podcast-v3`): `pipeline.draft_story` appends it after the host personality guide. It constrains surface style only; it never overrides factual fidelity, the exact headline, the first-author credit, the verbatim limitations paragraph or the host sign-off.
+
+The experiment tooling lives outside the production packages in [`experiments/`](../experiments): `article_ab.py` mirrors the real draft contract (same evidence packet, `PODCAST_INSTRUCTIONS` + host guide, same validators) and generates a labelled matrix over models, prompt variants and thinking on/off; `ai_judge.py` scores every valid draft plus the bundled baseline blind on hook, clarity, fidelity, spoken rhythm, human voice, host fit and overall using two DeepSeek judges. Neither writes to `lilt.sqlite3` or publishes. Aggregates land in `experiments/ab/JUDGE.md`, judgements cached in `experiments/ab/judge-cache.json`.
+
+```
+python3 experiments/article_ab.py --runs 2
+python3 experiments/article_ab.py --variants luna-baseline,luna-antislop --runs 2
+python3 experiments/ai_judge.py
+```
+
+Current finding: `luna-antislop` is statistically tied for craft with the best DeepSeek configurations, has the highest measured fidelity, and cuts the deterministic AI-tell penalty from ~12 (plain Luna) to ~0.25. Anti-slop Luna sometimes paraphrases evidence quotes, which the provenance gate rejects; operator retry is required until a quote-repair pass exists.
+
+Caveat: the bundled baseline scripts record `writing_provenance` in `backend/data/baseline-2026-09-17/manifest.json` as assistant-authored, not a live Luna API run, so treat them as a human/assistant quality reference. Bundled scripts cover different papers, so their fidelity score is null and only craft dimensions are comparable.
+
+## Newsletter
+
+`backend/newsletter.py` renders any bundled episode (transcript + audio + sources) as a responsive HTML email and a plain-text alternative, with a gradient show cover, a listen button, the full transcript, the synthetic-narration disclosure and an app-download CTA that currently reads "in development". It is standard-library only.
+
+```
+python3 backend/newsletter.py render --open          # previews for every episode
+python3 backend/newsletter.py send --to you@example.com --attach-audio
+```
+
+`send` stages one RFC 822 `.eml` per recipient under `build/newsletter/outbox/` (open them in any mail client). To deliver over SMTP instead, set `SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/`SMTP_PASSWORD` and pass `--deliver`; `--audio-url` replaces the local preview audio path with an absolute hosted URL. Deterministic checks live in `backend/tests/test_newsletter.py`.

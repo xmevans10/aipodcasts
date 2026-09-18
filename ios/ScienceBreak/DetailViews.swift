@@ -144,15 +144,15 @@ struct PlayerView: View {
     @Environment(\.dismiss) var dismiss
     private let soft = Color.white.opacity(0.75)
 
-    /// Swiping a page plays that episode; selection tracks the current story.
-    private var selection: Binding<Int> {
+    /// Paging position across the playlist; moving to a page plays that episode.
+    private var currentID: Binding<String?> {
         Binding(
-            get: { player.playlistIndex(of: player.story?.id) ?? 0 },
-            set: { index in
-                let list = player.playlist
-                guard list.indices.contains(index), list[index].id != player.story?.id else { return }
+            get: { player.story?.id },
+            set: { newID in
+                guard let newID, newID != player.story?.id,
+                      let story = player.playlist.first(where: { $0.id == newID }) else { return }
                 Haptics.tap()
-                player.play(list[index])
+                player.play(story)
             }
         )
     }
@@ -163,12 +163,26 @@ struct PlayerView: View {
                 if player.playlist.isEmpty {
                     Theme.canvas.ignoresSafeArea()
                 } else {
-                    TabView(selection: selection) {
-                        ForEach(Array(player.playlist.enumerated()), id: \.element.id) { index, story in
-                            page(story).tag(index)
+                    ScrollView(.horizontal) {
+                        LazyHStack(spacing: 0) {
+                            ForEach(player.playlist) { story in
+                                page(story)
+                                    .containerRelativeFrame(.horizontal)
+                                    .id(story.id)
+                            }
                         }
+                        .scrollTargetLayout()
                     }
-                    .tabViewStyle(.page(indexDisplayMode: .never))
+                    .scrollTargetBehavior(.paging)
+                    .scrollPosition(id: currentID)
+                    .scrollIndicators(.hidden)
+                }
+            }
+            .background {
+                if let show = player.story?.show {
+                    PlayerBackdrop(show: show).ignoresSafeArea()
+                } else {
+                    Theme.canvas.ignoresSafeArea()
                 }
             }
             .toolbar {
@@ -272,7 +286,6 @@ struct PlayerView: View {
                     }
                     .padding(.horizontal, 24).padding(.bottom, 24)
         }
-        .background { PlayerBackdrop(show: story.show).ignoresSafeArea() }
     }
     func clock(_ time: Double) -> String { "\(Int(time) / 60):\(String(format: "%02d", Int(time) % 60))" }
 }

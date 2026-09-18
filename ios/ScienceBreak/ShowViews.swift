@@ -6,33 +6,13 @@ struct ShowView: View {
     var show: Show
     private var episodes: [Story] { library.episodes(of: show) }
 
+    @State private var headerPassed = false
+    private let fade: CGFloat = 88
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
-                VStack(spacing: 16) {
-                    ShowCover(show: show).frame(width: 210).shadow(color: .black.opacity(0.14), radius: 22, y: 12)
-                    VStack(spacing: 6) {
-                        Text(show.category.uppercased()).font(.caption2.weight(.semibold)).tracking(0.8).foregroundStyle(Theme.secondary)
-                        Text(show.title).font(Theme.display).foregroundStyle(Theme.ink).accessibilityAddTraits(.isHeader)
-                        HStack(spacing: 8) {
-                            HostAvatar(host: show.host, size: 24)
-                            Text("Hosted by \(show.host.name)").font(.subheadline).foregroundStyle(Theme.secondary)
-                        }
-                    }
-                    Text(show.tagline).font(.body).foregroundStyle(Theme.ink)
-                    HStack(spacing: 10) {
-                        if let latest = episodes.first {
-                            Button { player.story?.id == latest.id ? player.toggle() : player.play(latest) } label: {
-                                Label(player.story?.id == latest.id && player.playing ? "Pause" : "Play latest", systemImage: player.story?.id == latest.id && player.playing ? "pause.fill" : "play.fill")
-                            }.buttonStyle(PrimaryButtonStyle(show: show))
-                        }
-                        Button { library.toggleFollow(show) } label: {
-                            Label(library.isFollowing(show) ? "Following" : "Follow", systemImage: library.isFollowing(show) ? "checkmark" : "plus")
-                        }.buttonStyle(SecondaryButtonStyle())
-                    }
-                    Text(statsLine).font(.caption).foregroundStyle(Theme.secondary)
-                }
-                .multilineTextAlignment(.center).frame(maxWidth: .infinity)
+                header
 
                 VStack(alignment: .leading, spacing: 4) {
                     SectionHeader(title: "Episodes")
@@ -42,6 +22,7 @@ struct ShowView: View {
                     }
                     if episodes.isEmpty { Text("The first episode is in production.").font(.subheadline).foregroundStyle(Theme.secondary) }
                 }
+                .padding(.horizontal, 20)
 
                 VStack(alignment: .leading, spacing: 14) {
                     SectionHeader(title: "About the show")
@@ -58,11 +39,48 @@ struct ShowView: View {
                         .font(.caption).foregroundStyle(Theme.secondary)
                 }
                 .card()
+                .padding(.horizontal, 20)
             }
-            .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 28)
+            .padding(.bottom, 28)
         }
         .background(Theme.canvas)
-        .navigationBarTitleDisplayMode(.inline)
+        .immersiveNavigationBar(show: show, title: show.title, solid: headerPassed)
+    }
+
+    /// Full-bleed colour header: the cover on a glow, white type, then a fade into the canvas.
+    private var header: some View {
+        VStack(spacing: 16) {
+            ZStack {
+                CoverGlow(show: show, size: 240)
+                ShowCover(show: show).frame(width: 210).shadow(color: .black.opacity(0.3), radius: 24, y: 14)
+            }
+            .padding(.top, 12)
+            VStack(spacing: 6) {
+                Text(show.category.uppercased()).font(.caption2.weight(.semibold)).tracking(0.8).foregroundStyle(.white.opacity(0.8))
+                Text(show.title).font(Theme.display).foregroundStyle(.white).accessibilityAddTraits(.isHeader)
+                HStack(spacing: 8) {
+                    HostAvatar(host: show.host, size: 24).overlay(Circle().strokeBorder(.white.opacity(0.6)))
+                    Text("Hosted by \(show.host.name)").font(.subheadline).foregroundStyle(.white.opacity(0.85))
+                }
+            }
+            Text(show.tagline).font(.body).foregroundStyle(.white)
+            HStack(spacing: 10) {
+                if let latest = episodes.first {
+                    Button { player.story?.id == latest.id ? player.toggle() : player.play(latest) } label: {
+                        Label(player.story?.id == latest.id && player.playing ? "Pause" : "Play latest", systemImage: player.story?.id == latest.id && player.playing ? "pause.fill" : "play.fill")
+                    }.buttonStyle(OnColorPrimaryButtonStyle(show: show))
+                }
+                Button { library.toggleFollow(show) } label: {
+                    Label(library.isFollowing(show) ? "Following" : "Follow", systemImage: library.isFollowing(show) ? "checkmark" : "plus")
+                }.buttonStyle(OnColorSecondaryButtonStyle())
+            }
+            Text(statsLine).font(.caption).foregroundStyle(.white.opacity(0.8))
+        }
+        .multilineTextAlignment(.center).frame(maxWidth: .infinity)
+        .padding(.horizontal, 20)
+        .modifier(HeaderScrollTracker(passed: $headerPassed))
+        .padding(.bottom, fade - 20)
+        .background(alignment: .bottom) { ImmersiveHeaderBackground(show: show, fade: fade) }
     }
 
     private var statsLine: String {

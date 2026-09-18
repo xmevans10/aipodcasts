@@ -104,7 +104,7 @@ struct HomeView: View {
             HomeSectionHeader(title: "Your shows") { NavigationLink("Browse") { BrowseView(embedded: true) } }
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)], spacing: 20) {
                 ForEach(shows) { show in
-                    NavigationLink { ShowView(show: show) } label: { ShowCard(show: show) }.buttonStyle(.plain)
+                    NavigationLink { ShowView(show: show) } label: { ShowCard(show: show) }.buttonStyle(.pressable)
                 }
             }
         }

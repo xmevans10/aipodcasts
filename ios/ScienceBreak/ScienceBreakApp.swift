@@ -24,17 +24,25 @@ struct RootView: View {
     @AppStorage("onboarded") private var onboarded = false
     @State private var showPlayer = false
     @State private var tab = 0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Namespace private var playerZoom
+    /// Each tab has its own mini player, so the zoom source ID is per tab.
+    private func inset(_ tag: Int) -> MiniPlayerInset {
+        MiniPlayerInset(showPlayer: $showPlayer, zoom: reduceMotion ? nil : playerZoom, tabTag: tag)
+    }
     var body: some View {
         TabView(selection: $tab) {
-            HomeView().miniPlayerInset($showPlayer).tag(0).tabItem { Label("Home", systemImage: "house") }
-            BrowseView().miniPlayerInset($showPlayer).tag(1).tabItem { Label("Browse", systemImage: "square.grid.2x2") }
-            HostsView().miniPlayerInset($showPlayer).tag(2).tabItem { Label("Hosts", systemImage: "person.2") }
-            LibraryView().miniPlayerInset($showPlayer).tag(3).tabItem { Label("Library", systemImage: "books.vertical") }
-            YouView().miniPlayerInset($showPlayer).tag(4).tabItem { Label("You", systemImage: "chart.bar") }
+            HomeView().modifier(inset(0)).tag(0).tabItem { Label("Home", systemImage: "house") }
+            BrowseView().modifier(inset(1)).tag(1).tabItem { Label("Browse", systemImage: "square.grid.2x2") }
+            HostsView().modifier(inset(2)).tag(2).tabItem { Label("Hosts", systemImage: "person.2") }
+            LibraryView().modifier(inset(3)).tag(3).tabItem { Label("Library", systemImage: "books.vertical") }
+            YouView().modifier(inset(4)).tag(4).tabItem { Label("You", systemImage: "chart.bar") }
         }
         .onChange(of: scenePhase) { _, phase in if phase != .active { player.checkpoint() } }
         .onChange(of: library.stories) { _, stories in player.restore(stories) }
-        .sheet(isPresented: $showPlayer) { PlayerView() }
+        .sheet(isPresented: $showPlayer) {
+            PlayerView().playerZoomDestination(id: MiniPlayerInset.zoomID(tab: tab), in: reduceMotion ? nil : playerZoom)
+        }
         .fullScreenCover(isPresented: Binding(get: { !onboarded }, set: { onboarded = !$0 })) { WelcomeView() }
         .task {
             #if DEBUG
@@ -55,43 +63,68 @@ struct RootView: View {
 
 struct MiniPlayerInset: ViewModifier {
     @EnvironmentObject var player: AudioPlayer
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Binding var showPlayer: Bool
+    /// Namespace for the iOS 18 zoom into the player; nil disables it.
+    var zoom: Namespace.ID? = nil
+    var tabTag: Int = 0
+
+    static func zoomID(tab: Int) -> String { "mini-player-cover-\(tab)" }
+
     func body(content: Content) -> some View {
         content.safeAreaInset(edge: .bottom) {
-            if let story = player.story {
-                HStack(spacing: 10) {
-                    Button { showPlayer = true } label: {
-                        HStack(spacing: 12) {
-                            ShowCover(show: story.show).frame(width: 42)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(story.title).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink).lineLimit(1)
-                                Text(player.isPreview ? "\(story.show.title) · Device voice sample" : story.show.title)
-                                    .font(.caption).foregroundStyle(Theme.secondary).lineLimit(1)
-                            }
-                            Spacer(minLength: 0)
-                        }.contentShape(Rectangle())
+            ZStack {
+                if let story = player.story { bar(story).transition(appearTransition) }
+            }
+            .animation(Motion.standard(reduceMotion: reduceMotion), value: player.story == nil)
+        }
+    }
+
+    private var appearTransition: AnyTransition {
+        reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity)
+    }
+
+    private var fraction: Double { min(1, player.position / max(player.duration, 1)) }
+
+    private func bar(_ story: Story) -> some View {
+        HStack(spacing: 10) {
+            Button { showPlayer = true } label: {
+                HStack(spacing: 12) {
+                    ShowCover(show: story.show).frame(width: 42)
+                        .playerZoomSource(id: Self.zoomID(tab: tabTag), in: zoom)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(story.title).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink).lineLimit(1)
+                        Text(player.isPreview ? "\(story.show.title) · Device voice sample" : story.show.title)
+                            .font(.caption).foregroundStyle(Theme.secondary).lineLimit(1)
                     }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Now playing: \(story.title). Opens player.")
-                    Button { player.toggle() } label: {
-                        Image(systemName: player.playing ? "pause.fill" : "play.fill").font(.title3).foregroundStyle(Theme.ink).frame(width: 44, height: 44)
-                    }.accessibilityLabel(player.playing ? "Pause" : "Play")
-                }
-                .padding(.leading, 8).padding(.trailing, 4).padding(.vertical, 7)
-                .background(Theme.surface)
-                .overlay(alignment: .bottom) {
-                    if !player.isPreview {
-                        GeometryReader { g in
-                            Rectangle().fill(story.show.mid).frame(width: g.size.width * min(1, player.position / max(player.duration, 1)), height: 2)
-                        }.frame(height: 2)
-                    }
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(Theme.hairline))
-                .shadow(color: .black.opacity(0.08), radius: 14, y: 6)
-                .padding(.horizontal, 10).padding(.bottom, 6)
+                    Spacer(minLength: 0)
+                }.contentShape(Rectangle())
+            }
+            .buttonStyle(PressableStyle(scale: 0.98))
+            .accessibilityLabel("Now playing: \(story.title). Opens player.")
+            Button { Haptics.tap(); player.toggle() } label: {
+                Image(systemName: player.playing ? "pause.fill" : "play.fill").font(.title3).foregroundStyle(Theme.ink)
+                    .contentTransition(reduceMotion ? .identity : .symbolEffect(.replace))
+                    .frame(width: 44, height: 44)
+            }
+            .buttonStyle(.pressable)
+            .animation(Motion.standard(reduceMotion: reduceMotion), value: player.playing)
+            .accessibilityLabel(player.playing ? "Pause" : "Play")
+        }
+        .padding(.leading, 8).padding(.trailing, 4).padding(.vertical, 7)
+        .background(Theme.surface)
+        .overlay(alignment: .bottom) {
+            if !player.isPreview {
+                GeometryReader { g in
+                    Rectangle().fill(story.show.mid).frame(width: g.size.width * fraction, height: 2)
+                        .animation(.easeOut(duration: 0.25), value: fraction)
+                }.frame(height: 2)
             }
         }
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(Theme.hairline))
+        .shadow(color: .black.opacity(0.08), radius: 14, y: 6)
+        .padding(.horizontal, 10).padding(.bottom, 6)
     }
 }
 

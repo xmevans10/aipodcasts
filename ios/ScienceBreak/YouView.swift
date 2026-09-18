@@ -6,6 +6,12 @@ struct YouView: View {
     @EnvironmentObject var library: Library
     @EnvironmentObject var player: AudioPlayer
     @State private var settings = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// What the ring and the minutes label currently show; animated toward the real values.
+    @State private var shownProgress: Double = 0
+    @State private var shownMinutes = 0
+    /// Drives the brief celebratory pulse when the goal is met.
+    @State private var celebrating = false
 
     private var followed: [Show] { Show.all.filter { library.isFollowing($0) } }
     private var finished: [Story] { library.latest.filter { player.progress(of: $0) >= 1 } }
@@ -23,10 +29,10 @@ struct YouView: View {
                         SectionHeader(title: "Settings")
                         Button { settings = true } label: {
                             row("gearshape", "App settings", "Feed, privacy, credits")
-                        }.buttonStyle(.plain)
+                        }.buttonStyle(PressableStyle(scale: 0.98))
                         NavigationLink { QueueView() } label: {
                             row("list.bullet", "Up next", "\(player.queuedStories.count) episode\(player.queuedStories.count == 1 ? "" : "s") queued")
-                        }.buttonStyle(.plain)
+                        }.buttonStyle(PressableStyle(scale: 0.98))
                     }
                     Text("Listening data stays on this device. There is no account and no analytics SDK.")
                         .font(.caption).foregroundStyle(Theme.secondary)
@@ -44,16 +50,25 @@ struct YouView: View {
             HStack(alignment: .center, spacing: 18) {
                 ZStack {
                     Circle().stroke(Theme.subtle, lineWidth: 10)
-                    Circle().trim(from: 0, to: goalProgress)
+                    Circle().trim(from: 0, to: shownProgress)
                         .stroke(AngularGradient(colors: Show.all.map(\.mid) + [Show.all[0].mid], center: .center),
                                 style: StrokeStyle(lineWidth: 10, lineCap: .round))
                         .rotationEffect(.degrees(-90))
+                        .shadow(color: Show.all[0].mid.opacity(celebrating ? 0.55 : 0), radius: celebrating ? 12 : 0)
                     VStack(spacing: 0) {
-                        Text("\(player.minutesToday)").font(.system(size: 24, weight: .semibold, design: .rounded)).monospacedDigit()
+                        Text("\(shownMinutes)").font(.system(size: 24, weight: .semibold, design: .rounded)).monospacedDigit()
+                            .contentTransition(.numericText(value: Double(shownMinutes)))
                         Text("min").font(.caption2).foregroundStyle(Theme.secondary)
                     }
                 }
                 .frame(width: 92, height: 92)
+                .scaleEffect(celebrating ? 1.08 : 1)
+                .onAppear { syncRing() }
+                .onChange(of: goalProgress) { old, new in
+                    syncRing()
+                    if old < 1, new >= 1 { celebrate() }
+                }
+                .onChange(of: player.minutesToday) { _, _ in syncRing() }
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("\(player.minutesToday) of \(library.dailyGoalMinutes) minutes listened today")
                 VStack(alignment: .leading, spacing: 6) {
@@ -72,10 +87,32 @@ struct YouView: View {
                 Spacer()
                 Stepper("\(library.dailyGoalMinutes) min", value: $library.dailyGoalMinutes, in: 3...60, step: 1)
                     .labelsHidden().fixedSize()
+                    .onChange(of: library.dailyGoalMinutes) { _, _ in Haptics.selection() }
                 Text("\(library.dailyGoalMinutes) min").font(.subheadline.weight(.semibold)).monospacedDigit().frame(width: 58, alignment: .trailing)
+                    .contentTransition(.numericText(value: Double(library.dailyGoalMinutes)))
+                    .animation(Motion.standard(reduceMotion: reduceMotion), value: library.dailyGoalMinutes)
             }
         }
         .card()
+    }
+
+    /// Moves the ring fill and minutes label to the current values.
+    private func syncRing() {
+        withAnimation(reduceMotion ? .easeInOut(duration: 0.35) : .spring(response: 0.9, dampingFraction: 0.85)) {
+            shownProgress = goalProgress
+            shownMinutes = player.minutesToday
+        }
+    }
+
+    /// Success haptic plus, unless Reduce Motion is on, a short scale-and-glow pulse on the ring.
+    private func celebrate() {
+        Haptics.success()
+        guard !reduceMotion else { return }
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) { celebrating = true }
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(450))
+            withAnimation(Motion.spring) { celebrating = false }
+        }
     }
 
     private var weekCard: some View {
@@ -109,6 +146,9 @@ struct YouView: View {
             StatTile(value: "\(library.saved.count)", label: "saved", symbol: "bookmark")
             StatTile(value: "\(sourcesCount)", label: "sources", symbol: "link")
         }
+        // StatTile's number Text picks this up from the environment.
+        .contentTransition(.numericText())
+        .animation(Motion.standard(reduceMotion: reduceMotion), value: [finished.count, library.saved.count, sourcesCount])
     }
 
     private var sourcesCount: Int {
@@ -126,14 +166,15 @@ struct YouView: View {
                         Text(show.host.name).font(.caption).foregroundStyle(Theme.secondary)
                     }
                     Spacer()
-                    Button { library.toggleFollow(show) } label: {
+                    Button { Haptics.selection(); library.toggleFollow(show) } label: {
                         Text(library.isFollowing(show) ? "Following" : "Follow")
                             .font(.caption.weight(.semibold)).padding(.horizontal, 14).frame(height: 32)
                             .foregroundStyle(library.isFollowing(show) ? Theme.ink : .white)
                             .background(library.isFollowing(show) ? Theme.surface : Theme.ink, in: Capsule())
                             .overlay(Capsule().strokeBorder(library.isFollowing(show) ? Theme.hairline : .clear))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.pressable)
+                    .animation(Motion.standard(reduceMotion: reduceMotion), value: library.isFollowing(show))
                     .accessibilityLabel(library.isFollowing(show) ? "Unfollow \(show.title)" : "Follow \(show.title)")
                 }
                 .padding(.vertical, 6)

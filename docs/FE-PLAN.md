@@ -1,4 +1,4 @@
-# Sound Science: front-end plan
+# Zwicky: front-end plan
 
 Planning baseline: 18 September 2026. Scope is the iPhone client and the
 newsletter surface. It assumes no new backend services and no paid provider
@@ -9,14 +9,14 @@ in [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md).
 
 Progress: Phases 1–3 implemented, plus interactive player paging; device verification pending.
 
-- One `AudioPlayer` ([`Player.swift`](../ios/ScienceBreak/Player.swift)) with
+- One `AudioPlayer` ([`Player.swift`](../ios/Zwicky/Player.swift)) with
   `AVAudioSession.playback` and play/pause remote commands, and Now Playing set
   to title/artist only. No interruption or route-change handling.
-- Persistence is `UserDefaults`/`@AppStorage` ([`Models.swift`](../ios/ScienceBreak/Models.swift),
+- Persistence is `UserDefaults`/`@AppStorage` ([`Models.swift`](../ios/Zwicky/Models.swift),
   `Library`, `ListeningState`). Saved/history/queue survive relaunch; the feed
   is not cached to disk, so a rotating or offline feed loses stories.
 - Placeholder surfaces remain: a "coming soon" line on device-voice samples
-  ([`DetailViews.swift:36`](../ios/ScienceBreak/DetailViews.swift)) and a
+  ([`DetailViews.swift:36`](../ios/Zwicky/DetailViews.swift)) and a
   StoreKit preview behind a Settings membership entry (`DetailViews.swift:314`).
 - Accessibility labels exist across screens but there has been no Dynamic Type
   or VoiceOver audit.
@@ -50,7 +50,7 @@ Progress: Phases 1–3 implemented, plus interactive player paging; device verif
 - Persist resolved story bodies for saved and queued items so they survive feed
   rotation.
 - Add retry affordances and a clear "offline, showing saved episodes" state.
-- Files: `Models.swift`, `ScienceBreakApp.swift`, new cache module,
+- Files: `Models.swift`, `ZwickyApp.swift`, new cache module,
   `HomeView.swift`, `ShowViews.swift`.
 - Done when: with no network, relaunch still opens and plays saved/queued items.
 

@@ -57,7 +57,7 @@ struct YouView: View {
                         .shadow(color: Show.all[0].mid.opacity(celebrating ? 0.55 : 0), radius: celebrating ? 12 : 0)
                     VStack(spacing: 0) {
                         Text("\(shownMinutes)").font(.system(size: 24, weight: .semibold, design: .rounded)).monospacedDigit()
-                            .contentTransition(.numericText(value: Double(shownMinutes)))
+                            .contentTransition(reduceMotion ? .identity : .numericText(value: Double(shownMinutes)))
                         Text("min").font(.caption2).foregroundStyle(Theme.secondary)
                     }
                 }
@@ -89,7 +89,7 @@ struct YouView: View {
                     .labelsHidden().fixedSize()
                     .onChange(of: library.dailyGoalMinutes) { _, _ in Haptics.selection() }
                 Text("\(library.dailyGoalMinutes) min").font(.subheadline.weight(.semibold)).monospacedDigit().frame(width: 58, alignment: .trailing)
-                    .contentTransition(.numericText(value: Double(library.dailyGoalMinutes)))
+                    .contentTransition(reduceMotion ? .identity : .numericText(value: Double(library.dailyGoalMinutes)))
                     .animation(Motion.standard(reduceMotion: reduceMotion), value: library.dailyGoalMinutes)
             }
         }
@@ -132,6 +132,7 @@ struct YouView: View {
                 AxisValueLabel(format: .dateTime.weekday(.narrow))
             } }
             .frame(height: 140)
+            .accessibilityElement(children: .ignore)
             .accessibilityLabel("Minutes listened each day this week")
             if player.minutesThisWeek == 0 {
                 Text("No listening logged yet. Minutes appear here as you play episodes.").font(.caption).foregroundStyle(Theme.secondary)
@@ -147,7 +148,7 @@ struct YouView: View {
             StatTile(value: "\(sourcesCount)", label: "sources", symbol: "link")
         }
         // StatTile's number Text picks this up from the environment.
-        .contentTransition(.numericText())
+        .contentTransition(reduceMotion ? .identity : .numericText())
         .animation(Motion.standard(reduceMotion: reduceMotion), value: [finished.count, library.saved.count, sourcesCount])
     }
 
@@ -191,8 +192,9 @@ struct YouView: View {
                 Text(subtitle).font(.caption).foregroundStyle(Theme.secondary)
             }
             Spacer()
-            Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary)
+            Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary).accessibilityHidden(true)
         }
+        .accessibilityElement(children: .combine)
         .card(padding: 14, radius: OpenAIKit.Radius.card)
     }
 }

@@ -44,7 +44,7 @@ struct WelcomeView: View {
                 Button { go(to: step - 1) } label: { Image(systemName: "chevron.left").font(.body.weight(.semibold)).frame(width: 44, height: 44) }
                     .accessibilityLabel("Back")
             } else {
-                Text("Sound Science").font(.system(size: 19, weight: .semibold, design: .serif)).frame(height: 44)
+                Text("Zwicky").font(.system(size: 19, weight: .semibold, design: .serif)).frame(height: 44)
             }
             Spacer()
             HStack(spacing: 6) {

@@ -23,11 +23,12 @@ struct EpisodeView: View {
                         Label(isCurrent && player.playing ? "Pause" : player.progress(of: story) > 0 && player.progress(of: story) < 1 ? "Resume" : "Play",
                               systemImage: isCurrent && player.playing ? "pause.fill" : "play.fill")
                     }.buttonStyle(PrimaryButtonStyle(show: story.show))
+                    .accessibilityHint("Plays this episode")
                     Spacer()
                     iconButton(queued ? "text.badge.checkmark" : "text.badge.plus", label: queued ? "In your queue" : "Add to queue") { player.enqueue(story) }
                         .disabled(queued || isCurrent)
                     iconButton(library.saved.contains(story.id) ? "bookmark.fill" : "bookmark", label: library.saved.contains(story.id) ? "Unsave" : "Save") { library.toggle(story) }
-                    ShareLink(item: "\(story.title) — \(story.show.title) on Sound Science") {
+                    ShareLink(item: "\(story.title) — \(story.show.title) on Zwicky") {
                         Image(systemName: "square.and.arrow.up").modifier(IconCircle())
                     }.accessibilityLabel("Share")
                 }
@@ -46,9 +47,10 @@ struct EpisodeView: View {
                                 Text("Follow the transcript as it plays").font(.caption).foregroundStyle(Theme.secondary)
                             }
                             Spacer()
-                            Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary)
+                            Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary).accessibilityHidden(true)
                         }.card(padding: 14, radius: OpenAIKit.Radius.card)
                     }.buttonStyle(.plain)
+                    .accessibilityHint("Opens the read-along transcript")
                 }
 
                 VStack(alignment: .leading, spacing: 10) {
@@ -80,6 +82,10 @@ struct EpisodeView: View {
                             }
                         }
                     }
+                    if story.sources.isEmpty {
+                        Text("Sources for this episode will appear here once they are available.")
+                            .font(.subheadline).foregroundStyle(Theme.secondary)
+                    }
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -104,7 +110,7 @@ struct EpisodeView: View {
                         Text("with \(story.host.name)").font(.caption).foregroundStyle(.white.opacity(0.8))
                     }
                     Spacer()
-                    Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(.white.opacity(0.7))
+                    Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(.white.opacity(0.7)).accessibilityHidden(true)
                 }
                 .padding(10).padding(.trailing, 4)
                 .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: OpenAIKit.Radius.card, style: .continuous))
@@ -142,6 +148,7 @@ struct PlayerView: View {
     @EnvironmentObject var player: AudioPlayer
     @EnvironmentObject var library: Library
     @Environment(\.dismiss) var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let soft = Color.white.opacity(0.75)
 
     /// Paging position across the playlist; moving to a page plays that episode.
@@ -161,7 +168,16 @@ struct PlayerView: View {
         NavigationStack {
             Group {
                 if player.playlist.isEmpty {
-                    Theme.canvas.ignoresSafeArea()
+                    VStack(spacing: 14) {
+                        Image(systemName: "headphones").font(.largeTitle).foregroundStyle(Theme.secondary)
+                        Text("Nothing to play").font(.headline).foregroundStyle(Theme.ink)
+                        Text("Add an episode from Browse or your Library to start listening.")
+                            .font(.subheadline).foregroundStyle(Theme.secondary)
+                            .multilineTextAlignment(.center).padding(.horizontal, 32)
+                        Button("Close") { dismiss() }.buttonStyle(PrimaryButtonStyle())
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .background(Theme.canvas.ignoresSafeArea())
                 } else {
                     ScrollView(.horizontal) {
                         LazyHStack(spacing: 0) {
@@ -196,7 +212,7 @@ struct PlayerView: View {
             }
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
-            .animation(.easeInOut(duration: 0.4), value: player.story?.show.id)
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.4), value: player.story?.show.id)
         }
     }
 
@@ -224,12 +240,13 @@ struct PlayerView: View {
                                 HostAvatar(host: story.host, size: 22).overlay(Circle().strokeBorder(.white.opacity(0.6)))
                                 Text("\(story.show.title) · \(story.host.name)").font(.subheadline).foregroundStyle(soft)
                             }
-                            Text(story.title).font(.system(size: 24, weight: .semibold, design: .serif)).foregroundStyle(.white).multilineTextAlignment(.center)
+                            Text(story.title).font(.system(size: 24, weight: .semibold, design: .serif)).foregroundStyle(.white).multilineTextAlignment(.center).accessibilityAddTraits(.isHeader)
                         }
                         if !preview {
                             VStack(spacing: 4) {
                                 Slider(value: Binding(get: { min(position, duration) }, set: { if active { player.seek($0) } }), in: 0...max(duration, 1))
                                     .tint(.white).accessibilityLabel("Playback position")
+                                    .accessibilityValue("\(clock(position)) of \(clock(duration))")
                                 HStack { Text(clock(position)); Spacer(); Text("-" + clock(max(0, duration - position))) }
                                     .font(.caption.monospacedDigit()).foregroundStyle(soft)
                             }
@@ -247,12 +264,17 @@ struct PlayerView: View {
                             Button { if active { player.seek(position + 15) } } label: { Image(systemName: "goforward.15").font(.title2) }.disabled(preview || !active).accessibilityLabel("Forward 15 seconds")
                         }.foregroundStyle(.white)
                         HStack {
-                            Button { if active { player.cycleRate() } } label: { Text(String(format: "%.2gx", active ? player.rate : 1)).font(.subheadline.weight(.semibold)).frame(width: 52, height: 44) }.accessibilityLabel("Playback speed")
+                            Button { if active { player.cycleRate() } } label: { Text(String(format: "%.2gx", active ? player.rate : 1)).font(.subheadline.weight(.semibold)).frame(width: 52, height: 44) }
+                                .accessibilityLabel("Playback speed")
+                                .accessibilityValue(String(format: "%.2gx", active ? player.rate : 1))
+                                .accessibilityHint("Changes the playback speed")
                             Spacer()
                             Menu {
                                 if player.sleepUntil != nil { Button("Cancel sleep timer") { player.cancelSleep() } }
                                 Button("15 minutes") { player.sleep(minutes: 15) }; Button("30 minutes") { player.sleep(minutes: 30) }
-                            } label: { Image(systemName: player.sleepUntil == nil ? "moon" : "moon.fill").foregroundStyle(.white).frame(width: 44, height: 44) }.accessibilityLabel("Sleep timer")
+                            } label: { Image(systemName: player.sleepUntil == nil ? "moon" : "moon.fill").foregroundStyle(.white).frame(width: 44, height: 44) }
+                                .accessibilityLabel("Sleep timer")
+                                .accessibilityValue(player.sleepUntil == nil ? "Off" : "On")
                             Spacer()
                             NavigationLink { QueueView() } label: {
                                 Image(systemName: "list.bullet").frame(width: 44, height: 44)
@@ -267,15 +289,17 @@ struct PlayerView: View {
                             Button { library.toggle(story) } label: { Image(systemName: library.saved.contains(story.id) ? "bookmark.fill" : "bookmark").frame(width: 44, height: 44) }
                                 .accessibilityLabel(library.saved.contains(story.id) ? "Unsave" : "Save")
                         }.font(.title3).foregroundStyle(.white)
-                        if active, let message = player.message { Text(message).font(.caption).foregroundStyle(soft) }
+                        if let message = player.message { Text(message).font(.caption).foregroundStyle(soft) }
                         VStack(spacing: 10) {
                             if let transcript = Episodes.transcript(for: story.id) {
                                 NavigationLink { TranscriptView(story: story, paragraphs: transcript) } label: {
                                     Label("Read along", systemImage: "text.quote")
                                 }.buttonStyle(OnColorSecondaryButtonStyle(fullWidth: true))
+                                .accessibilityHint("Opens the read-along transcript")
                             }
                             NavigationLink { EpisodeView(story: story) } label: { Label("Episode details & sources", systemImage: "doc.text") }
                                 .buttonStyle(OnColorSecondaryButtonStyle(fullWidth: true))
+                                .accessibilityHint("Opens details and sources for this episode")
                             if active, let next = player.queuedStories.first {
                                 Button { player.next() } label: {
                                     HStack { Text("Up next").foregroundStyle(soft); Text(next.title).lineLimit(1); Spacer(); Image(systemName: "forward.end.fill") }
@@ -302,7 +326,7 @@ struct SettingsView: View {
             Form {
                 #if DEBUG
                 Section("Membership") {
-                    Button("Sound Science Plus") { plus = true }
+                    Button("Zwicky Plus") { plus = true }
                     Text("Preview build · All episodes are free").font(.caption).foregroundStyle(Theme.secondary)
                 }
                 #endif
@@ -319,7 +343,7 @@ struct SettingsView: View {
                 Section("Credits") {
                     Text("Host illustrations: DiceBear “Notionists” (CC0). Narration: ElevenLabs. Reading typeface: Charter.").font(.caption).foregroundStyle(Theme.secondary)
                 }
-                Section { Button("Show welcome again") { onboarded = false; dismiss() }; Text("Sound Science 0.1").font(.caption).foregroundStyle(Theme.secondary) }
+                Section { Button("Show welcome again") { onboarded = false; dismiss() }; Text("Zwicky 0.1").font(.caption).foregroundStyle(Theme.secondary) }
             }
             .navigationTitle("Settings").toolbar { Button("Done") { dismiss() } }
             .sheet(isPresented: $plus) {
@@ -342,7 +366,7 @@ struct PolicyView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                Text(title).font(Theme.display)
+                Text(title).font(Theme.display).accessibilityAddTraits(.isHeader)
                 Text(text).font(Theme.reading(18)).lineSpacing(6)
             }.padding(24)
         }.background(Theme.canvas)
@@ -354,10 +378,10 @@ struct PlusView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 18) {
-                Text("SOUND SCIENCE PLUS").font(.caption2.weight(.semibold)).tracking(0.8).foregroundStyle(Theme.secondary)
-                Text("The full archive, offline.").font(Theme.display).multilineTextAlignment(.center)
+                Text("ZWICKY PLUS").font(.caption2.weight(.semibold)).tracking(0.8).foregroundStyle(Theme.secondary)
+                Text("The full archive, offline.").font(Theme.display).multilineTextAlignment(.center).accessibilityAddTraits(.isHeader)
                 Text("Planned for launch: every past episode, downloads for offline listening, and longer listening sessions.").multilineTextAlignment(.center).foregroundStyle(Theme.secondary)
-                if let ids = Bundle.main.object(forInfoDictionaryKey: "ScienceBreakSubscriptionProducts") as? String, !ids.isEmpty {
+                if let ids = Bundle.main.object(forInfoDictionaryKey: "ZwickySubscriptionProducts") as? String, !ids.isEmpty {
                     SubscriptionStoreView(productIDs: ids.split(separator: ",").map(String.init))
                         .storeButton(.visible, for: .restorePurchases)
                 } else {

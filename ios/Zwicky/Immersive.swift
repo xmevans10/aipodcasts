@@ -102,6 +102,7 @@ private struct ImmersiveNavigationBar: ViewModifier {
     var title: String
     var solid: Bool
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     func body(content: Content) -> some View {
         content
             .navigationBarTitleDisplayMode(.inline)
@@ -125,7 +126,7 @@ private struct ImmersiveNavigationBar: ViewModifier {
             .toolbarBackground(show.dark, for: .navigationBar)
             .toolbarBackground(solid ? .visible : .hidden, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
-            .animation(.easeOut(duration: 0.2), value: solid)
+            .animation(reduceMotion ? nil : .easeOut(duration: 0.2), value: solid)
     }
 }
 

@@ -1,6 +1,6 @@
 import SwiftUI
 
-@main struct ScienceBreakApp: App {
+@main struct ZwickyApp: App {
     @StateObject private var library = Library()
     @StateObject private var player = AudioPlayer()
     init() {

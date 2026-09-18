@@ -10,7 +10,7 @@ Run a single CLI operator/worker. The SQLite call-cap transaction handles budget
 
 ## Local demo
 
-Open `ios/ScienceBreak.xcodeproj`, select Sound Science and an iPhone simulator, Run. No API key is required. If using a real device, set your signing team and override `CODE_SIGNING_ALLOWED=YES`; the project is configured for unsigned simulator development by default.
+Open `ios/Zwicky.xcodeproj`, select Zwicky and an iPhone simulator, Run. No API key is required. If using a real device, set your signing team and override `CODE_SIGNING_ALLOWED=YES`; the project is configured for unsigned simulator development by default.
 
 Regenerate after source/config changes:
 ```
@@ -65,7 +65,7 @@ Do not expose Python’s standard-library server directly as a production intern
 
 Create an Apple Developer app record under your business; select bundle identifier and signing team. Publish real support, privacy and terms destinations. Set privacy disclosures from actual behavior. Add approved commercial voice rights and original source attribution. Fill age/content ratings accurately. Test on physical devices and submit via TestFlight before App Store release.
 
-The Plus view is a guarded StoreKit SubscriptionStoreView integration point, not a complete paid system. Do not set `Sound ScienceSubscriptionProducts` until archive/offline functionality, Transaction.currentEntitlements, Transaction.updates, verification, server notifications, expiry/refund handling and access enforcement are implemented and tested. StoreKit supplies purchase UI/restore; it does not create your content entitlement backend. Paid rollout is explicitly blocked until this work is complete.
+The Plus view is a guarded StoreKit SubscriptionStoreView integration point, not a complete paid system. Do not set `ZwickySubscriptionProducts` until archive/offline functionality, Transaction.currentEntitlements, Transaction.updates, verification, server notifications, expiry/refund handling and access enforcement are implemented and tested. StoreKit supplies purchase UI/restore; it does not create your content entitlement backend. Paid rollout is explicitly blocked until this work is complete.
 
 ## Release gaps
 

@@ -7,6 +7,7 @@ struct TranscriptView: View {
     let story: Story
     let paragraphs: [TranscriptParagraph]
     @State private var following = true
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var isCurrent: Bool { player.story?.id == story.id }
     private var now: Double { isCurrent ? player.position : -1 }
@@ -19,7 +20,7 @@ struct TranscriptView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
                     HStack(spacing: 8) { HostAvatar(host: story.host, size: 24); Text("\(story.show.title) · \(story.host.name)").font(.subheadline).foregroundStyle(Theme.secondary) }
-                    Text(story.title).font(Self.titleFont).foregroundStyle(Theme.ink)
+                    Text(story.title).font(Self.titleFont).foregroundStyle(Theme.ink).accessibilityAddTraits(.isHeader)
                     ForEach(paragraphs.indices, id: \.self) { index in
                         Text(attributed(paragraphs[index], active: index == active))
                             .font(Self.bodyFont).lineSpacing(8)
@@ -37,7 +38,7 @@ struct TranscriptView: View {
             .simultaneousGesture(DragGesture(minimumDistance: 12).onChanged { _ in following = false })
             .onChange(of: active) { _, index in
                 guard following, index >= 0 else { return }
-                withAnimation(.easeInOut(duration: 0.45)) { proxy.scrollTo(index, anchor: UnitPoint(x: 0.5, y: 0.28)) }
+                withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.45)) { proxy.scrollTo(index, anchor: UnitPoint(x: 0.5, y: 0.28)) }
             }
             .onAppear {
                 // after first layout, otherwise the scroll target isn't measurable yet
@@ -60,7 +61,7 @@ struct TranscriptView: View {
             if !following && isCurrent && player.playing {
                 Button {
                     following = true
-                    withAnimation(.easeInOut(duration: 0.45)) { proxy.scrollTo(max(active, 0), anchor: UnitPoint(x: 0.5, y: 0.28)) }
+                    withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.45)) { proxy.scrollTo(max(active, 0), anchor: UnitPoint(x: 0.5, y: 0.28)) }
                 } label: { Label("Follow along", systemImage: "arrow.down.to.line").font(.caption.weight(.semibold)).padding(.horizontal, 14).frame(height: 34).background(Theme.surface, in: Capsule()).overlay(Capsule().strokeBorder(Theme.hairline)).shadow(color: .black.opacity(0.08), radius: 8, y: 3) }
                 .foregroundStyle(Theme.ink)
             }

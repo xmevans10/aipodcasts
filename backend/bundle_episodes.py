@@ -13,7 +13,7 @@ from pipeline import load_local_env
 
 ROOT = Path(__file__).resolve().parent.parent
 DEMO = ROOT / 'demos/three-hosts-2026-09-17'
-OUT = ROOT / 'ios/ScienceBreak/Episodes'
+OUT = ROOT / 'ios/Zwicky/Episodes'
 
 
 def norm(token):

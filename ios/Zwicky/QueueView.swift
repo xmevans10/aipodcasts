@@ -41,7 +41,7 @@ struct QueueView: View {
                             Button("Remove", systemImage: "minus.circle", role: .destructive) { player.removeQueued(story.id) }
                         } label: { Image(systemName: "ellipsis").frame(width: 44, height: 44) }.accessibilityLabel("Queue options for \(story.title)")
                     }
-                    .swipeActions { Button("Remove", role: .destructive) { player.removeQueued(story.id) } }
+                    .swipeActions { Button("Remove", role: .destructive) { player.removeQueued(story.id) }.accessibilityHint("Removes \(story.title) from your queue") }
                 }
             }
             if !suggestions.isEmpty {

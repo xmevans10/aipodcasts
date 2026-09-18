@@ -73,6 +73,7 @@ struct EpisodeRow: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(PressableStyle(scale: 0.98))
+            .accessibilityHint("Opens details for \(story.title)")
             PlayButton(story: story)
         }
         .padding(.vertical, 10)
@@ -97,7 +98,7 @@ struct ShowCard: View {
                         Text("\(unplayed) NEW").font(.system(size: 10, weight: .bold)).tracking(0.5)
                             .padding(.horizontal, 8).padding(.vertical, 4).background(.white, in: Capsule())
                             .foregroundStyle(show.dark).padding(10)
-                            .contentTransition(.numericText(value: Double(unplayed)))
+                            .contentTransition(reduceMotion ? .identity : .numericText(value: Double(unplayed)))
                             .transition(reduceMotion ? .opacity : .scale(scale: 0.6, anchor: .topLeading).combined(with: .opacity))
                     }
                 }

@@ -111,7 +111,7 @@ import UIKit
         guard let story else { MPNowPlayingInfoCenter.default().nowPlayingInfo = nil; return }
         var info: [String: Any] = [
             MPMediaItemPropertyTitle: story.title,
-            MPMediaItemPropertyArtist: "Sound Science · \(story.host.name)",
+            MPMediaItemPropertyArtist: "Zwicky · \(story.host.name)",
             MPMediaItemPropertyAlbumTitle: story.show.title,
             MPNowPlayingInfoPropertyMediaType: MPNowPlayingInfoMediaType.audio.rawValue,
         ]
@@ -210,6 +210,20 @@ import UIKit
         listening = ListeningState(); listenedSeconds = [:]; story = nil; position = 0; history = []; cancelSleep(); persist()
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
     }
+    /// Re-assert the playback session so audio resumes after calls, routes or backgrounding.
+    @discardableResult
+    private func activateSession() -> Bool {
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback, mode: .spokenAudio)
+            try session.setActive(true)
+            return true
+        } catch {
+            message = "Audio couldn't start. Please try again."
+            playing = false
+            return false
+        }
+    }
     func play(_ item: Story, host: Host? = nil, pushHistory: Bool = true) {
         if pushHistory, let current = story, current.id != item.id {
             history.append(current.id)
@@ -223,12 +237,10 @@ import UIKit
         if let endObserver { NotificationCenter.default.removeObserver(endObserver) }; endObserver = nil
         player?.pause(); player = nil; activeUtterance = nil; speech.stopSpeaking(at: .immediate)
         story = item; position = item.audioURL == nil ? 0 : resumePosition; duration = Double(item.minutes * 60); message = nil; lastSyncedSecond = -1
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .spokenAudio)
-            try AVAudioSession.sharedInstance().setActive(true)
-        } catch { message = "Audio couldn't start. Please try again."; playing = false; return }
+        guard activateSession() else { return }
         if let raw = item.audioURL, let url = Self.resolve(raw) {
             let av = AVPlayer(url: url); player = av
+            av.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
             if resumePosition > 0 { av.seek(to: CMTime(seconds: resumePosition, preferredTimescale: 600)) }
             observer = av.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.1, preferredTimescale: 600), queue: .main) { [weak self] time in
                 Task { @MainActor in
@@ -273,6 +285,7 @@ import UIKit
     func pause() { player?.pause(); speech.pauseSpeaking(at: .immediate); playing = false; checkpoint(); updateNowPlaying() }
     func resume() {
         guard story != nil else { return }
+        guard activateSession() else { return }
         if let player, !listening.completed.contains(story?.id ?? "") { player.playImmediately(atRate: rate) }
         else if speech.isPaused { speech.continueSpeaking() }
         else if let story { play(story); return }

@@ -1,4 +1,4 @@
-# Sound Science: full-stack launch milestones
+# Zwicky: full-stack launch milestones
 
 Planning baseline: 17 September 2026. This plan supersedes the fixed six-week engineering sequence in LAUNCH.md; that document remains the positioning and marketing reference. Estimates are working ranges for one focused builder with an available editorial/product owner, not deadlines. Allow roughly 7–11 weeks to a free public release, including overlapping work and a two-week beta. Apple review, credentials and editorial turnaround can extend that range.
 
@@ -73,7 +73,7 @@ Gate: onboard → discover → listen → queue → interrupt → resume → sav
 
 **Dispatch prompt**
 
-> Implement M3 in /Users/xanderevans/Documents/ScienceBreak. Inspect existing SwiftUI screens, Player.swift and ListeningState.swift before adding new structures. Complete the core journey with persistent feed/story storage, correction handling and production audio reliability. Integrate the agreed API; keep the distinctive Sound Science visual language and fictional full-name hosts. Test queue/resume across lifecycle events, feed rotation, audio errors and withdrawals; audit small screens, Dynamic Type and VoiceOver. Update Now Playing and interruption/routing behavior. Do not launch the simulator without renewed authorization: the user asked to keep it shut down. Build and use an available physical device when authorized; clearly separate compile checks from runtime validation. Avoid placeholder paid features and avoid a frontend rewrite. Return evidence for each release gate and remaining device checks.
+> Implement M3 in /Users/xanderevans/Documents/ScienceBreak. Inspect existing SwiftUI screens, Player.swift and ListeningState.swift before adding new structures. Complete the core journey with persistent feed/story storage, correction handling and production audio reliability. Integrate the agreed API; keep the distinctive Zwicky visual language and fictional full-name hosts. Test queue/resume across lifecycle events, feed rotation, audio errors and withdrawals; audit small screens, Dynamic Type and VoiceOver. Update Now Playing and interruption/routing behavior. Do not launch the simulator without renewed authorization: the user asked to keep it shut down. Build and use an available physical device when authorized; clearly separate compile checks from runtime validation. Avoid placeholder paid features and avoid a frontend rewrite. Return evidence for each release gate and remaining device checks.
 
 ## M4 — Content operation and closed beta
 
@@ -93,9 +93,9 @@ Gate: App Review approval, production health checks, live support and content bu
 
 **Dispatch prompt**
 
-> Prepare M5 for Sound Science at /Users/xanderevans/Documents/ScienceBreak. Verify current Apple requirements from official documentation and inspect the actual release binary/configuration. Finish store assets, accurate metadata, privacy manifest/disclosure inventory, support/privacy/terms destinations, reviewer instructions and operational rollback checklist. Run final release/device checks and validate the live backend if deployed. List account-holder/legal inputs that cannot be inferred. Deliver a concrete submission package; submit/publish or send marketing messages only with explicit authorization. After authorized release, report actual health and support findings without claiming guaranteed Apple approval or growth.
+> Prepare M5 for Zwicky at /Users/xanderevans/Documents/ScienceBreak. Verify current Apple requirements from official documentation and inspect the actual release binary/configuration. Finish store assets, accurate metadata, privacy manifest/disclosure inventory, support/privacy/terms destinations, reviewer instructions and operational rollback checklist. Run final release/device checks and validate the live backend if deployed. List account-holder/legal inputs that cannot be inferred. Deliver a concrete submission package; submit/publish or send marketing messages only with explicit authorization. After authorized release, report actual health and support findings without claiming guaranteed Apple approval or growth.
 
-## M6 — Sound Science Plus and paid launch
+## M6 — Zwicky Plus and paid launch
 
 Work: validate pricing (existing $5.99/month and $39.99/year are hypotheses). Deliver a browsable premium archive and offline audio with download progress, retry, storage limits, deletion and expiration rules. Implement StoreKit products, current/updated transactions, restore and subscription management. Verify transactions on the server; handle server notifications, renewals, grace period, refunds/revocation and reconciliation. Define a tested account-free purchase/restore identity strategy; avoid adding user accounts merely for billing. Protect premium API/audio access, with a documented offline entitlement policy. If account creation is later introduced, provide in-app account deletion [3].
 

@@ -175,7 +175,7 @@ private func testStoryHelpers() {
 
 @main struct LogicChecks {
     static func main() {
-        let episodes = URL(fileURLWithPath: CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "ScienceBreak/Episodes")
+        let episodes = URL(fileURLWithPath: CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "Zwicky/Episodes")
         testListeningState()
         testListeningMath()
         testShowsAndHosts()

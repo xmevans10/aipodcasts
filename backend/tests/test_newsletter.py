@@ -23,7 +23,7 @@ class NewsletterTests(unittest.TestCase):
             story = rendered["story"]
             self.assertIn(story["title"], rendered["html"])
             self.assertIn(story["title"], rendered["subject"])
-            self.assertIn("The Sound Science iPhone app is on its way", rendered["html"])
+            self.assertIn("The Zwicky iPhone app is on its way", rendered["html"])
             self.assertIn("Transcript", rendered["html"])
             self.assertIn(story["body"].split("\n\n")[0][:40], rendered["html"])
 

@@ -1,4 +1,4 @@
-"""Sound Science's local editorial pipeline. Python 3.11+, standard library only.
+"""Zwicky's local editorial pipeline. Python 3.11+, standard library only.
 No public endpoint can trigger paid generation. All mutations are operator CLI actions.
 """
 from __future__ import annotations
@@ -84,10 +84,10 @@ def request(url: str, *, payload: dict | None = None, headers: dict | None = Non
                 and new.scheme == "https" and new.netloc == "storage.googleapis.com"
                 and new.path.startswith("/plos-corpus-prod/10.1371/")
                 and new.path.endswith(".xml")):
-                return urllib.request.Request(newurl, headers={"User-Agent": "Sound ScienceResearch/0.1"})
+                return urllib.request.Request(newurl, headers={"User-Agent": "ZwickyResearch/0.1"})
             return None
     data = json.dumps(payload).encode() if payload is not None else None
-    req = urllib.request.Request(url, data=data, headers={"User-Agent": "Sound ScienceResearch/0.1", **(headers or {})})
+    req = urllib.request.Request(url, data=data, headers={"User-Agent": "ZwickyResearch/0.1", **(headers or {})})
     with urllib.request.build_opener(NoRedirect).open(req, timeout=90) as response:
         content = response.read(limit + 1)
         if len(content) > limit:
@@ -361,7 +361,7 @@ def feed(db, origin: str) -> list[dict]:
             "minutes": max(1, round(len(draft["body"].split()) / 150)),
             "body": draft["body"], "caveat": draft["caveat"], "isDemo": False,
             "sources": [{"title": source["title"], "url": source["url"],
-                         "attribution": source["attribution"] + ". Adapted by Sound Science; changes made.",
+                         "attribution": source["attribution"] + ". Adapted by Zwicky; changes made.",
                          "license": source["license"] + " · " + source["licenseURL"]}],
             "audioURL": origin.rstrip("/") + "/audio/" + r["audio"]})
     return result

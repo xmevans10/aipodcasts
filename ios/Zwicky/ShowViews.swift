@@ -20,7 +20,14 @@ struct ShowView: View {
                         EpisodeRow(story: story, showsShow: false)
                         if index < episodes.count - 1 { Divider().overlay(Theme.hairline) }
                     }
-                    if episodes.isEmpty { Text("The first episode is in production.").font(.subheadline).foregroundStyle(Theme.secondary) }
+                    if library.loading && episodes.isEmpty {
+                        HStack(spacing: 10) {
+                            ProgressView()
+                            Text("Loading episodes…").font(.subheadline).foregroundStyle(Theme.secondary)
+                        }
+                    } else if episodes.isEmpty {
+                        Text("The first episode is in production.").font(.subheadline).foregroundStyle(Theme.secondary)
+                    }
                 }
                 .padding(.horizontal, 20)
 
@@ -69,10 +76,12 @@ struct ShowView: View {
                     Button { player.story?.id == latest.id ? player.toggle() : player.play(latest) } label: {
                         Label(player.story?.id == latest.id && player.playing ? "Pause" : "Play latest", systemImage: player.story?.id == latest.id && player.playing ? "pause.fill" : "play.fill")
                     }.buttonStyle(OnColorPrimaryButtonStyle(show: show))
+                    .accessibilityLabel(player.story?.id == latest.id && player.playing ? "Pause \(latest.title)" : "Play latest episode, \(latest.title)")
                 }
                 Button { library.toggleFollow(show) } label: {
                     Label(library.isFollowing(show) ? "Following" : "Follow", systemImage: library.isFollowing(show) ? "checkmark" : "plus")
                 }.buttonStyle(OnColorSecondaryButtonStyle())
+                .accessibilityLabel(library.isFollowing(show) ? "Following \(show.title)" : "Follow \(show.title)")
             }
             Text(statsLine).font(.caption).foregroundStyle(.white.opacity(0.8))
         }
@@ -114,6 +123,22 @@ struct BrowseView: View {
     private var content: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
+                if library.loading {
+                    HStack(spacing: 10) {
+                        ProgressView()
+                        Text("Loading episodes…").font(.subheadline).foregroundStyle(Theme.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                }
+                if let error = library.error {
+                    VStack(spacing: 10) {
+                        Label(error, systemImage: "exclamationmark.triangle")
+                            .font(.subheadline).foregroundStyle(Theme.secondary).multilineTextAlignment(.center)
+                        Button("Retry") { Task { await library.refresh() } }
+                            .buttonStyle(SecondaryButtonStyle())
+                    }
+                    .frame(maxWidth: .infinity, alignment: .center)
+                }
                 VStack(alignment: .leading, spacing: 4) {
                     SectionHeader(title: "Shows")
                     ForEach(shows) { show in
@@ -127,17 +152,21 @@ struct BrowseView: View {
                                     Text(show.host.name).font(.caption).foregroundStyle(Theme.secondary)
                                 }.multilineTextAlignment(.leading)
                                 Spacer(minLength: 0)
-                                Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary)
+                                Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary).accessibilityHidden(true)
                             }
                             .padding(.vertical, 10).contentShape(Rectangle())
                         }.buttonStyle(.plain)
+                        .accessibilityHint("Opens the show \(show.title)")
                     }
                     if shows.isEmpty { Text("No shows match “\(search)”.").font(.subheadline).foregroundStyle(Theme.secondary) }
                 }
                 VStack(alignment: .leading, spacing: 4) {
                     SectionHeader(title: search.isEmpty ? "All episodes" : "Episodes")
                     ForEach(episodes) { EpisodeRow(story: $0) }
-                    if episodes.isEmpty { Text("No episodes match “\(search)”.").font(.subheadline).foregroundStyle(Theme.secondary) }
+                    if episodes.isEmpty {
+                        Text(search.isEmpty ? "No episodes available yet." : "No episodes match “\(search)”.")
+                            .font(.subheadline).foregroundStyle(Theme.secondary)
+                    }
                 }
             }
             .padding(.horizontal, 20).padding(.bottom, 24)
@@ -181,6 +210,7 @@ struct LibraryView: View {
                                                 Text(show.title).font(.caption.weight(.semibold)).foregroundStyle(Theme.ink).lineLimit(1)
                                             }.frame(width: 120)
                                         }.buttonStyle(.plain)
+                                        .accessibilityHint("Opens the show \(show.title)")
                                     }
                                 }
                             }
@@ -191,9 +221,10 @@ struct LibraryView: View {
                             Label("Up next", systemImage: "list.bullet").font(.subheadline.weight(.semibold))
                             Spacer()
                             Text("\(player.queuedStories.count)").font(.subheadline).foregroundStyle(Theme.secondary)
-                            Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary)
+                            Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary).accessibilityHidden(true)
                         }.foregroundStyle(Theme.ink).card(padding: 16, radius: OpenAIKit.Radius.card)
                     }.buttonStyle(.plain)
+                    .accessibilityHint("Opens your listening queue")
                     VStack(alignment: .leading, spacing: 8) {
                         Picker("Collection", selection: $selection) { Text("Saved").tag(0); Text("In progress").tag(1); Text("Played").tag(2) }
                             .pickerStyle(.segmented)

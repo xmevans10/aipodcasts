@@ -34,12 +34,12 @@ private struct HostCard: View {
                 Text(show.host.niche).font(.caption).foregroundStyle(Theme.secondary)
                 Text(show.host.personality).font(.subheadline).foregroundStyle(Theme.ink).lineLimit(2).multilineTextAlignment(.leading)
                 HStack(spacing: 6) {
-                    Image(systemName: show.symbol).font(.caption2)
+                    Image(systemName: show.symbol).font(.caption2).accessibilityHidden(true)
                     Text(show.title).font(.caption.weight(.medium))
                 }.foregroundStyle(Theme.secondary).padding(.top, 2)
             }
             Spacer(minLength: 0)
-            Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary)
+            Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary).accessibilityHidden(true)
         }
         .card()
     }
@@ -66,6 +66,7 @@ struct HostView: View {
                             Label(player.story?.id == latest.id && player.playing ? "Pause" : "Listen to \(show.host.name.components(separatedBy: " ")[0])",
                                   systemImage: player.story?.id == latest.id && player.playing ? "pause.fill" : "play.fill")
                         }.buttonStyle(PrimaryButtonStyle())
+                        .accessibilityLabel(player.story?.id == latest.id && player.playing ? "Pause \(latest.title)" : "Listen to \(latest.title)")
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -79,13 +80,16 @@ struct HostView: View {
                             Text(show.tagline).font(.caption).foregroundStyle(Theme.secondary).lineLimit(2).multilineTextAlignment(.leading)
                         }
                         Spacer(minLength: 0)
-                        Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary)
+                        Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary).accessibilityHidden(true)
                     }.card()
                 }.buttonStyle(.plain)
+                .accessibilityHint("Opens the show \(show.title)")
 
-                if !episodes.isEmpty {
-                    VStack(alignment: .leading, spacing: 4) {
-                        SectionHeader(title: "Episodes")
+                VStack(alignment: .leading, spacing: 4) {
+                    SectionHeader(title: "Episodes")
+                    if episodes.isEmpty {
+                        Text("No episodes from \(show.host.name) yet.").font(.subheadline).foregroundStyle(Theme.secondary)
+                    } else {
                         ForEach(Array(episodes.enumerated()), id: \.element.id) { index, story in
                             EpisodeRow(story: story, showsShow: false)
                             if index < episodes.count - 1 { Divider().overlay(Theme.hairline) }
@@ -109,7 +113,7 @@ struct HostView: View {
     private func detail(_ symbol: String, _ title: String, _ body: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: symbol).font(.footnote.weight(.semibold)).foregroundStyle(Theme.ink)
-                .frame(width: 30, height: 30).background(Theme.subtle, in: Circle())
+                .frame(width: 30, height: 30).background(Theme.subtle, in: Circle()).accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 3) {
                 Text(title).font(.subheadline.weight(.semibold))
                 Text(body).font(.caption).foregroundStyle(Theme.secondary).lineSpacing(2)

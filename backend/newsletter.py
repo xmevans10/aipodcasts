@@ -1,4 +1,4 @@
-"""Sound Science newsletter: render an episode (transcript + audio) as a
+"""Zwicky newsletter: render an episode (transcript + audio) as a
 well-designed email, and stage it for delivery.
 
 No third-party service or dependency. `render` writes a responsive HTML email,
@@ -30,12 +30,12 @@ ROOT = HERE.parent
 sys.path.insert(0, str(HERE))
 from hosts import HOSTS
 
-EPISODES = ROOT / "ios" / "ScienceBreak" / "Episodes"
+EPISODES = ROOT / "ios" / "Zwicky" / "Episodes"
 DEFAULT_OUT = ROOT / "build" / "newsletter"
-APP_URL = "https://sound.science"
-UNSUBSCRIBE_URL = "https://sound.science/newsletter/unsubscribe?token={{token}}"
+APP_URL = "https://zwicky.app"
+UNSUBSCRIBE_URL = "https://zwicky.app/newsletter/unsubscribe?token={{token}}"
 
-# Show palette mirrors the SwiftUI `Show.all` values in ios/ScienceBreak/Models.swift.
+# Show palette mirrors the SwiftUI `Show.all` values in ios/Zwicky/Models.swift.
 COLORS = {
     "nova": {"light": "#8F7CFF", "mid": "#4B49C8", "dark": "#151A52"},
     "fern": {"light": "#A8E063", "mid": "#2FA46B", "dark": "#0C3B2E"},
@@ -130,7 +130,7 @@ def render_html(story, info, *, audio_url, recipient_name=None, token="preview")
         '<p style="margin:0 0 6px;font-family:' + SANS + ';font-size:11px;letter-spacing:1.4px;'
         'text-transform:uppercase;color:' + c["mid"] + ';font-weight:700;">Now in development</p>'
         '<h2 style="margin:0 0 8px;font-family:' + SERIF + ';font-size:24px;line-height:1.25;color:' + INK + ';">'
-        'The Sound Science iPhone app is on its way</h2>'
+        'The Zwicky iPhone app is on its way</h2>'
         '<p style="margin:0 0 18px;font-family:' + SANS + ';font-size:15px;line-height:1.6;color:' + SECONDARY + ';">'
         'Same shows, same hosts. A daily edition, offline listening and a queue that remembers where you left off.</p>'
         + _button("Get early access", APP_URL, c["mid"]) +
@@ -145,7 +145,7 @@ def render_html(story, info, *, audio_url, recipient_name=None, token="preview")
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light only">
-<title>{esc(story.get('title'))} · Sound Science</title>
+<title>{esc(story.get('title'))} · Zwicky</title>
 <style>
   @media (max-width:600px) {{
     .wrap {{ width:100% !important; }}
@@ -165,7 +165,7 @@ def render_html(story, info, *, audio_url, recipient_name=None, token="preview")
 
   <tr><td class="pad" style="padding:26px 40px 8px;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-      <td style="font-family:{SERIF};font-size:19px;font-weight:700;letter-spacing:.6px;color:{INK};">SOUND SCIENCE</td>
+      <td style="font-family:{SERIF};font-size:19px;font-weight:700;letter-spacing:.6px;color:{INK};">ZWICKY</td>
       <td align="right" style="font-family:{SANS};font-size:12px;color:{SECONDARY};">Big ideas. Easy listening.</td>
     </tr></table>
   </td></tr>
@@ -208,12 +208,12 @@ def render_html(story, info, *, audio_url, recipient_name=None, token="preview")
 
   <tr><td class="pad" style="padding:24px 40px 30px;border-top:1px solid {HAIRLINE};">
     <p style="margin:0 0 8px;font-family:{SANS};font-size:12px;line-height:1.6;color:{SECONDARY};">
-      You're getting this because you signed up for the Sound Science newsletter. Every episode is written by our editorial team and narrated by an AI-generated voice.
+      You're getting this because you signed up for the Zwicky newsletter. Every episode is written by our editorial team and narrated by an AI-generated voice.
     </p>
     <p style="margin:0;font-family:{SANS};font-size:12px;line-height:1.6;color:{SECONDARY};">
       <a href="{esc(UNSUBSCRIBE_URL.replace('{{token}}', token))}" style="color:{SECONDARY};">Unsubscribe</a> ·
-      <a href="{esc(APP_URL)}" style="color:{SECONDARY};">sound.science</a><br>
-      Sound Science, [mailing address placeholder] · © {year}
+      <a href="{esc(APP_URL)}" style="color:{SECONDARY};">zwicky.app</a><br>
+      Zwicky, [mailing address placeholder] · © {year}
     </p>
   </td></tr>
 
@@ -227,7 +227,7 @@ def render_html(story, info, *, audio_url, recipient_name=None, token="preview")
 def render_text(story, info, *, audio_url, recipient_name=None, token="preview"):
     greeting = ("Hi " + recipient_name + ",\n\n") if recipient_name else ""
     lines = [
-        "SOUND SCIENCE — " + info["show"],
+        "ZWICKY — " + info["show"],
         story.get("title", ""),
         "with " + info["host"] + " · " + str(reading_minutes(story)) + " min listen",
         "",
@@ -250,9 +250,9 @@ def render_text(story, info, *, audio_url, recipient_name=None, token="preview")
     lines += [
         "",
         "THE APP IS IN DEVELOPMENT",
-        "Sound Science for iPhone is on its way. Get early access: " + APP_URL,
+        "Zwicky for iPhone is on its way. Get early access: " + APP_URL,
         "",
-        "You're getting this because you signed up for the Sound Science newsletter.",
+        "You're getting this because you signed up for the Zwicky newsletter.",
         "Unsubscribe: " + UNSUBSCRIBE_URL.replace("{{token}}", token),
     ]
     return "\n".join(lines)
@@ -270,7 +270,7 @@ def render_episode(episode_id, out_dir, *, audio_url=None, recipient_name=None, 
     html_doc = render_html(story, info, audio_url=audio_url, recipient_name=recipient_name, token=token)
     text_doc = render_text(story, info, audio_url=audio_url, recipient_name=recipient_name, token=token)
     return {"id": episode_id, "story": story, "info": info, "html": html_doc, "text": text_doc,
-            "subject": story.get("title", "Sound Science") + " · Sound Science"}
+            "subject": story.get("title", "Zwicky") + " · Zwicky"}
 
 
 def build_message(rendered, *, sender, recipient, reply_to=None, attach_audio=False):
@@ -302,7 +302,7 @@ def command_render(args):
         (out_dir / (item["id"] + ".txt")).write_text(item["text"])
         rendered.append(item)
         print("rendered", item["id"], "->", out_dir / (item["id"] + ".html"))
-    index = ["<!doctype html><meta charset='utf-8'><title>Sound Science newsletter previews</title>",
+    index = ["<!doctype html><meta charset='utf-8'><title>Zwicky newsletter previews</title>",
              "<body style='background:#FAF9F6;font-family:-apple-system,Helvetica,Arial,sans-serif;padding:40px;'>",
              "<h1 style=\"font-family:Georgia,serif;color:#161614;\">Newsletter previews</h1>"]
     for item in rendered:
@@ -323,7 +323,7 @@ def command_send(args):
     recipients = [r.strip() for r in args.to.split(",") if r.strip()]
     if not recipients:
         raise SystemExit("Pass --to with at least one address")
-    sender = os.environ.get("NEWSLETTER_FROM", "Sound Science <newsletter@sound.science>")
+    sender = os.environ.get("NEWSLETTER_FROM", "Zwicky <newsletter@zwicky.app>")
     written = 0
     for episode_id in ids:
         item = render_episode(episode_id.strip(), out_dir, audio_url=args.audio_url)

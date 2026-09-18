@@ -12,6 +12,8 @@ import UIKit
     @Published var message: String?
     @Published private(set) var listening = ListeningState()
     @Published var sleepUntil: Date?
+    /// Set to present the full player sheet from anywhere.
+    @Published var isPlayerPresented = false
     var onStarted: ((Story) -> Void)?
     private var catalog: [String: Story] = [:]
     var queuedStories: [Story] { listening.queue.compactMap { catalog[$0] } }

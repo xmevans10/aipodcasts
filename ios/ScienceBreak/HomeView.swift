@@ -145,7 +145,7 @@ struct HomeView: View {
 // MARK: - Featured episode hero
 
 /// Full-bleed hero for the newest unplayed episode: the show's gradient, the host large,
-/// the title at hero size. Tapping the card plays / pauses; "Details" opens the episode.
+/// the title at hero size. Tapping the card opens the player; the play button toggles it.
 private struct FeaturedEpisodeCard: View {
     @EnvironmentObject var player: AudioPlayer
     var story: Story
@@ -158,9 +158,13 @@ private struct FeaturedEpisodeCard: View {
     private var shape: RoundedRectangle { RoundedRectangle(cornerRadius: OpenAIKit.Radius.hero, style: .continuous) }
 
     private func togglePlayback() { isCurrent ? player.toggle() : player.play(story) }
+    private func openPlayer() {
+        if !isCurrent { player.play(story) }
+        player.isPlayerPresented = true
+    }
 
     var body: some View {
-        Button(action: togglePlayback) {
+        Button(action: openPlayer) {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 6) {
@@ -193,7 +197,7 @@ private struct FeaturedEpisodeCard: View {
         .buttonStyle(HeroPressStyle())
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Featured episode from \(show.title): \(story.title). \(story.dek). \(story.minutes) minutes.")
-        .accessibilityHint(active ? "Pauses playback" : "Plays the episode")
+        .accessibilityHint("Opens the player")
         .accessibilityAddTraits(.isButton)
         .overlay(alignment: .bottom) { controls.padding(22) }
         .shadow(color: show.dark.opacity(0.28), radius: 20, y: 10)

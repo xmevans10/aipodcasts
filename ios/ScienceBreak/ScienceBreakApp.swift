@@ -30,13 +30,12 @@ struct RootView: View {
     @EnvironmentObject var library: Library
     @EnvironmentObject var player: AudioPlayer
     @AppStorage("onboarded") private var onboarded = false
-    @State private var showPlayer = false
     @State private var tab = 0
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Namespace private var playerZoom
     /// Each tab has its own mini player, so the zoom source ID is per tab.
     private func inset(_ tag: Int) -> MiniPlayerInset {
-        MiniPlayerInset(showPlayer: $showPlayer, zoom: reduceMotion ? nil : playerZoom, tabTag: tag)
+        MiniPlayerInset(zoom: reduceMotion ? nil : playerZoom, tabTag: tag)
     }
     var body: some View {
         TabView(selection: $tab) {
@@ -48,7 +47,7 @@ struct RootView: View {
         }
         .onChange(of: scenePhase) { _, phase in if phase != .active { player.checkpoint() } }
         .onChange(of: library.stories) { _, stories in player.restore(stories) }
-        .sheet(isPresented: $showPlayer) {
+        .sheet(isPresented: $player.isPlayerPresented) {
             PlayerView().playerZoomDestination(id: MiniPlayerInset.zoomID(tab: tab), in: reduceMotion ? nil : playerZoom)
         }
         .fullScreenCover(isPresented: Binding(get: { !onboarded }, set: { onboarded = !$0 })) { WelcomeView() }
@@ -59,7 +58,7 @@ struct RootView: View {
             if args.contains("--hosts") { tab = 2 }
             if args.contains("--library") { library.toggle(Story.demos[0]); tab = 3 }
             if args.contains("--you") { tab = 4 }
-            if args.contains("--player") { player.story = Story.demos[0]; showPlayer = true }
+            if args.contains("--player") { player.story = Story.demos[0]; player.isPlayerPresented = true }
             #endif
             player.onStarted = { library.heard($0) }
             player.restore(library.stories)
@@ -72,7 +71,6 @@ struct RootView: View {
 struct MiniPlayerInset: ViewModifier {
     @EnvironmentObject var player: AudioPlayer
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Binding var showPlayer: Bool
     /// Namespace for the iOS 18 zoom into the player; nil disables it.
     var zoom: Namespace.ID? = nil
     var tabTag: Int = 0
@@ -96,7 +94,7 @@ struct MiniPlayerInset: ViewModifier {
 
     private func bar(_ story: Story) -> some View {
         HStack(spacing: 10) {
-            Button { showPlayer = true } label: {
+            Button { player.isPlayerPresented = true } label: {
                 HStack(spacing: 12) {
                     ShowCover(show: story.show).frame(width: 42)
                         .playerZoomSource(id: Self.zoomID(tab: tabTag), in: zoom)
@@ -134,8 +132,4 @@ struct MiniPlayerInset: ViewModifier {
         .shadow(color: .black.opacity(0.08), radius: 14, y: 6)
         .padding(.horizontal, 10).padding(.bottom, 6)
     }
-}
-
-extension View {
-    func miniPlayerInset(_ showPlayer: Binding<Bool>) -> some View { modifier(MiniPlayerInset(showPlayer: showPlayer)) }
 }

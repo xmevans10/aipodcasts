@@ -7,6 +7,7 @@ swiftc -parse-as-library -O -o "$OUT" \
     ios/ScienceBreak/ListeningState.swift \
     ios/ScienceBreak/Models.swift \
     ios/ScienceBreak/Design.swift \
+    ios/ScienceBreak/Texture.swift \
     ios/ScienceBreak/HostPortrait.swift \
     ios/ScienceBreak/OpenAIKit.swift \
     ios/Tests/LogicChecks.swift

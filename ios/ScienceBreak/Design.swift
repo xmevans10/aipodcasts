@@ -133,8 +133,8 @@ extension SectionHeader where Trailing == EmptyView {
     init(title: String) { self.title = title; self.trailing = EmptyView() }
 }
 
-/// Podcast cover art: a vivid three-stop wash, a soft light bloom and the show title
-/// set in serif. No glyph watermark — the colour and type do the work.
+/// Podcast cover art: an organic mesh wash, a faint per-show line motif, film grain,
+/// a soft light bloom and the show title set in serif. No glyph watermark.
 /// Size it with `.frame(width:)`; it stays square.
 struct ShowCover: View {
     var show: Show
@@ -144,8 +144,13 @@ struct ShowCover: View {
             // the row's text on top of it.
             let w = min(geometry.size.width, geometry.size.height)
             ZStack(alignment: .bottomLeading) {
-                LinearGradient(colors: [show.light, show.mid, show.dark], startPoint: .topTrailing, endPoint: .bottomLeading)
-                RadialGradient(colors: [show.light.opacity(0.7), .clear], center: UnitPoint(x: 0.82, y: 0.14),
+                // Every decorative layer is clamped to w×w so none of them can size the cover.
+                CoverWash(show: show).frame(width: w, height: w)
+                if w >= 56 {
+                    CoverMotif(show: show).frame(width: w, height: w)
+                        .opacity(w >= 96 ? 0.12 : 0.08)
+                }
+                RadialGradient(colors: [show.light.opacity(0.4), .clear], center: UnitPoint(x: 0.82, y: 0.14),
                                startRadius: 0, endRadius: w * 0.72)
                 Ellipse()
                     .fill(LinearGradient(colors: [.white.opacity(0.18), .clear], startPoint: .top, endPoint: .bottom))
@@ -155,6 +160,15 @@ struct ShowCover: View {
                     // Clamped to the cover: the sheen is wider than the art, and without this
                     // the stack sizes itself to the sheen and shifts everything else off-centre.
                     .frame(width: w, height: w)
+                if w >= 96 {
+                    // A low shade behind the title keeps white type legible over the lightest mesh.
+                    LinearGradient(stops: [.init(color: show.dark.opacity(0.5), location: 0),
+                                           .init(color: .clear, location: 0.55)],
+                                   startPoint: .bottom, endPoint: .top)
+                        .frame(width: w, height: w)
+                }
+                // Printed, not digital: fine grain, overlay-blended within the compositing group.
+                CoverGrain().frame(width: w, height: w).blendMode(.overlay).opacity(w >= 96 ? 0.2 : 0.14)
                 if w >= 96 {
                     // The trailing spacer pins the block left and stops a long title
                     // laying itself out wider than the art and spilling past both edges.

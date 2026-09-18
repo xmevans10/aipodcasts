@@ -7,7 +7,7 @@ in [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md).
 
 ## Current state
 
-Progress: Phase 1 shipped; Phase 2 implemented, device verification pending.
+Progress: Phases 1–3 implemented, plus interactive player paging; device verification pending.
 
 - One `AudioPlayer` ([`Player.swift`](../ios/ScienceBreak/Player.swift)) with
   `AVAudioSession.playback` and play/pause remote commands, and Now Playing set

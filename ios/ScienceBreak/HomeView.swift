@@ -35,6 +35,7 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 36) {
                     header
+                    if library.isOffline { offlineBanner }
                     if let story = featured { FeaturedEpisodeCard(story: story) }
                     if let story = continueStory { continueCard(story) }
                     showsSection
@@ -75,6 +76,29 @@ struct HomeView: View {
         guard count > 0 else { return "Catch up on the latest from your shows." }
         let minutes = freshThisWeek.reduce(0) { $0 + $1.minutes }
         return "\(count) new episode\(count == 1 ? "" : "s") this week · \(minutes) min"
+    }
+
+    private var offlineBanner: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "wifi.slash").font(.body.weight(.semibold)).foregroundStyle(Theme.ink)
+                .frame(width: 36, height: 36).background(Theme.subtle, in: Circle())
+            VStack(alignment: .leading, spacing: 2) {
+                Text("You're offline").typeStyle(.headline).foregroundStyle(Theme.ink)
+                Text(cachedText).typeStyle(.meta).foregroundStyle(Theme.secondary)
+            }
+            Spacer(minLength: 8)
+            Button(library.loading ? "Retrying…" : "Retry") { Task { await library.refresh() } }
+                .font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink).disabled(library.loading)
+        }
+        .padding(14)
+        .background(Theme.surface, in: RoundedRectangle(cornerRadius: OpenAIKit.Radius.card, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: OpenAIKit.Radius.card, style: .continuous).strokeBorder(Theme.hairline))
+        .accessibilityElement(children: .combine)
+    }
+
+    private var cachedText: String {
+        guard let date = library.feedCachedAt else { return "Showing your saved episodes." }
+        return "Last updated \(date.formatted(.relative(presentation: .named)))."
     }
 
     private func continueCard(_ story: Story) -> some View {

@@ -5,6 +5,7 @@ cd "$(dirname "$0")/.."
 OUT="${TMPDIR:-/tmp}/sound-science-logic-checks"
 swiftc -parse-as-library -O -o "$OUT" \
     ios/ScienceBreak/ListeningState.swift \
+    ios/ScienceBreak/Cache.swift \
     ios/ScienceBreak/Models.swift \
     ios/ScienceBreak/Design.swift \
     ios/ScienceBreak/Texture.swift \

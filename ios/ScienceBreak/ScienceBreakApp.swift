@@ -47,6 +47,8 @@ struct RootView: View {
         }
         .onChange(of: scenePhase) { _, phase in if phase != .active { player.checkpoint() } }
         .onChange(of: library.stories) { _, stories in player.restore(stories) }
+        .onChange(of: player.listening.queue) { _, _ in library.pin(player.queuedStories + [player.story].compactMap { $0 }) }
+        .onChange(of: player.story?.id) { _, _ in if let story = player.story { library.pin([story]) } }
         .sheet(isPresented: $player.isPlayerPresented) {
             PlayerView().playerZoomDestination(id: MiniPlayerInset.zoomID(tab: tab), in: reduceMotion ? nil : playerZoom)
         }
@@ -64,6 +66,7 @@ struct RootView: View {
             player.restore(library.stories)
             await library.refresh()
             player.restore(library.stories)
+            library.pin(player.queuedStories + [player.story].compactMap { $0 })
         }
     }
 }

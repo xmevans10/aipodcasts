@@ -98,14 +98,48 @@ enum Episodes {
 }
 
 @MainActor final class Library: ObservableObject {
-    @Published var stories = Story.demos
+    @Published private(set) var stories: [Story]
     @Published var saved: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "saved") ?? [])
     @Published var history: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "history") ?? [])
     @Published var error: String?
     @Published var loading = false
     @Published var following: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "following") ?? Show.all.map(\.id))
+    /// True when a configured feed failed to refresh and the cached copy is shown.
+    @Published var isOffline = false
+    @Published private(set) var feedCachedAt: Date?
     @AppStorage("host") var hostID = "nova"
     @AppStorage("dailyGoalMinutes") var dailyGoalMinutes = 10
+    private var feed: [Story] = []
+    private var pinned: [Story] = []
+
+    init() {
+        pinned = StoryCache.loadPinned()
+        if let cached = StoryCache.loadFeed() {
+            feed = cached.stories
+            feedCachedAt = cached.cachedAt
+        } else {
+            feed = Story.demos
+        }
+        stories = []
+        rebuild()
+    }
+
+    /// Feed order first, then pinned stories no longer in the feed.
+    private func rebuild() {
+        var seen = Set<String>()
+        stories = (feed + pinned).filter { seen.insert($0.id).inserted }
+    }
+
+    /// Keep full records for items the listener saved, heard, queued or is playing.
+    func pin(_ items: [Story]) {
+        guard !items.isEmpty else { return }
+        for item in items {
+            if let index = pinned.firstIndex(where: { $0.id == item.id }) { pinned[index] = item }
+            else { pinned.append(item) }
+        }
+        StoryCache.savePinned(pinned)
+        rebuild()
+    }
     func isFollowing(_ show: Show) -> Bool { following.contains(show.id) }
     func toggleFollow(_ show: Show) {
         if following.contains(show.id) { following.remove(show.id) } else { following.insert(show.id) }
@@ -119,10 +153,12 @@ enum Episodes {
     func toggle(_ story: Story) {
         if saved.contains(story.id) { saved.remove(story.id) } else { saved.insert(story.id) }
         UserDefaults.standard.set(Array(saved), forKey: "saved")
+        pin([story])
     }
     func heard(_ story: Story) {
         history.insert(story.id)
         UserDefaults.standard.set(Array(history), forKey: "history")
+        pin([story])
     }
     func refresh() async {
         guard !feedURL.isEmpty else { return }
@@ -131,8 +167,19 @@ enum Episodes {
         do {
             let (data, response) = try await URLSession.shared.data(from: url)
             guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
-            stories = try JSONDecoder().decode([Story].self, from: data)
+            feed = try JSONDecoder().decode([Story].self, from: data)
+            feedCachedAt = .now
+            StoryCache.saveFeed(feed)
+            isOffline = false
             error = nil
-        } catch { self.error = "Couldn't refresh your stories. Your current collection is still available." }
+            rebuild()
+        } catch {
+            if feedCachedAt != nil {
+                isOffline = true
+                self.error = nil
+            } else {
+                self.error = "Couldn't refresh your stories. Your current collection is still available."
+            }
+        }
     }
 }

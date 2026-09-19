@@ -28,3 +28,18 @@
 - `python3 backend/pipeline.py doctor` reports which keys and host voices are configured.
 - Narration providers are chosen by `VOICE_PROVIDER` (`elevenlabs` | `openai` | `local`);
   see `docs/INTEGRATIONS.md` and `docs/VOICE-OPTIONS.md`.
+
+## Agent harness (opencode)
+
+Project agent config lives in `opencode.json` and `.opencode/`, and is used only by
+opencode (Pi's harness is not required). It applies Pi-style primitives:
+
+- **Skills** in `.opencode/skills/*/SKILL.md`: tests, release, episodes, device install.
+- **Commands** (prompt templates) in `.opencode/command/`: `/test`, `/release`,
+  `/episode`, `/doctor`, `/commit`.
+- **Subagents** in `.opencode/agent/`: `verifier` (read-only checks), `release`.
+- **Protected paths**: `backend/.env`, `*.p8`, and the generated `ios/Zwicky.xcodeproj`
+  are edit-denied; destructive git/`rm -rf` commands ask first.
+
+After changing any of these, restart opencode for the config to reload.
+

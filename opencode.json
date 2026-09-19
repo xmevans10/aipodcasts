@@ -1,0 +1,35 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "references": {
+    "docs": {
+      "path": "docs",
+      "description": "Use for Zwicky product, design, operations, social and integration conventions."
+    },
+    "experiments": {
+      "path": "experiments",
+      "description": "Use for the offline A/B writing harness and blind AI judge."
+    }
+  },
+  "permission": {
+    "edit": {
+      "*": "allow",
+      "backend/.env": "deny",
+      "backend/.env.*": "deny",
+      "**/*.p8": "deny",
+      "ios/Zwicky.xcodeproj/**": "deny"
+    },
+    "external_directory": {
+      "*": "allow",
+      "~/secrets/**": "deny",
+      "~/.ssh/**": "deny",
+      "~/.appstoreconnect/**": "deny"
+    },
+    "bash": {
+      "*": "allow",
+      "rm -rf *": "ask",
+      "git reset --hard*": "ask",
+      "git clean *": "ask",
+      "git push --force*": "ask"
+    }
+  }
+}

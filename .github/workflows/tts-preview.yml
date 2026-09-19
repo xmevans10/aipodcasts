@@ -1,0 +1,67 @@
+name: tts-preview
+
+# Self-hosts the open-source Chatterbox TTS on a GitHub runner to produce a voice
+# sample artifact, with no ElevenLabs key and no per-character cost. Runs on CPU
+# (Linux) by default; a short sample keeps the job well under the timeout.
+on:
+  workflow_dispatch:
+    inputs:
+      text:
+        description: Text to synthesize (defaults to a short Zwicky sample)
+        required: false
+        default: ""
+      max_words:
+        description: Truncate the script to this many words (0 = all)
+        required: false
+        default: "40"
+  push:
+    paths:
+      - ".github/workflows/tts-preview.yml"
+      - "tools/tts/chatterbox_generate.py"
+
+jobs:
+  chatterbox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      HF_HOME: ${{ github.workspace }}/.hf
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache model weights
+        uses: actions/cache@v4
+        with:
+          path: .hf
+          key: chatterbox-${{ runner.os }}-v1
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # CPU-only torch keeps the runner download small; Chatterbox reuses it.
+          pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install chatterbox-tts
+
+      - name: Generate sample
+        env:
+          TTS_TEXT: ${{ github.event.inputs.text }}
+          TTS_MAX: ${{ github.event.inputs.max_words }}
+        run: |
+          MAX="${TTS_MAX:-40}"
+          if [ -n "$TTS_TEXT" ]; then
+            python tools/tts/chatterbox_generate.py --text "$TTS_TEXT" --max-words "$MAX" --device cpu --out tts-out
+          else
+            python tools/tts/chatterbox_generate.py --max-words "$MAX" --device cpu --out tts-out
+          fi
+
+      - name: Upload audio
+        uses: actions/upload-artifact@v4
+        with:
+          name: chatterbox-sample
+          path: tts-out
+          if-no-files-found: error
+          retention-days: 14

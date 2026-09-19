@@ -20,6 +20,7 @@ from hosts import HOSTS as HOST_PROFILES, writing_guide, dialogue_hosts
 from anti_slop import ANTI_SLOP_GUIDE
 from dialogue import DIALOGUE_INSTRUCTIONS, DIALOGUE_SCHEMA, dialogue_guide, validate_dialogue, turns_body, turns_narration_inputs
 from provenance import provenance_text, quotes_in_source
+from voice import synthesize, status as voice_status
 from podcast import DEFAULT_MODEL, PODCAST_INSTRUCTIONS, validate_podcast, narration_script
 
 ROOT = Path(__file__).resolve().parent
@@ -33,8 +34,9 @@ def load_local_env(path: Path | None = None) -> None:
     if not path.exists():
         return
     allowed = {"OPENAI_API_KEY", "OPENAI_MODEL", "OPENAI_REASONING_EFFORT", "ELEVENLABS_API_KEY", "ELEVENLABS_MODEL",
-               "ELEVENLABS_DIALOGUE_MODEL",
-               "LILT_MAX_PROVIDER_CALLS_PER_DAY", "LILT_MAX_SOURCE_CHARS", *[h.voice_env for h in HOSTS.values()]}
+               "ELEVENLABS_DIALOGUE_MODEL", "VOICE_PROVIDER", "VOICE_LOCAL_URL", "OPENAI_TTS_MODEL", "OPENAI_TTS_VOICE",
+               "LILT_MAX_PROVIDER_CALLS_PER_DAY", "LILT_MAX_SOURCE_CHARS",
+               *[h.voice_env for h in HOSTS.values()], *["VOICE_OPENAI_" + h.id.upper() for h in HOSTS.values()]}
     for line in path.read_text().splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
@@ -298,57 +300,18 @@ def review(db, story_id: str, reviewer: str):
         db.execute("UPDATE stories SET state='approved',reviewer=?,review_hash=? WHERE id=?", (reviewer.strip(), digest, story_id))
 
 
-def _strip_id3(data: bytes) -> bytes:
-    """Drop a leading ID3v2 tag so concatenated dialogue chunks join cleanly."""
-    if data[:3] != b"ID3" or len(data) < 10:
-        return data
-    size = ((data[6] & 0x7F) << 21) | ((data[7] & 0x7F) << 14) | ((data[8] & 0x7F) << 7) | (data[9] & 0x7F)
-    return data[10 + size:]
-
-
-def _dialogue_chunks(inputs: list[dict], budget: int = 1900) -> list[list[dict]]:
-    """Group consecutive turns so each text-to-dialogue request stays inside the safe budget."""
-    chunks, current, size = [], [], 0
-    for item in inputs:
-        length = len(item["text"])
-        if current and size + length > budget:
-            chunks.append(current); current, size = [], 0
-        current.append(item); size += length
-    if current:
-        chunks.append(current)
-    return chunks
-
-
-def _narrate_single(key: str, voice: str, script: str) -> bytes:
-    return request("https://api.elevenlabs.io/v1/text-to-speech/" + voice + "?output_format=mp3_44100_128", payload={
-        "text": script, "model_id": os.environ.get("ELEVENLABS_MODEL", "eleven_multilingual_v2"),
-        "voice_settings": {"stability": 0.55, "similarity_boost": 0.75}
-    }, headers={"xi-api-key": key, "Content-Type": "application/json", "Accept": "audio/mpeg"}, limit=30_000_000)
-
-
-def _narrate_dialogue(key: str, draft: dict, source: dict, duo) -> bytes:
-    """One ElevenLabs text-to-dialogue take per chunk, concatenated into a single MP3.
-
-    eleven_v3 handles multiple speakers in one generation, so no per-voice splicing is
-    required; chunking only respects the API's ~2,000-character request guidance.
-    """
-    validate_dialogue(draft, source, duo)
-    inputs = turns_narration_inputs(draft, duo)
-    voices: dict[str, str] = {}
-    for item in inputs:
-        voice = os.environ.get(item["voice_env"])
-        if not voice or not re.fullmatch(r"[A-Za-z0-9_-]+", voice):
-            raise ValueError("Configure a licensed ElevenLabs voice for both hosts (" + item["voice_env"] + ")")
-        voices[item["speaker"]] = voice
-    model = os.environ.get("ELEVENLABS_DIALOGUE_MODEL", "eleven_v3")
-    parts = []
-    for chunk in _dialogue_chunks(inputs):
-        payload = {"inputs": [{"text": item["text"], "voice_id": voices[item["speaker"]]} for item in chunk],
-                   "model_id": model}
-        parts.append(request("https://api.elevenlabs.io/v1/text-to-dialogue?output_format=mp3_44100_128", payload=payload,
-                             headers={"xi-api-key": key, "Content-Type": "application/json", "Accept": "audio/mpeg"},
-                             limit=30_000_000))
-    return parts[0] + b"".join(_strip_id3(part) for part in parts[1:])
+def doctor() -> dict:
+    """Report which provider keys and settings are present. Makes no network calls."""
+    return {
+        "voice": voice_status(),
+        "openai_writer": {"api_key": bool(os.environ.get("OPENAI_API_KEY")),
+                          "model": os.environ.get("OPENAI_MODEL") or DEFAULT_MODEL},
+        "feed": {"public_origin": os.environ.get("LILT_PUBLIC_ORIGIN", ""),
+                 "max_provider_calls_per_day": os.environ.get("LILT_MAX_PROVIDER_CALLS_PER_DAY", "12"),
+                 "max_source_chars": os.environ.get("LILT_MAX_SOURCE_CHARS", "18000")},
+        "hosts": [{"id": host.id, "name": host.name, "show": host.show, "voice_env": host.voice_env,
+                   "voice_configured": bool(os.environ.get(host.voice_env))} for host in HOSTS.values()],
+    }
 
 
 def narrate(db, story_id):
@@ -359,21 +322,18 @@ def narrate(db, story_id):
         raise ValueError("Editorial approval is required before narration")
     if hashlib.sha256(record["draft"].encode()).hexdigest() != record["review_hash"]:
         raise ValueError("Draft changed after review")
-    key = os.environ.get("ELEVENLABS_API_KEY")
-    if not key:
-        raise ValueError("Configure a licensed ElevenLabs API key")
     draft = json.loads(record["draft"])
     source = json.loads(record["source"])
     duo = dialogue_hosts(record["host"])
-    reserve_call(db, "elevenlabs", story_id)
     if duo:
-        audio = _narrate_dialogue(key, draft, source, duo)
+        validate_dialogue(draft, source, duo)
+        inputs = turns_narration_inputs(draft, duo)
     else:
-        voice = os.environ.get("ELEVENLABS_VOICE_" + record["host"].upper())
-        if not voice or not re.fullmatch(r"[A-Za-z0-9_-]+", voice):
-            raise ValueError("Configure a licensed ElevenLabs voice and API key")
         validate_podcast(draft, source)
-        audio = _narrate_single(key, voice, narration_script(draft))
+        host = HOSTS[record["host"]]
+        inputs = [{"speaker": host.name, "host": host.id, "voice_env": host.voice_env, "text": narration_script(draft)}]
+    reserve_call(db, "elevenlabs", story_id)
+    audio = synthesize(inputs, dialogue=bool(duo), fetch=request)
     if len(audio) < 1000 or not (audio[:3] == b"ID3" or (audio[0] == 255 and audio[1] & 224 == 224)):
         raise ValueError("Provider did not return valid MP3 audio")
     audio_dir = DATA / "audio"; audio_dir.mkdir(parents=True, exist_ok=True)
@@ -430,6 +390,7 @@ def main():
     p = sub.add_parser("approve"); p.add_argument("id"); p.add_argument("--reviewer", required=True)
     sub.add_parser("list")
     sub.add_parser("usage")
+    sub.add_parser("doctor")
     args = parser.parse_args(); load_local_env(); db = connect()
     try:
         if args.command == "discover": result = discover()
@@ -438,6 +399,7 @@ def main():
         elif args.command == "hosts": result = [{"id": h.id, "name": h.name, "show": h.show, "topic": h.topic,
             "beat": h.beat, "delivery": h.delivery, "sign_off": h.sign_off, "voice_env": h.voice_env} for h in HOSTS.values()]
         elif args.command == "usage": result = [dict(r) for r in db.execute("SELECT day,provider,count(*) AS attempts,sum(input_tokens) AS input_tokens,sum(output_tokens) AS output_tokens FROM calls GROUP BY day,provider")]
+        elif args.command == "doctor": result = doctor()
         elif args.command == "draft": result = draft_story(db, args.id)
         elif args.command == "inspect": result = dict(row(db, args.id))
         elif args.command == "approve": review(db, args.id, args.reviewer); result = "Approved"

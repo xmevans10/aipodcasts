@@ -92,7 +92,8 @@ def turns_body(draft: dict) -> str:
 def turns_narration_inputs(draft: dict, hosts) -> list[dict]:
     """Ordered TTS inputs: each turn with the voice env var for its speaker."""
     by_name = {host.name: host for host in hosts}
-    return [{"speaker": turn["speaker"], "text": turn["text"], "voice_env": by_name[turn["speaker"]].voice_env}
+    return [{"speaker": turn["speaker"], "host": by_name[turn["speaker"]].id,
+             "voice_env": by_name[turn["speaker"]].voice_env, "text": turn["text"]}
             for turn in draft["turns"]]
 
 

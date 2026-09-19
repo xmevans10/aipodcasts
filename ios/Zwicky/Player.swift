@@ -339,6 +339,8 @@ import UIKit
     func minutesLeft(of item: Story) -> Int { ListeningMath.minutesLeft(progress: progress(of: item), duration: item.durationSeconds) }
     func minutes(on day: Date) -> Int { Int(((listenedSeconds[Story.dayFormatter.string(from: day)] ?? 0) / 60).rounded()) }
     var minutesToday: Int { minutes(on: .now) }
+    /// All listening time ever logged on this device.
+    var totalMinutes: Int { Int((listenedSeconds.values.reduce(0, +) / 60).rounded()) }
     /// Last seven days, oldest first.
     var week: [(day: Date, minutes: Int)] {
         (0..<7).reversed().compactMap { offset in

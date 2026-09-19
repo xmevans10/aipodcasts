@@ -215,6 +215,21 @@ enum Episodes {
     @Published private(set) var feedCachedAt: Date?
     @AppStorage("host") var hostID = "nova"
     @AppStorage("dailyGoalMinutes") var dailyGoalMinutes = 10
+    /// A local, anonymous profile. No account exists yet; these fields are the
+    /// upgradeable identity described in docs/SOCIAL-PLAN.md.
+    @AppStorage("profileName") var profileName = ""
+    @AppStorage("profileSymbol") var profileSymbol = "person.fill"
+    @AppStorage("profileHue") var profileHue = 0.66
+    @AppStorage("joinedStamp") private var joinedStamp = ""
+    var displayName: String {
+        let trimmed = profileName.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty ? "Listener" : trimmed
+    }
+    var initials: String {
+        displayName.split(separator: " ").prefix(2).compactMap { $0.first.map(String.init) }.joined().uppercased()
+    }
+    var joined: Date? { Story.dayFormatter.date(from: joinedStamp) }
+    func ensureJoined() { if joinedStamp.isEmpty { joinedStamp = Story.dayFormatter.string(from: .now) } }
     private var feed: [Story] = []
     private var pinned: [Story] = []
 

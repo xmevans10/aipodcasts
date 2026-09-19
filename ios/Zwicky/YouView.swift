@@ -6,6 +6,7 @@ struct YouView: View {
     @EnvironmentObject var library: Library
     @EnvironmentObject var player: AudioPlayer
     @State private var settings = false
+    @State private var profile = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// What the ring and the minutes label currently show; animated toward the real values.
     @State private var shownProgress: Double = 0
@@ -21,9 +22,11 @@ struct YouView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 28) {
+                    profileCard
                     goalCard
                     weekCard
                     totals
+                    achievements
                     followingSection
                     VStack(alignment: .leading, spacing: 12) {
                         SectionHeader(title: "Settings")
@@ -42,6 +45,60 @@ struct YouView: View {
             .background(Theme.canvas)
             .navigationTitle("You")
             .sheet(isPresented: $settings) { SettingsView() }
+            .sheet(isPresented: $profile) { ProfileView() }
+            .onAppear { library.ensureJoined() }
+        }
+    }
+
+    private var profileCard: some View {
+        Button { profile = true } label: {
+            HStack(spacing: 16) {
+                ProfileAvatar(initials: library.initials, symbol: library.profileSymbol, hue: library.profileHue, size: 64)
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(library.displayName).font(.title3.weight(.semibold)).foregroundStyle(Theme.ink)
+                    Text(library.joined.map { "Listener since \($0.formatted(.dateTime.month(.abbreviated).year()))" } ?? "Local profile")
+                        .font(.caption).foregroundStyle(Theme.secondary)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary).accessibilityHidden(true)
+            }
+            .card()
+        }
+        .buttonStyle(PressableStyle(scale: 0.98))
+        .accessibilityLabel("Profile, \(library.displayName). Opens profile.")
+    }
+
+    private struct Milestone: Identifiable { let id: String; let symbol: String; let earned: Bool }
+
+    private var milestones: [Milestone] {
+        [Milestone(id: "First listen", symbol: "headphones", earned: !library.history.isEmpty),
+         Milestone(id: "3-day streak", symbol: "flame", earned: player.streakDays >= 3),
+         Milestone(id: "Week one", symbol: "flame.fill", earned: player.streakDays >= 7),
+         Milestone(id: "Explorer", symbol: "checkmark.circle", earned: finished.count >= 5),
+         Milestone(id: "Curator", symbol: "bookmark", earned: library.saved.count >= 10),
+         Milestone(id: "Goal met", symbol: "target", earned: player.minutesToday >= library.dailyGoalMinutes)]
+    }
+
+    private var achievements: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(title: "Milestones") { Text("\(milestones.filter { $0.earned }.count) of \(milestones.count)") }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 14) {
+                    ForEach(milestones) { badge in
+                        VStack(spacing: 8) {
+                            Image(systemName: badge.symbol).font(.title3)
+                                .foregroundStyle(badge.earned ? .white : Theme.tertiary)
+                                .frame(width: 52, height: 52)
+                                .background(badge.earned ? Theme.ink : Theme.subtle, in: Circle())
+                            Text(badge.id).font(.caption2).foregroundStyle(Theme.secondary).lineLimit(1)
+                        }
+                        .frame(width: 78)
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("\(badge.id), \(badge.earned ? "earned" : "not yet")")
+                    }
+                }
+                .padding(.vertical, 2)
+            }
         }
     }
 

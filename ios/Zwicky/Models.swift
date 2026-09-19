@@ -134,9 +134,49 @@ struct Story: Identifiable, Codable, Hashable {
     /// "Sep 17", or "Sample" for device-voice demos without a date.
     var dateText: String { publishedDate?.formatted(.dateTime.month(.abbreviated).day()) ?? (isDemo ? "Sample" : "") }
     static let dayFormatter: DateFormatter = { let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"; f.locale = Locale(identifier: "en_US_POSIX"); return f }()
+    /// A device-voice demo for the four-host comedy show, so the co-hosted
+    /// format is playable before any produced narration exists.
+    static let starBrosTurns: [DialogueTurn] = [
+        DialogueTurn(speaker: "Jax Moreno", text: "Okay, serious question. Why is the night sky dark? There are billions of stars. Why isn't the whole sky just glowing?"),
+        DialogueTurn(speaker: "Kai Nakamura", text: "That's Olbers' paradox. It's a good question, which is annoying."),
+        DialogueTurn(speaker: "Benny Osei", text: "It's the one where the universe answers a question about the sky with a fact about time."),
+        DialogueTurn(speaker: "Chase Delacroix", text: "The old answer goes like this. If the universe were infinite, unchanging and infinitely old, every direction you looked would eventually hit a star, and the whole sky would be as bright as the surface of the Sun."),
+        DialogueTurn(speaker: "Jax Moreno", text: "Which it is not. I have seen the sky. It is very dark. I was there."),
+        DialogueTurn(speaker: "Kai Nakamura", text: "Two things are wrong with that setup. The universe is not infinitely old, and it is not standing still."),
+        DialogueTurn(speaker: "Chase Delacroix", text: "It is about thirteen point eight billion years old, and light has a speed. So there is a horizon. We only see sources whose light has had time to reach us."),
+        DialogueTurn(speaker: "Benny Osei", text: "The sky is dark because the universe has a birthday."),
+        DialogueTurn(speaker: "Kai Nakamura", text: "And because it is expanding. Space itself stretches the light on its way here, so distant light arrives redshifted, its energy spread thinner."),
+        DialogueTurn(speaker: "Jax Moreno", text: "So the far stuff doesn't just get quieter. It gets redder and dimmer. That is somehow worse, and cooler."),
+        DialogueTurn(speaker: "Chase Delacroix", text: "Both. The finite age sets the horizon, and expansion dims whatever crosses it."),
+        DialogueTurn(speaker: "Benny Osei", text: "A nice thought: darkness isn't the absence of stars. It's a message about how the whole thing began."),
+        DialogueTurn(speaker: "Kai Nakamura", text: "Careful. It's evidence, not a message."),
+        DialogueTurn(speaker: "Jax Moreno", text: "Kai. Let him have one."),
+        DialogueTurn(speaker: "Benny Osei", text: "I'll take one."),
+        DialogueTurn(speaker: "Chase Delacroix", text: "The clean version: a bright sky is what you would get from an infinite, eternal, static cosmos. We don't live in one, and the dark sky is one of the ways we can tell."),
+        DialogueTurn(speaker: "Jax Moreno", text: "So every clear night is a measurement. That's genuinely beautiful, and I'm not even being ironic."),
+        DialogueTurn(speaker: "Kai Nakamura", text: "You're a little bit being ironic."),
+        DialogueTurn(speaker: "Jax Moreno", text: "A little bit."),
+        DialogueTurn(speaker: "Benny Osei", text: "Look up tonight. The dark parts are data."),
+        DialogueTurn(speaker: "Chase Delacroix", text: "And the bright parts are the exceptions we can actually see."),
+        DialogueTurn(speaker: "Kai Nakamura", text: "That's the whole thing. Check the assumptions."),
+        DialogueTurn(speaker: "Jax Moreno", text: "Okay, that was good. I'm Jax Moreno, and the universe is rude and I love it."),
+        DialogueTurn(speaker: "Benny Osei", text: "I'm Benny Osei. Stay curious about the dark."),
+        DialogueTurn(speaker: "Chase Delacroix", text: "I'm Chase Delacroix. Look it up, it's called Olbers' paradox."),
+    ]
+    static let starBrosSample: Story = Story(
+        id: "demo-star-bros-dark-sky",
+        title: "Why the night sky is dark",
+        dek: "Four friends, one very old question, and a universe that will not sit still.",
+        topic: "ASTROPHYSICS", hostID: "jax", minutes: 3,
+        body: Story.starBrosTurns.map(\.text).joined(separator: " "),
+        caveat: "An original device-voice sample with four synthetic presenters. Written as a demonstration; the source is general background, not a new study, and neither the script nor the voices have had editorial approval.",
+        sources: [Source(title: "NASA Science: Universe", url: "https://science.nasa.gov/universe/",
+                         attribution: "NASA Science", license: "Public domain (NASA)")],
+        audioURL: nil, isDemo: true,
+        turns: Story.starBrosTurns, hostIDs: ["jax", "kai", "benny", "chase"])
     /// Voiced preview episodes bundled with the app, plus a device-voice demo for hosts without one yet.
     /// Every episode ships with the app; see backend/bundle_episodes.py.
-    static let demos: [Story] = Episodes.bundled.map(\.story)
+    static let demos: [Story] = Episodes.bundled.map(\.story) + [starBrosSample]
 }
 
 struct TranscriptWord: Codable, Hashable { let text: String; let start: Double }

@@ -31,6 +31,9 @@ import UIKit
     }
     private var activeUtterance: AVSpeechUtterance?
     private let speech = AVSpeechSynthesizer()
+    private var dialogue: [DialogueTurn] = []
+    private var dialogueIndex = 0
+    private var inDialogue = false
     private var player: AVPlayer?
     private var observer: Any?
     private var endObserver: NSObjectProtocol?
@@ -207,6 +210,7 @@ import UIKit
         if let observer { player?.removeTimeObserver(observer) }; observer = nil
         if let endObserver { NotificationCenter.default.removeObserver(endObserver) }; endObserver = nil
         player = nil; activeUtterance = nil; speech.stopSpeaking(at: .immediate)
+        dialogue = []; dialogueIndex = 0; inDialogue = false
         listening = ListeningState(); listenedSeconds = [:]; story = nil; position = 0; history = []; cancelSleep(); persist()
         MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
     }
@@ -224,6 +228,37 @@ import UIKit
             return false
         }
     }
+    /// Device-voice co-hosted playback: speak each turn with its presenter's voice,
+    /// advancing on completion. Produced dialogue uses one AVPlayer instead.
+    private func startDialogue(_ turns: [DialogueTurn]) {
+        dialogue = turns; dialogueIndex = 0; inDialogue = true
+        speakDialogueTurn()
+    }
+
+    private func speakDialogueTurn() {
+        guard inDialogue, dialogue.indices.contains(dialogueIndex) else { return }
+        let turn = dialogue[dialogueIndex]
+        let utterance = AVSpeechUtterance(string: turn.text)
+        utterance.voice = dialogueVoice(for: turn.speaker)
+        utterance.pitchMultiplier = dialoguePitch(for: turn.speaker)
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate * rate
+        activeUtterance = utterance
+        if duration > 0 { position = duration * Double(dialogueIndex) / Double(max(dialogue.count, 1)) }
+        speech.speak(utterance)
+    }
+
+    private func dialogueVoice(for speaker: String) -> AVSpeechSynthesisVoice? {
+        let id = Host.all.first { $0.name == speaker }?.id ?? ""
+        let language = ["jax": "en-US", "kai": "en-GB", "benny": "en-AU", "chase": "en-IE",
+                        "ines": "en-IE", "dev": "en-IN"][id] ?? "en-US"
+        return AVSpeechSynthesisVoice(language: language) ?? AVSpeechSynthesisVoice(language: "en-US")
+    }
+
+    private func dialoguePitch(for speaker: String) -> Float {
+        let id = Host.all.first { $0.name == speaker }?.id ?? ""
+        return ["jax": 1.04, "kai": 0.88, "benny": 1.14, "chase": 0.96, "ines": 1.0, "dev": 1.08][id] ?? 1.0
+    }
+
     func play(_ item: Story, host: Host? = nil, pushHistory: Bool = true) {
         if pushHistory, let current = story, current.id != item.id {
             history.append(current.id)
@@ -236,9 +271,12 @@ import UIKit
         if let observer { player?.removeTimeObserver(observer) }; observer = nil
         if let endObserver { NotificationCenter.default.removeObserver(endObserver) }; endObserver = nil
         player?.pause(); player = nil; activeUtterance = nil; speech.stopSpeaking(at: .immediate)
+        dialogue = []; dialogueIndex = 0; inDialogue = false
         story = item; position = item.audioURL == nil ? 0 : resumePosition; duration = Double(item.minutes * 60); message = nil; lastSyncedSecond = -1
         guard activateSession() else { return }
-        if let raw = item.audioURL, let url = Self.resolve(raw) {
+        if item.audioURL == nil, let turns = item.turns, !turns.isEmpty {
+            startDialogue(turns)
+        } else if let raw = item.audioURL, let url = Self.resolve(raw) {
             let av = AVPlayer(url: url); player = av
             av.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
             if resumePosition > 0 { av.seek(to: CMTime(seconds: resumePosition, preferredTimescale: 600)) }
@@ -330,6 +368,20 @@ import UIKit
     }
     func cancelSleep() { sleepTask?.cancel(); sleepTask = nil; sleepUntil = nil; message = nil }
     nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
-        Task { @MainActor in guard self.activeUtterance === utterance else { return }; self.activeUtterance = nil; self.finished() }
+        Task { @MainActor in
+            guard self.activeUtterance === utterance else { return }
+            self.activeUtterance = nil
+            if self.inDialogue {
+                self.dialogueIndex += 1
+                if self.dialogueIndex < self.dialogue.count {
+                    self.speakDialogueTurn()
+                } else {
+                    self.inDialogue = false
+                    self.finished()
+                }
+            } else {
+                self.finished()
+            }
+        }
     }
 }

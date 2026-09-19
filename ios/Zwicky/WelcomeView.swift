@@ -7,7 +7,7 @@ struct WelcomeView: View {
     @EnvironmentObject private var player: AudioPlayer
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var step = 0
-    @State private var selected: Set<String> = Set(Show.all.map(\.id))
+    @State private var selected: Set<String> = Set(Show.all.prefix(4).map(\.id))
     @AccessibilityFocusState private var headingFocused: Bool
 
     private var firstEpisode: Story? {
@@ -59,23 +59,34 @@ struct WelcomeView: View {
     }
 
     private func title(_ text: String) -> some View {
-        Text(text).font(.system(size: 34, weight: .semibold, design: .serif)).fixedSize(horizontal: false, vertical: true)
+        Text(text).font(.system(.largeTitle, design: .serif, weight: .semibold)).fixedSize(horizontal: false, vertical: true)
             .accessibilityAddTraits(.isHeader).accessibilityFocused($headingFocused)
     }
 
     private var intro: some View {
         Group {
-            LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12) {
-                ForEach(Show.all) { ShowCover(show: $0) }
-            }
             title("Science worth\nlistening to.")
-            Text("Short podcasts about new research, from four shows with their own hosts.")
+            Text("Big ideas. Easy listening. A short weekday science edition — one good idea in about three minutes.")
                 .font(.body).foregroundStyle(Theme.secondary)
+            featureStrip
             VStack(alignment: .leading, spacing: 14) {
                 point("clock", "About three minutes an episode")
                 point("checkmark.seal", "Every episode links to its sources")
-                point("text.quote", "Read along as you listen")
+                point("text.quote", "Read along with the transcript")
+                point("person.2", "Fictional hosts, AI narration, clearly labelled")
             }
+        }
+    }
+
+    /// A curated strip, not a wall of every show, so the first screen explains the product.
+    private var featureStrip: some View {
+        let ids = ["the-long-view", "wild-company", "signal-and-noise", "common-ground", "star-bros"]
+        let featured = ids.compactMap { id in Show.all.first { $0.id == id } }
+        return ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(featured) { ShowCover(show: $0).frame(width: 116) }
+            }
+            .padding(.vertical, 2)
         }
     }
 
@@ -176,9 +187,11 @@ struct WelcomeView: View {
                         }
                         Text(story.title).font(.system(size: 22, weight: .semibold, design: .serif))
                         Text(story.dek).font(.subheadline).foregroundStyle(Theme.secondary)
-                        Text(story.audioURL == nil ? "Device voice sample" : "\(story.minutes) min · AI-narrated · Sources included").font(.caption).foregroundStyle(Theme.secondary)
+                        Text(story.audioURL == nil ? "Device voice sample · transcript and sources included" : "\(story.minutes) min · AI-narrated · transcript and sources included").font(.caption).foregroundStyle(Theme.secondary)
                     }
                 }.card()
+                Text("Hosts are fictional presenters. Every episode is written and narrated with AI and checked against its sources.")
+                    .font(.caption).foregroundStyle(Theme.secondary)
             } else {
                 Text("Your shows are warming up. Browse what's available while new episodes are produced.").foregroundStyle(Theme.secondary)
             }

@@ -13,6 +13,10 @@ Two expressivity mechanisms, mirroring how we direct narration:
 With no reference clip, base and turbo use their built-in default voice.
 Python 3.11; `pip install chatterbox-tts`. The bundled Perth watermarker fails
 to import in some environments and exposes None, so we substitute its dummy.
+
+Promoted standard: base with temperature 0.65, top_p 0.9, min_p 0.02 (exaggeration
+0.5, cfg_weight 0.5). It won the tts-lab sampling suite by listening; the objective
+metrics were flat because every take was intelligible. Override any flag to compare.
 """
 from __future__ import annotations
 import argparse
@@ -42,24 +46,54 @@ def load(model_name: str, device: str):
     import inspect
     from chatterbox.tts_turbo import ChatterboxTurboTTS
     kwargs = {"device": device}
-    if "nano" in inspect.signature(ChatterboxTurboTTS.from_pretrained).parameters:
+    supports_nano = "nano" in inspect.signature(ChatterboxTurboTTS.from_pretrained).parameters
+    if model_name == "nano" and not supports_nano:
+        raise SystemExit(
+            "The installed chatterbox-tts has no Nano support (added after 0.1.7). "
+            "Install from git (pip install git+https://github.com/resemble-ai/chatterbox.git) "
+            "or use --model turbo."
+        )
+    if supports_nano:
         kwargs["nano"] = model_name == "nano"
     return ChatterboxTurboTTS.from_pretrained(**kwargs)
 
 
 def synthesize(model, model_name: str, text: str, args, device: str):
-    if model_name == "base":
-        return model.generate(text, exaggeration=args.exaggeration, cfg_weight=args.cfg_weight)
-    # turbo/nano: tags are inline in `text`; exaggeration/cfg_weight are ignored.
-    if getattr(model, "conds", None) is not None:
-        return model.generate(text)
-    # No built-in voice: synthesize a reference with the base model, then clone it.
-    import torchaudio as ta
-    base = load("base", device)
-    os.makedirs(args.out, exist_ok=True)
-    ref = os.path.join(args.out, "_reference.wav")
-    ta.save(ref, base.generate("This is a reference voice for the Zwicky preview. " * 2), base.sr)
-    return model.generate(text, audio_prompt_path=ref)
+    """Build kwargs from only the parameters this model's generate() actually accepts.
+
+    Base has no top_k or norm_loudness; turbo/nano ignore exaggeration, cfg_weight and
+    min_p. Filtering by signature keeps one CLI honest across all three checkpoints.
+    """
+    import inspect
+    import torch
+
+    if args.seed is not None:
+        torch.manual_seed(args.seed)
+    kwargs = {
+        "temperature": args.temperature,
+        "top_p": args.top_p,
+        "top_k": args.top_k,
+        "min_p": args.min_p,
+        "repetition_penalty": args.repetition_penalty,
+        "norm_loudness": args.norm_loudness,
+    }
+    if model_name == "base":  # turbo/nano ignore these and log a warning
+        kwargs["exaggeration"] = args.exaggeration
+        kwargs["cfg_weight"] = args.cfg_weight
+    params = inspect.signature(model.generate).parameters
+
+    if model_name != "base" and getattr(model, "conds", None) is None:
+        # No built-in voice: synthesize a reference with the base model, then clone it.
+        import torchaudio as ta
+        base = load("base", device)
+        os.makedirs(args.out, exist_ok=True)
+        ref = os.path.join(args.out, "_reference.wav")
+        ta.save(ref, base.generate("This is a reference voice for the Zwicky preview. " * 2), base.sr)
+        kwargs["audio_prompt_path"] = args.audio_prompt or ref
+    elif args.audio_prompt:
+        kwargs["audio_prompt_path"] = args.audio_prompt
+
+    return model.generate(text, **{k: v for k, v in kwargs.items() if k in params and v is not None})
 
 
 def main() -> None:
@@ -71,6 +105,16 @@ def main() -> None:
     parser.add_argument("--device", default="auto", choices=["auto", "cpu", "mps", "cuda"])
     parser.add_argument("--exaggeration", type=float, default=0.5)
     parser.add_argument("--cfg-weight", type=float, default=0.5)
+    # Promoted sampling standard (won the tts-lab sampling suite by listening):
+    # base, temperature 0.65, top_p 0.9, min_p 0.02. See experiments/tts_lab.
+    parser.add_argument("--temperature", type=float, default=0.65)
+    parser.add_argument("--top-p", type=float, default=0.9)
+    parser.add_argument("--top-k", type=float, default=None)
+    parser.add_argument("--min-p", type=float, default=0.02)
+    parser.add_argument("--repetition-penalty", type=float, default=None)
+    parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--norm-loudness", action=argparse.BooleanOptionalAction, default=None)
+    parser.add_argument("--audio-prompt", default="", help="reference clip to clone (base/turbo/nano)")
     parser.add_argument("--max-words", type=int, default=0)
     parser.add_argument("--name", default="chatterbox")
     args = parser.parse_args()

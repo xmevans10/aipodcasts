@@ -1,0 +1,85 @@
+name: tts-lab
+
+# Free, CPU-only Chatterbox research matrix. Loads each model once, renders a small
+# controlled suite of short beats, computes objective metrics (prosody + ASR WER) and
+# uploads the wavs for human listening. Dispatch with a suite name; results are visible
+# in the job log and as a `tts-lab-<suite>` artifact. No key, no paid API.
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: Which matrix to run
+        required: true
+        default: sampling
+        type: choice
+        options:
+          - sampling
+          - models
+          - tags
+          - beats
+          - reference
+          - chunk
+      seeds:
+        description: Seeds per condition
+        required: true
+        default: "2"
+      tag_models:
+        description: Models for the tags suite
+        required: false
+        default: turbo,nano
+      text:
+        description: Override the text (optional)
+        required: false
+        default: ""
+
+jobs:
+  lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      HF_HOME: ${{ github.workspace }}/.hf
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache model weights
+        uses: actions/cache@v4
+        with:
+          path: .hf
+          key: chatterbox-Linux-v1
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install chatterbox-tts soundfile faster-whisper
+
+      - name: Run suite
+        env:
+          SUITE: ${{ github.event.inputs.suite }}
+          SEEDS: ${{ github.event.inputs.seeds }}
+          TAG_MODELS: ${{ github.event.inputs.tag_models }}
+          TTS_TEXT: ${{ github.event.inputs.text }}
+        run: |
+          ARGS=(--suite "$SUITE" --out tts-lab-out --seeds "$SEEDS" --tag-models "$TAG_MODELS")
+          if [ -n "$TTS_TEXT" ]; then ARGS+=(--text "$TTS_TEXT"); fi
+          python experiments/tts_lab/lab.py "${ARGS[@]}"
+
+      - name: Summarise metrics
+        if: always()
+        run: |
+          test -f tts-lab-out/metrics.json || exit 0
+          python -c "import json; rows=json.load(open('tts-lab-out/metrics.json')); print(len(rows),'records'); [print(r.get('suite'),r.get('label'),'wer',r.get('wer'),'dur',r.get('duration_s'),'verdict',r.get('verdict'),'gen_s',r.get('gen_s')) for r in rows]"
+
+      - name: Upload audio + metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tts-lab-${{ github.event.inputs.suite }}
+          path: tts-lab-out
+          if-no-files-found: warn
+          retention-days: 14

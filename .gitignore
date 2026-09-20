@@ -13,3 +13,5 @@ build-*/
 .generation.lock
 demos/*/beats/*.mp3
 .claude/
+tts-lab-out/
+experiments/tts_lab/**/*.wav

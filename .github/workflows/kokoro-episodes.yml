@@ -1,0 +1,62 @@
+name: kokoro-episodes
+
+# Renders the four existing Sound Science episodes with Kokoro-82M directly, using the
+# per-character voices in tools/tts/voice_cast.json. No cloning, no second model, no
+# chunking: Kokoro segments long text itself. Free CPU runner, no key.
+on:
+  workflow_dispatch:
+    inputs:
+      smoke_words:
+        description: Truncate each script to N words for a fast smoke test (0 = full)
+        required: true
+        default: "0"
+      episodes:
+        description: Comma-separated character ids (default all four)
+        required: false
+        default: ""
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      HF_HOME: ${{ github.workspace }}/.hf
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache model weights
+        uses: actions/cache@v4
+        with:
+          path: .hf
+          key: kokoro-Linux-v1
+
+      - name: System deps (espeak-ng for Kokoro's G2P fallback)
+        run: sudo apt-get update && sudo apt-get install -y espeak-ng
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install kokoro soundfile
+
+      - name: Render episodes
+        env:
+          SMOKE: ${{ github.event.inputs.smoke_words }}
+          EPISODES: ${{ github.event.inputs.episodes }}
+        run: |
+          ARGS=(--out kokoro-episodes --smoke-words "$SMOKE")
+          if [ -n "$EPISODES" ]; then ARGS+=(--episodes "$EPISODES"); fi
+          python tools/tts/kokoro_episodes.py "${ARGS[@]}"
+
+      - name: Upload episodes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kokoro-episodes
+          path: kokoro-episodes
+          if-no-files-found: warn
+          retention-days: 14

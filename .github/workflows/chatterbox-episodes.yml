@@ -1,0 +1,69 @@
+name: chatterbox-episodes
+
+# Renders the four existing Sound Science episodes with Chatterbox base at the promoted
+# sampling standard. Each character gets its identity from the Kokoro cast: the assigned
+# Kokoro voice is rendered to a reference clip and Chatterbox clones it. Scripts are
+# chunked because base caps generation at 1000 tokens, then spliced. Free CPU runner; no key.
+on:
+  workflow_dispatch:
+    inputs:
+      smoke_words:
+        description: Truncate each script to N words for a fast smoke test (0 = full)
+        required: true
+        default: "0"
+      max_words:
+        description: Words per Chatterbox call before splicing
+        required: true
+        default: "60"
+      episodes:
+        description: Comma-separated character ids (default all four)
+        required: false
+        default: ""
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      HF_HOME: ${{ github.workspace }}/.hf
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache model weights
+        uses: actions/cache@v4
+        with:
+          path: .hf
+          key: chatterbox-Linux-v1
+
+      - name: System deps (espeak-ng for Kokoro)
+        run: sudo apt-get update && sudo apt-get install -y espeak-ng
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
+          pip install chatterbox-tts kokoro soundfile
+
+      - name: Render episodes
+        env:
+          SMOKE: ${{ github.event.inputs.smoke_words }}
+          MAXW: ${{ github.event.inputs.max_words }}
+          EPISODES: ${{ github.event.inputs.episodes }}
+        run: |
+          ARGS=(--out tts-episodes --max-words "$MAXW" --smoke-words "$SMOKE")
+          if [ -n "$EPISODES" ]; then ARGS+=(--episodes "$EPISODES"); fi
+          python tools/tts/render_episodes.py "${ARGS[@]}"
+
+      - name: Upload episodes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chatterbox-episodes
+          path: tts-episodes
+          if-no-files-found: warn
+          retention-days: 14

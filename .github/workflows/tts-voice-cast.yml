@@ -1,0 +1,50 @@
+name: tts-voice-cast
+
+# Renders one sample per presenter with Kokoro-82M (Apache-2.0, fixed voicepacks,
+# no cloning, no API key) so the whole 20-host cast can be QA'd. Free on a public repo.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/tts-voice-cast.yml"
+      - "tools/tts/kokoro_generate.py"
+      - "tools/tts/voice_cast.json"
+
+jobs:
+  kokoro:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      HF_HOME: ${{ github.workspace }}/.hf
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache model weights
+        uses: actions/cache@v4
+        with:
+          path: .hf
+          key: kokoro-${{ runner.os }}-v1
+
+      - name: System deps (espeak-ng for Kokoro's G2P fallback)
+        run: sudo apt-get update && sudo apt-get install -y espeak-ng
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install "kokoro>=0.9.4" soundfile
+
+      - name: Render the cast
+        run: python tools/tts/kokoro_generate.py --cast tools/tts/voice_cast.json --out tts-cast
+
+      - name: Upload audio
+        uses: actions/upload-artifact@v4
+        with:
+          name: kokoro-voice-cast
+          path: tts-cast
+          if-no-files-found: error
+          retention-days: 14

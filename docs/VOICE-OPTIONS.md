@@ -43,17 +43,28 @@ Prices are per 1M characters where the vendor bills by character.
 | OpenAI gpt-4o-mini-tts | High | No | No | ~$15 (tts-1) | Fixed presets, no cloning |
 | Amazon Polly / Deepgram Aura | Good | No | No | ~$4-16 | Very mature, no cloning |
 
+## Recommended free voice cast (implemented)
+
+**Kokoro-82M** is the base for the free cast: Apache-2.0 for code *and* weights, 28
+English fixed voicepacks (no cloning, no consent questions), 24 kHz, ~363 MB, CPU-viable.
+`tools/tts/voice_cast.json` assigns each of the 20 presenters a distinct voice;
+`tools/tts/kokoro_generate.py` renders them and the `tts-voice-cast` GitHub Action
+produces QA samples. Piper was rejected for this purpose: the Blizzard-2013/Lessac
+license taints most finetuned voices, and `hfc_*`, `ryan` and `l2arctic` are
+non-commercial. Kokoro's only caveat is the GPL `espeak-ng` fallback used for
+out-of-distribution text.
+
 ## Recommendation
 
 1. **Primary (current):** ElevenLabs Text to Dialogue with two licensed voice IDs
    and `ELEVENLABS_DIALOGUE_MODEL=eleven_v3`. Keep the provider seam below.
-2. **Free OSS path that ships today:** **Chatterbox** (MIT) with a short reference
-   clip per host, generating each turn and stitching by speaker — the harness
-   already exposes `turns_narration_inputs()` to drive this. Runs on Apple Silicon
-   via MPS, so no GPU rental for a low-volume show.
-3. **True multi-speaker OSS:** **Higgs Audio v2** (community license, attribution)
+2. **Free cast (implemented):** Kokoro-82M with the 20-voice cast above — no key, no cost.
+3. **Free cloning path:** **Chatterbox** (MIT) with a short reference clip per host,
+   generating each turn and stitching by speaker — the harness already exposes
+   `turns_narration_inputs()` to drive this. Runs on Apple Silicon via MPS.
+4. **True multi-speaker OSS:** **Higgs Audio v2** (community license, attribution)
    or **Dia2** (Apache) if we want one-pass dialogue without stitching.
-4. **Cheapest managed multi-speaker:** **Google Gemini-TTS**, pending a real bill
+5. **Cheapest managed multi-speaker:** **Google Gemini-TTS**, pending a real bill
    measurement on our scripts.
 
 Compute cost at our volume is negligible (a 500-word episode is ~4 minutes of

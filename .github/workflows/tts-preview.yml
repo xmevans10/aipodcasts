@@ -46,22 +46,30 @@ jobs:
           pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
           pip install chatterbox-tts
 
-      - name: Generate sample
+      - name: Generate comparison samples
         env:
           TTS_TEXT: ${{ github.event.inputs.text }}
           TTS_MAX: ${{ github.event.inputs.max_words }}
         run: |
           MAX="${TTS_MAX:-40}"
+          # Base model: global emotion knob, neutral vs dramatic.
+          python tools/tts/chatterbox_generate.py --model base --exaggeration 0.5 --cfg-weight 0.5 \
+            --max-words "$MAX" --name base-neutral --out tts-out
+          python tools/tts/chatterbox_generate.py --model base --exaggeration 0.85 --cfg-weight 0.3 \
+            --max-words "$MAX" --name base-dramatic --out tts-out
+          # Turbo model: inline paralinguistic tags (exaggeration/cfg are ignored there).
           if [ -n "$TTS_TEXT" ]; then
-            python tools/tts/chatterbox_generate.py --text "$TTS_TEXT" --max-words "$MAX" --device cpu --out tts-out
+            python tools/tts/chatterbox_generate.py --model turbo --text "$TTS_TEXT" --name turbo-tags --out tts-out
           else
-            python tools/tts/chatterbox_generate.py --max-words "$MAX" --device cpu --out tts-out
+            python tools/tts/chatterbox_generate.py --model turbo \
+              --text "Okay, serious question. Why is the night sky dark? [chuckle] That is genuinely the best one. [sigh] But the answer is about time, not stars. The dark parts are data." \
+              --name turbo-tags --out tts-out
           fi
 
       - name: Upload audio
         uses: actions/upload-artifact@v4
         with:
-          name: chatterbox-sample
+          name: chatterbox-samples
           path: tts-out
           if-no-files-found: error
           retention-days: 14

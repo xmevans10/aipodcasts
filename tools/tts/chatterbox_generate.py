@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
-"""Generate a Zwicky voice sample with Chatterbox (open source, MIT). No API key.
+"""Generate Zwicky voice samples with Chatterbox (open source, MIT). No API key.
 
-Chatterbox is a zero-shot TTS model; with no reference clip it uses its built-in
-default voice. Install once with `pip install chatterbox-tts`, then run:
+Two expressivity mechanisms, mirroring how we direct narration:
 
-    python tools/tts/chatterbox_generate.py --out tts-out
-    python tools/tts/chatterbox_generate.py --file script.txt --max-words 40
+  base  (500M)  global per-call emotion: --exaggeration (0.0-1.0+, higher = more
+                dramatic) and --cfg-weight (pacing; ~0.3 for slower, deliberate).
+  turbo (350M)  inline paralinguistic tags in --text, e.g. [chuckle], [laugh],
+                [cough]. Note: turbo/nano *ignore* exaggeration and cfg_weight
+                (the library logs a warning); emotion comes from tags and pacing.
+  nano  (110M)  same as turbo but smaller/faster (CPU-friendly).
 
-The bundled Perth watermarker fails to import in some environments and exposes
-None; we substitute its dummy implementation so generation can proceed (this
-means the output is not watermarked).
+With no reference clip, base and turbo use their built-in default voice.
+Python 3.11; `pip install chatterbox-tts`. The bundled Perth watermarker fails
+to import in some environments and exposes None, so we substitute its dummy.
 """
 from __future__ import annotations
 import argparse
@@ -32,15 +35,39 @@ def patch_watermarker() -> None:
         perth.PerthImplicitWatermarker = perth.DummyWatermarker
 
 
+def load(model_name: str, device: str):
+    if model_name == "base":
+        from chatterbox.tts import ChatterboxTTS
+        return ChatterboxTTS.from_pretrained(device=device)
+    from chatterbox.tts_turbo import ChatterboxTurboTTS
+    return ChatterboxTurboTTS.from_pretrained(device=device, nano=(model_name == "nano"))
+
+
+def synthesize(model, model_name: str, text: str, args, device: str):
+    if model_name == "base":
+        return model.generate(text, exaggeration=args.exaggeration, cfg_weight=args.cfg_weight)
+    # turbo/nano: tags are inline in `text`; exaggeration/cfg_weight are ignored.
+    if getattr(model, "conds", None) is not None:
+        return model.generate(text)
+    # No built-in voice: synthesize a reference with the base model, then clone it.
+    import torchaudio as ta
+    base = load("base", device)
+    os.makedirs(args.out, exist_ok=True)
+    ref = os.path.join(args.out, "_reference.wav")
+    ta.save(ref, base.generate("This is a reference voice for the Zwicky preview. " * 2), base.sr)
+    return model.generate(text, audio_prompt_path=ref)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--text", default="")
     parser.add_argument("--file", help="read the script from a file instead")
     parser.add_argument("--out", default="tts-out")
+    parser.add_argument("--model", default="base", choices=["base", "turbo", "nano"])
     parser.add_argument("--device", default="auto", choices=["auto", "cpu", "mps", "cuda"])
     parser.add_argument("--exaggeration", type=float, default=0.5)
     parser.add_argument("--cfg-weight", type=float, default=0.5)
-    parser.add_argument("--max-words", type=int, default=0, help="truncate to N words (0 = all)")
+    parser.add_argument("--max-words", type=int, default=0)
     parser.add_argument("--name", default="chatterbox")
     args = parser.parse_args()
 
@@ -54,18 +81,17 @@ def main() -> None:
     patch_watermarker()
     import torch
     import torchaudio as ta
-    from chatterbox.tts import ChatterboxTTS
 
     device = args.device
     if device == "auto":
         device = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
-    print(f"device={device} words={len(text.split())}", flush=True)
+    print(f"model={args.model} device={device} words={len(text.split())}", flush=True)
 
     t0 = time.time()
-    model = ChatterboxTTS.from_pretrained(device=device)
+    model = load(args.model, device)
     print(f"load {time.time() - t0:.1f}s", flush=True)
     t0 = time.time()
-    wav = model.generate(text, exaggeration=args.exaggeration, cfg_weight=args.cfg_weight)
+    wav = synthesize(model, args.model, text, args, device)
     print(f"generate {time.time() - t0:.1f}s", flush=True)
 
     os.makedirs(args.out, exist_ok=True)

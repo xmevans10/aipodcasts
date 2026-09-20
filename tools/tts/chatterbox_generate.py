@@ -39,8 +39,12 @@ def load(model_name: str, device: str):
     if model_name == "base":
         from chatterbox.tts import ChatterboxTTS
         return ChatterboxTTS.from_pretrained(device=device)
+    import inspect
     from chatterbox.tts_turbo import ChatterboxTurboTTS
-    return ChatterboxTurboTTS.from_pretrained(device=device, nano=(model_name == "nano"))
+    kwargs = {"device": device}
+    if "nano" in inspect.signature(ChatterboxTurboTTS.from_pretrained).parameters:
+        kwargs["nano"] = model_name == "nano"
+    return ChatterboxTurboTTS.from_pretrained(**kwargs)
 
 
 def synthesize(model, model_name: str, text: str, args, device: str):

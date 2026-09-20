@@ -58,12 +58,15 @@ jobs:
           python tools/tts/chatterbox_generate.py --model base --exaggeration 0.85 --cfg-weight 0.3 \
             --max-words "$MAX" --name base-dramatic --out tts-out
           # Turbo model: inline paralinguistic tags (exaggeration/cfg are ignored there).
+          # Don't fail the whole job if Turbo is unavailable; the base samples still upload.
           if [ -n "$TTS_TEXT" ]; then
-            python tools/tts/chatterbox_generate.py --model turbo --text "$TTS_TEXT" --name turbo-tags --out tts-out
+            python tools/tts/chatterbox_generate.py --model turbo --text "$TTS_TEXT" --name turbo-tags --out tts-out \
+              || echo "turbo generation failed; base samples still uploaded"
           else
             python tools/tts/chatterbox_generate.py --model turbo \
               --text "Okay, serious question. Why is the night sky dark? [chuckle] That is genuinely the best one. [sigh] But the answer is about time, not stars. The dark parts are data." \
-              --name turbo-tags --out tts-out
+              --name turbo-tags --out tts-out \
+              || echo "turbo generation failed; base samples still uploaded"
           fi
 
       - name: Upload audio

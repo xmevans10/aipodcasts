@@ -142,6 +142,80 @@ def parse_plos_xml(data: bytes, doi: str) -> dict:
             "text": content, "passages": extract_passages(root, text), "retrieved": dt.datetime.now(dt.timezone.utc).isoformat()}
 
 
+EUROPEPMC_SEARCH = "https://www.ebi.ac.uk/europepmc/webservices/rest/search"
+EUROPEPMC_XML = "https://www.ebi.ac.uk/europepmc/webservices/rest/{pmcid}/fullTextXML"
+
+
+def parse_jats(data: bytes, doi: str, license_hint: str = "") -> dict:
+    """Parse JATS full text (Europe PMC) into the same source dict as parse_plos_xml."""
+    if b"<!ENTITY" in data.upper() or re.search(br"<!DOCTYPE[^>]*\[", data, re.I):
+        raise ValueError("XML entity declarations are not supported")
+    root = ET.fromstring(re.sub(br"<!DOCTYPE[^>]*>", b"", data, flags=re.I))
+    license_nodes = root.findall("./front/article-meta/permissions/license")
+    raw_license = ET.tostring(license_nodes[0], encoding="unicode") if license_nodes else license_hint
+    match = re.search(r"https?://creativecommons.org/licenses/by/(\d\.\d)/?", raw_license)
+    if not match:
+        raise ValueError("No explicit CC BY license URL found; needs rights review")
+    actual_doi = next((text(n) for n in root.findall("./front/article-meta/article-id")
+                       if n.get("pub-id-type") == "doi"), "")
+    if actual_doi and actual_doi.lower() != doi.lower():
+        raise ValueError("DOI mismatch")
+    authors = []
+    for n in root.findall("./front/article-meta/contrib-group/contrib"):
+        if n.get("contrib-type") == "author":
+            name = n.find("name")
+            if name is not None:
+                authors.append(" ".join(filter(None, [text(name.find("given-names")), text(name.find("surname"))])))
+    paragraphs = [text(n) for n in root.findall("./front/article-meta/abstract//p") + root.findall("./body//p")]
+    content = "\n\n".join(p for p in paragraphs if p)
+    if len(content) < 400:
+        raise ValueError("Source text too short")
+    return {"title": text(root.find("./front/article-meta/title-group/article-title")),
+            "url": "https://doi.org/" + doi, "doi": doi,
+            "attribution": ", ".join(authors) or "Authors listed at source",
+            "journal": text(root.find("./front/journal-meta/journal-title-group/journal-title")),
+            "license": "CC BY " + match.group(1), "licenseURL": match.group(0),
+            "text": content, "passages": extract_passages(root, text),
+            "retrieved": dt.datetime.now(dt.timezone.utc).isoformat()}
+
+
+def europepmc_source(doi: str) -> dict | None:
+    """Full text for a CC BY open-access paper indexed by Europe PMC, else None."""
+    query = urllib.parse.quote('DOI:"' + doi + '"')
+    found = json.loads(request(EUROPEPMC_SEARCH + "?query=" + query + "&resultType=core&format=json"))
+    results = found.get("resultList", {}).get("result", [])
+    if not results:
+        return None
+    record = results[0]
+    if record.get("isOpenAccess") != "Y" or not record.get("pmcid"):
+        return None
+    return parse_jats(request(EUROPEPMC_XML.format(pmcid=record["pmcid"])), doi,
+                      str(record.get("license") or ""))
+
+
+def ingest_any(db: sqlite3.Connection, doi: str, host: str, refresh: bool = False) -> str:
+    """Ingest from whichever connector can parse this DOI: PLOS first, then Europe PMC."""
+    if re.fullmatch(r"10\.1371/journal\.[a-z]+\.\d+", doi):
+        return ingest(db, doi, host, refresh)
+    if host not in HOSTS:
+        raise ValueError("Unknown host")
+    story_id = hashlib.sha256((doi + ":" + host).encode()).hexdigest()[:20]
+    existing = db.execute("SELECT state FROM stories WHERE id=?", (story_id,)).fetchone()
+    if existing and not refresh:
+        return story_id
+    if existing and existing["state"] != "ingested":
+        raise ValueError("Only an undrafted source can be refreshed")
+    source = europepmc_source(doi)
+    if source is None:
+        raise ValueError("No reusable open-access full text (Europe PMC) for " + doi)
+    with db:
+        if existing:
+            db.execute("UPDATE stories SET source=? WHERE id=?", (json.dumps(source), story_id))
+        else:
+            db.execute("INSERT INTO stories(id,source,host) VALUES(?,?,?)", (story_id, json.dumps(source), host))
+    return story_id
+
+
 def ingest(db: sqlite3.Connection, doi: str, host: str, refresh: bool = False) -> str:
     if not re.fullmatch(r"10\.1371/journal\.[a-z]+\.\d+", doi):
         raise ValueError("Only PLOS journal DOIs are supported in the first source connector")
@@ -329,16 +403,18 @@ def produce_auto(db, days: int = 14, limit: int = 6, max_stories: int = 3,
     for work in selection["selected"]:
         if published >= max_stories:
             break
-        if not work["doi"].startswith("10.1371/"):
+        try:
+            story_id = ingest_any(db, work["doi"], work["host"])
+        except ValueError as error:
             results.append({"doi": work["doi"], "show": work["show"],
-                            "status": "skipped_unparseable_source"})
+                            "status": "no_ingestable_source", "error": str(error)[:160]})
             continue
         try:
-            story_id = ingest(db, work["doi"], work["host"])
             draft_story(db, story_id)
             report = approve_auto(db, story_id, decider_mode)
         except (ValueError, urllib.error.URLError, json.JSONDecodeError) as error:
-            results.append({"doi": work["doi"], "status": "error", "error": str(error)[:200]})
+            results.append({"doi": work["doi"], "show": work["show"], "story": story_id,
+                            "status": "error", "error": str(error)[:200]})
             continue
         entry = {"doi": work["doi"], "show": work["show"], "story": story_id, **report}
         if report["status"] == "approved" and narrate:

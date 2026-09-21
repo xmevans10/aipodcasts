@@ -20,6 +20,7 @@ from hosts import HOSTS as HOST_PROFILES, writing_guide, dialogue_hosts
 from anti_slop import ANTI_SLOP_GUIDE
 from dialogue import DIALOGUE_INSTRUCTIONS, DIALOGUE_SCHEMA, dialogue_guide, validate_dialogue, turns_body, turns_narration_inputs
 from provenance import provenance_text, quotes_in_source
+import verify as verifier
 from autoselect import select as select_stories, report as select_report
 from shortlist import rank as shortlist_rank, report as shortlist_report
 from voice import synthesize, status as voice_status
@@ -303,6 +304,60 @@ def review(db, story_id: str, reviewer: str):
         db.execute("UPDATE stories SET state='approved',reviewer=?,review_hash=? WHERE id=?", (reviewer.strip(), digest, story_id))
 
 
+def approve_auto(db, story_id: str, decider_mode: str = "auto"):
+    """Replace the named human reviewer with the automated verification gate."""
+    record = row(db, story_id)
+    if record["state"] != "review":
+        raise ValueError("Auto-approval requires a draft awaiting review")
+    report = verifier.verify_story(db, story_id, decider_mode)
+    if not report["pass"]:
+        return {"story": story_id, "status": "abstained", **report}
+    review(db, story_id, report["reviewer"])
+    return {"story": story_id, "status": "approved", **report}
+
+
+def produce_auto(db, days: int = 14, limit: int = 6, max_stories: int = 3,
+                 narrate: bool = True, decider_mode: str = "auto"):
+    """Fully autonomous chain: select -> ingest -> draft -> verify -> (narrate/publish).
+
+    Only sources the current connector can parse are ingested; everything else is
+    reported as skipped. A story that fails verification abstains and the next
+    candidate is tried. No human approval is requested.
+    """
+    selection = select_stories(db, days=days, per_show=1, limit=limit)
+    results, published = [], 0
+    for work in selection["selected"]:
+        if published >= max_stories:
+            break
+        if not work["doi"].startswith("10.1371/"):
+            results.append({"doi": work["doi"], "show": work["show"],
+                            "status": "skipped_unparseable_source"})
+            continue
+        try:
+            story_id = ingest(db, work["doi"], work["host"])
+            draft_story(db, story_id)
+            report = approve_auto(db, story_id, decider_mode)
+        except (ValueError, urllib.error.URLError, json.JSONDecodeError) as error:
+            results.append({"doi": work["doi"], "status": "error", "error": str(error)[:200]})
+            continue
+        entry = {"doi": work["doi"], "show": work["show"], "story": story_id, **report}
+        if report["status"] == "approved" and narrate:
+            try:
+                narrate(db, story_id)
+                publish(db, story_id)
+                entry["status"] = "published"
+                published += 1
+            except (ValueError, urllib.error.URLError) as error:
+                entry["status"] = "approved_not_narrated"
+                entry["narrate_error"] = str(error)[:200]
+                published += 1
+        elif report["status"] == "approved":
+            published += 1
+        results.append(entry)
+    return {"window_days": days, "selected": len(selection["selected"]),
+            "published": published, "results": results}
+
+
 def doctor() -> dict:
     """Report which provider keys and settings are present. Makes no network calls."""
     return {
@@ -388,6 +443,8 @@ def main():
     sub.add_parser("discover")
     p = sub.add_parser("shortlist"); p.add_argument("--days", type=int, default=7); p.add_argument("--per-host", type=int, default=3); p.add_argument("--limit", type=int, default=25); p.add_argument("--no-enrich", action="store_true"); p.add_argument("--markdown", action="store_true")
     p = sub.add_parser("select"); p.add_argument("--days", type=int, default=14); p.add_argument("--per-show", type=int, default=2); p.add_argument("--limit", type=int, default=10); p.add_argument("--markdown", action="store_true"); p.add_argument("--include-preprints", action="store_true", help="allow preprints/repositories (lower reputation)")
+    p = sub.add_parser("approve-auto"); p.add_argument("id"); p.add_argument("--decider", default="auto")
+    p = sub.add_parser("produce-auto"); p.add_argument("--days", type=int, default=14); p.add_argument("--limit", type=int, default=6); p.add_argument("--max-stories", type=int, default=3); p.add_argument("--no-narrate", action="store_true"); p.add_argument("--decider", default="auto")
     p = sub.add_parser("ingest"); p.add_argument("doi"); p.add_argument("--host", choices=HOSTS, required=True); p.add_argument("--refresh", action="store_true")
     sub.add_parser("hosts")
     for command in ("draft", "inspect", "narrate", "publish", "withdraw", "packet"):
@@ -412,6 +469,10 @@ def main():
             if args.markdown:
                 print(select_report(result))
                 return
+        elif args.command == "approve-auto": result = approve_auto(db, args.id, args.decider)
+        elif args.command == "produce-auto":
+            result = produce_auto(db, days=args.days, limit=args.limit, max_stories=args.max_stories,
+                                  narrate=not args.no_narrate, decider_mode=args.decider)
         elif args.command == "ingest": result = ingest(db, args.doi, args.host, args.refresh)
         elif args.command == "packet": result = build_packet(json.loads(row(db, args.id)["source"]), int(os.environ.get("LILT_MAX_SOURCE_CHARS", "18000")))
         elif args.command == "hosts": result = [{"id": h.id, "name": h.name, "show": h.show, "topic": h.topic,

@@ -27,6 +27,7 @@ sys.path.insert(0, str(ROOT / "backend"))
 from anti_slop import ANTI_SLOP_GUIDE, analyze, penalty
 from evidence import build_packet, evidence_text
 from hosts import HOSTS
+from language_clues import LANGUAGE_CLUES
 from podcast import PODCAST_INSTRUCTIONS, validate_podcast
 from pipeline import SCHEMA, validate_draft
 
@@ -56,6 +57,8 @@ VARIANTS = {
     "pro-antislop":      dict(model="deepseek-v4-pro", prompt="antislop", provider="deepseek", thinking=False, temperature=0.8),
     "luna-baseline":     dict(model="gpt-5.6-luna", prompt="baseline", provider="openai", effort="low", max_tokens=3500),
     "luna-antislop":     dict(model="gpt-5.6-luna", prompt="antislop", provider="openai", effort="low", max_tokens=3500),
+    "flash-clues":       dict(model="deepseek-flash", prompt="clues", provider="deepseek", thinking=False, temperature=0.8),
+    "luna-clues":        dict(model="gpt-5.6-luna", prompt="clues", provider="openai", effort="low", max_tokens=3500),
 }
 
 
@@ -96,6 +99,8 @@ def load_packet(packet_path: Path | None, host_id: str, max_chars: int):
 
 def instructions_for(prompt: str, host):
     base = PODCAST_INSTRUCTIONS + host.writing_guide()
+    if "clues" in prompt:
+        return base + "\n\n" + ANTI_SLOP_GUIDE + "\n\n" + LANGUAGE_CLUES[host.id]
     if prompt == "antislop":
         return base + "\n\n" + ANTI_SLOP_GUIDE
     return base

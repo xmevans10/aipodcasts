@@ -66,6 +66,14 @@ SIGNAL_WEIGHTS = {"editorial": 0.30, "community": 0.10, "impact": 0.15,
                   "fascination": 0.10}
 PRIMARY_TYPES = {"article"}          # OpenAlex normalized type for peer-reviewed research
 PREPRINT_TYPES = {"article", "preprint"}
+# Shows allowed to draw from arXiv preprints: beats whose primary literature is
+# physical or computational (astronomy, astrophysics, AI/ML, materials) and moves on
+# arXiv ahead of journals. Every other show keeps the peer-reviewed default. The
+# neuroscience show (ada) is deliberately left out: it is a life-science beat, not one
+# of the physical/computational shows this change targets.
+PREPRINT_SHOWS: set[str] = {"nova", "yusuf", "jax", "noor", "marek"}
+ARXIV_LANDING = re.compile(r"arxiv\.org/abs/([^/?#\s]+)", re.I)
+ARXIV_VERSION = re.compile(r"v\d+$", re.I)
 FINDING_CUES = ("we found", "we show", "we report", "we demonstrate", "our results",
                 "results show", "we observed", "we identify", "we measured", "we tested",
                 "experiment", "sample of", "participants", "dataset", "compared with",
@@ -309,9 +317,26 @@ def openalex_window(term: str, since: str, fetch=None, per_page: int = 50):
     return payload.get("results", [])
 
 
+def arxiv_id_from_locations(work: dict) -> str:
+    """First arXiv id in any location's landing page, version suffix stripped.
+
+    OpenAlex reports arXiv ids in locations[].landing_page_url rather than in the
+    doi field, so a submission with no registered DOI is otherwise invisible.
+    """
+    for location in work.get("locations") or []:
+        match = ARXIV_LANDING.search((location or {}).get("landing_page_url") or "")
+        if match:
+            return ARXIV_VERSION.sub("", match.group(1)).lower()
+    return ""
+
+
 def normalize_openalex(work: dict):
     doi = (work.get("doi") or "").replace("https://doi.org/", "").replace("http://doi.org/", "").lower()
     title = clean(work.get("display_name") or "")
+    arxiv_id = arxiv_id_from_locations(work)
+    if not doi and arxiv_id:
+        # No registered DOI: ingest_any routes the pseudo-DOI "arxiv:<id>" to ingest_arxiv.
+        doi = "arxiv:" + arxiv_id
     if not doi or not title:
         return None
     date_string = work.get("publication_date")
@@ -324,7 +349,7 @@ def normalize_openalex(work: dict):
     location = work.get("primary_location") or {}
     best = work.get("best_oa_location") or {}
     source = location.get("source") or {}
-    return {"id": doi, "doi": doi, "title": title,
+    return {"id": doi, "doi": doi, "arxiv_id": arxiv_id, "title": title,
             "abstract": reconstruct_abstract(work.get("abstract_inverted_index")),
             "date": date, "journal": clean(source.get("display_name") or source.get("host_organization_name") or ""),
             "cited": work.get("cited_by_count", 0) or 0,
@@ -373,6 +398,11 @@ def venue_reputation(work):
     if venue_type in ("repository", "preprint"):
         return 0.3
     return 0.6 if work.get("journal") else 0.4
+
+
+def is_preprint_show_work(work) -> bool:
+    """A preprint on a show allowed to draw from preprints (arXiv or not)."""
+    return (work.get("type") or "").lower() == "preprint" and work.get("host") in PREPRINT_SHOWS
 
 
 def studiness(work):
@@ -428,11 +458,15 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
 
     candidates = []
     retracted = non_primary = 0
-    allowed_types = PREPRINT_TYPES if min_reputation < MIN_REPUTATION else PRIMARY_TYPES
     for work in works.values():
         if work.get("is_retracted"):
             retracted += 1
             continue
+        # Peer-reviewed articles are the default everywhere. Preprints enter only on
+        # the PREPRINT_SHOWS beats, unless the caller explicitly opted into preprints
+        # by lowering min_reputation (the --include-preprints escape hatch).
+        preprints_here = min_reputation < MIN_REPUTATION or work["host"] in PREPRINT_SHOWS
+        allowed_types = PREPRINT_TYPES if preprints_here else PRIMARY_TYPES
         if work.get("type") not in allowed_types:
             non_primary += 1
             continue
@@ -458,7 +492,12 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
             "fascination": fascinating(work),
             "studiness": round(work_studiness, 3),
             "fit": round(score, 3),
-            "reusable": is_reusable(work["license"]),
+            # Reusable-license gate stays for journals and non-arXiv preprints. An
+            # arXiv preprint on a PREPRINT_SHOWS show may proceed without an OpenAlex
+            # license because ingest_arxiv re-checks the arXiv page for CC BY and
+            # abstains when the paper is not commercially reusable.
+            "reusable": is_reusable(work["license"]) or (
+                is_preprint_show_work(work) and bool(work.get("arxiv_id"))),
         })
         candidates.append(work)
 
@@ -482,7 +521,10 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
     ranked = sorted(candidates, key=lambda w: w["score"], reverse=True)
     selected, show_count, topic_count = [], {}, {}
     for work in ranked:
-        if not work["reusable"] or venue_reputation(work) < min_reputation:
+        # Preprints on the physical/computational shows are judged on license and fit,
+        # not on journal reputation: a repository/preprint score is their norm.
+        reputation_ok = venue_reputation(work) >= min_reputation or is_preprint_show_work(work)
+        if not work["reusable"] or not reputation_ok:
             continue
         topic = work["topic"]
         if show_count.get(work["host"], 0) >= per_show or topic_count.get(topic, 0) >= MAX_PER_TOPIC:

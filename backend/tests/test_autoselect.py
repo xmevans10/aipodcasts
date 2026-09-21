@@ -22,6 +22,40 @@ def feed(*titles):
     return f"<rss><channel>{items}</channel></rss>"
 
 
+def openalex_work(title, *, arxiv_id=None, doi=None, work_type="preprint",
+                  license_id="", source_type="repository", cited=1):
+    work = {
+        "display_name": title,
+        "publication_date": "2026-09-10",
+        "type": work_type,
+        "cited_by_count": cited,
+        "primary_location": {"source": {"display_name": "arXiv", "type": source_type},
+                             "license": license_id},
+        "best_oa_location": {"license": license_id},
+        "primary_topic": {"display_name": "Planetary science"},
+        "locations": [],
+    }
+    if doi:
+        work["doi"] = "https://doi.org/" + doi
+    if arxiv_id:
+        work["locations"].append({"landing_page_url": f"https://arxiv.org/abs/{arxiv_id}"})
+    return work
+
+
+def openalex_fetch(work_by_term):
+    def fetch(url):
+        if "api.openalex.org" in url:
+            from urllib.parse import parse_qs, urlparse
+            term = parse_qs(urlparse(url).query).get("search", [""])[0]
+            return ("json", {"results": work_by_term.get(term, [])})
+        if "huggingface.co" in url:
+            return ("json", [])
+        if "api.crossref.org" in url:
+            return ("json", {"message": {"items": []}})
+        return ("text", feed())
+    return fetch
+
+
 class SelectTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -104,6 +138,32 @@ class SelectTests(unittest.TestCase):
             self.assertTrue(is_reusable(good), good)
         for bad in ("cc-by-nc", "cc-by-nd", "cc-by-sa", "", "https://creativecommons.org/licenses/by-nc/4.0/"):
             self.assertFalse(is_reusable(bad), bad)
+
+    def test_arxiv_preprint_selectable_on_preprint_show(self):
+        work = openalex_work("A hidden moon with an unexpected orbit", arxiv_id="2501.00001v2")
+        result = select(self.db, days=14, today=self.today, source="openalex", per_show=2, limit=10,
+                        fetch=openalex_fetch({"moon": [work]}))
+        selected = next(w for w in result["selected"] if w["doi"] == "arxiv:2501.00001")
+        self.assertEqual(selected["arxiv_id"], "2501.00001")
+        self.assertEqual(selected["host"], "nova")
+
+    def test_arxiv_preprint_excluded_on_non_preprint_show(self):
+        work = openalex_work("A hidden bird with an unexpected song", arxiv_id="2501.00002")
+        result = select(self.db, days=14, today=self.today, source="openalex", per_show=2, limit=10,
+                        fetch=openalex_fetch({"bird": [work]}))
+        self.assertEqual(result["selected"], [])
+        self.assertGreaterEqual(result["non_primary_excluded"], 1)
+
+    def test_journal_article_still_requires_min_reputation(self):
+        work = openalex_work("A hidden moon in a repository", doi="10.5555/repo.1", work_type="article",
+                             source_type="repository", license_id=CC_BY)
+        fetch = openalex_fetch({"moon": [work]})
+        default = select(self.db, days=14, today=self.today, source="openalex", per_show=2, limit=10,
+                         fetch=fetch)
+        self.assertEqual(default["selected"], [])
+        relaxed = select(self.db, days=14, today=self.today, source="openalex", per_show=2, limit=10,
+                         fetch=fetch, min_reputation=0.0)
+        self.assertIn("10.5555/repo.1", [w["doi"] for w in relaxed["selected"]])
 
     def test_normalize_openalex(self):
         work = {"doi": "https://doi.org/10.1234/x", "display_name": "A surprising Moon crater",

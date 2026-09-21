@@ -1,0 +1,708 @@
+{
+  "today": "2026-09-21",
+  "baseline_weights": {
+    "new": 0.25,
+    "fascinating": 0.35,
+    "reputable": 0.3,
+    "fit": 0.1
+  },
+  "half_life": 30,
+  "windows": {
+    "7": {
+      "corpus": 1226,
+      "citation_coverage": 0.052,
+      "abstract_coverage": 0.155,
+      "perturbations": {
+        "newx0.5": {
+          "jaccard_top": 0.818,
+          "spearman_all": 0.9679
+        },
+        "newx1.5": {
+          "jaccard_top": 0.739,
+          "spearman_all": 0.9703
+        },
+        "fascinatingx0.5": {
+          "jaccard_top": 0.481,
+          "spearman_all": 0.9309
+        },
+        "fascinatingx1.5": {
+          "jaccard_top": 0.667,
+          "spearman_all": 0.9824
+        },
+        "reputablex0.5": {
+          "jaccard_top": 0.6,
+          "spearman_all": 0.92
+        },
+        "reputablex1.5": {
+          "jaccard_top": 0.6,
+          "spearman_all": 0.9792
+        },
+        "fitx0.5": {
+          "jaccard_top": 0.818,
+          "spearman_all": 0.9925
+        },
+        "fitx1.5": {
+          "jaccard_top": 0.739,
+          "spearman_all": 0.9832
+        },
+        "half_life_7": {
+          "jaccard_top": 0.379,
+          "spearman_all": 0.6875
+        },
+        "half_life_90": {
+          "jaccard_top": 0.818,
+          "spearman_all": 0.9591
+        },
+        "half_life_365": {
+          "jaccard_top": 0.818,
+          "spearman_all": 0.9462
+        }
+      },
+      "robust_top": [
+        "10.3847/1538-4357/ae9475",
+        "10.62051/xvw17b43",
+        "10.3389/fpos.2026.1959079",
+        "10.1088/2632-2153/ae9de8",
+        "10.1029/2026jh001425",
+        "10.1111/jsr.70454"
+      ],
+      "robust_titles": [
+        "LBT-MODS Spectroscopy of Young Stellar Objects in the Distant Metal-poor Star-forming Region Sh2-284: Stellar and Accretion Properties*\n\u2020",
+        "From Webs to Wires: Unraveling How Humidity Transforms the Electrical Properties of Tarantula and Ghost Spider Silk",
+        "From climate vulnerability to climate governance: a multi-hazard framework for adaptation planning evidence from Greece and implications for climate-sensitive regions",
+        "Bayesian neural networks versus deep ensembles for uncertainty quantification in machine learning interatomic potentials",
+        "Benchmarking Auto\u2010Regressive Spatio\u2010Temporal Predictions of Wildfire Spread From the FireBench Simulation Data Set With a Machine Learning Competition",
+        "Correlates of Multidimensional Sleep Profiles of Young Children"
+      ],
+      "top10": [
+        {
+          "title": "LBT-MODS Spectroscopy of Young Stellar Objects in the Distant Metal-poor Star-fo",
+          "show": "Star Stuff",
+          "journal": "The Astrophysical Journal",
+          "age": 6,
+          "cited": 0,
+          "new": 0.8706,
+          "fascinating": 0.9,
+          "reputable": 0.5,
+          "total": 0.7576
+        },
+        {
+          "title": "From Webs to Wires: Unraveling How Humidity Transforms the Electrical Properties",
+          "show": "Webwork",
+          "journal": "Transactions on Materials, Biotechnology",
+          "age": 6,
+          "cited": 0,
+          "new": 0.8706,
+          "fascinating": 0.6667,
+          "reputable": 0.7,
+          "total": 0.736
+        },
+        {
+          "title": "From climate vulnerability to climate governance: a multi-hazard framework for a",
+          "show": "Common Ground",
+          "journal": "Frontiers in Political Science",
+          "age": 0,
+          "cited": 0,
+          "new": 1.0,
+          "fascinating": 0.6833,
+          "reputable": 0.7,
+          "total": 0.7242
+        },
+        {
+          "title": "Bayesian neural networks versus deep ensembles for uncertainty quantification in",
+          "show": "Gradient",
+          "journal": "Machine Learning: Science and Technology",
+          "age": 6,
+          "cited": 0,
+          "new": 0.8706,
+          "fascinating": 0.6833,
+          "reputable": 0.7,
+          "total": 0.7168
+        },
+        {
+          "title": "Identification and characterization of Ganoderma enigmaticum, Ganoderma casuarin",
+          "show": "Mycelium",
+          "journal": "African Scientific Reports",
+          "age": 6,
+          "cited": 0,
+          "new": 0.8706,
+          "fascinating": 0.8708,
+          "reputable": 0.5,
+          "total": 0.6974
+        },
+        {
+          "title": "Can Knowledge Counteract Conflict? A Partial Replication Study of PFAS Science C",
+          "show": "Ground Truth",
+          "journal": "Risk Analysis",
+          "age": 5,
+          "cited": 0,
+          "new": 0.8909,
+          "fascinating": 0.8167,
+          "reputable": 0.5,
+          "total": 0.6836
+        },
+        {
+          "title": "Exploration of groups and outliers in Gaia RVS stellar spectra with metric learn",
+          "show": "Star Stuff",
+          "journal": "The Open Journal of Astrophysics",
+          "age": 6,
+          "cited": 0,
+          "new": 0.8706,
+          "fascinating": 0.75,
+          "reputable": 0.5,
+          "total": 0.6801
+        },
+        {
+          "title": "Benchmarking Auto\u2010Regressive Spatio\u2010Temporal Predictions of Wildfire Spread From",
+          "show": "Gradient",
+          "journal": "Journal of Geophysical Research: Machine",
+          "age": 2,
+          "cited": 0,
+          "new": 0.9548,
+          "fascinating": 0.6833,
+          "reputable": 0.5,
+          "total": 0.6779
+        },
+        {
+          "title": "Correlates of Multidimensional Sleep Profiles of Young Children",
+          "show": "Slow Wave",
+          "journal": "Journal of Sleep Research",
+          "age": 1,
+          "cited": 0,
+          "new": 0.9772,
+          "fascinating": 0.6667,
+          "reputable": 0.5,
+          "total": 0.6776
+        },
+        {
+          "title": "Supporting Visual Working Memory in Healthy Aging: A Review of Current Intervent",
+          "show": "Signal & Noise",
+          "journal": "Brain Sciences",
+          "age": 5,
+          "cited": 0,
+          "new": 0.8909,
+          "fascinating": 0.5833,
+          "reputable": 0.7,
+          "total": 0.6619
+        }
+      ]
+    },
+    "30": {
+      "corpus": 1280,
+      "citation_coverage": 0.044,
+      "abstract_coverage": 0.253,
+      "perturbations": {
+        "newx0.5": {
+          "jaccard_top": 0.6,
+          "spearman_all": 0.9381
+        },
+        "newx1.5": {
+          "jaccard_top": 0.739,
+          "spearman_all": 0.9743
+        },
+        "fascinatingx0.5": {
+          "jaccard_top": 0.333,
+          "spearman_all": 0.9567
+        },
+        "fascinatingx1.5": {
+          "jaccard_top": 0.739,
+          "spearman_all": 0.9789
+        },
+        "reputablex0.5": {
+          "jaccard_top": 0.6,
+          "spearman_all": 0.9832
+        },
+        "reputablex1.5": {
+          "jaccard_top": 0.6,
+          "spearman_all": 0.9881
+        },
+        "fitx0.5": {
+          "jaccard_top": 1.0,
+          "spearman_all": 0.9963
+        },
+        "fitx1.5": {
+          "jaccard_top": 0.818,
+          "spearman_all": 0.9959
+        },
+        "half_life_7": {
+          "jaccard_top": 0.333,
+          "spearman_all": 0.9408
+        },
+        "half_life_90": {
+          "jaccard_top": 0.481,
+          "spearman_all": 0.9143
+        },
+        "half_life_365": {
+          "jaccard_top": 0.333,
+          "spearman_all": 0.7844
+        }
+      },
+      "robust_top": [
+        "10.3847/1538-4357/ae9475",
+        "10.62051/xvw17b43",
+        "10.46481/asr.2026.5.3.555"
+      ],
+      "robust_titles": [
+        "LBT-MODS Spectroscopy of Young Stellar Objects in the Distant Metal-poor Star-forming Region Sh2-284: Stellar and Accretion Properties*\n\u2020",
+        "From Webs to Wires: Unraveling How Humidity Transforms the Electrical Properties of Tarantula and Ghost Spider Silk",
+        "Identification and characterization of Ganoderma enigmaticum, Ganoderma casuarinicola, and Polyporus thailandensis to fabricate mycelium-based composites"
+      ],
+      "top10": [
+        {
+          "title": "LBT-MODS Spectroscopy of Young Stellar Objects in the Distant Metal-poor Star-fo",
+          "show": "Star Stuff",
+          "journal": "The Astrophysical Journal",
+          "age": 6,
+          "cited": 0,
+          "new": 0.8706,
+          "fascinating": 0.9,
+          "reputable": 0.5,
+          "total": 0.7576
+        },
+        {
+          "title": "From Webs to Wires: Unraveling How Humidity Transforms the Electrical Properties",
+          "show": "Webwork",
+          "journal": "Transactions on Materials, Biotechnology",
+          "age": 6,
+          "cited": 0,
+          "new": 0.8706,
+          "fascinating": 0.6667,
+          "reputable": 0.7,
+          "total": 0.736
+        },
+        {
+          "title": "Identification and characterization of Ganoderma enigmaticum, Ganoderma casuarin",
+          "show": "Mycelium",
+          "journal": "African Scientific Reports",
+          "age": 6,
+          "cited": 0,
+          "new": 0.8706,
+          "fascinating": 0.8708,
+          "reputable": 0.5,
+          "total": 0.6974
+        },
+        {
+          "title": "Honey and Wound Healing: A Bibliometric Analysis of Global Research Trends (2014",
+          "show": "Hive Mind",
+          "journal": "Bee Studies- Apiculture Research Institu",
+          "age": 0,
+          "cited": 0,
+          "new": 1.0,
+          "fascinating": 0.6667,
+          "reputable": 0.5,
+          "total": 0.6583
+        },
+        {
+          "title": "GEOPHYSICAL, GRA VITATIONAL, AND MAGNETIC DATA ON NEPTUNE'S MOON TRITON",
+          "show": "The Long View",
+          "journal": "European Open Science Space",
+          "age": 14,
+          "cited": 0,
+          "new": 0.7236,
+          "fascinating": 0.6667,
+          "reputable": 0.7,
+          "total": 0.6492
+        },
+        {
+          "title": "Bioprospecting selected fungi for mycelium-based biomaterial development: functi",
+          "show": "Mycelium",
+          "journal": "Applied Microbiology and Biotechnology",
+          "age": 11,
+          "cited": 0,
+          "new": 0.7756,
+          "fascinating": 0.8,
+          "reputable": 0.5,
+          "total": 0.6489
+        },
+        {
+          "title": "That's no moon: Exomoon survival and detection limitations",
+          "show": "The Long View",
+          "journal": "Astronomy & Astrophysics",
+          "age": 12,
+          "cited": 0,
+          "new": 0.7579,
+          "fascinating": 0.6667,
+          "reputable": 0.5,
+          "total": 0.6478
+        },
+        {
+          "title": "Black Hole Or Neutron Star? Predictions On The Secondary Mass In GW190814",
+          "show": "Star Bros",
+          "journal": "Scholarly Review Journal",
+          "age": 0,
+          "cited": 0,
+          "new": 1.0,
+          "fascinating": 0.6333,
+          "reputable": 0.5,
+          "total": 0.6467
+        },
+        {
+          "title": "Status of beekeeping in Pakistan: apicultural significance, industry challenges,",
+          "show": "Hive Mind",
+          "journal": "Frontiers in Bee Science",
+          "age": 5,
+          "cited": 0,
+          "new": 0.8909,
+          "fascinating": 0.4667,
+          "reputable": 0.7,
+          "total": 0.6461
+        },
+        {
+          "title": "The Payne Zero Project I: Stellar Spectra from Physical Models in Seconds",
+          "show": "Star Stuff",
+          "journal": "The Open Journal of Astrophysics",
+          "age": 0,
+          "cited": 0,
+          "new": 1.0,
+          "fascinating": 0.55,
+          "reputable": 0.5,
+          "total": 0.6425
+        }
+      ]
+    },
+    "90": {
+      "corpus": 1276,
+      "citation_coverage": 0.07,
+      "abstract_coverage": 0.306,
+      "perturbations": {
+        "newx0.5": {
+          "jaccard_top": 0.481,
+          "spearman_all": 0.9418
+        },
+        "newx1.5": {
+          "jaccard_top": 0.6,
+          "spearman_all": 0.9866
+        },
+        "fascinatingx0.5": {
+          "jaccard_top": 0.538,
+          "spearman_all": 0.9749
+        },
+        "fascinatingx1.5": {
+          "jaccard_top": 0.6,
+          "spearman_all": 0.9842
+        },
+        "reputablex0.5": {
+          "jaccard_top": 0.538,
+          "spearman_all": 0.9912
+        },
+        "reputablex1.5": {
+          "jaccard_top": 0.818,
+          "spearman_all": 0.9922
+        },
+        "fitx0.5": {
+          "jaccard_top": 0.818,
+          "spearman_all": 0.9986
+        },
+        "fitx1.5": {
+          "jaccard_top": 0.905,
+          "spearman_all": 0.9982
+        },
+        "half_life_7": {
+          "jaccard_top": 0.25,
+          "spearman_all": 0.9206
+        },
+        "half_life_90": {
+          "jaccard_top": 0.429,
+          "spearman_all": 0.96
+        },
+        "half_life_365": {
+          "jaccard_top": 0.25,
+          "spearman_all": 0.7461
+        }
+      },
+      "robust_top": [
+        "10.3847/1538-4357/ae9475",
+        "10.3389/frbee.2026.1926378"
+      ],
+      "robust_titles": [
+        "LBT-MODS Spectroscopy of Young Stellar Objects in the Distant Metal-poor Star-forming Region Sh2-284: Stellar and Accretion Properties*\n\u2020",
+        "Status of beekeeping in Pakistan: apicultural significance, industry challenges, and opportunities for integrated genetic and disease research programs"
+      ],
+      "top10": [
+        {
+          "title": "LBT-MODS Spectroscopy of Young Stellar Objects in the Distant Metal-poor Star-fo",
+          "show": "Star Stuff",
+          "journal": "The Astrophysical Journal",
+          "age": 6,
+          "cited": 0,
+          "new": 0.8706,
+          "fascinating": 0.9,
+          "reputable": 0.5,
+          "total": 0.7576
+        },
+        {
+          "title": "Honey and Wound Healing: A Bibliometric Analysis of Global Research Trends (2014",
+          "show": "Hive Mind",
+          "journal": "Bee Studies- Apiculture Research Institu",
+          "age": 0,
+          "cited": 0,
+          "new": 1.0,
+          "fascinating": 0.6667,
+          "reputable": 0.5,
+          "total": 0.6583
+        },
+        {
+          "title": "GEOPHYSICAL, GRA VITATIONAL, AND MAGNETIC DATA ON NEPTUNE'S MOON TRITON",
+          "show": "The Long View",
+          "journal": "European Open Science Space",
+          "age": 14,
+          "cited": 0,
+          "new": 0.7236,
+          "fascinating": 0.6667,
+          "reputable": 0.7,
+          "total": 0.6492
+        },
+        {
+          "title": "Bioprospecting selected fungi for mycelium-based biomaterial development: functi",
+          "show": "Mycelium",
+          "journal": "Applied Microbiology and Biotechnology",
+          "age": 11,
+          "cited": 0,
+          "new": 0.7756,
+          "fascinating": 0.8,
+          "reputable": 0.5,
+          "total": 0.6489
+        },
+        {
+          "title": "Status of beekeeping in Pakistan: apicultural significance, industry challenges,",
+          "show": "Hive Mind",
+          "journal": "Frontiers in Bee Science",
+          "age": 5,
+          "cited": 0,
+          "new": 0.8909,
+          "fascinating": 0.4667,
+          "reputable": 0.7,
+          "total": 0.6461
+        },
+        {
+          "title": "Pre-Exercise Caffeine Ingestion Leads to Greater Exercise-Induced Torque Reducti",
+          "show": "Marginal Gains",
+          "journal": "Medicine & Science in Sports & Exercise",
+          "age": 14,
+          "cited": 0,
+          "new": 0.7236,
+          "fascinating": 0.55,
+          "reputable": 0.7,
+          "total": 0.6334
+        },
+        {
+          "title": "Prediction of Heart Disease Using Ensemble Machine Learning Techniques",
+          "show": "Gradient",
+          "journal": "International Journal of Intelligent Dat",
+          "age": 5,
+          "cited": 0,
+          "new": 0.8909,
+          "fascinating": 0.6333,
+          "reputable": 0.5,
+          "total": 0.6194
+        },
+        {
+          "title": "Nutrient composition of Mycetinis scorodonius fruiting bodies and induction of s",
+          "show": "Mycelium",
+          "journal": "Mycological Progress",
+          "age": 0,
+          "cited": 0,
+          "new": 1.0,
+          "fascinating": 0.55,
+          "reputable": 0.5,
+          "total": 0.6175
+        },
+        {
+          "title": "FastSurfer-Based Brain Morphometry and Machine-Learning Classification Across th",
+          "show": "Signal & Noise",
+          "journal": "Brain Sciences",
+          "age": 5,
+          "cited": 0,
+          "new": 0.8909,
+          "fascinating": 0.45,
+          "reputable": 0.7,
+          "total": 0.6152
+        },
+        {
+          "title": "Vegetation Types and Plant Invasion Shape Pollination Interactions on a Tropical",
+          "show": "Hive Mind",
+          "journal": "Plants",
+          "age": 4,
+          "cited": 0,
+          "new": 0.9117,
+          "fascinating": 0.5333,
+          "reputable": 0.5,
+          "total": 0.6146
+        }
+      ]
+    },
+    "365": {
+      "corpus": 1279,
+      "citation_coverage": 0.193,
+      "abstract_coverage": 0.314,
+      "perturbations": {
+        "newx0.5": {
+          "jaccard_top": 0.212,
+          "spearman_all": 0.9551
+        },
+        "newx1.5": {
+          "jaccard_top": 0.6,
+          "spearman_all": 0.9875
+        },
+        "fascinatingx0.5": {
+          "jaccard_top": 0.538,
+          "spearman_all": 0.9745
+        },
+        "fascinatingx1.5": {
+          "jaccard_top": 0.429,
+          "spearman_all": 0.9867
+        },
+        "reputablex0.5": {
+          "jaccard_top": 0.667,
+          "spearman_all": 0.9704
+        },
+        "reputablex1.5": {
+          "jaccard_top": 0.429,
+          "spearman_all": 0.9839
+        },
+        "fitx0.5": {
+          "jaccard_top": 1.0,
+          "spearman_all": 0.9975
+        },
+        "fitx1.5": {
+          "jaccard_top": 0.6,
+          "spearman_all": 0.9985
+        },
+        "half_life_7": {
+          "jaccard_top": 0.429,
+          "spearman_all": 0.8811
+        },
+        "half_life_90": {
+          "jaccard_top": 0.29,
+          "spearman_all": 0.9465
+        },
+        "half_life_365": {
+          "jaccard_top": 0.111,
+          "spearman_all": 0.927
+        }
+      },
+      "robust_top": [],
+      "robust_titles": [],
+      "top10": [
+        {
+          "title": "Catalytic hydrothermal liquefaction of microalgae and polystyrene waste for oil ",
+          "show": "The Deep",
+          "journal": "Fuel",
+          "age": 0,
+          "cited": 2,
+          "new": 1.0,
+          "fascinating": 0.35,
+          "reputable": 0.8,
+          "total": 0.6375
+        },
+        {
+          "title": "Pre-Exercise Caffeine Ingestion Leads to Greater Exercise-Induced Torque Reducti",
+          "show": "Marginal Gains",
+          "journal": "Medicine & Science in Sports & Exercise",
+          "age": 14,
+          "cited": 0,
+          "new": 0.7236,
+          "fascinating": 0.55,
+          "reputable": 0.7,
+          "total": 0.6334
+        },
+        {
+          "title": "Prediction of Heart Disease Using Ensemble Machine Learning Techniques",
+          "show": "Gradient",
+          "journal": "International Journal of Intelligent Dat",
+          "age": 5,
+          "cited": 0,
+          "new": 0.8909,
+          "fascinating": 0.6333,
+          "reputable": 0.5,
+          "total": 0.6194
+        },
+        {
+          "title": "FastSurfer-Based Brain Morphometry and Machine-Learning Classification Across th",
+          "show": "Signal & Noise",
+          "journal": "Brain Sciences",
+          "age": 5,
+          "cited": 0,
+          "new": 0.8909,
+          "fascinating": 0.45,
+          "reputable": 0.7,
+          "total": 0.6152
+        },
+        {
+          "title": "Mould susceptibility of supplemented mycelium composites for insulation applicat",
+          "show": "Mycelium",
+          "journal": "npj Materials Degradation",
+          "age": 11,
+          "cited": 0,
+          "new": 0.7756,
+          "fascinating": 0.6407,
+          "reputable": 0.5,
+          "total": 0.5932
+        },
+        {
+          "title": "Some like it hot: The enigmatic Arctic deep-sea eelpout Pachycara platyrhina thr",
+          "show": "The Deep",
+          "journal": "Deep Sea Research Part I: Oceanographic ",
+          "age": 0,
+          "cited": 0,
+          "new": 1.0,
+          "fascinating": 0.4667,
+          "reputable": 0.5,
+          "total": 0.5883
+        },
+        {
+          "title": "Star-IBR: Star-Shaped Iterative Box Refinement for Insulator Defect Localization",
+          "show": "Star Stuff",
+          "journal": "Electronics",
+          "age": 6,
+          "cited": 0,
+          "new": 0.8706,
+          "fascinating": 0.55,
+          "reputable": 0.5,
+          "total": 0.5851
+        },
+        {
+          "title": "Corrigendum to \u201cStudy of general relativistic shocks and their propagation in ne",
+          "show": "Star Bros",
+          "journal": "Journal of High Energy Astrophysics",
+          "age": 0,
+          "cited": 0,
+          "new": 1.0,
+          "fascinating": 0.45,
+          "reputable": 0.5,
+          "total": 0.5825
+        },
+        {
+          "title": "Apis mellifera bee: importance, challenges, and its impact on agriculture in Per",
+          "show": "Hive Mind",
+          "journal": "Frontiers in Bee Science",
+          "age": 54,
+          "cited": 0,
+          "new": 0.2872,
+          "fascinating": 0.6833,
+          "reputable": 0.7,
+          "total": 0.571
+        },
+        {
+          "title": "Significance of dissolution and complexation equilibria on determining metal spe",
+          "show": "The Deep",
+          "journal": "Geochimica et Cosmochimica Acta",
+          "age": 0,
+          "cited": 0,
+          "new": 1.0,
+          "fascinating": 0.3833,
+          "reputable": 0.5,
+          "total": 0.5592
+        }
+      ]
+    }
+  },
+  "cross_window_jaccard": {
+    "7v30": 0.111,
+    "7v90": 0.053,
+    "7v365": 0.0,
+    "30v90": 0.25,
+    "30v365": 0.053,
+    "90v365": 0.081
+  }
+}

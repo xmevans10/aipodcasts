@@ -1,0 +1,48 @@
+{
+  "weights": {
+    "publicity": 0.25,
+    "editorial": 0.2,
+    "community": 0.08,
+    "impact": 0.12,
+    "reputation": 0.12,
+    "studiness": 0.13,
+    "recency": 0.05,
+    "fascination": 0.05
+  },
+  "weights_sum": 1.0,
+  "baseline_order": [
+    "both",
+    "publicized",
+    "editorial",
+    "high-impact",
+    "fascinating",
+    "no-signal"
+  ],
+  "publicity_off_order": [
+    "editorial",
+    "both",
+    "high-impact",
+    "fascinating",
+    "no-signal",
+    "publicized"
+  ],
+  "checks": {
+    "publicized_beats_no_signal": true,
+    "editorial_beats_no_signal": true,
+    "press_edges_editorial": true,
+    "publicity_off_drops_publicized": true,
+    "syndication_collapses": true,
+    "stable_at_scale": true
+  },
+  "scale_margin": 0.00417,
+  "full_boost": 0.00417,
+  "perturbations": {
+    "publicity_x0.5": {
+      "top3_jaccard": 1.0
+    },
+    "publicity_x1.5": {
+      "top3_jaccard": 1.0
+    }
+  },
+  "passed": true
+}

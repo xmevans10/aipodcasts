@@ -16,7 +16,9 @@ Gates (any failure -> the candidate is dropped, not queued):
   show fit, reusable license, abstract present, retracted, already covered.
 
 Signals fused (rank-based):
-  editorial    presence and rank in human-edited feeds
+  publicity    a press office judged the paper worth explaining (one event, however
+               many syndicators carried the release; see publicity.py)
+  editorial    presence and rank in independent human-edited feeds
   community    Hugging Face Daily Papers upvotes (AI beat)
   impact       citation velocity (only meaningful for older papers)
   recency      mild decay; never dominant
@@ -41,7 +43,10 @@ from difflib import SequenceMatcher
 from pathlib import Path
 
 from beats import BEATS, normalize_host
+from eurekalert import releases as eurekalert_releases
 from hosts import HOSTS
+from publicity import (INDEPENDENT, Release, cluster_releases, editorial_value,
+                       event_index, publicity_value)
 
 ROOT = Path(__file__).resolve().parent
 DATA = Path(os.environ.get("LILT_DATA", ROOT / "data"))
@@ -61,9 +66,9 @@ CROSSREF = "https://api.crossref.org/works"
 OPENALEX = "https://api.openalex.org/works"
 
 RRF_K = 60
-SIGNAL_WEIGHTS = {"editorial": 0.30, "community": 0.10, "impact": 0.15,
-                  "reputation": 0.15, "studiness": 0.15, "recency": 0.05,
-                  "fascination": 0.10}
+SIGNAL_WEIGHTS = {"publicity": 0.25, "editorial": 0.20, "community": 0.08,
+                  "impact": 0.12, "reputation": 0.12, "studiness": 0.13,
+                  "recency": 0.05, "fascination": 0.05}
 PRIMARY_TYPES = {"article"}          # OpenAlex normalized type for peer-reviewed research
 PREPRINT_TYPES = {"article", "preprint"}
 # Shows allowed to draw from arXiv preprints: beats whose primary literature is
@@ -225,28 +230,39 @@ def crossref_lookup(title: str, fetch=None, rows: int = 1):
     return payload.get("message", {}).get("items", [])
 
 
-def editorial_dois(fetch=None):
-    """Join human-edited feed headlines to papers by DOI, so taste transfers exactly.
+def load_releases(fetch=None, editorial=None, since=None, today=None):
+    """Structured feed releases, each with a DOI resolved by one Crossref title lookup.
 
     News headlines rarely share wording with the paper title, so fuzzy matching fails.
-    One Crossref title lookup per feed item resolves the DOI and makes the editorial
-    signal a fact ("Quanta covered this paper") rather than a guess.
+    Resolving the DOI makes the publicity signal a fact ("this release points at this
+    paper") rather than a guess, and lets copies of one release on different sites
+    collapse into a single event in publicity.cluster_releases. Returns (releases, lookups).
+
+    When ``since`` is given, public EurekAlert releases in the window are appended as
+    signal-only entries (see eurekalert.py). Set ``LILT_EUREKALERT=0`` to disable.
     """
-    editorial, _ = load_tastemakers(fetch)
-    mapping: dict[str, set] = {}
-    lookups = 0
+    if editorial is None:
+        editorial, _ = load_tastemakers(fetch)
+    releases, lookups = [], 0
     for source, titles in editorial.items():
         for title in titles:
-            if len(_tokens(title)) < 4:
-                continue
-            items = crossref_lookup(title, fetch)
-            lookups += 1
-            if not items:
-                continue
-            work = normalize(items[0])
-            if work and SequenceMatcher(None, title.lower(), work["title"].lower()).ratio() >= 0.45:
-                mapping.setdefault(work["doi"], set()).add(source)
-    return mapping, lookups
+            release = Release(source=source, title=title)
+            if len(_tokens(title)) >= 4:
+                items = crossref_lookup(title, fetch)
+                lookups += 1
+                if items:
+                    work = normalize(items[0])
+                    if work and SequenceMatcher(None, title.lower(), work["title"].lower()).ratio() >= 0.45:
+                        release.doi = work["doi"]
+            releases.append(release)
+    if since is not None and os.environ.get("LILT_EUREKALERT", "1").strip() != "0":
+        # `fetch` stubs return a tuple too, so the same adapter serves tests and production.
+        cached = fetch if fetch is not None else get
+        try:
+            releases.extend(eurekalert_releases(cached, since, today))
+        except Exception:
+            pass
+    return releases, lookups
 
 
 def crossref_window(term: str, since: str, fetch=None, rows: int = 40):
@@ -388,6 +404,74 @@ def fit(work, terms):
     return sum(1 for term in terms if term.lower() in text) / len(terms)
 
 
+def openalex_by_doi(doi: str, fetch=None):
+    """Single-work OpenAlex lookup by DOI, for press-seeded discovery."""
+    params = {"mailto": CONTACT}
+    key = os.environ.get("LILT_OPENALEX_KEY", "").strip()
+    if key:
+        params["api_key"] = key
+    url = (OPENALEX + "/https://doi.org/" + urllib.parse.quote(doi, safe="")
+           + "?" + urllib.parse.urlencode(params))
+    try:
+        kind, payload = get(url, fetch)
+    except RateLimited:
+        return None
+    if kind != "json" or not isinstance(payload, dict):
+        return None
+    return normalize_openalex(payload)
+
+
+def crossref_by_doi(doi: str, fetch=None):
+    params = {"mailto": CONTACT}
+    url = CROSSREF + "/" + urllib.parse.quote(doi, safe="") + "?" + urllib.parse.urlencode(params)
+    try:
+        kind, payload = get(url, fetch)
+    except RateLimited:
+        return None
+    if kind != "json" or not isinstance(payload, dict):
+        return None
+    return normalize(payload.get("message", {}))
+
+
+def best_host(work):
+    """The beat whose vocabulary best matches the paper, with that beat's terms."""
+    best = None
+    for raw_host, terms in BEATS.items():
+        score = fit(work, terms)
+        if best is None or score > best[2]:
+            best = (normalize_host(raw_host), terms, score)
+    return best
+
+
+def seed_publicized(works, events_by_doi, exclude, fetch=None, source="crossref", cap=60,
+                    since: dt.date | None = None):
+    """Add papers a press office publicised even when no beat query surfaced them.
+
+    Press attention is a lead, not an endorsement: the paper still clears the same fit,
+    license, reputation and recency gates. Discovery metadata comes from the paper
+    connector, never from the release text.
+    """
+    seeded, attempts = 0, 0
+    for doi in events_by_doi:
+        if attempts >= cap:
+            break
+        if doi in works or doi in exclude:
+            continue
+        attempts += 1
+        work = openalex_by_doi(doi, fetch) if source == "openalex" else crossref_by_doi(doi, fetch)
+        if work is None or (since is not None and work["date"] < since):
+            continue
+        match = best_host(work)
+        if match is None or match[2] < FIT_GATE:
+            continue
+        host, terms, _ = match
+        work["host"], work["show"], work["terms"] = host, HOSTS[host].show, terms
+        work["discovered_by"] = "publicity"
+        works[work["doi"]] = work
+        seeded += 1
+    return seeded
+
+
 def venue_reputation(work):
     """Peer-reviewed journals outrank preprints and data repositories."""
     venue_type = (work.get("venue_type") or "").lower()
@@ -424,6 +508,49 @@ def rrf(rank: int) -> float:
     return 1.0 / (RRF_K + rank)
 
 
+# (signal, value getter, descending?, presence?) in the priority order from the plan.
+# A presence signal is a *set* ("this outlet covered the paper"): candidates not in the
+# set contribute nothing, exactly as a document absent from a retrieval list scores
+# nothing in RRF. Treating absent candidates as a tied tail instead made the signal's
+# effect shrink with the number of present candidates, which is not what we want.
+SIGNALS = [
+    ("publicity", lambda w: w["publicity"], True, True),
+    ("editorial", lambda w: w["editorial"], True, True),
+    ("community", lambda w: w["community"], True, True),
+    ("impact", lambda w: math.log1p(w["cited"] / max(w["age"] / 30.0, 0.5)), True, False),
+    ("reputation", venue_reputation, True, False),
+    ("studiness", lambda w: w["studiness"], True, False),
+    ("recency", lambda w: w["age"], False, False),
+    ("fascination", lambda w: w["fascination"], True, False),
+]
+
+
+def fuse(candidates, weights=None):
+    """Rank-aggregate: each signal contributes weight/(k+rank), so no axis dominates.
+
+    Presence signals (publicity, editorial, community) only score the candidates that
+    have them; graded signals score everyone and share a rank on ties, so equal values
+    cannot be separated by list order. Exposed separately from `select` so the fusion can
+    be measured directly (experiments/selection/publicity_effect.py) with no network.
+    """
+    weights = weights or SIGNAL_WEIGHTS
+    for work in candidates:
+        work["fusion"] = 0.0
+    for signal, getter, reverse, presence in SIGNALS:
+        ordered = sorted((w for w in candidates if not presence or getter(w) > 0),
+                         key=getter, reverse=reverse)
+        last_value, rank = None, 0
+        for index, work in enumerate(ordered):
+            value = getter(work)
+            if index and value != last_value:
+                rank = index
+            last_value = value
+            work["fusion"] += weights[signal] * rrf(rank)
+    for work in candidates:
+        work["score"] = round(work["fusion"], 5)
+    return candidates
+
+
 def seen_dois(db):
     found = set()
     for row in db.execute("SELECT source FROM stories WHERE source IS NOT NULL"):
@@ -442,7 +569,13 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
     source = source or ("openalex" if os.environ.get("LILT_OPENALEX_KEY", "").strip() else "crossref")
     exclude = seen_dois(db)
     editorial, community = load_tastemakers(fetch)
-    editorial_by_doi, lookups = editorial_dois(fetch)
+    releases, lookups = load_releases(fetch, editorial, since=dt.date.fromisoformat(since), today=today)
+    events = cluster_releases(releases)
+    events_by_doi = event_index(events)
+    # Independent editorial is its own signal; syndicators (ScienceDaily, Phys.org)
+    # only corroborate an event, so they are excluded from the fuzzy editorial match.
+    independent = {source: titles for source, titles in editorial.items()
+                   if source in INDEPENDENT}
 
     works: dict[str, dict] = {}
     for raw_host, terms in BEATS.items():
@@ -454,7 +587,13 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
                 if work is None or work["doi"] in exclude or work["doi"] in works:
                     continue
                 work["host"], work["show"], work["terms"] = host, HOSTS[host].show, terms
+                work["discovered_by"] = "beat"
                 works[work["doi"]] = work
+
+    # A publicized paper can be a candidate even when no beat query surfaced it; the
+    # press release is a pointer, so the metadata still comes from the paper connector.
+    seeded = seed_publicized(works, events_by_doi, exclude, fetch, source,
+                             since=dt.date.fromisoformat(since))
 
     candidates = []
     retracted = non_primary = 0
@@ -479,8 +618,20 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
             continue
         text = (work["title"] + " " + work["abstract"]).lower()
         matched = next((term for term in work["terms"] if term.lower() in text), work["show"])
-        doi_sources = sorted(editorial_by_doi.get(work["doi"], []))
-        fuzzy, fuzzy_sources = _similarity(work["title"], editorial)
+        # Publicity is one event per paper, so a release repeated across EurekAlert,
+        # ScienceDaily and Phys.org contributes one signal, not three. Independent
+        # editorial (Quanta, Nature News, Science News) is a separate signal.
+        event = events_by_doi.get(work["doi"])
+        fuzzy, fuzzy_sources = _similarity(work["title"], independent)
+        if event and event.independent:
+            editorial_score = 1.0
+            editorial_sources = sorted(source for source in event.sources if source in INDEPENDENT)
+        elif fuzzy_sources:
+            editorial_score = fuzzy
+            editorial_sources = fuzzy_sources
+        else:
+            editorial_score = 0.0
+            editorial_sources = []
         # Evidence tier: 'full' when the paper is license-clear (or an arXiv preprint on
         # a preprint show, re-checked at ingest); 'abstract' when only a public abstract
         # is available (any DOI); 'none' otherwise. Abstract-tier stories are written
@@ -489,8 +640,10 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
             is_preprint_show_work(work) and bool(work.get("arxiv_id")))
         tier = "full" if full_tier else ("abstract" if work.get("abstract") else "none")
         work.update({
-            "editorial": 1.0 if doi_sources else fuzzy,
-            "editorial_sources": doi_sources or fuzzy_sources,
+            "publicity": publicity_value(event),
+            "publicity_sources": sorted(event.sources) if event else [],
+            "editorial": editorial_score,
+            "editorial_sources": editorial_sources,
             # Crossref subject is almost always empty; fall back to the matched beat
             # so the topic-diversity cap actually separates stories.
             "topic": (work["subject"] or [matched])[0],
@@ -505,21 +658,7 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
         candidates.append(work)
 
     # Rank-aggregate: each signal contributes 1/(k+rank), so no axis dominates.
-    for signal, getter, reverse in [
-        ("editorial", lambda w: w["editorial"], True),
-        ("community", lambda w: w["community"], True),
-        ("impact", lambda w: math.log1p(w["cited"] / max(w["age"] / 30.0, 0.5)), True),
-        ("reputation", venue_reputation, True),
-        ("studiness", lambda w: w["studiness"], True),
-        ("recency", lambda w: w["age"], False),
-        ("fascination", lambda w: w["fascination"], True),
-    ]:
-        ordered = sorted(candidates, key=getter, reverse=reverse)
-        for rank, work in enumerate(ordered):
-            work.setdefault("fusion", 0.0)
-            work["fusion"] += SIGNAL_WEIGHTS[signal] * rrf(rank)
-    for work in candidates:
-        work["score"] = round(work.get("fusion", 0.0), 5)
+    fuse(candidates)
 
     ranked = sorted(candidates, key=lambda w: w["score"], reverse=True)
     selected, show_count, topic_count = [], {}, {}
@@ -543,20 +682,27 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
             "retracted_excluded": retracted, "non_primary_excluded": non_primary,
             "shows_filled": len({w["host"] for w in selected}),
             "mean_studiness": round(sum(selected_studiness) / len(selected_studiness), 3) if selected_studiness else 0,
+            "publicity_events": len(events),
+            "publicized_dois": len(events_by_doi),
+            "publicized_candidates": sum(1 for w in ranked if w["publicity"]),
+            "publicity_seeded": seeded,
             "editorial_titles": sum(len(v) for v in editorial.values()),
-            "editorial_doi_links": len(editorial_by_doi), "editorial_lookups": lookups}
+            "editorial_lookups": lookups}
 
 
 def report(result: dict) -> str:
     lines = [f"# Autonomous selection (source: {result.get('source', '?')}, last {result['window_days']} days)",
              f"{result['papers_pulled']} papers pulled, {result['candidates']} scored, "
-             f"{result['eligible']} license-eligible; {result['editorial_titles']} editorial headlines read, "
-             f"{result['editorial_doi_links']} joined to a paper by DOI", "",
-             "| rank | score | show | title | venue | age | cited | editorial from | reusable |",
-             "|---|---|---|---|---|---|---|---|---|"]
+             f"{result['eligible']} license-eligible; {result['publicity_events']} publicity events "
+             f"({result['publicized_dois']} with a DOI, {result['publicized_candidates']} candidate papers, "
+             f"{result['publicity_seeded']} seeded); "
+             f"{result['editorial_titles']} editorial headlines read", "",
+             "| rank | score | show | title | venue | age | cited | publicized by | editorial from | reusable |",
+             "|---|---|---|---|---|---|---|---|---|---|"]
     for index, work in enumerate(result["selected"], 1):
         venue = (work.get("venue_type") or work["journal"] or "")[:30]
         lines.append(f"| {index} | {work['score']} | {work['show']} | {work['title'][:60]} | "
                      f"{venue} | {work['age']}d | {work['cited']} | "
+                     f"{','.join(work['publicity_sources']) or '-'} | "
                      f"{','.join(work['editorial_sources']) or '-'} | {work['reusable']} |")
     return "\n".join(lines)

@@ -121,6 +121,66 @@ class SelectTests(unittest.TestCase):
         self.assertIn("quanta", by_doi["10.1371/journal.pone.0000001"]["editorial_sources"])
         self.assertGreater(by_doi["10.1371/journal.pone.0000001"]["editorial"], 0.5)
 
+    def test_fuse_is_order_independent_for_tied_values(self):
+        import autoselect
+
+        def cand(doi, publicity):
+            return {"doi": doi, "publicity": publicity, "editorial": 0.0, "community": 0.0,
+                    "cited": 5, "studiness": 0.7, "fascination": 0.4, "age": 7,
+                    "venue_type": "journal", "journal": "J"}
+
+        first = {w["doi"]: w["score"] for w in autoselect.fuse(
+            [cand("a", 1.0), cand("b", 1.0), cand("c", 0.0), cand("d", 0.0)])}
+        second = {w["doi"]: w["score"] for w in autoselect.fuse(
+            [cand("d", 0.0), cand("c", 0.0), cand("b", 1.0), cand("a", 1.0)])}
+        self.assertEqual(first, second)
+        self.assertGreater(first["a"], first["c"])
+
+    def test_seed_publicized_adds_off_beat_press_paper(self):
+        import autoselect
+        item = crossref_item("10.1371/journal.pone.0000001", "A hidden young crater on the Moon",
+                             license_url=CC_BY,
+                             abstract="An unexpected crater on the Moon surprises researchers.")
+
+        def fetch(url):
+            if "api.crossref.org" in url and "0000001" in url:
+                return ("json", {"message": item})
+            return ("json", {"message": {"items": []}})
+
+        works = {}
+        seeded = autoselect.seed_publicized(works, {"10.1371/journal.pone.0000001": object()},
+                                            set(), fetch, "crossref")
+        self.assertEqual(seeded, 1)
+        self.assertEqual(works["10.1371/journal.pone.0000001"]["discovered_by"], "publicity")
+
+    def test_syndicated_press_release_is_one_publicity_signal(self):
+        import autoselect
+        autoselect.FEEDS["eurekalert"] = ("https://www.eurekalert.org/news.xml", 1.0)
+        self.addCleanup(autoselect.FEEDS.pop, "eurekalert", None)
+        title = "A hidden young crater on the Moon"
+        # Resolve the release headline to the paper DOI, as a real press office would.
+        self.crossref[title] = [crossref_item("10.1371/journal.pone.0000001", title,
+                                              license_url=CC_BY, cited=10,
+                                              abstract="An unexpected crater surprises researchers.")]
+        base = self.fetch
+
+        def fetch(url):
+            if "quantamagazine.org" in url:
+                return ("text", feed())
+            if "eurekalert.org" in url or "sciencedaily.com" in url or "phys.org" in url:
+                return ("text", feed(title))
+            return base(url)
+
+        self.fetch = fetch
+        result = self.select(per_show=3, limit=10)
+        paper = next(w for w in result["selected"] if w["doi"] == "10.1371/journal.pone.0000001")
+        self.assertEqual(paper["publicity"], 1.0)
+        self.assertEqual(set(paper["publicity_sources"]),
+                         {"eurekalert", "sciencedaily", "physorg"})
+        self.assertEqual(paper["editorial_sources"], [])
+        self.assertEqual(result["publicized_dois"], 1)
+        self.assertEqual(result["publicity_events"], 1)
+
     def test_per_show_cap(self):
         result = self.select(per_show=1, limit=10)
         nova = [work for work in result["selected"] if work["host"] == "nova"]

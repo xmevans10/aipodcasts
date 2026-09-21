@@ -240,12 +240,15 @@ def verify_draft(draft: dict, source: dict, packet: dict, decider_: Decider) -> 
                      f"Claim: {c.get('claim','')} Evidence: {c.get('quote','')}")
                      for i, c in enumerate(claims)]
         questions.append(TypedQuestion("primary_finding", "boolean",
-            "The evidence reports an original observation or measurement, not commentary, "
-            "policy, opinion or a review."))
+            "The 'evidence' field reports the authors' own original observation or "
+            "measurement, rather than commentary, policy, opinion or a review."))
         questions.append(TypedQuestion("no_overstatement", "boolean",
-            "The script stays within the evidence and does not overstate the finding."))
+            "The 'script' field stays within the 'evidence' field and does not overstate it."))
         try:
-            decisions = decider_.ask(questions, {"script": _text_of(draft)})
+            decisions = decider_.ask(questions, {
+                "script": _text_of(draft),
+                "evidence": evidence_text(packet)[:6000],
+            })
         except RuntimeError as error:
             failures.append(f"verifier_unavailable: {error}")
         for question in questions:

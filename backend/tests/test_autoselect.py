@@ -102,6 +102,15 @@ class SelectTests(unittest.TestCase):
         self.assertIn("10.1371/journal.pone.0000001", dois)
         self.assertNotIn("10.9999/closed.1", dois)
 
+    def test_abstract_tier_selected_without_license(self):
+        self.crossref["sleep"].append(crossref_item(
+            "10.9999/abstract.2", "Sleep and memory in older adults", subject=("Sleep",),
+            abstract="We measured sleep and found memory improved in a sample of 60 participants."))
+        result = self.select(per_show=3, limit=10)
+        by_doi = {work["doi"]: work for work in result["selected"]}
+        self.assertIn("10.9999/abstract.2", by_doi)
+        self.assertEqual(by_doi["10.9999/abstract.2"]["evidence_tier"], "abstract")
+
     def test_fit_gate_drops_off_beat(self):
         result = self.select(per_show=3, limit=10)
         self.assertNotIn("A study of ordinary clouds", [work["title"] for work in result["selected"]])

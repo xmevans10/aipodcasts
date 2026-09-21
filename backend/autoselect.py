@@ -481,6 +481,13 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
         matched = next((term for term in work["terms"] if term.lower() in text), work["show"])
         doi_sources = sorted(editorial_by_doi.get(work["doi"], []))
         fuzzy, fuzzy_sources = _similarity(work["title"], editorial)
+        # Evidence tier: 'full' when the paper is license-clear (or an arXiv preprint on
+        # a preprint show, re-checked at ingest); 'abstract' when only a public abstract
+        # is available (any DOI); 'none' otherwise. Abstract-tier stories are written
+        # from metadata + abstract only, never reproducing the article.
+        full_tier = is_reusable(work["license"]) or (
+            is_preprint_show_work(work) and bool(work.get("arxiv_id")))
+        tier = "full" if full_tier else ("abstract" if work.get("abstract") else "none")
         work.update({
             "editorial": 1.0 if doi_sources else fuzzy,
             "editorial_sources": doi_sources or fuzzy_sources,
@@ -492,12 +499,8 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
             "fascination": fascinating(work),
             "studiness": round(work_studiness, 3),
             "fit": round(score, 3),
-            # Reusable-license gate stays for journals and non-arXiv preprints. An
-            # arXiv preprint on a PREPRINT_SHOWS show may proceed without an OpenAlex
-            # license because ingest_arxiv re-checks the arXiv page for CC BY and
-            # abstains when the paper is not commercially reusable.
-            "reusable": is_reusable(work["license"]) or (
-                is_preprint_show_work(work) and bool(work.get("arxiv_id"))),
+            "evidence_tier": tier,
+            "reusable": tier != "none",
         })
         candidates.append(work)
 

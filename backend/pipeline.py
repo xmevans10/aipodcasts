@@ -277,8 +277,61 @@ def ingest_arxiv(db: sqlite3.Connection, arxiv_id: str, host: str, refresh: bool
     return story_id
 
 
+def fetch_public(url: str) -> bytes:
+    """General HTTPS GET that follows redirects (unlike the PLOS-hardened `request`)."""
+    req = urllib.request.Request(url, headers={"User-Agent": "ZwickyResearch/0.1"})
+    with urllib.request.urlopen(req, timeout=60) as response:
+        return response.read(MAX_SOURCE_BYTES + 1)
+
+
+def reconstruct_abstract(inverted) -> str:
+    if not inverted:
+        return ""
+    positions = {}
+    for word, indices in inverted.items():
+        for index in indices:
+            positions[index] = word
+    return " ".join(positions[i] for i in sorted(positions))
+
+
+def openalex_source(doi: str) -> dict:
+    """Abstract-tier evidence: metadata + abstract for any DOI, no full-text reuse.
+
+    A paper whose full text is not licence-clear can still become an episode: we use
+    only the public abstract and metadata, write our own script, and never reproduce
+    the article. The source is marked evidence_tier='abstract' so the review trail is
+    explicit; fidelity is bounded by the abstract, which the validators and Jev
+    entailment enforce.
+    """
+    key = os.environ.get("LILT_OPENALEX_KEY", "").strip()
+    url = "https://api.openalex.org/works/doi:" + doi
+    if key:
+        url += "?api_key=" + key
+    work = json.loads(fetch_public(url))
+    abstract = reconstruct_abstract(work.get("abstract_inverted_index"))
+    if len(abstract.split()) < 40:
+        raise ValueError("No usable public abstract on OpenAlex for " + doi)
+    location = work.get("primary_location") or {}
+    best = work.get("best_oa_location") or {}
+    source = location.get("source") or {}
+    authors = []
+    for authorship in work.get("authorships") or []:
+        name = (authorship.get("author") or {}).get("display_name")
+        if name:
+            authors.append(name)
+    return {"title": work.get("display_name") or "", "url": "https://doi.org/" + doi, "doi": doi,
+            "attribution": ", ".join(authors) or "Authors listed at source",
+            "journal": source.get("display_name") or "",
+            "license": (best.get("license") or location.get("license") or "abstract only"),
+            "licenseURL": best.get("license") or location.get("license") or "",
+            "text": abstract, "passages": [{"id": "p0", "section": "Abstract", "text": abstract}],
+            "evidence_tier": "abstract",
+            "evidence_note": "Abstract-only evidence; no full-text reuse.",
+            "retrieved": dt.datetime.now(dt.timezone.utc).isoformat()}
+
+
 def ingest_any(db: sqlite3.Connection, doi: str, host: str, refresh: bool = False) -> str:
-    """Ingest from whichever connector can parse this identifier: PLOS, arXiv, then Europe PMC."""
+    """PLOS or arXiv full text, then Europe PMC full text, then an OpenAlex abstract."""
     if doi.startswith("arxiv:"):
         return ingest_arxiv(db, doi.split(":", 1)[1], host, refresh)
     if re.fullmatch(r"10\.1371/journal\.[a-z]+\.\d+", doi):
@@ -291,9 +344,12 @@ def ingest_any(db: sqlite3.Connection, doi: str, host: str, refresh: bool = Fals
         return story_id
     if existing and existing["state"] != "ingested":
         raise ValueError("Only an undrafted source can be refreshed")
-    source = europepmc_source(doi)
+    try:
+        source = europepmc_source(doi)
+    except (ValueError, urllib.error.URLError):
+        source = None
     if source is None:
-        raise ValueError("No reusable open-access full text (Europe PMC) for " + doi)
+        source = openalex_source(doi)  # abstract-tier fallback; raises if no abstract
     with db:
         if existing:
             db.execute("UPDATE stories SET source=? WHERE id=?", (json.dumps(source), story_id))

@@ -2,7 +2,7 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from pipeline import parse_jats, parse_arxiv_html, is_cc_by
+from pipeline import parse_jats, parse_arxiv_html, is_cc_by, paragraphs_from_text, source_from_core
 
 LONG = ("We measured many samples across sites and found a strong consistent effect. " * 8)
 
@@ -43,6 +43,22 @@ class IngestTests(unittest.TestCase):
         self.assertTrue(is_cc_by("https://creativecommons.org/licenses/by/4.0/"))
         self.assertFalse(is_cc_by("https://creativecommons.org/licenses/by-nc-nd/4.0/"))
         self.assertFalse(is_cc_by(""))
+
+    def test_paragraphs_from_text(self):
+        many = paragraphs_from_text("One. Two. Three. Four. Five. Six. Seven. Eight.")
+        self.assertGreater(len(many), 1)
+        blocks = paragraphs_from_text("First block.\n\nSecond block with more text.")
+        self.assertEqual(len(blocks), 2)
+
+    def test_source_from_core_prefers_full_text_and_checks_doi(self):
+        work = {"doi": "10.1/x", "title": "A study", "fullText": "Sentence here. " * 150,
+                "abstract": "short", "authors": [{"name": "Ada Lovelace"}], "publisher": "Repo",
+                "license": "cc-by", "downloadUrl": "https://example.org/paper.pdf"}
+        source = source_from_core(work, "10.1/x")
+        self.assertEqual(source["evidence_tier"], "full")
+        self.assertEqual(source["attribution"], "Ada Lovelace")
+        self.assertGreater(len(source["passages"]), 1)
+        self.assertIsNone(source_from_core(work, "10.9/other"))
 
     def test_parse_arxiv_html_drops_chrome_and_references(self):
         html = (b"<html><body><h2>1 Introduction</h2><p>" + b"meaningful paper sentence " * 6 +

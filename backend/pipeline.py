@@ -40,7 +40,7 @@ def load_local_env(path: Path | None = None) -> None:
     allowed = {"OPENAI_API_KEY", "OPENAI_MODEL", "OPENAI_REASONING_EFFORT", "ELEVENLABS_API_KEY", "ELEVENLABS_MODEL",
                "ELEVENLABS_DIALOGUE_MODEL", "VOICE_PROVIDER", "VOICE_LOCAL_URL", "OPENAI_TTS_MODEL", "OPENAI_TTS_VOICE",
                "LILT_MAX_PROVIDER_CALLS_PER_DAY", "LILT_MAX_SOURCE_CHARS",
-               "LILT_OPENALEX_KEY", "LILT_CONTACT_EMAIL", "TYPESAFE_AI_API_KEY", "JEV_API_KEY",
+               "LILT_OPENALEX_KEY", "LILT_CONTACT_EMAIL", "TYPESAFE_AI_API_KEY", "JEV_API_KEY", "CORE_API_KEY",
                "TYPESAFE_BASE_URL", "JEV_MODEL", "DEEPSEEK_API_KEY", "DEEPSEEK_MODEL",
                *[h.voice_env for h in HOSTS.values()], *["VOICE_OPENAI_" + h.id.upper() for h in HOSTS.values()]}
     for line in path.read_text().splitlines():
@@ -277,6 +277,59 @@ def ingest_arxiv(db: sqlite3.Connection, arxiv_id: str, host: str, refresh: bool
     return story_id
 
 
+CORE_API = "https://api.core.ac.uk/v3/search/works"
+# CORE sits behind Cloudflare bot management, which blocks default library user
+# agents (error 1010); a browser-like UA and a followed redirect are required.
+CORE_UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+           "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
+
+
+def paragraphs_from_text(text: str) -> list:
+    parts = [p.strip() for p in re.split(r"\n\s*\n", text or "") if p.strip()]
+    if len(parts) <= 1:
+        sentences = [s for s in re.split(r"(?<=[.!?])\s+", text or "") if s]
+        parts = [" ".join(sentences[i:i + 4]) for i in range(0, len(sentences), 4)]
+    return [{"id": f"p{i + 1}", "section": "Body", "text": p} for i, p in enumerate(parts)]
+
+
+def source_from_core(work: dict, doi: str):
+    """Normalize a CORE record into a source dict, preferring full text over abstract."""
+    if not work or (work.get("doi") or "").lower() != doi.lower():
+        return None
+    full = work.get("fullText") or ""
+    abstract = work.get("abstract") or ""
+    text = full if len(full.split()) >= 200 else abstract
+    if len(text.split()) < 40:
+        return None
+    authors = [a.get("name") for a in (work.get("authors") or []) if a.get("name")]
+    return {"title": work.get("title") or "", "url": work.get("downloadUrl") or ("https://doi.org/" + doi),
+            "doi": doi, "attribution": ", ".join(authors) or "Authors listed at source",
+            "journal": work.get("publisher") or "", "license": work.get("license") or "CORE record",
+            "licenseURL": "", "text": text, "passages": paragraphs_from_text(text),
+            "evidence_tier": "full" if full else "abstract",
+            "evidence_note": "CORE open-access record." if full else "CORE abstract only.",
+            "retrieved": dt.datetime.now(dt.timezone.utc).isoformat()}
+
+
+def core_source(doi: str):
+    """Best-effort CORE full text/abstract for a DOI; None on any failure or miss."""
+    key = os.environ.get("CORE_API_KEY", "").strip()
+    if not key:
+        return None
+    query = urllib.parse.quote('doi:"' + doi + '"')
+    request_ = urllib.request.Request(
+        CORE_API + "?q=" + query + "&limit=1",
+        headers={"Authorization": "Bearer " + key, "Accept": "application/json",
+                 "User-Agent": CORE_UA})
+    try:
+        with urllib.request.urlopen(request_, timeout=60) as response:
+            data = json.loads(response.read(MAX_SOURCE_BYTES))
+    except (urllib.error.HTTPError, urllib.error.URLError, json.JSONDecodeError, TimeoutError):
+        return None
+    results = data.get("results") or []
+    return source_from_core(results[0], doi) if results else None
+
+
 def fetch_public(url: str) -> bytes:
     """General HTTPS GET that follows redirects (unlike the PLOS-hardened `request`)."""
     req = urllib.request.Request(url, headers={"User-Agent": "ZwickyResearch/0.1"})
@@ -348,6 +401,8 @@ def ingest_any(db: sqlite3.Connection, doi: str, host: str, refresh: bool = Fals
         source = europepmc_source(doi)
     except (ValueError, urllib.error.URLError):
         source = None
+    if source is None:
+        source = core_source(doi)  # CORE open-access full text, when indexed
     if source is None:
         source = openalex_source(doi)  # abstract-tier fallback; raises if no abstract
     with db:

@@ -20,6 +20,7 @@ from hosts import HOSTS as HOST_PROFILES, writing_guide, dialogue_hosts
 from anti_slop import ANTI_SLOP_GUIDE
 from dialogue import DIALOGUE_INSTRUCTIONS, DIALOGUE_SCHEMA, dialogue_guide, validate_dialogue, turns_body, turns_narration_inputs
 from provenance import provenance_text, quotes_in_source
+from autoselect import select as select_stories, report as select_report
 from shortlist import rank as shortlist_rank, report as shortlist_report
 from voice import synthesize, status as voice_status
 from podcast import DEFAULT_MODEL, PODCAST_INSTRUCTIONS, validate_podcast, narration_script
@@ -385,6 +386,7 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("discover")
     p = sub.add_parser("shortlist"); p.add_argument("--days", type=int, default=7); p.add_argument("--per-host", type=int, default=3); p.add_argument("--limit", type=int, default=25); p.add_argument("--no-enrich", action="store_true"); p.add_argument("--markdown", action="store_true")
+    p = sub.add_parser("select"); p.add_argument("--days", type=int, default=14); p.add_argument("--per-show", type=int, default=2); p.add_argument("--limit", type=int, default=10); p.add_argument("--markdown", action="store_true")
     p = sub.add_parser("ingest"); p.add_argument("doi"); p.add_argument("--host", choices=HOSTS, required=True); p.add_argument("--refresh", action="store_true")
     sub.add_parser("hosts")
     for command in ("draft", "inspect", "narrate", "publish", "withdraw", "packet"):
@@ -402,6 +404,11 @@ def main():
                                     enrich=not args.no_enrich)
             if args.markdown:
                 print(shortlist_report(result))
+                return
+        elif args.command == "select":
+            result = select_stories(db, days=args.days, per_show=args.per_show, limit=args.limit)
+            if args.markdown:
+                print(select_report(result))
                 return
         elif args.command == "ingest": result = ingest(db, args.doi, args.host, args.refresh)
         elif args.command == "packet": result = build_packet(json.loads(row(db, args.id)["source"]), int(os.environ.get("LILT_MAX_SOURCE_CHARS", "18000")))

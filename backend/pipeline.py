@@ -38,6 +38,7 @@ def load_local_env(path: Path | None = None) -> None:
     allowed = {"OPENAI_API_KEY", "OPENAI_MODEL", "OPENAI_REASONING_EFFORT", "ELEVENLABS_API_KEY", "ELEVENLABS_MODEL",
                "ELEVENLABS_DIALOGUE_MODEL", "VOICE_PROVIDER", "VOICE_LOCAL_URL", "OPENAI_TTS_MODEL", "OPENAI_TTS_VOICE",
                "LILT_MAX_PROVIDER_CALLS_PER_DAY", "LILT_MAX_SOURCE_CHARS",
+               "LILT_OPENALEX_KEY", "LILT_CONTACT_EMAIL",
                *[h.voice_env for h in HOSTS.values()], *["VOICE_OPENAI_" + h.id.upper() for h in HOSTS.values()]}
     for line in path.read_text().splitlines():
         line = line.strip()
@@ -386,7 +387,7 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("discover")
     p = sub.add_parser("shortlist"); p.add_argument("--days", type=int, default=7); p.add_argument("--per-host", type=int, default=3); p.add_argument("--limit", type=int, default=25); p.add_argument("--no-enrich", action="store_true"); p.add_argument("--markdown", action="store_true")
-    p = sub.add_parser("select"); p.add_argument("--days", type=int, default=14); p.add_argument("--per-show", type=int, default=2); p.add_argument("--limit", type=int, default=10); p.add_argument("--markdown", action="store_true")
+    p = sub.add_parser("select"); p.add_argument("--days", type=int, default=14); p.add_argument("--per-show", type=int, default=2); p.add_argument("--limit", type=int, default=10); p.add_argument("--markdown", action="store_true"); p.add_argument("--include-preprints", action="store_true", help="allow preprints/repositories (lower reputation)")
     p = sub.add_parser("ingest"); p.add_argument("doi"); p.add_argument("--host", choices=HOSTS, required=True); p.add_argument("--refresh", action="store_true")
     sub.add_parser("hosts")
     for command in ("draft", "inspect", "narrate", "publish", "withdraw", "packet"):
@@ -406,7 +407,8 @@ def main():
                 print(shortlist_report(result))
                 return
         elif args.command == "select":
-            result = select_stories(db, days=args.days, per_show=args.per_show, limit=args.limit)
+            result = select_stories(db, days=args.days, per_show=args.per_show, limit=args.limit,
+                                    min_reputation=0.0 if args.include_preprints else 0.5)
             if args.markdown:
                 print(select_report(result))
                 return

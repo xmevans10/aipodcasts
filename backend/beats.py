@@ -18,13 +18,13 @@ BEATS: dict[str, list[str]] = {
     "noor": ["machine learning", "neural network", "artificial intelligence", "language model"],
     "marek": ["3d printing", "additive manufacturing", "printed lattice", "polymer extrusion"],
     "tomas": ["biomechanics", "exercise", "muscle", "physical performance"],
-    "lena": ["sleep", "circadian", "dream", "rest"],
+    "lena": ["sleep", "circadian", "dreaming", "rest"],
     "rosa": ["fungus", "mycelium", "decomposition", "symbiosis"],
     "amara": ["bee", "pollination", "insect behaviour", "bee colony"],
-    "kenji": ["deep sea", "hydrothermal", "extreme environment", "abyssal"],
+    "kenji": ["deep sea", "hydrothermal vent", "abyssal", "deep ocean"],
     "freya": ["ancient dna", "archaeology", "migration", "genome"],
     # dialogue shows: one beat, keyed by the first presenter; dialogue_hosts expands
-    "ines": ["replication", "statistics", "meta-analysis", "measurement"],
+    "ines": ["replication", "statistical methods", "meta-analysis", "measurement error"],
     "jax": ["astrophysics", "black hole", "galaxy", "cosmic"],
 }
 

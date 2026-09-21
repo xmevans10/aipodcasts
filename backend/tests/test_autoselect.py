@@ -5,7 +5,7 @@ import sys
 import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from pipeline import connect
-from autoselect import select, report
+from autoselect import select, report, is_reusable, normalize_openalex
 
 CC_BY = "https://creativecommons.org/licenses/by/4.0/"
 
@@ -60,7 +60,7 @@ class SelectTests(unittest.TestCase):
         return ("text", feed())
 
     def select(self, **kwargs):
-        return select(self.db, days=14, today=self.today, fetch=self.fetch, **kwargs)
+        return select(self.db, days=14, today=self.today, fetch=self.fetch, source="crossref", **kwargs)
 
     def test_only_license_eligible_are_selected(self):
         result = self.select(per_show=3, limit=10)
@@ -85,6 +85,24 @@ class SelectTests(unittest.TestCase):
 
     def test_report_renders(self):
         self.assertTrue(report(self.select(per_show=2, limit=5)).startswith("# Autonomous selection"))
+
+    def test_license_rules(self):
+        for good in ("cc-by", "https://creativecommons.org/licenses/by/4.0/", "cc0", "public-domain"):
+            self.assertTrue(is_reusable(good), good)
+        for bad in ("cc-by-nc", "cc-by-nd", "cc-by-sa", "", "https://creativecommons.org/licenses/by-nc/4.0/"):
+            self.assertFalse(is_reusable(bad), bad)
+
+    def test_normalize_openalex(self):
+        work = {"doi": "https://doi.org/10.1234/x", "display_name": "A surprising Moon crater",
+                "publication_date": "2026-09-10", "abstract_inverted_index": {"A": [0], "crater": [2]},
+                "cited_by_count": 3, "primary_location": {"source": {"display_name": "Icarus"}, "license": "cc-by"},
+                "best_oa_location": {"license": "cc-by"}, "primary_topic": {"display_name": "Planetary science"},
+                "type": "article"}
+        normalized = normalize_openalex(work)
+        self.assertEqual(normalized["doi"], "10.1234/x")
+        self.assertEqual(normalized["journal"], "Icarus")
+        self.assertTrue(normalized["abstract"])
+        self.assertTrue(is_reusable(normalized["license"]))
 
 
 if __name__ == "__main__":

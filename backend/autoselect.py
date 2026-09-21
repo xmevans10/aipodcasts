@@ -58,14 +58,30 @@ FEEDS = {
 }
 HF_DAILY = "https://huggingface.co/api/daily_papers"
 CROSSREF = "https://api.crossref.org/works"
+OPENALEX = "https://api.openalex.org/works"
 
 RRF_K = 60
-SIGNAL_WEIGHTS = {"editorial": 0.35, "community": 0.10, "impact": 0.20,
-                  "recency": 0.15, "fascination": 0.20}
+SIGNAL_WEIGHTS = {"editorial": 0.30, "community": 0.10, "impact": 0.20,
+                  "reputation": 0.15, "recency": 0.10, "fascination": 0.15}
 FIT_GATE = 0.25
+MIN_REPUTATION = 0.5  # peer-reviewed journals; excludes preprints/repositories by default
 MAX_PER_TOPIC = 2
-REUSABLE_LICENSES = ("creativecommons.org/licenses/by", "creativecommons.org/publicdomain",
-                     "creativecommons.org/licenses/zero", "cc0")
+
+
+def is_reusable(license_id: str) -> bool:
+    """Commercial-safe reuse: attribution/CC0/public-domain, never NC or ND.
+
+    CC BY-SA is excluded too: it would force our script and audio derivative to be
+    share-alike, which we do not want on a paid product.
+    """
+    value = (license_id or "").lower()
+    if not value:
+        return False
+    if any(marker in value for marker in ("by-nc", "by-nd", "by-sa", "/nc", "/nd", "-nc-", "-nd-")):
+        return False
+    return any(marker in value for marker in (
+        "cc-by", "creativecommons.org/licenses/by", "cc0", "publicdomain",
+        "public-domain", "public_domain"))
 
 SURPRISE = ("unexpected", "surprising", "paradox", "counterintuitive", "challenge",
             "overturn", "contradict", "despite", "for the first time", "never", "rare",
@@ -252,6 +268,58 @@ def normalize(item: dict):
             "license": licenses, "subject": item.get("subject") or []}
 
 
+def reconstruct_abstract(inverted) -> str:
+    if not inverted:
+        return ""
+    positions = {}
+    for word, indices in inverted.items():
+        for index in indices:
+            positions[index] = word
+    return " ".join(positions[i] for i in sorted(positions))
+
+
+def openalex_window(term: str, since: str, fetch=None, per_page: int = 50):
+    """Open-access article/preprint/review works for a term, newest relevance first."""
+    params = {"search": term,
+              "filter": f"from_publication_date:{since},is_oa:true,type:article|preprint|review",
+              "per-page": per_page, "mailto": CONTACT}
+    key = os.environ.get("LILT_OPENALEX_KEY", "").strip()
+    if key:
+        params["api_key"] = key
+    url = OPENALEX + "?" + urllib.parse.urlencode(params)
+    try:
+        kind, payload = get(url, fetch)
+    except RateLimited:
+        return []
+    if kind != "json" or not isinstance(payload, dict):
+        return []
+    return payload.get("results", [])
+
+
+def normalize_openalex(work: dict):
+    doi = (work.get("doi") or "").replace("https://doi.org/", "").replace("http://doi.org/", "").lower()
+    title = clean(work.get("display_name") or "")
+    if not doi or not title:
+        return None
+    date_string = work.get("publication_date")
+    if not date_string:
+        return None
+    try:
+        date = dt.date.fromisoformat(date_string[:10])
+    except ValueError:
+        return None
+    location = work.get("primary_location") or {}
+    best = work.get("best_oa_location") or {}
+    source = location.get("source") or {}
+    return {"id": doi, "doi": doi, "title": title,
+            "abstract": reconstruct_abstract(work.get("abstract_inverted_index")),
+            "date": date, "journal": clean(source.get("display_name") or source.get("host_organization_name") or ""),
+            "cited": work.get("cited_by_count", 0) or 0,
+            "license": (best.get("license") or location.get("license") or ""),
+            "subject": [(work.get("primary_topic") or {}).get("display_name")] if (work.get("primary_topic") or {}).get("display_name") else [],
+            "type": work.get("type", ""), "venue_type": (source.get("type") or "")}
+
+
 def fascinating(work):
     text = (work["title"] + " " + work["abstract"]).lower()
     surprises = sum(text.count(term) for term in SURPRISE)
@@ -269,6 +337,18 @@ def fit(work, terms):
     return sum(1 for term in terms if term.lower() in text) / len(terms)
 
 
+def venue_reputation(work):
+    """Peer-reviewed journals outrank preprints and data repositories."""
+    venue_type = (work.get("venue_type") or "").lower()
+    if venue_type == "journal":
+        return 1.0
+    if venue_type in ("conference", "proceedings"):
+        return 0.7
+    if venue_type in ("repository", "preprint"):
+        return 0.3
+    return 0.6 if work.get("journal") else 0.4
+
+
 def rrf(rank: int) -> float:
     return 1.0 / (RRF_K + rank)
 
@@ -284,20 +364,22 @@ def seen_dois(db):
 
 
 def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
-           today: dt.date | None = None, fetch=None):
+           today: dt.date | None = None, fetch=None, source: str | None = None,
+           min_reputation: float = MIN_REPUTATION):
     today = today or dt.date.today()
     since = (today - dt.timedelta(days=days)).isoformat()
+    source = source or ("openalex" if os.environ.get("LILT_OPENALEX_KEY", "").strip() else "crossref")
     exclude = seen_dois(db)
     editorial, community = load_tastemakers(fetch)
     editorial_by_doi, lookups = editorial_dois(fetch)
 
     works: dict[str, dict] = {}
-    rate_limited = 0
     for raw_host, terms in BEATS.items():
         host = normalize_host(raw_host)
         for term in terms:
-            for item in crossref_window(term, since, fetch):
-                work = normalize(item)
+            items = openalex_window(term, since, fetch) if source == "openalex" else crossref_window(term, since, fetch)
+            for item in items:
+                work = normalize_openalex(item) if source == "openalex" else normalize(item)
                 if work is None or work["doi"] in exclude or work["doi"] in works:
                     continue
                 work["host"], work["show"], work["terms"] = host, HOSTS[host].show, terms
@@ -322,7 +404,7 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
             "age": max((today - work["date"]).days, 0),
             "fascination": fascinating(work),
             "fit": round(score, 3),
-            "reusable": any(marker in work["license"].lower() for marker in REUSABLE_LICENSES),
+            "reusable": is_reusable(work["license"]),
         })
         candidates.append(work)
 
@@ -331,6 +413,7 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
         ("editorial", lambda w: w["editorial"], True),
         ("community", lambda w: w["community"], True),
         ("impact", lambda w: math.log1p(w["cited"] / max(w["age"] / 30.0, 0.5)), True),
+        ("reputation", venue_reputation, True),
         ("recency", lambda w: w["age"], False),
         ("fascination", lambda w: w["fascination"], True),
     ]:
@@ -344,7 +427,7 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
     ranked = sorted(candidates, key=lambda w: w["score"], reverse=True)
     selected, show_count, topic_count = [], {}, {}
     for work in ranked:
-        if not work["reusable"]:
+        if not work["reusable"] or venue_reputation(work) < min_reputation:
             continue
         topic = work["topic"]
         if show_count.get(work["host"], 0) >= per_show or topic_count.get(topic, 0) >= MAX_PER_TOPIC:
@@ -354,21 +437,22 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
         selected.append(work)
         if len(selected) >= limit:
             break
-    return {"window_days": days, "papers_pulled": len(works), "candidates": len(ranked),
+    return {"source": source, "window_days": days, "papers_pulled": len(works), "candidates": len(ranked),
             "eligible": sum(1 for w in ranked if w["reusable"]), "selected": selected,
             "editorial_titles": sum(len(v) for v in editorial.values()),
             "editorial_doi_links": len(editorial_by_doi), "editorial_lookups": lookups}
 
 
 def report(result: dict) -> str:
-    lines = [f"# Autonomous selection (last {result['window_days']} days)",
+    lines = [f"# Autonomous selection (source: {result.get('source', '?')}, last {result['window_days']} days)",
              f"{result['papers_pulled']} papers pulled, {result['candidates']} scored, "
              f"{result['eligible']} license-eligible; {result['editorial_titles']} editorial headlines read, "
              f"{result['editorial_doi_links']} joined to a paper by DOI", "",
-             "| rank | score | show | title | journal | age | cited | editorial from | reusable |",
+             "| rank | score | show | title | venue | age | cited | editorial from | reusable |",
              "|---|---|---|---|---|---|---|---|---|"]
     for index, work in enumerate(result["selected"], 1):
-        lines.append(f"| {index} | {work['score']} | {work['show']} | {work['title'][:66]} | "
-                     f"{work['journal'][:30]} | {work['age']}d | {work['cited']} | "
+        venue = (work.get("venue_type") or work["journal"] or "")[:30]
+        lines.append(f"| {index} | {work['score']} | {work['show']} | {work['title'][:60]} | "
+                     f"{venue} | {work['age']}d | {work['cited']} | "
                      f"{','.join(work['editorial_sources']) or '-'} | {work['reusable']} |")
     return "\n".join(lines)

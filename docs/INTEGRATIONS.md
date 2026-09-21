@@ -50,6 +50,21 @@ Host voice variables follow each presenter id: `ELEVENLABS_VOICE_NOVA`, `_FERN`,
 - **Data/limits:** `LILT_MAX_PROVIDER_CALLS_PER_DAY`, `LILT_MAX_SOURCE_CHARS`,
   `LILT_DATA`, `PORT`.
 
+## Story discovery (no keys)
+
+Selection fuses publicity/metadata signals; see
+[editorial/story-discovery.md](editorial/story-discovery.md) for the priority order and
+verification log.
+
+| Source | Env | Notes |
+|---|---|---|
+| OpenAlex discovery | `LILT_OPENALEX_KEY`, `LILT_CONTACT_EMAIL` | Key raises the shared free rate limit; contact email is polite-pool identification. |
+| EurekAlert press releases | `LILT_EUREKALERT` (default `1`) | Signal-only: sitemap + transient DOI extraction, `(doi, date)` kept. No release text is stored or narrated. Set `0` to skip. |
+| Science Media Centre | `LILT_SMC` (default `0`) | Enables one extra verifier caveat question per episode for brain/sleep/climate/health beats. Never evidence. |
+| Quanta / Nature News / Science News / ScienceDaily / Phys.org, arXiv, HF Daily Papers | *(none)* | RSS/JSON feeds; syndicated press copies collapse into one event. |
+
+`python3 backend/pipeline.py doctor` reports which of these are active.
+
 ## App Store Connect (TestFlight)
 
 Uses a team API key (key id, issuer id, and a `.p8` file) with manual signing:

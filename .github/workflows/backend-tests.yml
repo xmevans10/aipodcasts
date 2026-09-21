@@ -1,0 +1,30 @@
+name: backend-tests
+
+# Fast, key-free gate for the pipeline: selection, evidence, verification and serving.
+# No network and no credentials — every fetcher is injected, so the suite is deterministic.
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - "experiments/selection/**"
+      - ".github/workflows/backend-tests.yml"
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Backend tests
+        run: python3 -m pytest -q backend/tests
+
+      - name: Publicity-signal effect (deterministic, offline)
+        run: python3 experiments/selection/publicity_effect.py

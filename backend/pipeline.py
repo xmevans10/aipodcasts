@@ -670,6 +670,12 @@ def doctor() -> dict:
         "feed": {"public_origin": os.environ.get("LILT_PUBLIC_ORIGIN", ""),
                  "max_provider_calls_per_day": os.environ.get("LILT_MAX_PROVIDER_CALLS_PER_DAY", "12"),
                  "max_source_chars": os.environ.get("LILT_MAX_SOURCE_CHARS", "18000")},
+        "selection_sources": {
+            "openalex_key": bool(os.environ.get("LILT_OPENALEX_KEY")),
+            "contact_email": bool(os.environ.get("LILT_CONTACT_EMAIL")),
+            "eurekalert": os.environ.get("LILT_EUREKALERT", "1").strip() != "0",
+            "smc_caveats": os.environ.get("LILT_SMC", "").strip().lower() in ("1", "true", "yes"),
+        },
         "hosts": [{"id": host.id, "name": host.name, "show": host.show, "voice_env": host.voice_env,
                    "voice_configured": bool(os.environ.get(host.voice_env))} for host in HOSTS.values()],
     }

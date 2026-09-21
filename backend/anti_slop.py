@@ -12,6 +12,24 @@ context and intent decide whether an edit is warranted.
 from __future__ import annotations
 import re
 
+GENERAL_AUDIENCE_GUIDE = '''GENERAL AUDIENCE — write for a curious friend, not a colleague.
+The listener is smart but has no specialist training and has not read the paper. The
+show is casual and approachable; the facts stay rigorous.
+- Talk with the listener, not at them. Contractions, everyday words, a warm
+  conversational voice. Fun is allowed; silliness and hype are not.
+- No jargon. If a technical term is unavoidable, explain it in plain words the first
+  time, then keep using the plain words.
+- Do not name instruments, methods, genes, proteins or acronyms to sound credible.
+  Describe what the researchers actually did in ordinary language. A name earns its
+  place only when the story needs it, and then it gets a short explanation.
+- Lead with the picture, then add the specifics. Explain the idea before the detail.
+- Keep numbers human: round them, compare to something familiar, say why the number
+  matters. Never stack statistics.
+- Short sentences, one idea each. No lecture tone, no textbook phrasing.
+- Simplify the wording, never the finding, the uncertainty or the limitation.
+
+'''
+
 ANTI_SLOP_GUIDE = '''WRITING SURFACE — sound like a person, not a model.
 These rules change only how the script sounds. They never change a finding, a
 number, a limitation, an attribution or the exact wording of the paper title.

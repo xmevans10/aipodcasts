@@ -17,7 +17,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 from evidence import extract_passages, build_packet, evidence_text
 from hosts import HOSTS as HOST_PROFILES, writing_guide, dialogue_hosts
-from anti_slop import ANTI_SLOP_GUIDE
+from anti_slop import ANTI_SLOP_GUIDE, GENERAL_AUDIENCE_GUIDE
 from dialogue import DIALOGUE_INSTRUCTIONS, DIALOGUE_SCHEMA, dialogue_guide, validate_dialogue, turns_body, turns_narration_inputs
 from provenance import provenance_text, quotes_in_source
 from language_clues import LANGUAGE_CLUES
@@ -529,9 +529,11 @@ def draft_story(db, story_id):
     duo = dialogue_hosts(record["host"])
     clues = language_clue_block(duo, record["host"])
     if duo:
-        instructions = DIALOGUE_INSTRUCTIONS + dialogue_guide(duo) + "\n\n" + ANTI_SLOP_GUIDE + clues
+        instructions = (DIALOGUE_INSTRUCTIONS + dialogue_guide(duo) + "\n\n"
+                        + GENERAL_AUDIENCE_GUIDE + ANTI_SLOP_GUIDE + clues)
     else:
-        instructions = PODCAST_INSTRUCTIONS + writing_guide(record["host"]) + "\n\n" + ANTI_SLOP_GUIDE + clues
+        instructions = (PODCAST_INSTRUCTIONS + writing_guide(record["host"]) + "\n\n"
+                        + GENERAL_AUDIENCE_GUIDE + ANTI_SLOP_GUIDE + clues)
     effort = os.environ.get("OPENAI_REASONING_EFFORT", "low")
     if effort not in {"none", "low", "medium", "high", "xhigh", "max"}:
         raise ValueError("Unsupported reasoning effort")

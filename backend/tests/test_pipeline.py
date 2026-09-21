@@ -126,8 +126,9 @@ class PipelineTests(unittest.TestCase):
         self.db.commit()
         response = {'status': 'completed', 'output': [{'content': [{'type': 'output_text', 'text': json.dumps(dialogue)}]}]}
         with patch.dict(os.environ, {'OPENAI_API_KEY': 'test', 'OPENAI_MODEL': 'test-model'}):
-            with patch.object(p, 'request', return_value=json.dumps(response).encode()):
+            with patch.object(p, 'request', return_value=json.dumps(response).encode()) as req:
                 draft = p.draft_story(self.db, story_id)
+        self.assertIn('GENERAL AUDIENCE', req.call_args.kwargs['payload']['instructions'])
         self.assertEqual(draft['title'], 'The quiet achievement')
         self.assertEqual(len(draft['turns']), 6)
 
@@ -178,6 +179,13 @@ class PipelineTests(unittest.TestCase):
                 p.draft_story(self.db, self.id)
                 instructions = req.call_args.kwargs['payload']['instructions']
                 self.assertIn('LANGUAGE CLUES for nova', instructions)
+
+    def test_general_audience_guide_reaches_the_prompt(self):
+        response = {'status': 'completed', 'output': [{'content': [{'type': 'output_text', 'text': json.dumps(self.draft)}]}]}
+        with patch.dict(os.environ, {'OPENAI_API_KEY': 'test', 'OPENAI_MODEL': 'test-model'}):
+            with patch.object(p, 'request', return_value=json.dumps(response).encode()) as req:
+                p.draft_story(self.db, self.id)
+                self.assertIn('GENERAL AUDIENCE', req.call_args.kwargs['payload']['instructions'])
 
     def test_draft_repair_retries_with_the_failure_quoted(self):
         bad = {**self.draft, 'body': 'A tiny script.'}

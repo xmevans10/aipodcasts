@@ -20,6 +20,7 @@ from hosts import HOSTS as HOST_PROFILES, writing_guide, dialogue_hosts
 from anti_slop import ANTI_SLOP_GUIDE
 from dialogue import DIALOGUE_INSTRUCTIONS, DIALOGUE_SCHEMA, dialogue_guide, validate_dialogue, turns_body, turns_narration_inputs
 from provenance import provenance_text, quotes_in_source
+from shortlist import rank as shortlist_rank, report as shortlist_report
 from voice import synthesize, status as voice_status
 from podcast import DEFAULT_MODEL, PODCAST_INSTRUCTIONS, validate_podcast, narration_script
 
@@ -383,6 +384,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("discover")
+    p = sub.add_parser("shortlist"); p.add_argument("--days", type=int, default=7); p.add_argument("--per-host", type=int, default=3); p.add_argument("--limit", type=int, default=25); p.add_argument("--no-enrich", action="store_true"); p.add_argument("--markdown", action="store_true")
     p = sub.add_parser("ingest"); p.add_argument("doi"); p.add_argument("--host", choices=HOSTS, required=True); p.add_argument("--refresh", action="store_true")
     sub.add_parser("hosts")
     for command in ("draft", "inspect", "narrate", "publish", "withdraw", "packet"):
@@ -394,6 +396,13 @@ def main():
     args = parser.parse_args(); load_local_env(); db = connect()
     try:
         if args.command == "discover": result = discover()
+        elif args.command == "shortlist":
+            result = shortlist_rank(db, days=args.days, per_host=args.per_host, limit=args.limit,
+                                    contact=os.environ.get("LILT_CONTACT_EMAIL", "zwicky-research@example.com"),
+                                    enrich=not args.no_enrich)
+            if args.markdown:
+                print(shortlist_report(result))
+                return
         elif args.command == "ingest": result = ingest(db, args.doi, args.host, args.refresh)
         elif args.command == "packet": result = build_packet(json.loads(row(db, args.id)["source"]), int(os.environ.get("LILT_MAX_SOURCE_CHARS", "18000")))
         elif args.command == "hosts": result = [{"id": h.id, "name": h.name, "show": h.show, "topic": h.topic,

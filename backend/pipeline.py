@@ -20,6 +20,7 @@ from hosts import HOSTS as HOST_PROFILES, writing_guide, dialogue_hosts
 from anti_slop import ANTI_SLOP_GUIDE
 from dialogue import DIALOGUE_INSTRUCTIONS, DIALOGUE_SCHEMA, dialogue_guide, validate_dialogue, turns_body, turns_narration_inputs
 from provenance import provenance_text, quotes_in_source
+from language_clues import LANGUAGE_CLUES
 import verify as verifier
 from autoselect import select as select_stories, report as select_report
 from shortlist import rank as shortlist_rank, report as shortlist_report
@@ -393,6 +394,13 @@ def row(db, story_id):
     return result
 
 
+def language_clue_block(duo, host_id: str) -> str:
+    """Prompt block of observed speaking-style clues for this host (both, if dialogue)."""
+    ids = [host.id for host in duo] if duo else [host_id]
+    parts = [f"LANGUAGE CLUES for {i}:\n{LANGUAGE_CLUES[i]}" for i in ids if i in LANGUAGE_CLUES]
+    return ("\n\n" + "\n\n".join(parts)) if parts else ""
+
+
 def draft_story(db, story_id):
     record = row(db, story_id)
     if record["draft"]:
@@ -408,39 +416,62 @@ def draft_story(db, story_id):
         raise ValueError("Named author metadata is required before generation")
     packet = build_packet(source, int(os.environ.get("LILT_MAX_SOURCE_CHARS", "18000")))
     duo = dialogue_hosts(record["host"])
+    clues = language_clue_block(duo, record["host"])
     if duo:
-        instructions = DIALOGUE_INSTRUCTIONS + dialogue_guide(duo) + "\n\n" + ANTI_SLOP_GUIDE
+        instructions = DIALOGUE_INSTRUCTIONS + dialogue_guide(duo) + "\n\n" + ANTI_SLOP_GUIDE + clues
     else:
-        instructions = PODCAST_INSTRUCTIONS + writing_guide(record["host"]) + "\n\n" + ANTI_SLOP_GUIDE
+        instructions = PODCAST_INSTRUCTIONS + writing_guide(record["host"]) + "\n\n" + ANTI_SLOP_GUIDE + clues
     effort = os.environ.get("OPENAI_REASONING_EFFORT", "low")
     if effort not in {"none", "low", "medium", "high", "xhigh", "max"}:
         raise ValueError("Unsupported reasoning effort")
     reasoning = {"reasoning": {"effort": effort}} if model.startswith("gpt-5.6-luna") else {}
     with db:
         db.execute("UPDATE stories SET draft_input=? WHERE id=?", (json.dumps(packet, ensure_ascii=False), story_id))
-    call_id = reserve_call(db, "openai", story_id)
-    response = json.loads(request("https://api.openai.com/v1/responses", payload={
-        "model": model, "store": False, "instructions": instructions, **reasoning,
-        "input": json.dumps(packet, ensure_ascii=False, separators=(",", ":")),
-        "max_output_tokens": 4500 if duo else 3500,
-        "text": {"format": {"type": "json_schema", "name": "science_story", "strict": True,
-                            "schema": DIALOGUE_SCHEMA if duo else SCHEMA}}
-    }, headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"}))
-    usage = response.get("usage") or {}
-    with db:
-        db.execute("UPDATE calls SET input_tokens=?,output_tokens=? WHERE id=?",
-                   (usage.get("input_tokens"), usage.get("output_tokens"), call_id))
-    if response.get("status") != "completed":
-        raise ValueError("Generation incomplete; nothing published")
-    outputs = [c["text"] for item in response.get("output", []) for c in item.get("content", []) if c.get("type") == "output_text"]
-    if not outputs:
-        raise ValueError("No draft returned, possibly refused")
-    draft = json.loads("".join(outputs))
-    if duo:
-        validate_dialogue(draft, {"text": evidence_text(packet)}, duo)
-    else:
-        validate_draft(draft, {"text": evidence_text(packet)})
-        validate_podcast(draft, source, HOSTS[record["host"]])
+
+    # Validate-and-repair loop: a draft that fails one validator is retried with the
+    # exact failure quoted back, instead of being dropped. Each attempt is reserved
+    # against the daily provider-call cap, so repair cannot run away.
+    attempts = max(1, int(os.environ.get("LILT_DRAFT_ATTEMPTS", "2")))
+    last_error, draft = None, None
+    for _ in range(attempts):
+        attempt_instructions = instructions
+        if last_error:
+            attempt_instructions += ("\n\nREPAIR: the previous draft was rejected by the validator with: \""
+                                     + last_error + "\". Rewrite it so it satisfies that exact requirement. Keep every "
+                                     "fact, number and quotation traceable to the evidence packet; add no new facts.")
+        call_id = reserve_call(db, "openai", story_id)
+        response = json.loads(request("https://api.openai.com/v1/responses", payload={
+            "model": model, "store": False, "instructions": attempt_instructions, **reasoning,
+            "input": json.dumps(packet, ensure_ascii=False, separators=(",", ":")),
+            "max_output_tokens": 4500 if duo else 3500,
+            "text": {"format": {"type": "json_schema", "name": "science_story", "strict": True,
+                                "schema": DIALOGUE_SCHEMA if duo else SCHEMA}}
+        }, headers={"Authorization": "Bearer " + key, "Content-Type": "application/json"}))
+        usage = response.get("usage") or {}
+        with db:
+            db.execute("UPDATE calls SET input_tokens=?,output_tokens=? WHERE id=?",
+                       (usage.get("input_tokens"), usage.get("output_tokens"), call_id))
+        if response.get("status") != "completed":
+            last_error = "generation incomplete"
+            continue
+        outputs = [c["text"] for item in response.get("output", []) for c in item.get("content", []) if c.get("type") == "output_text"]
+        if not outputs:
+            last_error = "no draft returned, possibly refused"
+            continue
+        try:
+            candidate = json.loads("".join(outputs))
+            if duo:
+                validate_dialogue(candidate, {"text": evidence_text(packet)}, duo)
+            else:
+                validate_draft(candidate, {"text": evidence_text(packet)})
+                validate_podcast(candidate, source, HOSTS[record["host"]])
+        except (json.JSONDecodeError, ValueError) as error:
+            last_error = str(error)
+            continue
+        draft = candidate
+        break
+    if draft is None:
+        raise ValueError("Draft failed after " + str(attempts) + " attempts: " + str(last_error))
     with db:
         db.execute("UPDATE stories SET draft=?,state='review' WHERE id=?", (json.dumps(draft), story_id))
     return draft

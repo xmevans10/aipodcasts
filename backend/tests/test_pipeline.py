@@ -138,4 +138,32 @@ class PipelineTests(unittest.TestCase):
                 self.assertEqual(err.exception.code, 404)
             finally: http.shutdown(); http.server_close(); thread.join()
 
+    def test_language_clues_reach_the_prompt(self):
+        response = {'status': 'completed', 'output': [{'content': [{'type': 'output_text', 'text': json.dumps(self.draft)}]}]}
+        with patch.dict(os.environ, {'OPENAI_API_KEY': 'test', 'OPENAI_MODEL': 'test-model'}):
+            with patch.object(p, 'request', return_value=json.dumps(response).encode()) as req:
+                p.draft_story(self.db, self.id)
+                instructions = req.call_args.kwargs['payload']['instructions']
+                self.assertIn('LANGUAGE CLUES for nova', instructions)
+
+    def test_draft_repair_retries_with_the_failure_quoted(self):
+        bad = {**self.draft, 'body': 'A tiny script.'}
+        bad_response = {'status': 'completed', 'output': [{'content': [{'type': 'output_text', 'text': json.dumps(bad)}]}]}
+        good_response = {'status': 'completed', 'output': [{'content': [{'type': 'output_text', 'text': json.dumps(self.draft)}]}]}
+        with patch.dict(os.environ, {'OPENAI_API_KEY': 'test', 'OPENAI_MODEL': 'test-model', 'LILT_DRAFT_ATTEMPTS': '2'}):
+            with patch.object(p, 'request', side_effect=[json.dumps(bad_response).encode(), json.dumps(good_response).encode()]) as req:
+                draft = p.draft_story(self.db, self.id)
+                self.assertEqual(req.call_count, 2)
+                self.assertIn('REPAIR', req.call_args.kwargs['payload']['instructions'])
+                self.assertEqual(draft['title'], self.draft['title'])
+                self.assertEqual(self.db.execute('SELECT count(*) FROM calls').fetchone()[0], 2)
+
+    def test_draft_repair_gives_up_after_attempts(self):
+        bad = {**self.draft, 'body': 'A tiny script.'}
+        bad_response = {'status': 'completed', 'output': [{'content': [{'type': 'output_text', 'text': json.dumps(bad)}]}]}
+        with patch.dict(os.environ, {'OPENAI_API_KEY': 'test', 'OPENAI_MODEL': 'test-model', 'LILT_DRAFT_ATTEMPTS': '2'}):
+            with patch.object(p, 'request', return_value=json.dumps(bad_response).encode()):
+                with self.assertRaisesRegex(ValueError, 'failed after 2 attempts'):
+                    p.draft_story(self.db, self.id)
+
 if __name__ == '__main__': unittest.main()

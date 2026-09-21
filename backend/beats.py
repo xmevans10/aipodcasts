@@ -13,7 +13,7 @@ BEATS: dict[str, list[str]] = {
     "fern": ["animal behaviour", "wildlife", "bird", "mammal"],
     "ada": ["neuroscience", "brain", "cognition", "sensory processing"],
     "atlas": ["ocean", "climate", "glacier", "earth system"],
-    "spinner": ["spider", "silk", "arachnid", "web"],
+    "spinner": ["spider", "silk", "arachnid", "spider web"],
     "yusuf": ["star", "stellar", "astrochemistry", "spectroscopy"],
     "noor": ["machine learning", "neural network", "artificial intelligence", "language model"],
     "marek": ["3d printing", "additive manufacturing", "printed lattice", "polymer extrusion"],
@@ -22,7 +22,7 @@ BEATS: dict[str, list[str]] = {
     "rosa": ["fungus", "mycelium", "decomposition", "symbiosis"],
     "amara": ["bee", "pollination", "insect behaviour", "bee colony"],
     "kenji": ["deep sea", "hydrothermal vent", "abyssal", "deep ocean"],
-    "freya": ["ancient dna", "archaeology", "migration", "genome"],
+    "freya": ["ancient dna", "archaeology", "paleogenomics", "archaeological"],
     # dialogue shows: one beat, keyed by the first presenter; dialogue_hosts expands
     "ines": ["replication", "statistical methods", "meta-analysis", "measurement error"],
     "jax": ["astrophysics", "black hole", "galaxy", "cosmic"],

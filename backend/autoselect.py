@@ -61,8 +61,18 @@ CROSSREF = "https://api.crossref.org/works"
 OPENALEX = "https://api.openalex.org/works"
 
 RRF_K = 60
-SIGNAL_WEIGHTS = {"editorial": 0.30, "community": 0.10, "impact": 0.20,
-                  "reputation": 0.15, "recency": 0.10, "fascination": 0.15}
+SIGNAL_WEIGHTS = {"editorial": 0.30, "community": 0.10, "impact": 0.15,
+                  "reputation": 0.15, "studiness": 0.15, "recency": 0.05,
+                  "fascination": 0.10}
+PRIMARY_TYPES = {"article"}          # OpenAlex normalized type for peer-reviewed research
+PREPRINT_TYPES = {"article", "preprint"}
+FINDING_CUES = ("we found", "we show", "we report", "we demonstrate", "our results",
+                "results show", "we observed", "we identify", "we measured", "we tested",
+                "experiment", "sample of", "participants", "dataset", "compared with",
+                "we estimate", "we analysed", "we analyzed")
+REVIEW_CUES = ("we review", "this review", "we summarize", "we summarise", "we argue",
+               "we discuss", "we propose a framework", "perspective", "opinion",
+               "commentary", "we survey", "we outline", "conceptual")
 FIT_GATE = 0.25
 MIN_REPUTATION = 0.5  # peer-reviewed journals; excludes preprints/repositories by default
 MAX_PER_TOPIC = 2
@@ -265,7 +275,10 @@ def normalize(item: dict):
     return {"id": doi, "doi": doi, "title": title, "abstract": clean(item.get("abstract") or ""),
             "date": date, "journal": clean((item.get("container-title") or [""])[0]),
             "cited": item.get("is-referenced-by-count", 0) or 0,
-            "license": licenses, "subject": item.get("subject") or []}
+            "license": licenses, "subject": item.get("subject") or [],
+            "type": "article" if item.get("type") in (None, "journal-article") else item.get("type"),
+            "type_crossref": item.get("type") or "", "is_retracted": False,
+            "fwci": None, "related_works": []}
 
 
 def reconstruct_abstract(inverted) -> str:
@@ -317,7 +330,11 @@ def normalize_openalex(work: dict):
             "cited": work.get("cited_by_count", 0) or 0,
             "license": (best.get("license") or location.get("license") or ""),
             "subject": [(work.get("primary_topic") or {}).get("display_name")] if (work.get("primary_topic") or {}).get("display_name") else [],
-            "type": work.get("type", ""), "venue_type": (source.get("type") or "")}
+            "type": work.get("type", ""), "venue_type": (source.get("type") or ""),
+            "type_crossref": work.get("type_crossref") or "",
+            "is_retracted": bool(work.get("is_retracted")),
+            "fwci": (work.get("summary_stats") or {}).get("fwci"),
+            "related_works": work.get("related_works") or []}
 
 
 def fascinating(work):
@@ -330,6 +347,15 @@ def fascinating(work):
     return max(0.0, 0.35 * min(1.0, surprises / 3) + 0.2 * min(1.0, numbers / 6)
                + 0.1 * (1.0 if "?" in work["title"] else 0.0)
                + 0.35 * max(0.0, min(1.0, (14 - average) / 6)) - 0.3 * min(1.0, jargon / 3))
+
+
+VENUE_REJECT = re.compile(r"\b(reviews?|commentary|opinion|perspective|magazine|newsletter|"
+                          r"book review|media reviews?)\b", re.I)
+
+
+def is_primary_venue(work):
+    """Reject outlets that publish commentary/media reviews rather than research."""
+    return not VENUE_REJECT.search(work.get("journal") or "")
 
 
 def fit(work, terms):
@@ -347,6 +373,21 @@ def venue_reputation(work):
     if venue_type in ("repository", "preprint"):
         return 0.3
     return 0.6 if work.get("journal") else 0.4
+
+
+def studiness(work):
+    """Distinguish a study from commentary/review using abstract framing.
+
+    Deterministic, no model: primary research says 'we measured / we found / sample',
+    commentary says 'we review / we argue / perspective'. A media review has no
+    methods, so this is what stops one winning a slot.
+    """
+    text = (work.get("abstract") or "").lower()
+    if not text:
+        return 0.4
+    findings = sum(1 for cue in FINDING_CUES if cue in text)
+    reviews = sum(1 for cue in REVIEW_CUES if cue in text)
+    return max(0.0, min(1.0, 0.4 + 0.1 * findings - 0.2 * reviews))
 
 
 def rrf(rank: int) -> float:
@@ -386,7 +427,19 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
                 works[work["doi"]] = work
 
     candidates = []
+    retracted = non_primary = 0
+    allowed_types = PREPRINT_TYPES if min_reputation < MIN_REPUTATION else PRIMARY_TYPES
     for work in works.values():
+        if work.get("is_retracted"):
+            retracted += 1
+            continue
+        if work.get("type") not in allowed_types:
+            non_primary += 1
+            continue
+        work_studiness = studiness(work)
+        if min_reputation >= MIN_REPUTATION and not is_primary_venue(work):
+            non_primary += 1
+            continue
         score = fit(work, work["terms"])
         if score < FIT_GATE:
             continue
@@ -403,6 +456,7 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
             "community": _hf_similarity(work["title"], community),
             "age": max((today - work["date"]).days, 0),
             "fascination": fascinating(work),
+            "studiness": round(work_studiness, 3),
             "fit": round(score, 3),
             "reusable": is_reusable(work["license"]),
         })
@@ -414,6 +468,7 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
         ("community", lambda w: w["community"], True),
         ("impact", lambda w: math.log1p(w["cited"] / max(w["age"] / 30.0, 0.5)), True),
         ("reputation", venue_reputation, True),
+        ("studiness", lambda w: w["studiness"], True),
         ("recency", lambda w: w["age"], False),
         ("fascination", lambda w: w["fascination"], True),
     ]:
@@ -434,11 +489,15 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
             continue
         show_count[work["host"]] = show_count.get(work["host"], 0) + 1
         topic_count[topic] = topic_count.get(topic, 0) + 1
-        selected.append(work)
+        selected.append({**work, "date": work["date"].isoformat()})
         if len(selected) >= limit:
             break
+    selected_studiness = [w["studiness"] for w in selected]
     return {"source": source, "window_days": days, "papers_pulled": len(works), "candidates": len(ranked),
             "eligible": sum(1 for w in ranked if w["reusable"]), "selected": selected,
+            "retracted_excluded": retracted, "non_primary_excluded": non_primary,
+            "shows_filled": len({w["host"] for w in selected}),
+            "mean_studiness": round(sum(selected_studiness) / len(selected_studiness), 3) if selected_studiness else 0,
             "editorial_titles": sum(len(v) for v in editorial.values()),
             "editorial_doi_links": len(editorial_by_doi), "editorial_lookups": lookups}
 

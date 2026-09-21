@@ -5,15 +5,15 @@ import sys
 import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from pipeline import connect
-from autoselect import select, report, is_reusable, normalize_openalex
+from autoselect import select, report, is_reusable, normalize_openalex, studiness
 
 CC_BY = "https://creativecommons.org/licenses/by/4.0/"
 
 
-def crossref_item(doi, title, *, license_url="", cited=0, abstract="", subject=("Topic",), date=(2026, 9, 10)):
+def crossref_item(doi, title, *, license_url="", cited=0, abstract="", subject=("Topic",), date=(2026, 9, 10), type="journal-article"):
     return {"DOI": doi, "title": [title], "abstract": abstract,
             "issued": {"date-parts": [list(date)]}, "container-title": ["Test Journal"],
-            "subject": list(subject), "is-referenced-by-count": cited,
+            "subject": list(subject), "is-referenced-by-count": cited, "type": type,
             "license": [{"URL": license_url}] if license_url else []}
 
 
@@ -85,6 +85,19 @@ class SelectTests(unittest.TestCase):
 
     def test_report_renders(self):
         self.assertTrue(report(self.select(per_show=2, limit=5)).startswith("# Autonomous selection"))
+
+    def test_commentary_excluded(self):
+        self.crossref["moon"].append(crossref_item(
+            "10.1371/journal.pone.0000004", "A book review of recent lunar science",
+            license_url=CC_BY, subject=("Reviews",), type="book-review"))
+        result = self.select(per_show=3, limit=10)
+        self.assertNotIn("A book review of recent lunar science", [work["title"] for work in result["selected"]])
+        self.assertGreaterEqual(result["non_primary_excluded"], 1)
+
+    def test_studiness_prefers_findings_over_reviews(self):
+        finding = {"abstract": "We measured a sample of 40 participants and found a strong effect."}
+        review = {"abstract": "We review the literature, discuss prior work and argue for a perspective."}
+        self.assertGreater(studiness(finding), studiness(review))
 
     def test_license_rules(self):
         for good in ("cc-by", "https://creativecommons.org/licenses/by/4.0/", "cc0", "public-domain"):

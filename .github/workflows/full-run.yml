@@ -1,0 +1,58 @@
+name: full-run-transcripts
+
+# Runs the full autonomous pipeline across every show once a week and uploads one
+# transcript per show (plus a manifest) as a build artifact. The backend is stdlib-only,
+# so there is nothing to install; transcription needs OPENAI_API_KEY and discovery is
+# better with LILT_OPENALEX_KEY. See docs/editorial/story-discovery.md.
+on:
+  schedule:
+    - cron: "0 13 * * 1"   # Mondays, 13:00 UTC
+  workflow_dispatch:
+    inputs:
+      days:
+        description: Selection window in days
+        default: "14"
+      per_show:
+        description: Candidates considered per show
+        default: "3"
+
+jobs:
+  transcripts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5.6-luna' }}
+      OPENAI_REASONING_EFFORT: low
+      LILT_OPENALEX_KEY: ${{ secrets.LILT_OPENALEX_KEY }}
+      LILT_CONTACT_EMAIL: ${{ secrets.LILT_CONTACT_EMAIL }}
+      CORE_API_KEY: ${{ secrets.CORE_API_KEY }}
+      DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+      TYPESAFE_AI_API_KEY: ${{ secrets.TYPESAFE_AI_API_KEY }}
+      LILT_EUREKALERT: "1"
+      LILT_SMC: "1"
+      LILT_DRAFT_ATTEMPTS: "2"
+      # The weekly run drafts every show, so the per-run cap must exceed the show count.
+      LILT_MAX_PROVIDER_CALLS_PER_DAY: "96"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate one transcript per show
+        run: |
+          python3 experiments/full-run/run_all_shows.py \
+            --days "${{ inputs.days || 14 }}" \
+            --per-show "${{ inputs.per_show || 3 }}" \
+            --out full-run-artifacts
+
+      - name: Upload transcripts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-run-transcripts
+          path: full-run-artifacts/
+          if-no-files-found: warn
+          retention-days: 90

@@ -16,3 +16,5 @@ demos/*/beats/*.mp3
 tts-lab-out/
 experiments/tts_lab/**/*.wav
 experiments/selection/cache/
+experiments/full-run/run-*/
+full-run-artifacts/

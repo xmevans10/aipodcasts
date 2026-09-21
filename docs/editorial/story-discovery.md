@@ -126,3 +126,13 @@ Reactions never enter the evidence packet or the script. Verified live: 18 react
 parsed; `lena` matched the REM-sleep reaction and `ada` the brain ones. Covered by
 `backend/tests/test_smc.py`.
 
+## Weekly full run
+
+`experiments/full-run/run_all_shows.py` runs the whole chain — select → ingest → draft →
+verify — for every show and writes one transcript per show plus a manifest. `.github/workflows/full-run.yml`
+runs it every Monday (`0 13 * * 1`) and on demand, uploading `full-run-artifacts/` as a
+build artifact. Required repo secrets: `OPENAI_API_KEY`, `LILT_OPENALEX_KEY`,
+`LILT_CONTACT_EMAIL`; optional: `CORE_API_KEY`, `DEEPSEEK_API_KEY`, `TYPESAFE_AI_API_KEY`.
+The per-run provider cap is raised to 96 because the run drafts every show. It never
+narrates or publishes.
+

@@ -572,7 +572,11 @@ def draft_story(db, story_id):
         try:
             candidate = json.loads("".join(outputs))
             if duo:
-                validate_dialogue(candidate, {"text": evidence_text(packet)}, duo)
+                # validate_dialogue checks the opening for the exact paper title and first
+                # author, so it needs the metadata as well as the evidence text.
+                validate_dialogue(candidate, {"text": evidence_text(packet),
+                                              "title": source.get("title", ""),
+                                              "attribution": source.get("attribution", "")}, duo)
             else:
                 validate_draft(candidate, {"text": evidence_text(packet)})
                 validate_podcast(candidate, source, HOSTS[record["host"]])

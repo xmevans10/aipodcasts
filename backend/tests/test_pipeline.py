@@ -98,6 +98,39 @@ class PipelineTests(unittest.TestCase):
                 self.assertEqual(payload['model'], 'gpt-5.6-luna')
                 self.assertEqual(payload['reasoning'], {'effort': 'low'})
                 self.assertEqual(json.loads(payload['input'])['source_attribution'], 'A. Researcher')
+    def test_dialogue_draft_receives_paper_metadata(self):
+        # Regression: the dialogue validator checks the opening for the exact paper title
+        # and first author, so draft_story must pass metadata, not just evidence text.
+        source = {'title': 'Growth across a leaf', 'attribution': 'Kate Harline, Brendan Lane',
+                  'text': 'The sample was small. Growth coordination keeps the leaf flat. ' * 40,
+                  'url': 'https://doi.org/10.1/x', 'license': 'CC BY 4.0', 'licenseURL': ''}
+        ines, dev = HOSTS['ines'], HOSTS['dev']
+        dialogue = {
+            'title': 'The quiet achievement',
+            'dek': 'A second opinion on how a leaf stays flat.',
+            'turns': [
+                {'speaker': ines.name, 'text': 'Today: The quiet achievement. Kate Harline and colleagues ask how Growth across a leaf stays flat. ' + 'word ' * 220},
+                {'speaker': dev.name, 'text': 'Here is why it matters outside the lab, framed as one clearly marked comparison.'},
+                {'speaker': ines.name, 'text': 'The method is careful, and the sample was small. ' + ines.sign_off},
+                {'speaker': dev.name, 'text': 'That caveat does not spoil the finding, it sharpens it.'},
+                {'speaker': ines.name, 'text': 'Exactly. A small clear result still earns its place.'},
+                {'speaker': dev.name, 'text': 'And that is the whole story. ' + dev.sign_off},
+            ],
+            'caveat': 'The sample was small.',
+            'claims': [{'claim': 'Coordination keeps the leaf flat',
+                        'quote': 'Growth coordination keeps the leaf flat'}],
+        }
+        story_id = 'd' * 20
+        self.db.execute('INSERT INTO stories(id,source,host) VALUES(?,?,?)',
+                        (story_id, json.dumps(source), 'ines'))
+        self.db.commit()
+        response = {'status': 'completed', 'output': [{'content': [{'type': 'output_text', 'text': json.dumps(dialogue)}]}]}
+        with patch.dict(os.environ, {'OPENAI_API_KEY': 'test', 'OPENAI_MODEL': 'test-model'}):
+            with patch.object(p, 'request', return_value=json.dumps(response).encode()):
+                draft = p.draft_story(self.db, story_id)
+        self.assertEqual(draft['title'], 'The quiet achievement')
+        self.assertEqual(len(draft['turns']), 6)
+
     def test_missing_authors_block_paid_generation(self):
         self.source['attribution'] = 'Authors listed at source'
         self.db.execute('UPDATE stories SET source=?', (json.dumps(self.source),)); self.db.commit()

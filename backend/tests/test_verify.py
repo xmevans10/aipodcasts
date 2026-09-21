@@ -51,6 +51,20 @@ class VerifyTests(unittest.TestCase):
         self.assertFalse(report["pass"])
         self.assertTrue(any("entail_0" in f for f in report["failures"]))
 
+    def test_smc_caveats_add_a_question(self):
+        source, packet, draft = fixtures()
+        caveats = [{"title": "Expert reaction to a sleep study", "url": "https://example.org/x"}]
+        failed = verify_draft(draft, source, packet, FakeDecider(0.3), caveats=caveats)
+        self.assertTrue(any("smc_caveats" in f for f in failed["failures"]))
+        passed = verify_draft(draft, source, packet, FakeDecider(0.9), caveats=caveats)
+        self.assertTrue(passed["pass"], passed["failures"])
+        self.assertIn("smc_caveats", passed["notes"])
+
+    def test_no_caveats_adds_no_smc_question(self):
+        source, packet, draft = fixtures()
+        report = verify_draft(draft, source, packet, FakeDecider(0.95))
+        self.assertNotIn("smc_caveats", report["notes"])
+
     def test_jev_decider_maps_boolean_to_noul(self):
         seen = {}
 

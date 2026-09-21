@@ -214,7 +214,8 @@ def _text_of(draft: dict) -> str:
     return " ".join(str(draft.get(field, "")) for field in ("title", "dek", "body", "caveat"))
 
 
-def verify_draft(draft: dict, source: dict, packet: dict, decider_: Decider) -> dict:
+def verify_draft(draft: dict, source: dict, packet: dict, decider_: Decider,
+                 caveats: list | None = None) -> dict:
     failures: list[str] = []
     notes: dict = {}
 
@@ -244,11 +245,22 @@ def verify_draft(draft: dict, source: dict, packet: dict, decider_: Decider) -> 
             "measurement, rather than commentary, policy, opinion or a review."))
         questions.append(TypedQuestion("no_overstatement", "boolean",
             "The 'script' field stays within the 'evidence' field and does not overstate it."))
+        # Science Media Centre reactions are a checking source: they add a caveat
+        # question for the beats they cover (see smc.py). They never enter evidence.
+        if caveats:
+            questions.append(TypedQuestion("smc_caveats", "boolean",
+                "The script acknowledges the caveats or limitations raised by these expert "
+                "reactions and does not overstate beyond the evidence: "
+                + "; ".join(c.get("title", "") for c in caveats)))
         try:
-            decisions = decider_.ask(questions, {
+            state = {
                 "script": _text_of(draft),
                 "evidence": evidence_text(packet)[:6000],
-            })
+            }
+            if caveats:
+                state["expert_reactions"] = [{"title": c.get("title"), "url": c.get("url")}
+                                             for c in caveats]
+            decisions = decider_.ask(questions, state)
         except RuntimeError as error:
             failures.append(f"verifier_unavailable: {error}")
         for question in questions:
@@ -259,7 +271,7 @@ def verify_draft(draft: dict, source: dict, packet: dict, decider_: Decider) -> 
             probability = decision.probability if decision.probability is not None else 0.0
             notes[question.id] = probability
             threshold = {"entail": ENTAIL_THRESHOLD, "primary_finding": PRIMARY_THRESHOLD,
-                         "no_overstatement": OVERSTATE_THRESHOLD}
+                         "no_overstatement": OVERSTATE_THRESHOLD, "smc_caveats": 0.5}
             key = "entail" if question.id.startswith("entail_") else question.id
             if probability < threshold[key]:
                 failures.append(f"{question.id}={probability:.2f} below {threshold[key]}")
@@ -288,4 +300,14 @@ def verify_story(db, story_id: str, decider_mode: str = "auto") -> dict:
     else:
         from evidence import build_packet
         packet = build_packet(source, int(os.environ.get("LILT_MAX_SOURCE_CHARS", "18000")))
-    return verify_draft(draft, source, packet, decider(decider_mode))
+    # SMC reactions are opt-in (LILT_SMC=1) and best-effort: a feed failure must never
+    # block or approve a story, so it fails open to no caveat question.
+    caveats = []
+    if os.environ.get("LILT_SMC", "").strip().lower() in ("1", "true", "yes"):
+        try:
+            from beats import normalize_host
+            from smc import expert_reactions, reactions_for_host
+            caveats = reactions_for_host(normalize_host(record["host"]), expert_reactions())
+        except Exception:
+            caveats = []
+    return verify_draft(draft, source, packet, decider(decider_mode), caveats=caveats)

@@ -5,7 +5,7 @@ import sys
 import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from pipeline import connect
-from verify import Decision, Decider, verify_draft, verify_story, numeric_fidelity
+from verify import Decision, Decider, JevDecider, TypedQuestion, verify_draft, verify_story, numeric_fidelity
 
 
 class FakeDecider(Decider):
@@ -50,6 +50,24 @@ class VerifyTests(unittest.TestCase):
         report = verify_draft(draft, source, packet, FakeDecider(0.2))
         self.assertFalse(report["pass"])
         self.assertTrue(any("entail_0" in f for f in report["failures"]))
+
+    def test_jev_decider_maps_boolean_to_noul(self):
+        seen = {}
+
+        def transport(body):
+            seen.update(body)
+            return {"answers": {"real": {"type": "noul", "noul": 0.91},
+                                "topic": {"type": "choice", "choice": "astronomy"}}}
+
+        jev = JevDecider("test-key", transport=transport)
+        questions = [TypedQuestion("real", "boolean", "is it real"),
+                     TypedQuestion("topic", "choice", "what is it", {"astronomy": None})]
+        out = jev.ask(questions, {"x": 1})
+        self.assertEqual(seen["model"], "jev-latest")
+        self.assertEqual(seen["questions"]["real"]["type"], "noul")
+        self.assertAlmostEqual(out["real"].probability, 0.91)
+        self.assertTrue(out["real"].answer)
+        self.assertEqual(out["topic"].answer, "astronomy")
 
     def test_numeric_helper(self):
         self.assertEqual(numeric_fidelity("see 42 and 7", "nothing here"), ["42"])

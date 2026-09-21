@@ -2,7 +2,7 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from pipeline import parse_jats
+from pipeline import parse_jats, parse_arxiv_html, is_cc_by
 
 LONG = ("We measured many samples across sites and found a strong consistent effect. " * 8)
 
@@ -38,6 +38,20 @@ class IngestTests(unittest.TestCase):
     def test_parse_jats_rejects_doi_mismatch(self):
         with self.assertRaises(ValueError):
             parse_jats(jats(), "10.9999/other")
+
+    def test_is_cc_by(self):
+        self.assertTrue(is_cc_by("https://creativecommons.org/licenses/by/4.0/"))
+        self.assertFalse(is_cc_by("https://creativecommons.org/licenses/by-nc-nd/4.0/"))
+        self.assertFalse(is_cc_by(""))
+
+    def test_parse_arxiv_html_drops_chrome_and_references(self):
+        html = (b"<html><body><h2>1 Introduction</h2><p>" + b"meaningful paper sentence " * 6 +
+                b"</p><h2>Report GitHub Issue</h2><p>Content selection saved. Describe the issue below:</p>"
+                b"<h2>References</h2><p>a reference paragraph that is long enough to be captured normally.</p>"
+                b"</body></html>")
+        _text, passages = parse_arxiv_html(html)
+        self.assertEqual(len(passages), 1)
+        self.assertIn("Introduction", passages[0]["section"])
 
 
 if __name__ == "__main__":

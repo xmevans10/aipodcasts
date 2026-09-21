@@ -16,10 +16,10 @@ Two independent layers:
    - does the evidence report an original finding rather than commentary/policy?
    - does the script avoid overstating the evidence?
 
-`decider()` selects a backend: Jev when JEV_BASE_URL + a key are configured, else
-DeepSeek (key already in backend/.env), else deterministic only. Any failure to
-reach a backend does not auto-approve: the story abstains. Abstaining is a
-successful outcome for an autonomous grader.
+`decider()` selects a backend: Jev (TypeSafe System One) when TYPESAFE_AI_API_KEY is
+set, else DeepSeek, else deterministic only. Any failure to reach a backend does not
+auto-approve: the story abstains. Abstaining is a successful outcome for an
+autonomous grader.
 """
 from __future__ import annotations
 
@@ -121,15 +121,73 @@ class OpenAICompatDecider(Decider):
         return decisions
 
 
+class JevDecider(Decider):
+    """TypeSafe's Jev via the System One API.
+
+    POST {base}/systemone with {model, state, questions}. Boolean questions are sent
+    as type 'noul' and answered with a probability; choice/score come back with a
+    value and confidence. Verified against @ai-sdk/typesafe-ai 3.0.4.
+    """
+
+    name = "jev"
+
+    def __init__(self, api_key: str, base_url: str = "https://api.typesafe.ai/v1",
+                 model: str = "jev-latest", transport=None):
+        self.api_key = api_key
+        self.base_url = base_url.rstrip("/")
+        self.model = model
+        self.transport = transport
+
+    @staticmethod
+    def _question(question: TypedQuestion) -> dict:
+        if question.kind == "boolean":  # Jev calls booleans "noul"
+            return {"type": "noul", "instructions": question.instructions}
+        return {"type": question.kind, "instructions": question.instructions, "criteria": question.criteria}
+
+    def ask(self, questions, state):
+        body = {"model": self.model, "state": state,
+                "questions": {q.id: self._question(q) for q in questions}}
+        data = self._post(body)
+        answers = data.get("answers") or {}
+        decisions: dict[str, Decision] = {}
+        for question in questions:
+            answer = answers.get(question.id)
+            if not isinstance(answer, dict):
+                continue
+            if answer.get("type") == "noul" and isinstance(answer.get("noul"), (int, float)):
+                probability = float(answer["noul"])
+                decisions[question.id] = Decision("boolean", probability >= 0.5, probability)
+            elif answer.get("type") == "choice" and isinstance(answer.get("choice"), str):
+                decisions[question.id] = Decision("choice", answer["choice"])
+            elif answer.get("type") == "score" and isinstance(answer.get("score"), (int, float)):
+                decisions[question.id] = Decision("score", float(answer["score"]))
+        return decisions
+
+    def _post(self, body):
+        if self.transport is not None:
+            return self.transport(body)
+        request = urllib.request.Request(
+            self.base_url + "/systemone", data=json.dumps(body).encode(),
+            headers={"Authorization": "Bearer " + self.api_key, "Content-Type": "application/json"})
+        try:
+            with urllib.request.urlopen(request, timeout=120) as response:
+                return json.loads(response.read())
+        except (urllib.error.HTTPError, urllib.error.URLError, json.JSONDecodeError,
+                TimeoutError) as error:
+            raise RuntimeError(f"jev unavailable: {type(error).__name__}") from error
+
+
 def decider(mode: str = "auto") -> Decider:
     if mode == "deterministic":
         return DeterministicDecider()
-    jev_key = os.environ.get("JEV_API_KEY") or os.environ.get("TYPESAFE_AI_API_KEY")
-    jev_url = os.environ.get("JEV_BASE_URL", "").strip()
-    if jev_key and jev_url:  # Jev via TypeSafe/gateway when its endpoint is configured
-        return OpenAICompatDecider(jev_url, jev_key, os.environ.get("JEV_MODEL", "jev-latest"), "jev")
+    jev_key = os.environ.get("TYPESAFE_AI_API_KEY") or os.environ.get("JEV_API_KEY")
+    if mode in ("auto", "jev") and jev_key:
+        return JevDecider(jev_key, os.environ.get("TYPESAFE_BASE_URL", "https://api.typesafe.ai/v1"),
+                          os.environ.get("JEV_MODEL", "jev-latest"))
+    if mode == "jev":
+        return DeterministicDecider()  # asked for Jev but no key: abstain rather than guess
     deepseek = os.environ.get("DEEPSEEK_API_KEY")
-    if deepseek:
+    if mode in ("auto", "deepseek") and deepseek:
         return OpenAICompatDecider("https://api.deepseek.com", deepseek,
                                    os.environ.get("DEEPSEEK_MODEL", "deepseek-flash"), "deepseek")
     return DeterministicDecider()

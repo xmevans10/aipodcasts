@@ -39,7 +39,8 @@ def load_local_env(path: Path | None = None) -> None:
     allowed = {"OPENAI_API_KEY", "OPENAI_MODEL", "OPENAI_REASONING_EFFORT", "ELEVENLABS_API_KEY", "ELEVENLABS_MODEL",
                "ELEVENLABS_DIALOGUE_MODEL", "VOICE_PROVIDER", "VOICE_LOCAL_URL", "OPENAI_TTS_MODEL", "OPENAI_TTS_VOICE",
                "LILT_MAX_PROVIDER_CALLS_PER_DAY", "LILT_MAX_SOURCE_CHARS",
-               "LILT_OPENALEX_KEY", "LILT_CONTACT_EMAIL",
+               "LILT_OPENALEX_KEY", "LILT_CONTACT_EMAIL", "TYPESAFE_AI_API_KEY", "JEV_API_KEY",
+               "TYPESAFE_BASE_URL", "JEV_MODEL", "DEEPSEEK_API_KEY", "DEEPSEEK_MODEL",
                *[h.voice_env for h in HOSTS.values()], *["VOICE_OPENAI_" + h.id.upper() for h in HOSTS.values()]}
     for line in path.read_text().splitlines():
         line = line.strip()
@@ -193,8 +194,92 @@ def europepmc_source(doi: str) -> dict | None:
                       str(record.get("license") or ""))
 
 
+ARXIV_API = "https://export.arxiv.org/api/query"
+
+
+ARXIV_CHROME = re.compile(r"(HTML conversions sometimes|Report GitHub Issue|Back to top|"
+                          r"Content selection saved|Describe the issue below|"
+                          r"arXiv:\d|This article has an erratum)", re.I)
+ARXIV_STOP = re.compile(r"^(references|bibliography|acknowledg)", re.I)
+
+
+def parse_arxiv_html(html: bytes):
+    """Extract section-labelled paragraphs from an arXiv HTML (LaTeXML) page."""
+    body = re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", html.decode("utf-8", "replace"),
+                  flags=re.S | re.I)
+    passages, section = [], "Body"
+    for match in re.finditer(r"<(h[1-6]|p)\b[^>]*>(.*?)</\1>", body, re.S | re.I):
+        value = " ".join(re.sub(r"<[^>]+>", " ", match.group(2)).split())
+        if not value:
+            continue
+        if match.group(1).lower().startswith("h"):
+            if ARXIV_STOP.match(value):
+                break
+            if ARXIV_CHROME.search(value):
+                continue
+            section = value[:80]
+        elif len(value) >= 40 and not ARXIV_CHROME.search(value):
+            passages.append({"id": f"p{len(passages) + 1}", "section": section, "text": value})
+    return "\n\n".join(p["text"] for p in passages), passages
+
+
+def arxiv_license(arxiv_id: str) -> str:
+    page = request("https://arxiv.org/abs/" + arxiv_id).decode("utf-8", "replace")
+    match = re.search(r"creativecommons\.org/licenses/([a-z0-9-]+)/([\d.]+)", page)
+    return match.group(0) if match else ""
+
+
+def is_cc_by(license_url: str) -> bool:
+    value = (license_url or "").lower()
+    return "/by/" in value and "nc" not in value and "nd" not in value
+
+
+def arxiv_source(arxiv_id: str, license_url: str) -> dict:
+    ns = {"a": "http://www.w3.org/2005/Atom"}
+    root = ET.fromstring(request(ARXIV_API + "?id_list=" + urllib.parse.quote(arxiv_id) + "&max_results=1"))
+    entry = root.find("a:entry", ns)
+    if entry is None:
+        raise ValueError("arXiv id not found: " + arxiv_id)
+    title = " ".join(text(entry.find("a:title", ns)).split())
+    authors = [text(a.find("a:name", ns)) for a in entry.findall("a:author", ns)]
+    abstract = " ".join(text(entry.find("a:summary", ns)).split())
+    full_text, passages = parse_arxiv_html(request("https://arxiv.org/html/" + arxiv_id))
+    if len(full_text) < 400:
+        raise ValueError("arXiv full text unavailable or too short: " + arxiv_id)
+    match = re.search(r"creativecommons\.org/licenses/by/([\d.]+)", license_url)
+    return {"title": title, "url": "https://arxiv.org/abs/" + arxiv_id, "doi": "arxiv:" + arxiv_id,
+            "attribution": ", ".join(authors) or "Authors listed at source", "journal": "arXiv",
+            "license": "CC BY " + match.group(1), "licenseURL": license_url,
+            "text": abstract + "\n\n" + full_text,
+            "passages": [{"id": "p0", "section": "Abstract", "text": abstract}] + passages,
+            "retrieved": dt.datetime.now(dt.timezone.utc).isoformat()}
+
+
+def ingest_arxiv(db: sqlite3.Connection, arxiv_id: str, host: str, refresh: bool = False) -> str:
+    if host not in HOSTS:
+        raise ValueError("Unknown host")
+    story_id = hashlib.sha256(("arxiv:" + arxiv_id + ":" + host).encode()).hexdigest()[:20]
+    existing = db.execute("SELECT state FROM stories WHERE id=?", (story_id,)).fetchone()
+    if existing and not refresh:
+        return story_id
+    if existing and existing["state"] != "ingested":
+        raise ValueError("Only an undrafted source can be refreshed")
+    license_url = arxiv_license(arxiv_id)
+    if not is_cc_by(license_url):
+        raise ValueError("arXiv paper is not CC BY; not commercially reusable: " + arxiv_id)
+    source = arxiv_source(arxiv_id, license_url)
+    with db:
+        if existing:
+            db.execute("UPDATE stories SET source=? WHERE id=?", (json.dumps(source), story_id))
+        else:
+            db.execute("INSERT INTO stories(id,source,host) VALUES(?,?,?)", (story_id, json.dumps(source), host))
+    return story_id
+
+
 def ingest_any(db: sqlite3.Connection, doi: str, host: str, refresh: bool = False) -> str:
-    """Ingest from whichever connector can parse this DOI: PLOS first, then Europe PMC."""
+    """Ingest from whichever connector can parse this identifier: PLOS, arXiv, then Europe PMC."""
+    if doi.startswith("arxiv:"):
+        return ingest_arxiv(db, doi.split(":", 1)[1], host, refresh)
     if re.fullmatch(r"10\.1371/journal\.[a-z]+\.\d+", doi):
         return ingest(db, doi, host, refresh)
     if host not in HOSTS:

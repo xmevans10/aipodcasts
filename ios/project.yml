@@ -16,7 +16,7 @@ settings:
     INFOPLIST_KEY_CFBundleDisplayName: Zwicky
     INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.news
     INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: false
-    CURRENT_PROJECT_VERSION: 4
+    CURRENT_PROJECT_VERSION: 5
     MARKETING_VERSION: 1.0.0
     DEVELOPMENT_TEAM: 8K5ZVPCQ42
     CODE_SIGN_STYLE: Automatic

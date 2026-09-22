@@ -145,11 +145,10 @@ struct ShowCover: View {
             let w = min(geometry.size.width, geometry.size.height)
             ZStack(alignment: .bottomLeading) {
                 // Every decorative layer is clamped to w×w so none of them can size the cover.
-                CoverWash(show: show).frame(width: w, height: w)
-                if w >= 56 {
-                    CoverMotif(show: show).frame(width: w, height: w)
-                        .opacity(w >= 96 ? 0.12 : 0.08)
-                }
+                Image("cover-\(show.id)")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: w, height: w)
                 RadialGradient(colors: [show.light.opacity(0.4), .clear], center: UnitPoint(x: 0.82, y: 0.14),
                                startRadius: 0, endRadius: w * 0.72)
                 Ellipse()

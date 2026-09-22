@@ -9,6 +9,14 @@ file is self-contained except for the shared context, which you paste once at th
 2. Paste one milestone prompt from the files below.
 3. Point the agent at this repo and let it verify with the checks in the shared context.
 
+## Content quality repair
+
+The 2026-09-22 audience review found that the latest scripts are too technical and some
+read internal instructions aloud. Use the comprehensive [content-quality prompt sequence](content-quality/README.md)
+to repair generation, add audience review, rewrite all sixteen episodes, and verify a safe
+release. It records the unresolved spoken-paper-title choice and the interrupted milestone-1
+publication. Start there before rerendering the current batch.
+
 ## Milestones
 
 | # | File | Goal | Depends on |
@@ -28,5 +36,7 @@ nothing new; 4 builds on the pipeline that already publishes to R2.
 - Render + publish: `.github/workflows/render-episodes.yml` → `tools/tts/bundle_shows.py`,
   `tools/publish_feed.py` → Cloudflare R2 (`R2_*` secrets).
 - Live feed: `https://pub-e19f5de621fd4b4ea01c0465d0251407.r2.dev/v1/feed.json`.
-- 14 solo shows live; co-hosted shows deferred (milestone 1).
+- Last verified live state (2026-09-22): 14 shows / 18 episodes. Co-host rendering and iOS
+  speaker labels are implemented, but the pending release was cancelled for content-quality
+  repairs. See [the current handoff](content-quality/00-shared-context.md); recheck live state.
 - App defaults to the feed; read-along fetches `detailURL` sidecars.

@@ -1,8 +1,8 @@
-# Effects of surface defects on flow and heat transfer in additively manufactured ellipsoidal Kelvin lattices
+# The Tiny Flaws Inside a 3D Print
 
 *A printed lattice can look perfect in a computer model, while roughness and tiny shape errors change how air moves through the real part.*
 
-An ellipsoidal Kelvin lattice can look like a piece of impossible metal lace: curved struts, narrow passages, and a shape that seems designed to make a caliper give up. Build it one layer at a time, though, and the real object brings along rough skin and small shape errors. Those details can change the airflow and the heat it carries away.
+The Tiny Flaws Inside a 3D Print. An ellipsoidal Kelvin lattice can look like a piece of impossible metal lace: curved struts, narrow passages, and a shape that seems designed to make a caliper give up. Build it one layer at a time, though, and the real object brings along rough skin and small shape errors. Those details can change the airflow and the heat it carries away.
 
 That’s the subject of Effects of surface defects on flow and heat transfer in additively manufactured ellipsoidal Kelvin lattices. Yu Liu and colleagues report the work in International Communications in Heat and Mass Transfer.
 

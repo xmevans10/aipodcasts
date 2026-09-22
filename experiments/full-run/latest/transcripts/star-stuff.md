@@ -1,8 +1,8 @@
-# Ultrahigh resolution 19F and 31P NMR spectroscopy
+# Untangling a Molecular Traffic Jam
 
 *A new NMR experiment separates crowded signals from fluorine- and phosphorus-rich samples without special equipment.*
 
-The calcium in your bones was forged in ancient stars. Iron in your blood passed through furnaces too, before becoming part of the chemistry of a living body. I follow those atoms from cloud to star and back out again, so I’m always listening for the clues they leave in a spectrum. Today, the clue is made on Earth, in a laboratory.
+Untangling a Molecular Traffic Jam. The calcium in your bones was forged in ancient stars. Iron in your blood passed through furnaces too, before becoming part of the chemistry of a living body. I follow those atoms from cloud to star and back out again, so I’m always listening for the clues they leave in a spectrum. Today, the clue is made on Earth, in a laboratory.
 
 “Ultrahigh resolution 19F and 31P NMR spectroscopy” is a study by Coral Mycroft and colleagues, published in Communications Chemistry. It asks a practical question: how do you read a chemical sample when many signals pile on top of one another?
 
@@ -28,8 +28,8 @@ So the story returns to the spectrum. In a star, a line can reveal an element fo
   > Here, we report an ultra-broadband, ultrahigh resolution NMR experiment for measuring pure shift spectra of nuclei such as fluorine and phosphorus.
 - The method addresses signal overlap that reduces spectral resolution.
   > Often, such analyses can be challenging because overlap between multiplets degrades spectral resolution.
-- The experiment covers the broad chemical-shift ranges commonly seen in fluorine and phosphorus NMR.
-  > However, existing methods have insufficient bandwidth to cover the large chemical shift ranges commonly observed in fluorine and phosphorus NMR.
+- The researchers report an ultra-broadband NMR experiment for pure shift spectra of fluorine and phosphorus.
+  > Here, we report an ultra-broadband, ultrahigh resolution NMR experiment for measuring pure shift spectra of nuclei such as fluorine and phosphorus.
 - The method was demonstrated on complex systems rich in fluorine and phosphorus.
   > Its usefulness is demonstrated in the analysis of complex systems highly abundant in these nuclei with far-reaching applications in pharmaceuticals, environmental sciences and synthetic chemistry.
 - The method does not require special NMR equipment.

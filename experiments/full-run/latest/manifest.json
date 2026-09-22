@@ -8,8 +8,8 @@
       "host": "nova",
       "status": "approved",
       "doi": "10.1038/s43247-026-04038-1",
-      "title": "Nickel isotopes reveal micrometeorite accretion on the lunar farside dominated by inner Solar System materials",
-      "words": 442,
+      "title": "Who’s Been Dusting the Far Side of the Moon?",
+      "words": 454,
       "evidence_tier": "abstract",
       "verification_pass": true
     },
@@ -18,8 +18,8 @@
       "host": "fern",
       "status": "approved",
       "doi": "10.1111/1749-4877.70182",
-      "title": "Ecology and Brain Size Drive Feeding Innovations in Birds",
-      "words": 480,
+      "title": "Which Birds Invent New Ways to Eat?",
+      "words": 487,
       "evidence_tier": "abstract",
       "verification_pass": true
     },
@@ -28,48 +28,48 @@
       "host": "ada",
       "status": "approved",
       "doi": "10.1007/s11357-026-02516-0",
-      "title": "Enhancing fall risk assessment in the oldest old: The interplay of cognition and gait speed",
-      "words": 467,
+      "title": "What a Slower Walk Can Tell Us",
+      "words": 459,
       "evidence_tier": "abstract",
       "verification_pass": true
     },
     {
       "show": "Common Ground",
       "host": "atlas",
-      "status": "abstained",
+      "status": "approved",
       "doi": "10.1016/j.srs.2026.100506",
-      "title": "Automating glacier facies classification: Benchmark dataset and deep learning baseline from pan-European sample",
-      "words": 455,
+      "title": "Reading a Glacier from Space",
+      "words": 460,
       "evidence_tier": "abstract",
-      "verification_pass": false
+      "verification_pass": true
     },
     {
       "show": "Webwork",
       "host": "spinner",
       "status": "approved",
       "doi": "10.1016/j.jad.2026.122490",
-      "title": "Mapping mental representations of fear-relevant stimuli through similarity modeling",
-      "words": 440,
+      "title": "What Makes a Spider Scary?",
+      "words": 445,
       "evidence_tier": "abstract",
       "verification_pass": true
     },
     {
       "show": "Star Stuff",
       "host": "yusuf",
-      "status": "abstained",
+      "status": "approved",
       "doi": "10.1038/s42004-026-01968-x",
-      "title": "Ultrahigh resolution 19F and 31P NMR spectroscopy",
-      "words": 436,
+      "title": "Untangling a Molecular Traffic Jam",
+      "words": 441,
       "evidence_tier": "abstract",
-      "verification_pass": false
+      "verification_pass": true
     },
     {
       "show": "Gradient",
       "host": "noor",
       "status": "approved",
       "doi": "10.1515/jdis-2026-0048",
-      "title": "Can Large Language Models Evaluate Grant Proposal Quality? Revisiting the Wennerås and Wold Peer Review Data",
-      "words": 422,
+      "title": "Would You Let AI Judge Your Big Idea?",
+      "words": 430,
       "evidence_tier": "abstract",
       "verification_pass": true
     },
@@ -78,8 +78,8 @@
       "host": "marek",
       "status": "approved",
       "doi": "10.1016/j.icheatmasstransfer.2026.112564",
-      "title": "Effects of surface defects on flow and heat transfer in additively manufactured ellipsoidal Kelvin lattices",
-      "words": 448,
+      "title": "The Tiny Flaws Inside a 3D Print",
+      "words": 455,
       "evidence_tier": "abstract",
       "verification_pass": true
     },
@@ -88,8 +88,8 @@
       "host": "tomas",
       "status": "approved",
       "doi": "10.1016/j.exer.2026.111239",
-      "title": "Biomechanical interplay between lamina cribrosa and peripapillary sclera characterized by 3D ultrasound elastography",
-      "words": 448,
+      "title": "What Happens When Eye Pressure Rises?",
+      "words": 457,
       "evidence_tier": "abstract",
       "verification_pass": true
     },
@@ -98,8 +98,8 @@
       "host": "lena",
       "status": "approved",
       "doi": "10.1163/22134913-bja10087",
-      "title": "When Paintings Change Time: Visual Structure and Circadian Context Shape Subjective Duration",
-      "words": 459,
+      "title": "Can a Painting Change Your Sense of Time?",
+      "words": 467,
       "evidence_tier": "abstract",
       "verification_pass": true
     },
@@ -108,8 +108,8 @@
       "host": "rosa",
       "status": "approved",
       "doi": "10.1038/s44512-026-00002-3",
-      "title": "Cell wall-forming chitin synthases in a chytrid fungus",
-      "words": 508,
+      "title": "How a Fungus Builds Its Walls",
+      "words": 514,
       "evidence_tier": "abstract",
       "verification_pass": true
     },
@@ -118,8 +118,8 @@
       "host": "amara",
       "status": "approved",
       "doi": "10.1016/j.atech.2026.102559",
-      "title": "Determining blooming-phase dynamics through intra-day hive-weight analysis",
-      "words": 435,
+      "title": "What the Hive Brought Home",
+      "words": 440,
       "evidence_tier": "abstract",
       "verification_pass": true
     },
@@ -128,8 +128,8 @@
       "host": "kenji",
       "status": "approved",
       "doi": "10.1038/s43247-026-04042-5",
-      "title": "Pronounced megafaunal community transition driven by polymetallic nodule cover in the Northwest Pacific abyss",
-      "words": 498,
+      "title": "Life on the Seafloor’s Metal Pebbles",
+      "words": 504,
       "evidence_tier": "abstract",
       "verification_pass": true
     },
@@ -138,30 +138,30 @@
       "host": "freya",
       "status": "approved",
       "doi": "10.1186/s13059-026-04242-4",
-      "title": "COSIGT: population-scalable genotyping of complex loci from low-coverage sequencing data using pangenome graphs",
-      "words": 445,
+      "title": "Making More of Less Ancient DNA",
+      "words": 451,
       "evidence_tier": "abstract",
       "verification_pass": true
     },
     {
       "show": "Ground Truth",
       "host": "ines",
-      "status": "abstained",
+      "status": "approved",
       "doi": "10.1038/s41586-026-11034-0",
-      "title": "Cohesin reshapes replication fork contacts to aid fork slowing and reversal",
-      "words": 391,
+      "title": "When DNA Copying Hits the Brakes",
+      "words": 400,
       "evidence_tier": "abstract",
-      "verification_pass": false
+      "verification_pass": true
     },
     {
       "show": "Star Bros",
       "host": "jax",
-      "status": "abstained",
+      "status": "approved",
       "doi": "10.1051/0004-6361/202660142",
-      "title": "Learning cosmic web environments with diffusion models",
-      "words": 604,
+      "title": "What AI Learns from a Fake Universe",
+      "words": 611,
       "evidence_tier": "abstract",
-      "verification_pass": false
+      "verification_pass": true
     }
   ]
 }

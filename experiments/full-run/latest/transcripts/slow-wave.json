@@ -14,18 +14,17 @@
     "evidence_tier": "abstract",
     "evidence_note": "Abstract-only evidence; no full-text reuse."
   },
-  "words": 459,
+  "words": 467,
   "verification": {
-    "story": "0c3e5a05db2390d9bc85",
-    "status": "approved",
     "pass": true,
+    "draft_sha256": "20dfcc199b4590480ad2929ba2d54545091ad47b0f84f2d351a25f97d530220d",
     "failures": [],
     "backend": "jev",
     "evidence_sha256": "a8b9e4f41c64de57",
     "notes": {
       "claims_checked": 5,
       "missing_numbers": [],
-      "entail_0": 0.99,
+      "entail_0": 0.98,
       "entail_1": 0.98,
       "entail_2": 0.98,
       "entail_3": 0.99,
@@ -33,12 +32,14 @@
       "primary_finding": 0.95,
       "no_overstatement": 0.83
     },
-    "reviewer": "auto-verifier:jev"
+    "reviewer": "auto-verifier:jev",
+    "story": "0c3e5a05db2390d9bc85",
+    "status": "approved"
   },
   "draft": {
-    "title": "When Paintings Change Time: Visual Structure and Circadian Context Shape Subjective Duration",
+    "title": "Can a Painting Change Your Sense of Time?",
     "dek": "A study using Van Gogh paintings finds that perceived duration reflects both the details in an image and the viewer’s biological timing context.",
-    "body": "Have you ever watched a second hand, blinked, and felt that the moment had stretched or snapped shut? While we sleep, the brain moves through measurable stages. While we’re awake, it also keeps estimating time from the world around us. A new study asks how much a painting can bend that estimate.\n\nThe paper is titled “When Paintings Change Time: Visual Structure and Circadian Context Shape Subjective Duration.” Cehao Yu and colleagues published it in Art & Perception. They showed participants images based on five Van Gogh paintings. There were 25 images altogether: the five originals, plus versions shifted toward four different color directions.\n\nThe task was simple in principle. Each image appeared for a brief interval. Participants judged whether that interval seemed closer to a learned short duration or a learned long one. The researchers then compared those judgments with features of the paintings, such as brightness, color spread, and the complexity of directional patterns. They also looked at each participant’s chronotype, meaning their usual timing preference, along with day length.\n\nColor alone had a small effect. Blue-shifted images were judged as lasting slightly longer than neutral and green-shifted images. But the average judgments for those conditions stayed close to the true midpoint. The larger differences appeared between individual paintings. The shortest and longest perceived durations differed by about 22 milliseconds. That’s a tiny interval, but it was consistent enough to relate to measurable visual structure.\n\nThree groups of image features together accounted for 59 percent of the differences between paintings. The researchers also found that chronotype and day length independently predicted perceived duration. In this sample, those observer-level effects were larger than the effects linked to the image statistics.\n\nA comparison may help here. Think of perception as a timetable that’s adjusted by both the train and the station. The painting supplies the changing scenery, while the viewer’s internal clock and the season help set the schedule. The result isn’t a coded message hidden in the artwork. It’s a report from a brain estimating time while looking at structured visual input.\n\nThe study has limits. It used a small, specialized set of images derived from five Van Gogh paintings, so the findings may not apply to other artworks, viewing conditions, or populations. The color effects were modest, and the observational links with chronotype and day length cannot establish that circadian or seasonal factors caused changes in perceived duration. The packet does not provide the participant count or enough detail to judge how widely the results generalize.\n\nSo, when a painting seems to linger, the clock in your head may be responding to more than color. It may be taking in visual structure while keeping time in its own quiet way. I'm Lena Petrova. Sleep on it, properly.",
+    "body": "Can a Painting Change Your Sense of Time? Have you ever watched a second hand, blinked, and felt that the moment had stretched or snapped shut? While we sleep, the brain moves through measurable stages. While we’re awake, it also keeps estimating time from the world around us. A new study asks how much a painting can bend that estimate.\n\nThe paper is titled “When Paintings Change Time: Visual Structure and Circadian Context Shape Subjective Duration.” Cehao Yu and colleagues published it in Art & Perception. They showed participants images based on five Van Gogh paintings. There were 25 images altogether: the five originals, plus versions shifted toward four different color directions.\n\nThe task was simple in principle. Each image appeared for a brief interval. Participants judged whether that interval seemed closer to a learned short duration or a learned long one. The researchers then compared those judgments with features of the paintings, such as brightness, color spread, and the complexity of directional patterns. They also looked at each participant’s chronotype, meaning their usual timing preference, along with day length.\n\nColor alone had a small effect. Blue-shifted images were judged as lasting slightly longer than neutral and green-shifted images. But the average judgments for those conditions stayed close to the true midpoint. The larger differences appeared between individual paintings. The shortest and longest perceived durations differed by about 22 milliseconds. That’s a tiny interval, but it was consistent enough to relate to measurable visual structure.\n\nThree groups of image features together accounted for 59 percent of the differences between paintings. The researchers also found that chronotype and day length independently predicted perceived duration. In this sample, those observer-level effects were larger than the effects linked to the image statistics.\n\nA comparison may help here. Think of perception as a timetable that’s adjusted by both the train and the station. The painting supplies the changing scenery, while the viewer’s internal clock and the season help set the schedule. The result isn’t a coded message hidden in the artwork. It’s a report from a brain estimating time while looking at structured visual input.\n\nThe study has limits. It used a small, specialized set of images derived from five Van Gogh paintings, so the findings may not apply to other artworks, viewing conditions, or populations. The color effects were modest, and the observational links with chronotype and day length cannot establish that circadian or seasonal factors caused changes in perceived duration. The packet does not provide the participant count or enough detail to judge how widely the results generalize.\n\nSo, when a painting seems to linger, the clock in your head may be responding to more than color. It may be taking in visual structure while keeping time in its own quiet way. I'm Lena Petrova. Sleep on it, properly.",
     "caveat": "The study has limits. It used a small, specialized set of images derived from five Van Gogh paintings, so the findings may not apply to other artworks, viewing conditions, or populations. The color effects were modest, and the observational links with chronotype and day length cannot establish that circadian or seasonal factors caused changes in perceived duration. The packet does not provide the participant count or enough detail to judge how widely the results generalize.",
     "claims": [
       {

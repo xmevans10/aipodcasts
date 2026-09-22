@@ -1,8 +1,8 @@
-# COSIGT: population-scalable genotyping of complex loci from low-coverage sequencing data using pangenome graphs
+# Making More of Less Ancient DNA
 
 *A method for reading difficult genetic regions from sparse sequencing data, including ancient DNA, by comparing coverage patterns rather than raw read counts.*
 
-A single ancient DNA sample can arrive like a book with most of its pages missing. How do you work out which genetic version was there, without pretending the gaps are readable text?
+Making More of Less Ancient DNA. A single ancient DNA sample can arrive like a book with most of its pages missing. How do you work out which genetic version was there, without pretending the gaps are readable text?
 
 That’s the question behind “COSIGT: population-scalable genotyping of complex loci from low-coverage sequencing data using pangenome graphs.” The study, published in Genome Biology, comes from Davide Bolognini and colleagues.
 

@@ -14,37 +14,32 @@
     "evidence_tier": "abstract",
     "evidence_note": "Abstract-only evidence; no full-text reuse."
   },
-  "words": 436,
+  "words": 441,
   "verification": {
-    "story": "3499e42924e961fa3480",
-    "status": "abstained",
-    "pass": false,
-    "failures": [
-      "numbers_not_in_evidence: ['19', '31']",
-      "entail_2=0.71 below 0.8"
-    ],
+    "pass": true,
+    "draft_sha256": "3bae4bbac011b1c92b6461e6a21dfc82043e99cc7550a4cc8cddd2b2759cd5e3",
+    "failures": [],
     "backend": "jev",
     "evidence_sha256": "587bb7658fd90203",
     "notes": {
       "claims_checked": 5,
-      "missing_numbers": [
-        "19",
-        "31"
-      ],
-      "entail_0": 0.94,
+      "missing_numbers": [],
+      "entail_0": 0.92,
       "entail_1": 0.95,
-      "entail_2": 0.71,
-      "entail_3": 0.98,
+      "entail_2": 0.97,
+      "entail_3": 0.97,
       "entail_4": 0.98,
       "primary_finding": 0.85,
       "no_overstatement": 0.65
     },
-    "reviewer": "auto-verifier:jev"
+    "reviewer": "auto-verifier:jev",
+    "story": "3499e42924e961fa3480",
+    "status": "approved"
   },
   "draft": {
-    "title": "Ultrahigh resolution 19F and 31P NMR spectroscopy",
+    "title": "Untangling a Molecular Traffic Jam",
     "dek": "A new NMR experiment separates crowded signals from fluorine- and phosphorus-rich samples without special equipment.",
-    "body": "The calcium in your bones was forged in ancient stars. Iron in your blood passed through furnaces too, before becoming part of the chemistry of a living body. I follow those atoms from cloud to star and back out again, so I’m always listening for the clues they leave in a spectrum. Today, the clue is made on Earth, in a laboratory.\n\n“Ultrahigh resolution 19F and 31P NMR spectroscopy” is a study by Coral Mycroft and colleagues, published in Communications Chemistry. It asks a practical question: how do you read a chemical sample when many signals pile on top of one another?\n\nThe technique is called nuclear magnetic resonance, or NMR. It works a little like listening to a room full of people speaking at once, then trying to identify each voice. Fluorine and phosphorus can produce especially crowded patterns. Those overlapping patterns make it hard to tell which signal belongs to which compound.\n\nThe researchers used a type of NMR measurement known as a pure shift experiment. It suppresses one source of signal broadening, caused by interactions between similar atomic nuclei. That can make the separate signals easier to see. Existing pure shift methods, though, don’t cover the broad range of chemical shifts often found in fluorine and phosphorus measurements.\n\nThis team reports an ultra-broadband version with very high resolution. In comparison, think of it as replacing a narrow window with a wide one while also sharpening the focus. The experiment can measure pure shift spectra across a much larger range. The authors demonstrated its usefulness with complex samples containing abundant fluorine and phosphorus, with possible applications in pharmaceutical, environmental and synthetic chemistry.\n\nThere’s a practical detail worth keeping. The method is described as simple to set up, and it doesn’t require special NMR equipment. That could make clearer spectra more accessible in laboratories that already have standard equipment.\n\nThe supplied material is an abstract, so it doesn’t tell us how the method performs across every sample, how its resolution compares numerically with each existing approach, or where its limits appear. It also reports demonstrated usefulness, not a guarantee that every fluorine- or phosphorus-rich mixture will become easy to interpret.\n\nSelected source paragraphs only. Omitted sections may contain additional evidence and limitations. Do not claim a complete review.\n\nSo the story returns to the spectrum. In a star, a line can reveal an element forged long ago. In a laboratory, a cleaner line can reveal which compounds are present now. Better separation doesn’t create new chemistry. It helps us hear the chemistry that was already there. I'm Yusuf Adeyemi. We are made of old light.",
+    "body": "Untangling a Molecular Traffic Jam. The calcium in your bones was forged in ancient stars. Iron in your blood passed through furnaces too, before becoming part of the chemistry of a living body. I follow those atoms from cloud to star and back out again, so I’m always listening for the clues they leave in a spectrum. Today, the clue is made on Earth, in a laboratory.\n\n“Ultrahigh resolution 19F and 31P NMR spectroscopy” is a study by Coral Mycroft and colleagues, published in Communications Chemistry. It asks a practical question: how do you read a chemical sample when many signals pile on top of one another?\n\nThe technique is called nuclear magnetic resonance, or NMR. It works a little like listening to a room full of people speaking at once, then trying to identify each voice. Fluorine and phosphorus can produce especially crowded patterns. Those overlapping patterns make it hard to tell which signal belongs to which compound.\n\nThe researchers used a type of NMR measurement known as a pure shift experiment. It suppresses one source of signal broadening, caused by interactions between similar atomic nuclei. That can make the separate signals easier to see. Existing pure shift methods, though, don’t cover the broad range of chemical shifts often found in fluorine and phosphorus measurements.\n\nThis team reports an ultra-broadband version with very high resolution. In comparison, think of it as replacing a narrow window with a wide one while also sharpening the focus. The experiment can measure pure shift spectra across a much larger range. The authors demonstrated its usefulness with complex samples containing abundant fluorine and phosphorus, with possible applications in pharmaceutical, environmental and synthetic chemistry.\n\nThere’s a practical detail worth keeping. The method is described as simple to set up, and it doesn’t require special NMR equipment. That could make clearer spectra more accessible in laboratories that already have standard equipment.\n\nThe supplied material is an abstract, so it doesn’t tell us how the method performs across every sample, how its resolution compares numerically with each existing approach, or where its limits appear. It also reports demonstrated usefulness, not a guarantee that every fluorine- or phosphorus-rich mixture will become easy to interpret.\n\nSelected source paragraphs only. Omitted sections may contain additional evidence and limitations. Do not claim a complete review.\n\nSo the story returns to the spectrum. In a star, a line can reveal an element forged long ago. In a laboratory, a cleaner line can reveal which compounds are present now. Better separation doesn’t create new chemistry. It helps us hear the chemistry that was already there. I'm Yusuf Adeyemi. We are made of old light.",
     "caveat": "Selected source paragraphs only. Omitted sections may contain additional evidence and limitations. Do not claim a complete review.",
     "claims": [
       {
@@ -56,8 +51,8 @@
         "quote": "Often, such analyses can be challenging because overlap between multiplets degrades spectral resolution."
       },
       {
-        "claim": "The experiment covers the broad chemical-shift ranges commonly seen in fluorine and phosphorus NMR.",
-        "quote": "However, existing methods have insufficient bandwidth to cover the large chemical shift ranges commonly observed in fluorine and phosphorus NMR."
+        "claim": "The researchers report an ultra-broadband NMR experiment for pure shift spectra of fluorine and phosphorus.",
+        "quote": "Here, we report an ultra-broadband, ultrahigh resolution NMR experiment for measuring pure shift spectra of nuclei such as fluorine and phosphorus."
       },
       {
         "claim": "The method was demonstrated on complex systems rich in fluorine and phosphorus.",

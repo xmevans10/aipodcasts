@@ -1,10 +1,10 @@
-# Nickel isotopes reveal micrometeorite accretion on the lunar farside dominated by inner Solar System materials
+# Who’s Been Dusting the Far Side of the Moon?
 
 *Tiny impacts have left a chemical record in material returned from the Moon’s far side.*
 
-A handful of grey lunar dust can look perfectly ordinary. Under closer inspection, it carries a record of impacts from tiny pieces of rock and metal. The familiar surface is a kind of historical document, written in chemistry.
+The paper is “Nickel isotopes reveal micrometeorite accretion on the lunar farside dominated by inner Solar System materials”. A handful of grey lunar dust can look perfectly ordinary. Under closer inspection, it carries a record of impacts from tiny pieces of rock and metal. The familiar surface is a kind of historical document, written in chemistry.
 
-The episode is titled “Nickel isotopes reveal micrometeorite accretion on the lunar farside dominated by inner Solar System materials”. The paper, published in Communications Earth & Environment, comes from Kewei Chen and colleagues. They studied nickel isotopes in soil, or regolith, and rock fragments collected by China’s Chang’e-6 mission from the Moon’s far side.
+The episode is titled “Who’s Been Dusting the Far Side of the Moon?”. The paper, published in Communications Earth & Environment, comes from Kewei Chen and colleagues. They studied nickel isotopes in soil, or regolith, and rock fragments collected by China’s Chang’e-6 mission from the Moon’s far side.
 
 Their question was simple to ask, even if the answer is written in very small numbers. Where did the particles striking the lunar surface come from? And what happens to them when repeated impacts heat and partly vaporise the material?
 

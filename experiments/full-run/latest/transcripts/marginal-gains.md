@@ -1,10 +1,10 @@
-# Biomechanical interplay between lamina cribrosa and peripapillary sclera characterized by 3D ultrasound elastography
+# What Happens When Eye Pressure Rises?
 
 *A study of 22 donated human eyes finds coordinated deformation between two structures near the optic nerve as eye pressure rises.*
 
-What moves when pressure rises inside an eye? The answer may involve a quiet mechanical conversation between two tissues at the back of the eye, rather than one structure acting alone.
+The paper is “Biomechanical interplay between lamina cribrosa and peripapillary sclera characterized by 3D ultrasound elastography”. What moves when pressure rises inside an eye? The answer may involve a quiet mechanical conversation between two tissues at the back of the eye, rather than one structure acting alone.
 
-This episode is called “Biomechanical interplay between lamina cribrosa and peripapillary sclera characterized by 3D ultrasound elastography.” The paper, with the same title, comes from Zihao Chen and colleagues in Experimental Eye Research. The researchers studied the lamina cribrosa, a support structure where the optic nerve leaves the eye, and the peripapillary sclera, the tough tissue around it.
+This episode is called “What Happens When Eye Pressure Rises?.” The paper, with the same title, comes from Zihao Chen and colleagues in Experimental Eye Research. The researchers studied the lamina cribrosa, a support structure where the optic nerve leaves the eye, and the peripapillary sclera, the tough tissue around it.
 
 They worked with 22 donated human whole eyes. In the lab, they raised pressure inside each eye from 15 to 30 millimetres of mercury, in steps. At each step, they used three-dimensional ultrasound to track how the tissues moved and changed shape through their full thickness.
 

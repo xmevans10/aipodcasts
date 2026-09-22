@@ -1,8 +1,8 @@
-# Enhancing fall risk assessment in the oldest old: The interplay of cognition and gait speed
+# What a Slower Walk Can Tell Us
 
 *In adults aged 90 and older, slow walking was linked with future falls, while the pattern differed between women and men.*
 
-You walk across a room without giving the wiring much thought. But what does that ordinary movement look like from the inside, especially when the body is in its nineties? The episode is called “Enhancing fall risk assessment in the oldest old: The interplay of cognition and gait speed.” It comes from “Enhancing fall risk assessment in the oldest old: The interplay of cognition and gait speed,” by Katherine A. Colcord and colleagues, published in GeroScience.
+You walk across a room without giving the wiring much thought. But what does that ordinary movement look like from the inside, especially when the body is in its nineties? The episode is called “What a Slower Walk Can Tell Us.” It comes from “Enhancing fall risk assessment in the oldest old: The interplay of cognition and gait speed,” by Katherine A. Colcord and colleagues, published in GeroScience.
 
 The researchers asked whether two parts of everyday function, walking speed and thinking ability, were linked with future falls in people aged 90 and older. They used data from The 90 + Study, which checked in with participants every six months. There were 1,099 people, including 749 women and 350 men, with an average age of 93.2 years.
 

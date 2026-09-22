@@ -14,37 +14,36 @@
     "evidence_tier": "abstract",
     "evidence_note": "Abstract-only evidence; no full-text reuse."
   },
-  "words": 391,
+  "words": 400,
   "verification": {
-    "story": "c2dca1574521d5ba35f6",
-    "status": "abstained",
-    "pass": false,
-    "failures": [
-      "entail_1=0.72 below 0.8"
-    ],
+    "pass": true,
+    "draft_sha256": "c0e1b9772b58dc83c5ee842699e5320a3c5b066398bb8258d29890c5d4edf8e5",
+    "failures": [],
     "backend": "jev",
     "evidence_sha256": "dbc59f7ddafd8405",
     "notes": {
       "claims_checked": 6,
       "missing_numbers": [],
       "entail_0": 0.98,
-      "entail_1": 0.72,
+      "entail_1": 0.96,
       "entail_2": 0.98,
       "entail_3": 0.98,
-      "entail_4": 0.98,
+      "entail_4": 0.97,
       "entail_5": 0.97,
       "primary_finding": 0.92,
-      "no_overstatement": 0.71
+      "no_overstatement": 0.65
     },
-    "reviewer": "auto-verifier:jev"
+    "reviewer": "auto-verifier:jev",
+    "story": "c2dca1574521d5ba35f6",
+    "status": "approved"
   },
   "draft": {
-    "title": "Cohesin reshapes replication fork contacts to aid fork slowing and reversal",
+    "title": "When DNA Copying Hits the Brakes",
     "dek": "A study in Nature finds that cohesin helps reorganize stressed DNA replication forks, supporting slowing and reversal rather than letting damage spread unchecked.",
     "turns": [
       {
         "speaker": "Ines Marlowe",
-        "text": "A single stalled replication fork can leave behind single-stranded DNA. How was that measured, and what happens next? The episode is titled “Cohesin reshapes replication fork contacts to aid fork slowing and reversal.”"
+        "text": "The paper is “Cohesin reshapes replication fork contacts to aid fork slowing and reversal”. A single stalled replication fork can leave behind single-stranded DNA. How was that measured, and what happens next? The episode is titled “When DNA Copying Hits the Brakes.”"
       },
       {
         "speaker": "Dev Raman",
@@ -72,7 +71,11 @@
       },
       {
         "speaker": "Dev Raman",
-        "text": "The careful takeaway is that cohesin-mediated loop extrusion is associated with a rearrangement of contacts at stressed replication forks, alongside slowing and reversal that support genome stability. We don't know yet how broadly this applies across tumours or therapies from the supplied material. I'm Dev Raman. Keep asking what it changes. I'm Ines Marlowe. Check the method."
+        "text": "The careful takeaway is that cohesin-mediated loop extrusion is associated with a rearrangement of contacts at stressed replication forks, alongside slowing and reversal that support genome stability. We don't know yet how broadly this applies across tumours or therapies from the supplied material. I'm Dev Raman. Keep asking what it changes."
+      },
+      {
+        "speaker": "Ines Marlowe",
+        "text": "I'm Ines Marlowe. Check the method."
       }
     ],
     "caveat": "Selected source paragraphs only. Omitted sections may contain additional evidence or limitations. Do not claim a complete review.",
@@ -83,7 +86,7 @@
       },
       {
         "claim": "The study examined the role of cohesin-mediated loop extrusion in replication-fork contacts under stress.",
-        "quote": "Although transient interaction of sister forks was recently reported during unperturbed replication 5 , the functional relevance of fork contacts during replication stress and the role of cohesin in this context remain unknown."
+        "quote": "Here we show that cohesin-mediated loop extrusion rearranges nascent DNA contacts at stressed replication forks to promote genome stability."
       },
       {
         "claim": "The researchers used multiple experimental approaches, including a technique for capturing chromatin contacts at newly copied DNA.",

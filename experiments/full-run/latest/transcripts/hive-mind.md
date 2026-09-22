@@ -1,8 +1,8 @@
-# Determining blooming-phase dynamics through intra-day hive-weight analysis
+# What the Hive Brought Home
 
 *Fifteen hives, weighed every five minutes, revealed different daily weight patterns before, during and after bloom.*
 
-One bee leaves the hive, finds a flower, and comes home carrying a little nectar. Another makes the same trip. Across thousands of small journeys, the hive’s weight rises and falls through the day. Can that pattern tell us which part of the flowering season a colony is in?
+What the Hive Brought Home. One bee leaves the hive, finds a flower, and comes home carrying a little nectar. Another makes the same trip. Across thousands of small journeys, the hive’s weight rises and falls through the day. Can that pattern tell us which part of the flowering season a colony is in?
 
 That’s the question behind “Determining blooming-phase dynamics through intra-day hive-weight analysis.” The study, by José Luis Ávila-Jiménez and colleagues, appears in Smart Agricultural Technology. Researchers followed fifteen hives at the University of Córdoba’s experimental apiary across two consecutive beekeeping seasons. Six hives were monitored in 2016 and nine in 2017.
 

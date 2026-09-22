@@ -14,37 +14,36 @@
     "evidence_tier": "abstract",
     "evidence_note": "Abstract-only evidence; no full-text reuse."
   },
-  "words": 604,
+  "words": 611,
   "verification": {
-    "story": "781a7722eb5977106b67",
-    "status": "abstained",
-    "pass": false,
-    "failures": [
-      "entail_0=0.75 below 0.8"
-    ],
+    "pass": true,
+    "draft_sha256": "e94634b9a6c8d924e32c78e357bd04467e8972256d1a75378e0037cf1ad05203",
+    "failures": [],
     "backend": "jev",
     "evidence_sha256": "9ccf1094d1875e4e",
     "notes": {
       "claims_checked": 6,
       "missing_numbers": [],
-      "entail_0": 0.75,
+      "entail_0": 0.97,
       "entail_1": 0.98,
-      "entail_2": 0.95,
+      "entail_2": 0.96,
       "entail_3": 0.97,
       "entail_4": 0.97,
       "entail_5": 0.97,
-      "primary_finding": 0.91,
-      "no_overstatement": 0.77
+      "primary_finding": 0.92,
+      "no_overstatement": 0.74
     },
-    "reviewer": "auto-verifier:jev"
+    "reviewer": "auto-verifier:jev",
+    "story": "781a7722eb5977106b67",
+    "status": "approved"
   },
   "draft": {
-    "title": "Learning cosmic web environments with diffusion models",
+    "title": "What AI Learns from a Fake Universe",
     "dek": "A diffusion model trained on simulated universes appears to learn more than a convincing cosmic makeover: it picks up the cosmic web’s dense knots, thin bridges, and vast empty regions at several scales.",
     "turns": [
       {
         "speaker": "Jackson \"Jax\" Ruiz",
-        "text": "Okay, wait, the universe has a web made of voids, walls, filaments, and nodes, and a model can learn its different neighborhoods? That can't be right in the casual sense, so what does it really mean?"
+        "text": "What AI Learns from a Fake Universe. Okay, wait, the universe has a web made of voids, walls, filaments, and nodes, and a model can learn its different neighborhoods? That can't be right in the casual sense, so what does it really mean?"
       },
       {
         "speaker": "Kai Nakamura",
@@ -102,8 +101,8 @@
     "caveat": "Selected source paragraphs only. Omitted sections may contain additional evidence or limitations. Do not claim a complete review.",
     "claims": [
       {
-        "claim": "The cosmic web contains several distinct environments and carries information about structure formation and cosmological parameters.",
-        "quote": "The cosmic web, consisting of an intricate network of voids, walls, filaments, and nodes, encodes key information about structure formation and the cosmological parameters that govern it."
+        "claim": "In simulations, the diffusion model learned a multi-scale representation of the cosmic web, including non-Gaussian information.",
+        "quote": "Our results show that, beyond accurately reproducing two-point statistics, diffusion models learn a multi-scale representation of the cosmic web through self-attention, including non-Gaussian information."
       },
       {
         "claim": "The study trained a diffusion model on N-body simulations and examined its self-attention maps.",

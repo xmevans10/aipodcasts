@@ -1,8 +1,8 @@
-# Learning cosmic web environments with diffusion models
+# What AI Learns from a Fake Universe
 
 *A diffusion model trained on simulated universes appears to learn more than a convincing cosmic makeover: it picks up the cosmic web’s dense knots, thin bridges, and vast empty regions at several scales.*
 
-**Jackson "Jax" Ruiz:** Okay, wait, the universe has a web made of voids, walls, filaments, and nodes, and a model can learn its different neighborhoods? That can't be right in the casual sense, so what does it really mean?
+**Jackson "Jax" Ruiz:** What AI Learns from a Fake Universe. Okay, wait, the universe has a web made of voids, walls, filaments, and nodes, and a model can learn its different neighborhoods? That can't be right in the casual sense, so what does it really mean?
 
 **Kai Nakamura:** It means researchers trained a diffusion model on an N-body simulation suite, then asked what information the model's internal attention maps contained. The paper is titled "Learning cosmic web environments with diffusion models," by M. Noor and colleagues, published in Astronomy and Astrophysics.
 
@@ -34,8 +34,8 @@
 
 ## Claims
 
-- The cosmic web contains several distinct environments and carries information about structure formation and cosmological parameters.
-  > The cosmic web, consisting of an intricate network of voids, walls, filaments, and nodes, encodes key information about structure formation and the cosmological parameters that govern it.
+- In simulations, the diffusion model learned a multi-scale representation of the cosmic web, including non-Gaussian information.
+  > Our results show that, beyond accurately reproducing two-point statistics, diffusion models learn a multi-scale representation of the cosmic web through self-attention, including non-Gaussian information.
 - The study trained a diffusion model on N-body simulations and examined its self-attention maps.
   > For this study, we trained a diffusion model on the N-body simulation suite to investigate the semantic information learnt by its self-attention maps.
 - Attention maps corresponded to cosmic-web environments in distinct ways.

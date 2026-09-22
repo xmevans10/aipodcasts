@@ -1,8 +1,8 @@
-# Mapping mental representations of fear-relevant stimuli through similarity modeling
+# What Makes a Spider Scary?
 
 *A large study of spider-related images finds that fear is organized across several mental dimensions, not just one simple feeling.*
 
-A single picture of a spider can feel like a whole bundle of information at once. Shape, texture, movement imagined in the mind, and the feeling of threat may arrive together, even though they’re different things. How could researchers map that bundle without deciding in advance what the important parts must be?
+What Makes a Spider Scary? A single picture of a spider can feel like a whole bundle of information at once. Shape, texture, movement imagined in the mind, and the feeling of threat may arrive together, even though they’re different things. How could researchers map that bundle without deciding in advance what the important parts must be?
 
 “Mapping mental representations of fear-relevant stimuli through similarity modeling” comes from Mengfan Zhang and colleagues in the Journal of Affective Disorders. The team focused on arachnophobia as a model for understanding fear-related mental representations.
 

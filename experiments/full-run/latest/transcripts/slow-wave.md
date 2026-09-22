@@ -1,8 +1,8 @@
-# When Paintings Change Time: Visual Structure and Circadian Context Shape Subjective Duration
+# Can a Painting Change Your Sense of Time?
 
 *A study using Van Gogh paintings finds that perceived duration reflects both the details in an image and the viewer’s biological timing context.*
 
-Have you ever watched a second hand, blinked, and felt that the moment had stretched or snapped shut? While we sleep, the brain moves through measurable stages. While we’re awake, it also keeps estimating time from the world around us. A new study asks how much a painting can bend that estimate.
+Can a Painting Change Your Sense of Time? Have you ever watched a second hand, blinked, and felt that the moment had stretched or snapped shut? While we sleep, the brain moves through measurable stages. While we’re awake, it also keeps estimating time from the world around us. A new study asks how much a painting can bend that estimate.
 
 The paper is titled “When Paintings Change Time: Visual Structure and Circadian Context Shape Subjective Duration.” Cehao Yu and colleagues published it in Art & Perception. They showed participants images based on five Van Gogh paintings. There were 25 images altogether: the five originals, plus versions shifted toward four different color directions.
 

@@ -1,8 +1,8 @@
-# Cell wall-forming chitin synthases in a chytrid fungus
+# How a Fungus Builds Its Walls
 
 *A chytrid fungus carries a surprisingly broad toolkit for building its cell wall, with different tools appearing as its shape changes.*
 
-A dead leaf looks quiet until you remember that decay is a construction site too. Under the surface, fungi are busy breaking materials apart and building themselves back up. One of those builders is Rhizoclosmatium globosum, a saprotrophic chytrid, meaning a fungus that feeds on dead organic matter. Tiny, aquatic, and rather easy to overlook, it has a lot to tell us about fungal architecture.
+How a Fungus Builds Its Walls. A dead leaf looks quiet until you remember that decay is a construction site too. Under the surface, fungi are busy breaking materials apart and building themselves back up. One of those builders is Rhizoclosmatium globosum, a saprotrophic chytrid, meaning a fungus that feeds on dead organic matter. Tiny, aquatic, and rather easy to overlook, it has a lot to tell us about fungal architecture.
 
 The paper is called “Cell wall-forming chitin synthases in a chytrid fungus.” It comes from Trupti Gaikwad, Michael Cunliffe and colleagues, published in npj Fungal Science. The researchers asked how this early-branching fungus makes chitin, a tough material that helps form fungal cell walls.
 

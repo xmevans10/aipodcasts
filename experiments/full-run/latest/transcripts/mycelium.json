@@ -14,11 +14,10 @@
     "evidence_tier": "abstract",
     "evidence_note": "Abstract-only evidence; no full-text reuse."
   },
-  "words": 508,
+  "words": 514,
   "verification": {
-    "story": "00b134c2a51523ddb04b",
-    "status": "approved",
     "pass": true,
+    "draft_sha256": "ff55fe67b07b6109be72edf1703a661a5b56ee70c5de7bd4f1448fba5ace675c",
     "failures": [],
     "backend": "jev",
     "evidence_sha256": "3f49702cf9211786",
@@ -26,20 +25,22 @@
       "claims_checked": 6,
       "missing_numbers": [],
       "entail_0": 0.97,
-      "entail_1": 0.98,
-      "entail_2": 0.97,
+      "entail_1": 0.97,
+      "entail_2": 0.96,
       "entail_3": 0.99,
       "entail_4": 0.98,
       "entail_5": 0.96,
       "primary_finding": 0.95,
       "no_overstatement": 0.82
     },
-    "reviewer": "auto-verifier:jev"
+    "reviewer": "auto-verifier:jev",
+    "story": "00b134c2a51523ddb04b",
+    "status": "approved"
   },
   "draft": {
-    "title": "Cell wall-forming chitin synthases in a chytrid fungus",
+    "title": "How a Fungus Builds Its Walls",
     "dek": "A chytrid fungus carries a surprisingly broad toolkit for building its cell wall, with different tools appearing as its shape changes.",
-    "body": "A dead leaf looks quiet until you remember that decay is a construction site too. Under the surface, fungi are busy breaking materials apart and building themselves back up. One of those builders is Rhizoclosmatium globosum, a saprotrophic chytrid, meaning a fungus that feeds on dead organic matter. Tiny, aquatic, and rather easy to overlook, it has a lot to tell us about fungal architecture.\n\nThe paper is called “Cell wall-forming chitin synthases in a chytrid fungus.” It comes from Trupti Gaikwad, Michael Cunliffe and colleagues, published in npj Fungal Science. The researchers asked how this early-branching fungus makes chitin, a tough material that helps form fungal cell walls.\n\nThey searched the fungus’s genome and found twenty genes for chitin synthases, the enzymes that build chitin. These included familiar groups, plus one unusual gene that also carries a region linked to making another wall material, beta-glucan. That combination hints at a specialised building tool, although the study doesn’t establish exactly what that tool does in living cells.\n\nThe team then looked at which genes were active as the fungus moved through three stages: swimming spores, newly settled germlings, and immature thalli, or developing fungal bodies. Different genes were active at different stages. As the fungus became more morphologically complex, more of its chitin-synthase toolkit was in use.\n\nThey also attached glowing labels to two of the enzymes and tracked where those enzymes appeared during cell development. Early on, the signal was spread through encysted cells. Later, it became concentrated at the wall of a sporangium, the structure that produces spores. Signals also appeared in the apophysis and where that structure meets the sporangium. Those patterns point to roles in maintaining particular parts of the growing cell.\n\nComparison: think of a city’s plumbing and waste system. Different crews may work in different districts as the city expands, and the visible pipes tell you where activity is happening. They don’t, by themselves, reveal every job each crew performs. In the same way, gene activity and fluorescent location show timing and position, while the precise work of each enzyme still needs testing.\n\nOne useful correction to the popular “wood-wide web” story: this paper measured gene activity and enzyme location, not messages passing between fungi. “Communication” would be a metaphor here, not a demonstrated finding. The real story is quieter and wonderfully physical: wall materials are made where a growing chytrid needs strength.\n\nThis study examines one chytrid species and selected developmental stages, so its findings cannot be assumed to represent all fungi or every stage of its life cycle. Gene activity and fluorescent localisation indicate where chitin synthases are present, but they do not by themselves prove the exact function of each enzyme or establish that the unusual combined-domain protein makes both chitin and beta-glucan in living cells.\n\nSo, return to that apparently still piece of decay. The fungus working inside it is not simply dissolving the old world. It’s sorting materials, placing walls, and changing its construction plan as its body takes shape. I'm Rosa Ibarra. Rot is a relationship.",
+    "body": "How a Fungus Builds Its Walls. A dead leaf looks quiet until you remember that decay is a construction site too. Under the surface, fungi are busy breaking materials apart and building themselves back up. One of those builders is Rhizoclosmatium globosum, a saprotrophic chytrid, meaning a fungus that feeds on dead organic matter. Tiny, aquatic, and rather easy to overlook, it has a lot to tell us about fungal architecture.\n\nThe paper is called “Cell wall-forming chitin synthases in a chytrid fungus.” It comes from Trupti Gaikwad, Michael Cunliffe and colleagues, published in npj Fungal Science. The researchers asked how this early-branching fungus makes chitin, a tough material that helps form fungal cell walls.\n\nThey searched the fungus’s genome and found twenty genes for chitin synthases, the enzymes that build chitin. These included familiar groups, plus one unusual gene that also carries a region linked to making another wall material, beta-glucan. That combination hints at a specialised building tool, although the study doesn’t establish exactly what that tool does in living cells.\n\nThe team then looked at which genes were active as the fungus moved through three stages: swimming spores, newly settled germlings, and immature thalli, or developing fungal bodies. Different genes were active at different stages. As the fungus became more morphologically complex, more of its chitin-synthase toolkit was in use.\n\nThey also attached glowing labels to two of the enzymes and tracked where those enzymes appeared during cell development. Early on, the signal was spread through encysted cells. Later, it became concentrated at the wall of a sporangium, the structure that produces spores. Signals also appeared in the apophysis and where that structure meets the sporangium. Those patterns point to roles in maintaining particular parts of the growing cell.\n\nComparison: think of a city’s plumbing and waste system. Different crews may work in different districts as the city expands, and the visible pipes tell you where activity is happening. They don’t, by themselves, reveal every job each crew performs. In the same way, gene activity and fluorescent location show timing and position, while the precise work of each enzyme still needs testing.\n\nOne useful correction to the popular “wood-wide web” story: this paper measured gene activity and enzyme location, not messages passing between fungi. “Communication” would be a metaphor here, not a demonstrated finding. The real story is quieter and wonderfully physical: wall materials are made where a growing chytrid needs strength.\n\nThis study examines one chytrid species and selected developmental stages, so its findings cannot be assumed to represent all fungi or every stage of its life cycle. Gene activity and fluorescent localisation indicate where chitin synthases are present, but they do not by themselves prove the exact function of each enzyme or establish that the unusual combined-domain protein makes both chitin and beta-glucan in living cells.\n\nSo, return to that apparently still piece of decay. The fungus working inside it is not simply dissolving the old world. It’s sorting materials, placing walls, and changing its construction plan as its body takes shape. I'm Rosa Ibarra. Rot is a relationship.",
     "caveat": "This study examines one chytrid species and selected developmental stages, so its findings cannot be assumed to represent all fungi or every stage of its life cycle. Gene activity and fluorescent localisation indicate where chitin synthases are present, but they do not by themselves prove the exact function of each enzyme or establish that the unusual combined-domain protein makes both chitin and beta-glucan in living cells.",
     "claims": [
       {

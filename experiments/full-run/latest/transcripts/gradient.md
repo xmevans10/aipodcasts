@@ -1,8 +1,8 @@
-# Can Large Language Models Evaluate Grant Proposal Quality? Revisiting the Wennerås and Wold Peer Review Data
+# Would You Let AI Judge Your Big Idea?
 
 *A test of language-model scores against expert ratings of 142 Swedish medical fellowship applications finds a weak match, with clear limits on what the models can judge.*
 
-You’ve probably sorted a pile of applications, messages, or documents by what seems strongest. A language model can do something similar, then get a subtle case wrong because it’s finding patterns in words, not weighing a proposal like a reviewer with a particular standard in mind.
+Would You Let AI Judge Your Big Idea? You’ve probably sorted a pile of applications, messages, or documents by what seems strongest. A language model can do something similar, then get a subtle case wrong because it’s finding patterns in words, not weighing a proposal like a reviewer with a particular standard in mind.
 
 That question sits at the centre of “Can Large Language Models Evaluate Grant Proposal Quality? Revisiting the Wennerås and Wold Peer Review Data,” by Ulf Sandström and colleagues, published in the Journal of Data and Information Science.
 

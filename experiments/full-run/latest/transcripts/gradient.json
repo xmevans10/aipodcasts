@@ -14,11 +14,10 @@
     "evidence_tier": "abstract",
     "evidence_note": "Abstract-only evidence; no full-text reuse."
   },
-  "words": 422,
+  "words": 430,
   "verification": {
-    "story": "c06c29b98acfd9ebe4fa",
-    "status": "approved",
     "pass": true,
+    "draft_sha256": "8895729fecb47deaf9912e4eaa6f1b7361baccfeb024193659b2194d7669a345",
     "failures": [],
     "backend": "jev",
     "evidence_sha256": "47611dc51f2c25cb",
@@ -31,15 +30,17 @@
       "entail_3": 0.99,
       "entail_4": 0.97,
       "entail_5": 0.97,
-      "primary_finding": 0.85,
+      "primary_finding": 0.87,
       "no_overstatement": 0.85
     },
-    "reviewer": "auto-verifier:jev"
+    "reviewer": "auto-verifier:jev",
+    "story": "c06c29b98acfd9ebe4fa",
+    "status": "approved"
   },
   "draft": {
-    "title": "Can Large Language Models Evaluate Grant Proposal Quality? Revisiting the Wennerås and Wold Peer Review Data",
+    "title": "Would You Let AI Judge Your Big Idea?",
     "dek": "A test of language-model scores against expert ratings of 142 Swedish medical fellowship applications finds a weak match, with clear limits on what the models can judge.",
-    "body": "You’ve probably sorted a pile of applications, messages, or documents by what seems strongest. A language model can do something similar, then get a subtle case wrong because it’s finding patterns in words, not weighing a proposal like a reviewer with a particular standard in mind.\n\nThat question sits at the centre of “Can Large Language Models Evaluate Grant Proposal Quality? Revisiting the Wennerås and Wold Peer Review Data,” by Ulf Sandström and colleagues, published in the Journal of Data and Information Science.\n\nThe researchers asked how closely several medium-sized, open-weight language models scored grant proposals compared with human peer reviewers. Their test used a historical dataset: 142 Swedish Medical Council post-doctoral fellowship applications from 1994. The models produced scores, and the researchers compared those scores with the average expert ratings.\n\nA correlation is a measure of how much two rankings tend to line up. A perfect match would be one. The models’ scores correlated moderately with one another, with an average of 0.34. Their agreement with the expert scores was weaker, though still positive and mostly statistically significant, with an average correlation of 0.22.\n\nThe strongest model result reached 0.33. That came from Gemma 3 27b, using proposal titles and summaries but leaving out the main texts. That number was about half the correlation between the human reviewers, at 56 percent.\n\nThere’s a useful comparison here: think of each model as a sieve. It lets certain patterns through, based on the material it receives and the scoring task it’s given. A sieve can help sort a pile, but the result depends on the mesh, the contents, and what counts as a good catch. A model score is similarly shaped by its input and by the relationship between language patterns and the target rating.\n\nThe practical suggestion is cautious. These models might help with application triage, meaning an early sorting step, or with breaking ties. The paper does not show that they can replace expert review. It tested one old funding call, one dataset, and a set of evaluation criteria that weren’t all the same. We also can’t tell from these selected passages how the models would perform on newer applications or other funding systems.\n\nThe small sample size, old funding call and heterogeneous evaluation criteria all undermine the robustness of the analysis.\n\nSo picture that pile of applications again. A model may help arrange it, but the ranking still needs a clear purpose and a human check on what the score misses. I’m Noor Haddad. Know what the model is for.",
+    "body": "Would You Let AI Judge Your Big Idea? You’ve probably sorted a pile of applications, messages, or documents by what seems strongest. A language model can do something similar, then get a subtle case wrong because it’s finding patterns in words, not weighing a proposal like a reviewer with a particular standard in mind.\n\nThat question sits at the centre of “Can Large Language Models Evaluate Grant Proposal Quality? Revisiting the Wennerås and Wold Peer Review Data,” by Ulf Sandström and colleagues, published in the Journal of Data and Information Science.\n\nThe researchers asked how closely several medium-sized, open-weight language models scored grant proposals compared with human peer reviewers. Their test used a historical dataset: 142 Swedish Medical Council post-doctoral fellowship applications from 1994. The models produced scores, and the researchers compared those scores with the average expert ratings.\n\nA correlation is a measure of how much two rankings tend to line up. A perfect match would be one. The models’ scores correlated moderately with one another, with an average of 0.34. Their agreement with the expert scores was weaker, though still positive and mostly statistically significant, with an average correlation of 0.22.\n\nThe strongest model result reached 0.33. That came from Gemma 3 27b, using proposal titles and summaries but leaving out the main texts. That number was about half the correlation between the human reviewers, at 56 percent.\n\nThere’s a useful comparison here: think of each model as a sieve. It lets certain patterns through, based on the material it receives and the scoring task it’s given. A sieve can help sort a pile, but the result depends on the mesh, the contents, and what counts as a good catch. A model score is similarly shaped by its input and by the relationship between language patterns and the target rating.\n\nThe practical suggestion is cautious. These models might help with application triage, meaning an early sorting step, or with breaking ties. The paper does not show that they can replace expert review. It tested one old funding call, one dataset, and a set of evaluation criteria that weren’t all the same. We also can’t tell from these selected passages how the models would perform on newer applications or other funding systems.\n\nThe small sample size, old funding call and heterogeneous evaluation criteria all undermine the robustness of the analysis.\n\nSo picture that pile of applications again. A model may help arrange it, but the ranking still needs a clear purpose and a human check on what the score misses. I’m Noor Haddad. Know what the model is for.",
     "caveat": "The small sample size, old funding call and heterogeneous evaluation criteria all undermine the robustness of the analysis.",
     "claims": [
       {

@@ -1,8 +1,8 @@
-# Cohesin reshapes replication fork contacts to aid fork slowing and reversal
+# When DNA Copying Hits the Brakes
 
 *A study in Nature finds that cohesin helps reorganize stressed DNA replication forks, supporting slowing and reversal rather than letting damage spread unchecked.*
 
-**Ines Marlowe:** A single stalled replication fork can leave behind single-stranded DNA. How was that measured, and what happens next? The episode is titled “Cohesin reshapes replication fork contacts to aid fork slowing and reversal.”
+**Ines Marlowe:** The paper is “Cohesin reshapes replication fork contacts to aid fork slowing and reversal”. A single stalled replication fork can leave behind single-stranded DNA. How was that measured, and what happens next? The episode is titled “When DNA Copying Hits the Brakes.”
 
 **Dev Raman:** It matters beyond the lab because cancer treatments can challenge these copying machines, and cells need ways to keep a damaged copying process from becoming a broken genome. In Nature, Daniel González‐Acosta and colleagues report the paper “Cohesin reshapes replication fork contacts to aid fork slowing and reversal.”
 
@@ -16,7 +16,9 @@
 
 **Ines Marlowe:** There is an important boundary. This packet gives us a selected abstract, not the full paper, so we cannot assess every experiment, sample, control, or uncertainty from it. The findings also describe what the researchers observed in their experimental systems; they do not by themselves show that changing cohesin will improve cancer treatment. Selected source paragraphs only. Omitted sections may contain additional evidence or limitations. Do not claim a complete review.
 
-**Dev Raman:** The careful takeaway is that cohesin-mediated loop extrusion is associated with a rearrangement of contacts at stressed replication forks, alongside slowing and reversal that support genome stability. We don't know yet how broadly this applies across tumours or therapies from the supplied material. I'm Dev Raman. Keep asking what it changes. I'm Ines Marlowe. Check the method.
+**Dev Raman:** The careful takeaway is that cohesin-mediated loop extrusion is associated with a rearrangement of contacts at stressed replication forks, alongside slowing and reversal that support genome stability. We don't know yet how broadly this applies across tumours or therapies from the supplied material. I'm Dev Raman. Keep asking what it changes.
+
+**Ines Marlowe:** I'm Ines Marlowe. Check the method.
 
 **Caveat:** Selected source paragraphs only. Omitted sections may contain additional evidence or limitations. Do not claim a complete review.
 
@@ -25,7 +27,7 @@
 - Cancer chemotherapeutic treatments can challenge DNA replication forks, causing single-stranded DNA to accumulate and DNA synthesis to slow.
   > DNA replication forks can be challenged by cancer chemotherapeutic treatments, leading to accumulation of single-stranded DNA and slowdown of DNA synthesis.
 - The study examined the role of cohesin-mediated loop extrusion in replication-fork contacts under stress.
-  > Although transient interaction of sister forks was recently reported during unperturbed replication 5 , the functional relevance of fork contacts during replication stress and the role of cohesin in this context remain unknown.
+  > Here we show that cohesin-mediated loop extrusion rearranges nascent DNA contacts at stressed replication forks to promote genome stability.
 - The researchers used multiple experimental approaches, including a technique for capturing chromatin contacts at newly copied DNA.
   > Using auxin-inducible degron 6 , separation-of-function mutants 7–9 and a newly developed Micro-C-based technique to capture chromatin contacts at nascent DNA (Repli-C)
 - Cohesin accumulates at stalled forks and favours inter-replicon contacts over sister-fork coupling.

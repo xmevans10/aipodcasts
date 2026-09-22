@@ -1,8 +1,8 @@
-# Pronounced megafaunal community transition driven by polymetallic nodule cover in the Northwest Pacific abyss
+# Life on the Seafloor’s Metal Pebbles
 
 *Photographic surveys found a U-shaped relationship between nodule cover and abyssal megafaunal density, with community composition shifting from mobile to sessile animals.*
 
-Far below the surface, where sunlight fails, the seafloor is scattered with rocks that animals use as living space. In that quiet darkness, a sea cucumber moves across the sediment while a sponge stays fixed in place, filtering what drifts past. The animals are different, but the rocks may help decide who gets the better address.
+Life on the Seafloor’s Metal Pebbles. Far below the surface, where sunlight fails, the seafloor is scattered with rocks that animals use as living space. In that quiet darkness, a sea cucumber moves across the sediment while a sponge stays fixed in place, filtering what drifts past. The animals are different, but the rocks may help decide who gets the better address.
 
 This is the question behind “Pronounced megafaunal community transition driven by polymetallic nodule cover in the Northwest Pacific abyss,” a study by Leyi Fang and colleagues, published in Communications Earth & Environment. The researchers asked how the amount of polymetallic nodules, rocky lumps on the abyssal plain, relates to large animals living on or near the seafloor.
 

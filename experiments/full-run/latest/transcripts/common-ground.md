@@ -1,8 +1,8 @@
-# Automating glacier facies classification: Benchmark dataset and deep learning baseline from pan-European sample
+# Reading a Glacier from Space
 
 *A European dataset and a simple deep-learning model turn satellite images into a broad map of glacier surface types, with useful but limited links to glacier mass balance.*
 
-When snow melts on a glacier, the surface can change from bright, fresh snow to older ice, dusty debris, or snow that has partly refrozen. Those changes happen across seasons, but the glacier keeps the record in layers, over years and decades. The challenge is reading that record across a whole continent.
+Reading a Glacier from Space. When snow melts on a glacier, the surface can change from bright, fresh snow to older ice, dusty debris, or snow that has partly refrozen. Those changes happen across seasons, but the glacier keeps the record in layers, over years and decades. The challenge is reading that record across a whole continent.
 
 “Automating glacier facies classification: Benchmark dataset and deep learning baseline from pan-European sample” is a study by Konstantin A. Maslov and colleagues, published in Science of Remote Sensing. The researchers wanted a faster way to identify broad surface categories in satellite images. These categories are visual clues to where snow is accumulating and where ice is melting.
 

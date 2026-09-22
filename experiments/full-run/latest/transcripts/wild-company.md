@@ -1,8 +1,8 @@
-# Ecology and Brain Size Drive Feeding Innovations in Birds
+# Which Birds Invent New Ways to Eat?
 
 *Across 955 bird species, brain size and ecology are linked with different kinds of feeding innovation.*
 
-A bird finds a new way to get at food. Perhaps it handles a familiar meal differently, or tries a food type it hasn’t used before. Somewhere between clever solution and fortunate accident, that’s a feeding innovation. Birds have plenty of them, which makes them useful for asking a big question in a very practical way.
+Which Birds Invent New Ways to Eat? A bird finds a new way to get at food. Perhaps it handles a familiar meal differently, or tries a food type it hasn’t used before. Somewhere between clever solution and fortunate accident, that’s a feeding innovation. Birds have plenty of them, which makes them useful for asking a big question in a very practical way.
 
 The paper is called “Ecology and Brain Size Drive Feeding Innovations in Birds”. It comes from Yating LIU and colleagues, published in Integrative Zoology. The researchers compared feeding innovations across 955 bird species, looking at brain size alongside ecological details such as whether a species stayed put or migrated, and whether it ate a broad range of foods.
 

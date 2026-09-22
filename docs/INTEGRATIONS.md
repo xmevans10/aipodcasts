@@ -57,6 +57,12 @@ a `feed.json` to R2's S3-compatible API; the app's Settings → feed field point
 `<R2_PUBLIC_BASE>/<prefix>/feed.json`. `render-episodes.yml` runs it automatically after
 rendering when the secrets exist.
 
+Both `render-episodes.yml` and the weekly `full-run.yml` run
+`experiments/full-run/check_batch.py` before rendering. An incomplete or edited
+transcript batch cannot reach the R2 publish step. The weekly Action can resume a
+partially approved batch from a committed `seed_dir` or a prior `seed_run_id`; see
+[story discovery](editorial/story-discovery.md#weekly-full-run).
+
 | Secret | Value |
 |---|---|
 | `R2_ENDPOINT` | `https://<account-id>.r2.cloudflarestorage.com` |

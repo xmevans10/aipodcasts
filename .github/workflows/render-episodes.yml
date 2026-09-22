@@ -43,6 +43,11 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Require a complete reviewed batch
+        run: python3 experiments/full-run/check_batch.py "$(dirname "$TRANSCRIPTS")"
+        env:
+          TRANSCRIPTS: ${{ inputs.transcripts || 'experiments/full-run/latest/transcripts' }}
+
       - name: Cache Kokoro weights
         uses: actions/cache@v4
         with:

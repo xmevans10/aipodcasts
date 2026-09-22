@@ -2,11 +2,12 @@
 """Run the full autonomous pipeline across every show and save the transcripts.
 
 For each canonical show this selects candidates, ingests the first with usable evidence,
-drafts the episode, and runs the automated verification gate. It writes one transcript per
-show plus a manifest, and by default never narrates or publishes, so no audio provider or
-public feed is touched.
+drafts the episode, and runs factual and audience review. Only approved scripts enter
+transcripts/; failed drafts remain in withheld/ for diagnosis. A manifest records all
+sixteen dispositions. This command never narrates or publishes.
 
     LILT_MAX_PROVIDER_CALLS_PER_DAY=64 python3 experiments/full-run/run_all_shows.py
+    python3 experiments/full-run/run_all_shows.py --seed-dir experiments/full-run/stage4-2026-09-22
     python3 experiments/full-run/run_all_shows.py --select-only   # no API calls
 """
 from __future__ import annotations
@@ -16,11 +17,13 @@ import datetime as dt
 import json
 import os
 import re
+import shutil
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "backend"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from beats import BEATS, normalize_host  # noqa: E402
 from pipeline import (HOSTS, approve_auto, connect, draft_story, ingest_any,  # noqa: E402
@@ -67,6 +70,13 @@ def word_count(draft: dict) -> int:
 def build(args):
     load_local_env()
     db = connect()
+    seed = Path(args.seed_dir) if args.seed_dir else None
+    seed_entries = {}
+    if seed:
+        from check_batch import check_batch
+        check_batch(seed, require_all=False)
+        seed_entries = {e["show"]: e for e in
+                        json.loads((seed / "manifest.json").read_text())["shows"]}
     today = dt.date.today()
     selection = select_stories(db, days=args.days, per_show=args.per_show, limit=args.limit,
                                today=today, fetch=None, source=None)
@@ -78,6 +88,8 @@ def build(args):
     out = Path(args.out) if args.out else HERE / ("run-" + dt.datetime.now().strftime("%Y%m%d-%H%M%S"))
     transcripts = out / "transcripts"
     transcripts.mkdir(parents=True, exist_ok=True)
+    withheld = out / "withheld"
+    withheld.mkdir(parents=True, exist_ok=True)
 
     print(f"selection: {selection['papers_pulled']} papers, {selection['candidates']} scored, "
           f"{selection['publicity_events']} publicity events, {len(selection['selected'])} candidates")
@@ -87,9 +99,20 @@ def build(args):
     entries = []
     for host in canonical_hosts():
         show = HOSTS[host].show
-        candidates = by_host.get(host, [])
+        previous = seed_entries.get(show, {})
+        if previous.get("status") == "approved":
+            for ext in ("json", "md"):
+                shutil.copyfile(seed / "transcripts" / f"{slug(show)}.{ext}",
+                                transcripts / f"{slug(show)}.{ext}")
+            entries.append(dict(previous))
+            print(f"  {show:16} approved                 reused checked seed")
+            continue
+        excluded = set(previous.get("excluded_dois", []))
+        candidates = [w for w in by_host.get(host, []) if w["doi"] not in excluded]
         entry = {"host": host, "show": show, "candidates": len(candidates),
                  "status": "no_candidate", "doi": "", "title": ""}
+        if excluded:
+            entry["excluded_dois"] = sorted(excluded)
         if args.select_only:
             entry["candidate_dois"] = [w["doi"] for w in candidates]
             entry["candidate_titles"] = [w["title"][:80] for w in candidates]
@@ -106,6 +129,10 @@ def build(args):
                 verification = None
                 if not args.no_verify:
                     verification = approve_auto(db, story_id, args.decider)
+                # approve_auto may repair the draft. Export the exact final reviewed
+                # version, never the pre-repair object captured above.
+                record = row(db, story_id)
+                draft = json.loads(record["draft"])
                 stamp = slug(show)
                 artifact = {"show": show, "host": host, "story_id": story_id,
                             "doi": work["doi"], "requested_by": work.get("discovered_by", "beat"),
@@ -114,12 +141,14 @@ def build(args):
                                        ("title", "attribution", "journal", "url", "license",
                                         "evidence_tier", "evidence_note")},
                             "words": word_count(draft), "verification": verification, "draft": draft}
-                (transcripts / f"{stamp}.json").write_text(json.dumps(artifact, indent=2, ensure_ascii=False))
-                (transcripts / f"{stamp}.md").write_text(render(draft, source, host))
                 listener = (verification or {}).get("audience") or {}
                 artifact["audience"] = listener or None
-                (transcripts / f"{stamp}.json").write_text(
-                    json.dumps(artifact, indent=2, ensure_ascii=False))
+                approved = verification and verification.get("status") == "approved"
+                target = transcripts if approved else withheld
+                stem = stamp if approved else f"{stamp}-{story_id}"
+                (target / f"{stem}.json").write_text(
+                    json.dumps(artifact, indent=2, ensure_ascii=False) + "\n")
+                (target / f"{stem}.md").write_text(render(draft, source, host) + "\n")
                 entry.update({"status": verification.get("status", "drafted") if verification else "drafted",
                               "doi": work["doi"], "title": draft.get("title", ""),
                               "story_id": story_id, "words": word_count(draft),
@@ -130,6 +159,10 @@ def build(args):
                               "beat_fit": listener.get("beat_fit"),
                               "audience_repairs": (verification or {}).get("audience_repairs")})
                 print(f"  {show:16} {entry['status']:24} {draft.get('title', '')[:52]}")
+                if listener.get("decision") == "withhold" or listener.get("beat_fit") == "unfounded":
+                    # A paper rejected for show fit must not prevent a different
+                    # candidate from being considered in this same bounded run.
+                    continue
                 break
             except Exception as error:  # one bad show must not abort the batch
                 errors.append(f"{work['doi']}: {type(error).__name__}: {error}"[:200])
@@ -139,7 +172,10 @@ def build(args):
             print(f"  {show:16} FAILED                 {errors[-1] if errors else 'no candidates'}")
         entries.append(entry)
 
+    approved = sum(1 for e in entries if e["status"] == "approved")
     manifest = {"generated": dt.datetime.now(dt.timezone.utc).isoformat(),
+                "approved": approved, "total": len(entries),
+                "release_ready": approved == len(entries),
                 "window_days": args.days, "selection": {k: selection[k] for k in
                     ("papers_pulled", "candidates", "publicity_events", "publicized_candidates")},
                 "shows": entries}
@@ -155,7 +191,6 @@ def build(args):
                      f"{entry.get('evidence_tier', '')} | {entry.get('verification_pass', '')} | "
                      f"{entry.get('audience_decision') or entry.get('audience_pass', '')} | "
                      f"{entry.get('beat_fit', '')} |")
-    approved = sum(1 for e in entries if e["status"] == "approved")
     lines += ["",
               f"**{approved}/{len(entries)} shows approved.** A show that is not `approved` is "
               "not part of a release: it is withheld or blocked, and must be reported as such.",
@@ -177,6 +212,7 @@ def main():
     parser.add_argument("--per-show", type=int, default=3)
     parser.add_argument("--limit", type=int, default=80)
     parser.add_argument("--out", default="")
+    parser.add_argument("--seed-dir", default="", help="reuse checked approved scripts from a prior batch")
     parser.add_argument("--decider", default="auto")
     parser.add_argument("--select-only", action="store_true", help="candidates only; no API calls")
     parser.add_argument("--no-verify", action="store_true")

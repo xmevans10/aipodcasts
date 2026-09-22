@@ -52,7 +52,8 @@
       "host": "tomas",
       "story_id": "2bf31e350df888a399cb",
       "status": "withheld",
-      "reason": "paper_reselection_needed"
+      "reason": "paper_reselection_needed",
+      "excluded_dois": ["10.1016/j.exer.2026.111239"]
     },
     {
       "show": "Mycelium",
@@ -98,7 +99,8 @@
       "host": "yusuf",
       "story_id": "3499e42924e961fa3480",
       "status": "withheld",
-      "reason": "paper_reselection_needed"
+      "reason": "paper_reselection_needed",
+      "excluded_dois": ["10.1038/s42004-026-01968-x"]
     },
     {
       "show": "The Deep",

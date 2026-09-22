@@ -128,11 +128,29 @@ parsed; `lena` matched the REM-sleep reaction and `ada` the brain ones. Covered 
 
 ## Weekly full run
 
-`experiments/full-run/run_all_shows.py` runs the whole chain — select → ingest → draft →
-verify — for every show and writes one transcript per show plus a manifest. `.github/workflows/full-run.yml`
-runs it every Monday (`0 13 * * 1`) and on demand, uploading `full-run-artifacts/` as a
-build artifact. Required repo secrets: `OPENAI_API_KEY`, `LILT_OPENALEX_KEY`,
-`LILT_CONTACT_EMAIL`; optional: `CORE_API_KEY`, `DEEPSEEK_API_KEY`, `TYPESAFE_AI_API_KEY`.
-The per-run provider cap is raised to 96 because the run drafts every show. It never
-narrates or publishes.
+`experiments/full-run/run_all_shows.py` runs select → ingest → draft → factual
+verification → audience review for every show. `.github/workflows/full-run.yml` runs it
+on Mondays (`0 13 * * 1`) and on demand. Approved JSON/Markdown pairs go under
+`full-run-artifacts/transcripts/`; rejected drafts go under `withheld/` with their
+manifest disposition. The Action always uploads that artifact, even if the release gate
+fails. `check_batch.py` permits rendering and R2 publication only when all sixteen
+canonical shows have approved, current factual and audience fingerprints and their
+Markdown matches the approved JSON. An incomplete run leaves the feed unchanged.
 
+To continue the stage 4 batch entirely in Actions, dispatch `full-run-transcripts`
+with `seed_dir=experiments/full-run/stage4-2026-09-22`. The five approved scripts are
+checked and reused; the other eleven are selected and reviewed in that run. For another
+attempt, dispatch it with `seed_run_id` set to the previous full-run Actions run ID.
+That downloads its artifact and reuses only approved scripts. `seed_run_id` takes
+precedence over `seed_dir`. The two off-beat papers in the stage 4 manifest are excluded
+from reselection. Review failures and missing candidates stay visible in the manifest;
+the workflow never treats them as approvals.
+
+Required repository secrets for drafting: `OPENAI_API_KEY`, `TYPESAFE_AI_API_KEY`,
+`LILT_OPENALEX_KEY`, `LILT_CONTACT_EMAIL`. Optional selection inputs include
+`CORE_API_KEY` and `DEEPSEEK_API_KEY`. The writer and reviewer model come from
+`OPENAI_MODEL` (default `gpt-5.6-luna`); `OPENAI_REASONING_EFFORT` is a repository
+variable (default `low`). The per-run provider cap is 96. Secrets are injected into the
+Action environment, never committed or uploaded with the transcripts. R2 secrets are
+needed only if the complete batch should be published; the same Action can still render
+and upload its audio artifact without them.

@@ -1,9 +1,8 @@
 name: full-run-transcripts
 
-# Runs the full autonomous pipeline across every show once a week and uploads one
-# transcript per show (plus a manifest) as a build artifact. The backend is stdlib-only,
-# so there is nothing to install; transcription needs OPENAI_API_KEY and discovery is
-# better with LILT_OPENALEX_KEY. See docs/editorial/story-discovery.md.
+# Draft and review all sixteen shows. A dispatch can resume from the approved
+# scripts in a committed batch or a prior Actions artifact. Incomplete runs upload
+# their manifest and withheld drafts but cannot start rendering or publishing.
 on:
   schedule:
     - cron: "0 13 * * 1"   # Mondays, 13:00 UTC
@@ -15,6 +14,20 @@ on:
       per_show:
         description: Candidates considered per show
         default: "3"
+      seed_dir:
+        description: Committed batch to resume (optional)
+        default: ""
+      seed_run_id:
+        description: Prior full-run Actions run ID to resume (optional; overrides seed_dir)
+        default: ""
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: full-run-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   transcripts:
@@ -23,7 +36,7 @@ jobs:
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5.6-luna' }}
-      OPENAI_REASONING_EFFORT: low
+      OPENAI_REASONING_EFFORT: ${{ vars.OPENAI_REASONING_EFFORT || 'low' }}
       LILT_OPENALEX_KEY: ${{ secrets.LILT_OPENALEX_KEY }}
       LILT_CONTACT_EMAIL: ${{ secrets.LILT_CONTACT_EMAIL }}
       CORE_API_KEY: ${{ secrets.CORE_API_KEY }}
@@ -34,6 +47,8 @@ jobs:
       LILT_DRAFT_ATTEMPTS: "2"
       # The weekly run drafts every show, so the per-run cap must exceed the show count.
       LILT_MAX_PROVIDER_CALLS_PER_DAY: "96"
+      SEED_DIR: ${{ inputs.seed_dir || '' }}
+      SEED_RUN_ID: ${{ inputs.seed_run_id || '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -41,14 +56,27 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Resume from prior Actions run
+        if: env.SEED_RUN_ID != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download "$SEED_RUN_ID" --repo "$GITHUB_REPOSITORY" \
+            --name full-run-transcripts --dir seed-artifacts
+          echo "SEED_DIR=seed-artifacts" >> "$GITHUB_ENV"
+
       - name: Generate one transcript per show
         run: |
           python3 experiments/full-run/run_all_shows.py \
-            --days "${{ inputs.days || 14 }}" \
-            --per-show "${{ inputs.per_show || 3 }}" \
+            --days "$DAYS" \
+            --per-show "$PER_SHOW" \
+            --seed-dir "$SEED_DIR" \
             --out full-run-artifacts
+        env:
+          DAYS: ${{ inputs.days || '14' }}
+          PER_SHOW: ${{ inputs.per_show || '3' }}
 
-      - name: Upload transcripts
+      - name: Upload reviewed and withheld transcripts
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -56,6 +84,9 @@ jobs:
           path: full-run-artifacts/
           if-no-files-found: warn
           retention-days: 90
+
+      - name: Require sixteen current factual and audience approvals
+        run: python3 experiments/full-run/check_batch.py full-run-artifacts
 
   # Turn the weekly transcripts into app-ready episodes with the free Kokoro cast
   # (Apache-2.0, one distinct voice per host). Co-hosted dialogue is spliced by turn.
@@ -85,6 +116,9 @@ jobs:
         with:
           name: full-run-transcripts
           path: full-run-artifacts
+
+      - name: Recheck release gate before rendering
+        run: python3 experiments/full-run/check_batch.py full-run-artifacts
 
       - name: Cache Kokoro weights
         uses: actions/cache@v4

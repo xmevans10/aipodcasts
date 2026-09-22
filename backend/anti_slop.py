@@ -69,7 +69,9 @@ Rhythm:
   and do not march out same-shaped sentences. One short sentence that lands a
   point is good; three in a row is a drumroll.
 - No em dashes. Use commas, full stops or parentheses. This is spoken; write for
-  the ear, with contractions and natural breath.
+  the ear, with contractions and natural breath. The one exception is a host's
+  exact sign-off: reproduce that string character for character, punctuation
+  included, even where it contains an em dash.
 - No markdown, bold, bullet points or section headings. Do not read numbers as
   digits unless they are conventionally spoken that way.
 - Keep the host's voice specific. Do not invent personal experience, fieldwork,

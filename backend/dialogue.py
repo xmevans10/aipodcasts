@@ -10,7 +10,11 @@ from provenance import provenance_text, quotes_in_source
 from podcast import TITLE_GUIDE, validate_episode_title
 from hosts import dialogue_dynamic
 
-DIALOGUE_PROMPT_VERSION = 'dialogue-v2'  # audience contract: progressive turns, hook first
+DIALOGUE_PROMPT_VERSION = 'dialogue-v3'  # cast-scaled opening window
+
+#: Opening window in spoken words: 220 for a duo, 280 for the four-host show.
+OPENING_WORDS_BASE = 160
+OPENING_WORDS_PER_HOST = 30
 
 DIALOGUE_SCHEMA = {
     "type": "object", "additionalProperties": False,
@@ -41,7 +45,7 @@ headings.
 
 Shape the episode naturally:
 1. Open with a concrete curiosity hook or vivid question from one presenter.
-2. Then, still within the first 220 words, work in the exact episode title as the
+2. Then, still early in the episode, work in the exact episode title as the
    headline, introduce the paper by its exact source_title and credit the first named
    author from source_attribution followed by 'and colleagues' when there are multiple
    authors. Mention the journal if provided. Do not infer author seniority or say 'led by'.
@@ -155,10 +159,15 @@ def validate_dialogue_contract(draft: dict, source: dict, hosts) -> None:
     words = text.split()
     if not 220 <= len(words) <= 1000:
         raise ValueError("Dialogue must be between 220 and 1000 words")
-    opening = provenance_text(" ".join(words[:220])).casefold()
+    # The opening window scales with the cast. Four presenters need roughly twice the
+    # room two do before the headline and citation can land without crowding out the hook.
+    window = OPENING_WORDS_BASE + OPENING_WORDS_PER_HOST * len(hosts)
+    opening = provenance_text(" ".join(words[:window])).casefold()
     for label, value in [("episode headline", draft["title"]), ("paper title", source["title"])]:
         if provenance_text(value).casefold() not in opening:
-            raise ValueError("Dialogue opening must include the exact " + label)
+            raise ValueError(
+                f"Dialogue opening must include the exact {label}, word for word, within the "
+                f"first {window} spoken words. The exact string to include is: \"{value}\"")
     first_author = source.get("attribution", "").split(",")[0].strip()
     if not first_author or first_author == "Authors listed at source":
         raise ValueError("Named author metadata is required before generation")

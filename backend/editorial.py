@@ -103,9 +103,31 @@ do not produce an outline, and do not narrate the process in the episode.
 '''
 
 
+OPENING_CHECKLIST = '''OPENING CHECKLIST — check these before you return the JSON. They are
+structural requirements, not style advice, and a draft that misses one is rejected.
+1. The FIRST sentence is a hook. It is not the paper citation and not a greeting.
+2. Somewhere in the opening, after that hook, the `title` field appears WORD FOR WORD in
+   the spoken script. Copy it exactly; do not paraphrase it, shorten it or reword it.
+3. Somewhere in the opening, the `source_title` appears WORD FOR WORD, with the first
+   named author from `source_attribution` and "and colleagues" if there are several.
+4. Each of those two titles is spoken EXACTLY ONCE in the whole script, and the paper is
+   credited once, not once per presenter.
+5. The `caveat` field appears WORD FOR WORD in the spoken script, exactly once.
+6. The closing carries each presenter's exact sign-off, in that presenter's own words.
+Requirements 2, 3 and 5 are verbatim string matches. Cutting for clarity never means
+cutting these; trim elsewhere.
+'''
+
+
 def contract_block() -> str:
-    """The full shared block appended to both the solo and dialogue instructions."""
-    return "\n".join([PRECEDENCE, AUDIENCE_CONTRACT, INTERNAL_CONTROLS, WRITING_PROCESS])
+    """The full shared block appended to both the solo and dialogue instructions.
+
+    The opening checklist goes last on purpose. The structural requirements are exact
+    string matches that a validator rejects outright, and a writer that has just read four
+    paragraphs about cutting for clarity will otherwise paraphrase the headline away.
+    """
+    return "\n".join([PRECEDENCE, AUDIENCE_CONTRACT, INTERNAL_CONTROLS, WRITING_PROCESS,
+                       OPENING_CHECKLIST])
 
 
 def _normalized(value: str) -> str:

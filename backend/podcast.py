@@ -82,7 +82,9 @@ def validate_podcast(draft, source, host=None):
     opening = normalized(' '.join(draft['body'].split()[:180]))
     for label, value in [('episode headline', draft['title']), ('paper title', source['title'])]:
         if normalized(value) not in opening:
-            raise ValueError('Podcast opening must include the exact ' + label)
+            raise ValueError('Podcast opening must include the exact ' + label + ', word for '
+                             'word, within the first 180 spoken words. The exact string to '
+                             'include is: "' + value + '"')
     attribution = source.get('attribution', '')
     first_author = attribution.split(',')[0].strip()
     if not first_author or first_author == 'Authors listed at source':

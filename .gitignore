@@ -24,3 +24,5 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/test_output
 build/fastlane/
+fastlane/.env
+fastlane/.env.*

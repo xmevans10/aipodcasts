@@ -16,6 +16,9 @@ default_platform(:ios)
 #
 # ASC keys are issued per team, not per app, so a key already used for another app on
 # team 8K5ZVPCQ42 works here.
+#
+# fastlane loads fastlane/.env on its own, so the values can live there instead of in
+# the shell. That file is git-ignored and is read by fastlane directly.
 
 platform :ios do
   before_all do
@@ -32,17 +35,21 @@ platform :ios do
 
   desc "Read the App Store Connect API key from the environment"
   private_lane :asc_key do
-    missing = %w[ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_PATH].reject { |name| ENV[name].to_s != "" }
+    # ASC_KEY_FILE is the name already used by the other apps on this team; the two
+    # aliases are accepted so an existing shell export of either name works unchanged.
+    key_path = [ENV["ASC_KEY_FILE"], ENV["ASC_API_KEY_PATH"], ENV["ASC_KEY_PATH"]]
+               .find { |value| value.to_s != "" }
+    missing = %w[ASC_KEY_ID ASC_ISSUER_ID].reject { |name| ENV[name].to_s != "" }
+    missing << "ASC_KEY_FILE" if key_path.nil?
     unless missing.empty?
       UI.user_error!("Missing #{missing.join(', ')}. See the header of fastlane/Fastfile.")
     end
-    unless File.exist?(ENV["ASC_KEY_PATH"])
-      UI.user_error!("No .p8 at ASC_KEY_PATH=#{ENV['ASC_KEY_PATH']}")
-    end
+    key_path = File.expand_path(key_path)
+    UI.user_error!("No .p8 at #{key_path}") unless File.exist?(key_path)
     app_store_connect_api_key(
       key_id: ENV["ASC_KEY_ID"],
       issuer_id: ENV["ASC_ISSUER_ID"],
-      key_filepath: ENV["ASC_KEY_PATH"],
+      key_filepath: key_path,
       in_house: false
     )
   end

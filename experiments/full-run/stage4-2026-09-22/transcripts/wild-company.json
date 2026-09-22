@@ -1,0 +1,72 @@
+{
+  "show": "Wild Company",
+  "host": "fern",
+  "story_id": "9ca60053526fbff94cce",
+  "doi": "10.1111/1749-4877.70182",
+  "requested_by": "beat",
+  "publicity_sources": [],
+  "source": {
+    "title": "Ecology and Brain Size Drive Feeding Innovations in Birds",
+    "attribution": "Yating LIU, Ying Jiang, Jiliang Xu, Wen Bo Liao",
+    "journal": "Integrative Zoology",
+    "url": "https://doi.org/10.1111/1749-4877.70182",
+    "license": "cc-by",
+    "evidence_tier": "abstract",
+    "evidence_note": "Abstract-only evidence; no full-text reuse."
+  },
+  "words": 360,
+  "verification": {
+    "status": "approved",
+    "pass": true,
+    "draft_sha256": "a408424d14476224a1582ab17fc1ddb5741134e011184a4a6411a775a98a454e",
+    "reviewer": "auto-verifier:jev"
+  },
+  "draft": {
+    "title": "Which Birds Find New Ways to Eat?",
+    "dek": "Across 955 bird species, researchers found a link between brain size and the rate of unusual feeding behaviour, while ecological differences also mattered.",
+    "body": "A bird flips a leaf, probes somewhere unexpected, or tackles a food its neighbours have ignored. That small act of experimentation is one way animals deal with a changing menu. Which Birds Find New Ways to Eat? asks what patterns go along with birds trying new foods or new ways to get them.\n\nThe question comes from the paper Ecology and Brain Size Drive Feeding Innovations in Birds, by Yating LIU and colleagues, published in Integrative Zoology. The researchers compared records of unusual feeding behaviour across 955 bird species. They looked at how often each species was reported trying a new way to get food or using a different kind of food, then compared those rates with brain size and features of how each species lives and feeds.\n\nThe clearest result was a relationship across species. The researchers compared a bird’s brain size with its body size, so a large-bodied bird did not automatically count as having a large brain. Species with relatively larger brains were reported trying new foods or new ways to get food more often. The abstract calls the measure “residual brain size” but does not explain exactly how it was calculated.\n\nThe pattern also varied with the birds’ way of life. The links were different for birds trying a new way to handle food and birds eating a new kind of food, although the abstract does not say exactly how those links differed. Resident species, those that stay put rather than migrate, commonly had high innovation rates, as did birds with omnivorous diets, meaning they use a broad range of foods.\n\nThis is a comparison across 955 bird species, so it shows associations, not that brain size or ecology causes new feeding behaviour. Because the abstract does not give the calculation, we cannot tell which differences between species that brain-size measure accounts for.\n\nSo, when a bird works out a fresh way to reach lunch, the study links those behaviours with a brain-size measure and with how the species lives and feeds. The clever-looking act is small. The explanation is spread across the species’ whole way of life. I'm Clara Rowan. There's always more going on.",
+    "caveat": "This is a comparison across 955 bird species, so it shows associations, not that brain size or ecology causes new feeding behaviour. Because the abstract does not give the calculation, we cannot tell which differences between species that brain-size measure accounts for.",
+    "claims": [
+      {
+        "claim": "The study examined feeding innovations across 955 bird species in relation to brain size and ecological variables.",
+        "quote": "Here, we analyzed feeding innovations across 955 bird species, examining relationships with brain size and ecological variables."
+      },
+      {
+        "claim": "The researchers found a positive correlation between residual brain size and feeding innovation rate.",
+        "quote": "Our results reveal that residual brain size positively correlates with feeding innovation rate."
+      },
+      {
+        "claim": "High feeding innovation rates were commonly observed among resident species and species with omnivorous feeding strategies.",
+        "quote": "A high feeding innovation rate is commonly observed in resident species that employ omnivorous feeding strategies."
+      },
+      {
+        "claim": "The associations differed between technical innovations and food-type innovations.",
+        "quote": "Moreover, the patterns of association with residual brain size and ecological variables differed between the two innovation subtypes, namely technical and food type innovation rates."
+      },
+      {
+        "claim": "The model suggested that migration type and feeding strategy mediate effects involving brain size and temperature seasonality.",
+        "quote": "Phylogenetic path analysis further indicates that the effects of residual brain size and temperature seasonality on feeding innovation are mediated via migration type and/or feeding strategy."
+      }
+    ]
+  },
+  "audience": {
+    "pass": true,
+    "decision": "pass",
+    "failures": [],
+    "issues": [],
+    "first_hard_sentence": "",
+    "unexplained_terms": [],
+    "beat_fit": "grounded",
+    "listener_paraphrase": {
+      "question": "Which kinds of birds are more often reported trying new foods or new ways to get food?",
+      "method": "Researchers compared reports of unusual feeding behaviour across 955 bird species with each species' brain size relative to its body size, migration, and feeding habits.",
+      "finding": "Species with relatively larger brains were more often reported showing these feeding innovations. High rates were also common among resident birds and birds with broad, omnivorous diets, though the patterns differed between trying a new feeding method and eating a new kind of food.",
+      "limit": "This was a comparison across species, so it shows associations rather than proving that brain size or ecology causes the behaviour. The available abstract also does not explain exactly how the relative brain-size measure was calculated or how the two types of innovation differed."
+    },
+    "paraphrase_numbers_not_in_script": [],
+    "draft_sha256": "a408424d14476224a1582ab17fc1ddb5741134e011184a4a6411a775a98a454e",
+    "contract_version": "audience-contract-v1",
+    "review_version": "audience-review-v1",
+    "reviewer": "audience-reviewer:audience-review-v1"
+  }
+}

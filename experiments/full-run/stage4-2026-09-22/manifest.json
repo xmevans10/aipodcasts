@@ -1,7 +1,7 @@
 {
   "snapshot": "2026-09-22",
   "release_ready": false,
-  "approved": 4,
+  "approved": 5,
   "total": 16,
   "shows": [
     {
@@ -9,14 +9,14 @@
       "host": "atlas",
       "story_id": "cc8503a3911924fdfaa9",
       "status": "withheld",
-      "reason": "factual_or_audience_review_incomplete"
+      "reason": "factual_verification_abstained"
     },
     {
       "show": "Gradient",
       "host": "noor",
       "story_id": "c06c29b98acfd9ebe4fa",
       "status": "withheld",
-      "reason": "factual_or_audience_review_incomplete"
+      "reason": "audience_review_rejected"
     },
     {
       "show": "Ground Truth",
@@ -45,7 +45,7 @@
       "host": "marek",
       "story_id": "94d73be41b889fcb0b32",
       "status": "withheld",
-      "reason": "factual_or_audience_review_incomplete"
+      "reason": "audience_review_rejected"
     },
     {
       "show": "Marginal Gains",
@@ -70,28 +70,28 @@
       "host": "freya",
       "story_id": "7c6002769a4413ddbf82",
       "status": "withheld",
-      "reason": "factual_or_audience_review_incomplete"
+      "reason": "audience_review_rejected"
     },
     {
       "show": "Signal & Noise",
       "host": "ada",
       "story_id": "a92a674c9f22c1c841d2",
       "status": "withheld",
-      "reason": "factual_or_audience_review_incomplete"
+      "reason": "audience_review_rejected"
     },
     {
       "show": "Slow Wave",
       "host": "lena",
       "story_id": "0c3e5a05db2390d9bc85",
       "status": "withheld",
-      "reason": "factual_or_audience_review_incomplete"
+      "reason": "factual_or_audience_review_pending"
     },
     {
       "show": "Star Bros",
       "host": "jax",
       "story_id": "781a7722eb5977106b67",
       "status": "withheld",
-      "reason": "factual_or_audience_review_incomplete"
+      "reason": "draft_failed_exact_source_title_contract"
     },
     {
       "show": "Star Stuff",
@@ -116,21 +116,25 @@
       "host": "nova",
       "story_id": "63faa1f64a81b637f5e2",
       "status": "withheld",
-      "reason": "factual_or_audience_review_incomplete"
+      "reason": "audience_review_rejected"
     },
     {
       "show": "Webwork",
       "host": "spinner",
       "story_id": "7be0ddfe907f6573dc2a",
       "status": "withheld",
-      "reason": "factual_or_audience_review_incomplete"
+      "reason": "audience_review_rejected"
     },
     {
       "show": "Wild Company",
       "host": "fern",
       "story_id": "9ca60053526fbff94cce",
-      "status": "withheld",
-      "reason": "factual_or_audience_review_incomplete"
+      "status": "approved",
+      "reason": "",
+      "title": "Which Birds Find New Ways to Eat?",
+      "words": 360,
+      "factual": "pass",
+      "audience": "pass"
     }
   ]
 }

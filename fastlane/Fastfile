@@ -1,0 +1,89 @@
+default_platform(:ios)
+
+# Zwicky's release lanes.
+#
+# The Xcode project is generated from ios/project.yml and is git-ignored, so every lane
+# regenerates it before building. The build number lives in project.yml
+# (CURRENT_PROJECT_VERSION) and is bumped in a commit, not by fastlane editing a pbxproj
+# that is about to be overwritten.
+#
+# Authentication is an App Store Connect API key, supplied through the environment so no
+# secret is ever written into this repository:
+#
+#   export ASC_KEY_ID=XXXXXXXXXX          # the 10-character key id
+#   export ASC_ISSUER_ID=xxxxxxxx-xxxx-…  # the team's issuer id (an ASC UUID)
+#   export ASC_KEY_PATH=/path/AuthKey_XXXXXXXXXX.p8
+#
+# ASC keys are issued per team, not per app, so a key already used for another app on
+# team 8K5ZVPCQ42 works here.
+
+platform :ios do
+  before_all do
+    ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] ||= "120"
+    # fastlane warns and can mangle output without a UTF-8 locale.
+    ENV["LANG"] ||= "en_US.UTF-8"
+    ENV["LC_ALL"] ||= "en_US.UTF-8"
+  end
+
+  desc "Regenerate the Xcode project from ios/project.yml"
+  private_lane :generate_project do
+    sh("cd ../ios && xcodegen generate")
+  end
+
+  desc "Read the App Store Connect API key from the environment"
+  private_lane :asc_key do
+    missing = %w[ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_PATH].reject { |name| ENV[name].to_s != "" }
+    unless missing.empty?
+      UI.user_error!("Missing #{missing.join(', ')}. See the header of fastlane/Fastfile.")
+    end
+    unless File.exist?(ENV["ASC_KEY_PATH"])
+      UI.user_error!("No .p8 at ASC_KEY_PATH=#{ENV['ASC_KEY_PATH']}")
+    end
+    app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_filepath: ENV["ASC_KEY_PATH"],
+      in_house: false
+    )
+  end
+
+  desc "Build and upload the current commit to TestFlight"
+  lane :beta do
+    key = asc_key
+    generate_project
+
+    build_app(
+      project: "ios/Zwicky.xcodeproj",
+      scheme: "Zwicky",
+      configuration: "Release",
+      export_method: "app-store",
+      # Automatic signing: let Xcode create the App Store profile for this bundle id,
+      # authenticated with the API key above. Without this there is no distribution
+      # profile for com.xmevans10.Zwicky on this machine.
+      xcargs: "-allowProvisioningUpdates",
+      output_directory: "build/fastlane",
+      output_name: "Zwicky.ipa",
+      clean: true
+    )
+
+    upload_to_testflight(
+      api_key: key,
+      # The build is what we are shipping; waiting on Apple's processing queue can take
+      # much longer than the upload and tells us nothing new.
+      skip_waiting_for_build_processing: true,
+      distribute_external: false,
+      changelog: ENV["TESTFLIGHT_CHANGELOG"] || "Painted show covers for all sixteen shows."
+    )
+  end
+
+  desc "Everything the repo checks before a release, without shipping"
+  lane :checks do
+    sh("cd .. && python3 -m pytest -q backend/tests")
+    sh("cd .. && ./scripts/run-ios-tests.sh")
+    generate_project
+    sh("cd .. && xcodebuild -project ios/Zwicky.xcodeproj -scheme Zwicky " \
+       "-configuration Release -sdk iphonesimulator " \
+       "-destination 'generic/platform=iOS Simulator' build CODE_SIGNING_ALLOWED=NO " \
+       "| tail -5")
+  end
+end

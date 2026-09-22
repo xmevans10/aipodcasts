@@ -18,3 +18,9 @@ experiments/tts_lab/**/*.wav
 experiments/selection/cache/
 experiments/full-run/run-*/
 full-run-artifacts/
+
+# fastlane run output (the Fastfile and Appfile are tracked)
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/test_output
+build/fastlane/

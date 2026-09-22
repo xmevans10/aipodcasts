@@ -147,6 +147,10 @@ class PipelineTests(unittest.TestCase):
                 p.draft_story(self.db, self.id); p.draft_story(self.db, self.id)
                 self.assertEqual(req.call_count, 1)
             p.review(self.db, self.id, 'Test Editor')
+            # Narration is gated on audience review as well as editorial approval, so an
+            # operator-recorded override stands in for it here.
+            p.override_audience(self.db, self.id, 'Test Editor',
+                                'Mocked end-to-end path; no reviewer configured in tests.')
             with patch.object(p, 'request', return_value=b'ID3' + b'x' * 2000) as req:
                 p.narrate(self.db, self.id); p.narrate(self.db, self.id)
                 self.assertEqual(req.call_count, 1)

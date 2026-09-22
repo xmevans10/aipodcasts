@@ -122,8 +122,13 @@ class DialogueRenderTests(unittest.TestCase):
                 turn['text'] = turn['text'].replace(HOSTS['ines'].sign_off, HOSTS['jax'].sign_off).replace(HOSTS['dev'].sign_off, HOSTS['kai'].sign_off)
             for _ in range(2):
                 draft['turns'] += [{'speaker': HOSTS[h].name, 'text': HOSTS[h].sign_off} for h in ['benny', 'chase']]
+        import audience
         return ({'host': host, 'show': HOSTS[host].show, 'draft': draft, 'source': SOURCE,
-                 'verification': {'pass': True, 'draft_sha256': draft_fingerprint(draft)}}, load_cast(ROOT / 'tools/tts/voice_cast.json'))
+                 'verification': {'pass': True, 'draft_sha256': draft_fingerprint(draft)},
+                 'audience': {'pass': True, 'draft_sha256': draft_fingerprint(draft),
+                              'contract_version': audience.CONTRACT_VERSION,
+                              'review_version': audience.REVIEW_VERSION}},
+                load_cast(ROOT / 'tools/tts/voice_cast.json'))
 
     def test_two_and_four_host_audio_offsets_and_payload(self):
         from bundle_shows import narration_inputs, render_turns, wav_duration, SR, TURN_GAP
@@ -161,6 +166,13 @@ class DialogueRenderTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'verification'):
             narration_inputs(artifact, cast)
         artifact['verification']['pass'] = True
+        artifact['audience']['pass'] = False
+        with self.assertRaisesRegex(ValueError, 'audience review'):
+            narration_inputs(artifact, cast)
+        artifact['audience']['pass'] = True
+        stale = dict(artifact, audience={**artifact['audience'], 'draft_sha256': 'x' * 64})
+        with self.assertRaisesRegex(ValueError, 'audience review is stale'):
+            narration_inputs(stale, cast)
         with self.assertRaisesRegex(ValueError, 'Missing voice'):
             narration_inputs(artifact, {k: v for k, v in cast.items() if k != 'dev'})
         cast['dev']['voice'] = cast['ines']['voice']

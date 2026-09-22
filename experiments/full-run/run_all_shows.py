@@ -116,11 +116,19 @@ def build(args):
                             "words": word_count(draft), "verification": verification, "draft": draft}
                 (transcripts / f"{stamp}.json").write_text(json.dumps(artifact, indent=2, ensure_ascii=False))
                 (transcripts / f"{stamp}.md").write_text(render(draft, source, host))
+                listener = (verification or {}).get("audience") or {}
+                artifact["audience"] = listener or None
+                (transcripts / f"{stamp}.json").write_text(
+                    json.dumps(artifact, indent=2, ensure_ascii=False))
                 entry.update({"status": verification.get("status", "drafted") if verification else "drafted",
                               "doi": work["doi"], "title": draft.get("title", ""),
                               "story_id": story_id, "words": word_count(draft),
                               "evidence_tier": source.get("evidence_tier"),
-                              "verification_pass": (verification or {}).get("pass")})
+                              "verification_pass": (verification or {}).get("pass"),
+                              "audience_pass": listener.get("pass"),
+                              "audience_decision": listener.get("decision"),
+                              "beat_fit": listener.get("beat_fit"),
+                              "audience_repairs": (verification or {}).get("audience_repairs")})
                 print(f"  {show:16} {entry['status']:24} {draft.get('title', '')[:52]}")
                 break
             except Exception as error:  # one bad show must not abort the batch
@@ -139,17 +147,28 @@ def build(args):
     lines = ["# Full-run transcripts", "",
              f"- Generated: {manifest['generated']}",
              f"- Window: {args.days} days · {sum(1 for e in entries if e['status'] not in ('no_candidate', 'FAILED'))}/{len(entries)} shows drafted", "",
-             "| Show | Host | Status | Title | Words | Tier | Verified |",
-             "|---|---|---|---|---|---|---|"]
+             "| Show | Host | Status | Title | Words | Tier | Factual | Audience | Beat fit |",
+             "|---|---|---|---|---|---|---|---|---|"]
     for entry in entries:
         lines.append(f"| {entry['show']} | {entry['host']} | {entry['status']} | "
                      f"{entry.get('title', '')[:60]} | {entry.get('words', '')} | "
-                     f"{entry.get('evidence_tier', '')} | {entry.get('verification_pass', '')} |")
+                     f"{entry.get('evidence_tier', '')} | {entry.get('verification_pass', '')} | "
+                     f"{entry.get('audience_decision') or entry.get('audience_pass', '')} | "
+                     f"{entry.get('beat_fit', '')} |")
+    approved = sum(1 for e in entries if e["status"] == "approved")
+    lines += ["",
+              f"**{approved}/{len(entries)} shows approved.** A show that is not `approved` is "
+              "not part of a release: it is withheld or blocked, and must be reported as such.",
+              ""]
     (out / "manifest.md").write_text("\n".join(lines) + "\n")
 
     db.close()
     drafted = sum(1 for e in entries if e["status"] not in ("no_candidate", "FAILED"))
-    print(f"\n{drafted}/{len(entries)} shows drafted -> {out}")
+    approved = sum(1 for e in entries if e["status"] == "approved")
+    print(f"\n{drafted}/{len(entries)} shows drafted, {approved}/{len(entries)} approved -> {out}")
+    for entry in entries:
+        if entry["status"] != "approved":
+            print(f"  NOT APPROVED  {entry['show']:16} {entry['status']}")
 
 
 def main():

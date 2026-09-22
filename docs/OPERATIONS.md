@@ -33,12 +33,19 @@ python3 backend/pipeline.py ingest 10.1371/journal.pbio.3003993 --host fern
 python3 backend/pipeline.py list
 python3 backend/pipeline.py draft STORY_ID
 python3 backend/pipeline.py inspect STORY_ID
+# Audience review: can a nonspecialist follow this after one listen?
+python3 backend/pipeline.py audience STORY_ID
 # Editor checks original, draft, evidence quotes and rights before this step:
 python3 backend/pipeline.py approve STORY_ID --reviewer 'Editor Name'
 python3 backend/pipeline.py narrate STORY_ID
 # Listen to the MP3, check pronunciation and accidental omissions:
 python3 backend/pipeline.py publish STORY_ID
 ```
+
+Narration and publication both require a passing audience review bound to the exact
+script; see [the audience review gate](editorial/audience-review.md). A story with no
+report, a stale report or a failed report cannot be narrated. `override-audience` exists
+for a named person to take responsibility on the record when a reviewer is unavailable.
 
 The included live intake was imported on 2026-09-16 and remains unpublished in local `backend/data/`. No paid provider calls were made. Source article title: “Growth-rate coordination across the width of a leaf preserves its flatness.” The local record ID is `e94c833d4832dae56f3c`.
 

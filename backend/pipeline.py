@@ -18,6 +18,7 @@ import xml.etree.ElementTree as ET
 from evidence import extract_passages, build_packet, evidence_text
 from hosts import HOSTS as HOST_PROFILES, writing_guide, dialogue_hosts
 from anti_slop import ANTI_SLOP_GUIDE, GENERAL_AUDIENCE_GUIDE
+import audience as audience_review
 from dialogue import DIALOGUE_INSTRUCTIONS, DIALOGUE_SCHEMA, dialogue_guide, validate_dialogue, turns_body, turns_narration_inputs
 from provenance import provenance_text, quotes_in_source
 from language_clues import LANGUAGE_CLUES
@@ -76,6 +77,11 @@ def connect(path: Path | None = None) -> sqlite3.Connection:
     );
     """)
     for table, name, declaration in [('stories', 'draft_input', 'TEXT'),
+                                     # Audience review, added 2026-09-22. Legacy rows have
+                                     # NULL here and are therefore NOT approved for
+                                     # narration: the new gate fails closed on old records.
+                                     ('stories', 'audience_report', 'TEXT'),
+                                     ('stories', 'audience_override', 'TEXT'),
                                      ('calls', 'input_tokens', 'INTEGER'),
                                      ('calls', 'output_tokens', 'INTEGER')]:
         if name not in {r[1] for r in db.execute('PRAGMA table_info(' + table + ')')}:
@@ -512,11 +518,18 @@ def language_clue_block(duo, host_id: str) -> str:
     return ("\n\n" + "\n\n".join(parts)) if parts else ""
 
 
-def draft_story(db, story_id):
+def draft_story(db, story_id, *, extra_instructions: str = "", redraft: bool = False):
+    """Generate (or, with redraft=True, regenerate) the script for a story.
+
+    `extra_instructions` carries audience-review failures back to the writer. A redraft
+    replaces the stored draft and returns the story to `review`, which invalidates every
+    report bound to the old fingerprint.
+    """
     record = row(db, story_id)
-    if record["draft"]:
+    if record["draft"] and not redraft:
         return json.loads(record["draft"])
-    if record["state"] != "ingested":
+    allowed = ("ingested", "review") if redraft else ("ingested",)
+    if record["state"] not in allowed:
         raise ValueError("Story must be ingested first")
     key = os.environ.get("OPENAI_API_KEY")
     model = os.environ.get("OPENAI_MODEL") or DEFAULT_MODEL
@@ -546,6 +559,8 @@ def draft_story(db, story_id):
     # against the daily provider-call cap, so repair cannot run away.
     attempts = max(1, int(os.environ.get("LILT_DRAFT_ATTEMPTS", "2")))
     last_error, draft = None, None
+    if extra_instructions:
+        instructions += "\n\n" + extra_instructions
     for _ in range(attempts):
         attempt_instructions = instructions
         if last_error:
@@ -590,8 +605,94 @@ def draft_story(db, story_id):
     if draft is None:
         raise ValueError("Draft failed after " + str(attempts) + " attempts: " + str(last_error))
     with db:
-        db.execute("UPDATE stories SET draft=?,state='review' WHERE id=?", (json.dumps(draft), story_id))
+        # A new draft invalidates the previous approval and both reports bound to it.
+        db.execute("UPDATE stories SET draft=?,state='review',reviewer=NULL,review_hash=NULL,"
+                   "audience_report=NULL WHERE id=?", (json.dumps(draft), story_id))
     return draft
+
+
+def audience_state(db, story_id: str) -> dict:
+    """The stored audience report for a story, plus whether it still applies.
+
+    Freshness is bound to the exact draft fingerprint, the contract version and the review
+    version. Any edit to a title, body, turn or caveat changes the fingerprint and
+    invalidates the report, so a polished draft cannot ride an old approval.
+    """
+    record = row(db, story_id)
+    stored = json.loads(record["audience_report"]) if record["audience_report"] else None
+    draft = json.loads(record["draft"]) if record["draft"] else None
+    fresh = bool(draft) and audience_review.is_fresh(stored, draft)
+    return {"report": stored, "fresh": fresh, "draft": draft,
+            "override": record["audience_override"]}
+
+
+def audience_check(db, story_id: str, *, force: bool = False) -> dict:
+    """Run audience review for a story, or reuse an unchanged valid report.
+
+    Never spends a call to re-score text that has not changed. Any provider problem leaves
+    an explicit pending state; nothing in this path can produce an approval by accident.
+    """
+    record = row(db, story_id)
+    if not record["draft"]:
+        raise ValueError("Story has no draft to review")
+    state = audience_state(db, story_id)
+    if state["fresh"] and not force:
+        return {"story": story_id, "status": "cached", **state["report"]}
+
+    draft = state["draft"]
+    source = json.loads(record["source"])
+    packet = (json.loads(record["draft_input"]) if record["draft_input"]
+              else build_packet(source, int(os.environ.get("LILT_MAX_SOURCE_CHARS", "18000"))))
+    host = HOSTS[record["host"]]
+    try:
+        parsed = audience_review.review_script(
+            draft, source, evidence_text(packet), host.show, host.beat,
+            fetch=request, reserve=lambda provider, sid: reserve_call(db, provider, sid),
+            story_id=story_id)
+    except RuntimeError as error:
+        # Unavailable, refused, malformed or timed out: pending, never pass.
+        return {"story": story_id, "status": "pending", "pass": False,
+                "failures": ["audience_review_unavailable: " + str(error)],
+                "draft_sha256": verifier.draft_fingerprint(draft),
+                "contract_version": audience_review.CONTRACT_VERSION,
+                "review_version": audience_review.REVIEW_VERSION}
+    report = audience_review.verdict(parsed, draft, evidence_text(packet))
+    with db:
+        db.execute("UPDATE stories SET audience_report=? WHERE id=?",
+                   (json.dumps(report, ensure_ascii=False), story_id))
+    return {"story": story_id, "status": "reviewed", **report}
+
+
+def audience_ok(db, story_id: str) -> tuple[bool, str]:
+    """The release gate. Missing, stale or failed review is not a pass."""
+    state = audience_state(db, story_id)
+    if state["override"]:
+        return True, "audience_override: " + state["override"]
+    if state["report"] is None:
+        return False, ("audience review has never run for this story; run "
+                       "`pipeline.py audience <id>`")
+    if not state["fresh"]:
+        return False, ("audience review is stale: the script, the editorial contract or the "
+                       "review version changed since it was written")
+    if not state["report"].get("pass"):
+        return False, "audience review did not pass: " + "; ".join(
+            state["report"].get("failures", [])[:4])
+    return True, "audience review passed"
+
+
+def override_audience(db, story_id: str, reviewer: str, reason: str) -> str:
+    """A named person taking responsibility for shipping without a passing review.
+
+    Deliberately explicit and recorded. It exists so a legacy or reviewer-unavailable story
+    can still ship on a human decision, not so the gate can be skipped quietly.
+    """
+    if not reviewer.strip() or len(reason.strip()) < 20:
+        raise ValueError("An override needs a named reviewer and a reason of real substance")
+    row(db, story_id)
+    note = f"{reviewer.strip()}: {reason.strip()}"
+    with db:
+        db.execute("UPDATE stories SET audience_override=? WHERE id=?", (note, story_id))
+    return note
 
 
 def review(db, story_id: str, reviewer: str):
@@ -611,16 +712,41 @@ def review(db, story_id: str, reviewer: str):
         db.execute("UPDATE stories SET state='approved',reviewer=?,review_hash=? WHERE id=?", (reviewer.strip(), digest, story_id))
 
 
-def approve_auto(db, story_id: str, decider_mode: str = "auto"):
-    """Replace the named human reviewer with the automated verification gate."""
+def approve_auto(db, story_id: str, decider_mode: str = "auto", repairs: int | None = None):
+    """Replace the named human reviewer with both automated gates.
+
+    Scientific verification and audience review are independent. A story is approved only
+    when the same script passes both; a strong audience report never rescues a failed
+    evidence check, and a passed evidence check never substitutes for comprehension.
+    """
     record = row(db, story_id)
     if record["state"] != "review":
         raise ValueError("Auto-approval requires a draft awaiting review")
-    report = verifier.verify_story(db, story_id, decider_mode)
-    if not report["pass"]:
-        return {"story": story_id, "status": "abstained", **report}
-    review(db, story_id, report["reviewer"])
-    return {"story": story_id, "status": "approved", **report}
+    if repairs is None:
+        repairs = int(os.environ.get("LILT_AUDIENCE_REPAIRS",
+                                     str(audience_review.DEFAULT_MAX_REPAIRS)))
+    attempted = 0
+    while True:
+        report = verifier.verify_story(db, story_id, decider_mode)
+        if not report["pass"]:
+            return {"story": story_id, "status": "abstained", **report}
+        listener = audience_check(db, story_id)
+        if listener.get("pass"):
+            review(db, story_id, report["reviewer"])
+            return {"story": story_id, "status": "approved", **report,
+                    "audience": listener, "audience_repairs": attempted}
+        # Only a parsed review with actionable failures is worth a writer call. A pending
+        # review means we could not reach a reviewer; re-rolling would not change the text.
+        if (attempted >= repairs or listener.get("status") == "pending"
+                or not listener.get("failures")):
+            return {"story": story_id,
+                    "status": "audience_" + ("pending" if listener.get("status") == "pending"
+                                             else "rejected"),
+                    "pass": False, "factual": report, "audience": listener,
+                    "audience_repairs": attempted}
+        attempted += 1
+        draft_story(db, story_id, redraft=True,
+                    extra_instructions=audience_review.repair_instructions(listener))
 
 
 def produce_auto(db, days: int = 14, limit: int = 6, max_stories: int = 3,
@@ -673,6 +799,11 @@ def doctor() -> dict:
         "voice": voice_status(),
         "openai_writer": {"api_key": bool(os.environ.get("OPENAI_API_KEY")),
                           "model": os.environ.get("OPENAI_MODEL") or DEFAULT_MODEL},
+        "audience_review": {"available": audience_review.available(),
+                            "model": os.environ.get("LILT_REVIEW_MODEL") or os.environ.get("OPENAI_MODEL") or "",
+                            "contract_version": audience_review.CONTRACT_VERSION,
+                            "review_version": audience_review.REVIEW_VERSION,
+                            "max_repairs": os.environ.get("LILT_AUDIENCE_REPAIRS", str(audience_review.DEFAULT_MAX_REPAIRS))},
         "feed": {"public_origin": os.environ.get("LILT_PUBLIC_ORIGIN", ""),
                  "max_provider_calls_per_day": os.environ.get("LILT_MAX_PROVIDER_CALLS_PER_DAY", "12"),
                  "max_source_chars": os.environ.get("LILT_MAX_SOURCE_CHARS", "18000")},
@@ -695,6 +826,9 @@ def narrate(db, story_id):
         raise ValueError("Editorial approval is required before narration")
     if hashlib.sha256(record["draft"].encode()).hexdigest() != record["review_hash"]:
         raise ValueError("Draft changed after review")
+    permitted, why = audience_ok(db, story_id)
+    if not permitted:
+        raise ValueError("Audience review gate: " + why)
     draft = json.loads(record["draft"])
     source = json.loads(record["source"])
     duo = dialogue_hosts(record["host"])
@@ -727,6 +861,9 @@ def publish(db, story_id):
         raise ValueError("Audio file is missing")
     if hashlib.sha256(record["draft"].encode()).hexdigest() != record["review_hash"]:
         raise ValueError("Draft no longer matches the approved version")
+    permitted, why = audience_ok(db, story_id)
+    if not permitted:
+        raise ValueError("Audience review gate: " + why)
     with db:
         db.execute("UPDATE stories SET state='published' WHERE id=?", (story_id,))
 
@@ -758,7 +895,9 @@ def main():
     sub.add_parser("discover")
     p = sub.add_parser("shortlist"); p.add_argument("--days", type=int, default=7); p.add_argument("--per-host", type=int, default=3); p.add_argument("--limit", type=int, default=25); p.add_argument("--no-enrich", action="store_true"); p.add_argument("--markdown", action="store_true")
     p = sub.add_parser("select"); p.add_argument("--days", type=int, default=14); p.add_argument("--per-show", type=int, default=2); p.add_argument("--limit", type=int, default=10); p.add_argument("--markdown", action="store_true"); p.add_argument("--include-preprints", action="store_true", help="allow preprints/repositories (lower reputation)")
-    p = sub.add_parser("approve-auto"); p.add_argument("id"); p.add_argument("--decider", default="auto")
+    p = sub.add_parser("approve-auto"); p.add_argument("id"); p.add_argument("--decider", default="auto"); p.add_argument("--repairs", type=int, default=None, help="audience-driven rewrite rounds (default LILT_AUDIENCE_REPAIRS)")
+    p = sub.add_parser("audience", help="run or reuse audience review for a draft"); p.add_argument("id"); p.add_argument("--force", action="store_true", help="re-review unchanged text (spends a call)")
+    p = sub.add_parser("override-audience", help="ship without a passing audience review, on the record"); p.add_argument("id"); p.add_argument("--reviewer", required=True); p.add_argument("--reason", required=True)
     p = sub.add_parser("produce-auto"); p.add_argument("--days", type=int, default=14); p.add_argument("--limit", type=int, default=6); p.add_argument("--max-stories", type=int, default=3); p.add_argument("--no-narrate", action="store_true"); p.add_argument("--decider", default="auto")
     p = sub.add_parser("ingest"); p.add_argument("doi"); p.add_argument("--host", choices=HOSTS, required=True); p.add_argument("--refresh", action="store_true")
     sub.add_parser("hosts")
@@ -784,7 +923,9 @@ def main():
             if args.markdown:
                 print(select_report(result))
                 return
-        elif args.command == "approve-auto": result = approve_auto(db, args.id, args.decider)
+        elif args.command == "approve-auto": result = approve_auto(db, args.id, args.decider, args.repairs)
+        elif args.command == "audience": result = audience_check(db, args.id, force=args.force)
+        elif args.command == "override-audience": result = override_audience(db, args.id, args.reviewer, args.reason)
         elif args.command == "produce-auto":
             result = produce_auto(db, days=args.days, limit=args.limit, max_stories=args.max_stories,
                                   narrate=not args.no_narrate, decider_mode=args.decider)

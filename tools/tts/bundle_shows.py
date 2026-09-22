@@ -29,6 +29,7 @@ sys.path.insert(0, str(ROOT / "backend"))
 from envelope import HOP, envelope_wav  # noqa: E402
 from podcast import validate_podcast
 from verify import draft_fingerprint
+import audience
 from dialogue import turns_body, turns_narration_inputs, validate_dialogue_contract
 from hosts import HOSTS, dialogue_hosts  # noqa: E402
 
@@ -167,6 +168,15 @@ def narration_inputs(transcript: dict, cast: dict) -> list[dict]:
         raise ValueError(f"{transcript['show']}: script has not passed evidence verification")
     if report.get("draft_sha256") != draft_fingerprint(transcript["draft"]):
         raise ValueError(f"{transcript['show']}: verification is stale; reverify the edited script")
+    # Audience review is a separate gate, checked here because rendering is a release
+    # boundary. A missing, stale or failed report is never a pass.
+    listener = transcript.get("audience") or {}
+    if listener.get("pass") is not True:
+        raise ValueError(f"{transcript['show']}: script has no passing audience review; "
+                         "run `pipeline.py audience <id>` and repair the failures")
+    if not audience.is_fresh(listener, transcript["draft"]):
+        raise ValueError(f"{transcript['show']}: audience review is stale for this script, "
+                         "contract or review version; re-review before rendering")
     for item in inputs:
         voice = (cast.get(item["host"]) or {}).get("voice")
         if not voice or not item["text"].strip():

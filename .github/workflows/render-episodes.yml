@@ -15,6 +15,7 @@ on:
     paths:
       - "experiments/full-run/latest/**"
       - "tools/tts/bundle_shows.py"
+      - "tools/tts/align.py"
       - "tools/tts/voice_cast.json"
       - "backend/dialogue.py"
       - "backend/hosts.py"

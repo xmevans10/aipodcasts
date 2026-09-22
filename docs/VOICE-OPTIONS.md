@@ -76,9 +76,13 @@ All 16 shows render with **Kokoro directly** — no cloning step. The
 [model card](https://huggingface.co/hexgrad/Kokoro-82M) documents Apache-2.0 weights.
 `tools/tts/bundle_shows.py` resolves each dialogue speaker through `backend/hosts.py`
 and selects its stable voice by host ID from `voice_cast.json`. Each turn is synthesized
-separately, with a 180 ms pause between turns. Paragraph word starts are estimated
-within the measured turn duration and offset by the exact sample count, including pauses.
-These are approximate word timings; forced alignment remains milestone 3.
+separately, with a 180 ms pause between turns. Word times come from
+`tools/tts/align.py`: it reads each turn's waveform (frame energies, silences and clause
+pauses), uses Kokoro's own per-segment audio boundaries as anchors, and fits the known
+words with a phoneme-weighted duration model, so the highlight follows the voice rather
+than a letter count. espeak-ng (present in the render runner) supplies phonemes; without
+it a spelling-based syllable estimate stands in. This replaces the earlier length-weighted
+estimate.
 
 Both rendering workflows require all 16 shows and retain the four older bundled
 episodes in `ios/Zwicky/Episodes/`. They publish audio, speaker-labelled sidecars

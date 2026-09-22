@@ -1,5 +1,10 @@
 # Milestone 3 — Professional audio and precise read-along
 
+> Status (2026-09-22): waveform-guided alignment is implemented in `tools/tts/align.py`
+> and wired into `bundle_shows.py` (Kokoro segment anchors + phoneme-weighted energy DP),
+> with `TranscriptWord.end` now carried into the app. Loudness normalisation, per-host
+> pronunciation for names/terms, and the automated alignment-confidence gate remain open.
+
 Prepend [`00-shared-context.md`](00-shared-context.md), then paste:
 
 ```text

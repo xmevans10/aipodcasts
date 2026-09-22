@@ -2,13 +2,14 @@
 """Render the weekly transcripts to audio with Kokoro and bundle them for the app.
 
 Solo and co-hosted shows use stable per-presenter Kokoro voicepacks (Apache-2.0).
-Dialogue is rendered turn by turn; word times are estimated within each measured turn,
-then offset into the final audio. No speaker labels are spoken aloud.
+Dialogue is rendered turn by turn; each turn's words are aligned to its own audio by
+`align.py`, which reads the waveform (energy, silences, clause pauses) and fits the known
+words with a phoneme-weighted duration model. Kokoro's own per-segment audio boundaries
+anchor the alignment so a long turn cannot drift. No speaker labels are spoken aloud.
 
 For each show it writes <episode-id>.m4a plus <episode-id>.json in the output directory in the shape the
 app's BundledEpisode decoder expects (story, duration, word-timed transcript, envelope),
-and refreshes Episodes/index.json. Word timings are distributed by word length across the
-real audio duration, since Kokoro reads the exact reviewed script.
+and refreshes Episodes/index.json.
 
     python3 tools/tts/bundle_shows.py --transcripts experiments/full-run/<run>/transcripts
 """
@@ -26,6 +27,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "backend"))
+import align  # noqa: E402
 from envelope import HOP, envelope_wav  # noqa: E402
 from podcast import validate_podcast
 from verify import draft_fingerprint
@@ -83,6 +85,7 @@ def story_for(transcript: dict, duration: float, published: str, episode: str = 
     body = turns_body(draft) if "turns" in draft else draft["body"].strip()
     words = body.split()
     starts = timings(words, duration)
+    ends = starts[1:] + [round(duration, 3)] if starts else []
     meta = HOSTS.get(host)
     topic = (meta.topic.upper() if meta and meta.topic else transcript["show"].upper())
     return {
@@ -108,7 +111,8 @@ def story_for(transcript: dict, duration: float, published: str, episode: str = 
                if "turns" in draft else {}),
         },
         "duration": round(duration, 2),
-        "transcript": paragraphs if paragraphs is not None else [{"words": [{"text": w, "start": s} for w, s in zip(words, starts)]}],
+        "transcript": paragraphs if paragraphs is not None else [
+            {"words": [{"text": w, "start": s, "end": e} for w, s, e in zip(words, starts, ends)]}],
         "levelHop": HOP,
     }
 
@@ -137,17 +141,37 @@ _PIPELINES: dict = {}
 
 
 def render_kokoro(text: str, voice: str, speed: float):
-    """Render text in one Kokoro voice; pipelines are cached per language (model load is slow)."""
+    """Render text in one Kokoro voice; pipelines are cached per language (model load is slow).
+
+    Returns ``(audio, segments)``. Each segment is one Kokoro synthesis chunk with its
+    text and sample count; those exact boundaries anchor the read-along alignment.
+    """
     import numpy as np
     from kokoro import KPipeline
 
     language = "b" if voice.startswith("b") else "a"
     if language not in _PIPELINES:
         _PIPELINES[language] = KPipeline(lang_code=language)
-    chunks = [audio for _, _, audio in _PIPELINES[language](text, voice=voice, speed=speed)]
+    chunks, segments = [], []
+    for result in _PIPELINES[language](text, voice=voice, speed=speed):
+        graphemes = getattr(result, "graphemes", None)
+        audio = getattr(result, "audio", None)
+        if audio is None:  # older fastlane/kokoro builds yield a (graphemes, phonemes, audio) tuple
+            graphemes, audio = result[0], result[2]
+        if len(audio) == 0:
+            continue
+        chunks.append(audio)
+        segments.append({"text": graphemes or "", "samples": len(audio)})
     if not chunks:
         raise ValueError("Kokoro returned no audio")
-    return np.concatenate(chunks)
+    return np.concatenate(chunks), segments
+
+
+def _rendered(result):
+    """Accept either ``(audio, segments)`` from render_kokoro or a bare audio sequence."""
+    if isinstance(result, tuple) and len(result) == 2 and isinstance(result[1], list):
+        return result[0], result[1]
+    return result, None
 
 
 TURN_GAP = 0.18
@@ -189,7 +213,7 @@ def narration_inputs(transcript: dict, cast: dict) -> list[dict]:
 
 
 def render_turns(inputs: list[dict], wav: Path, speed: float, render=None) -> list[dict]:
-    """Write mono PCM and anchor each paragraph to its actual sample offset."""
+    """Write mono PCM and align each paragraph's words to its own audio."""
     import array
     import math
     render = render or render_kokoro
@@ -199,7 +223,7 @@ def render_turns(inputs: list[dict], wav: Path, speed: float, render=None) -> li
         stream.setsampwidth(2)
         stream.setframerate(SR)
         for index, item in enumerate(inputs):
-            audio = render(item["text"], item["voice"], speed)
+            audio, segments = _rendered(render(item["text"], item["voice"], speed))
             if len(audio) == 0 or not all(math.isfinite(float(v)) for v in audio):
                 raise ValueError("Narration returned empty or non-finite audio")
             if index:
@@ -207,9 +231,11 @@ def render_turns(inputs: list[dict], wav: Path, speed: float, render=None) -> li
                 stream.writeframes(b"\0\0" * gap)
                 offset += gap
             words = item["text"].split()
-            starts = timings(words, len(audio) / SR)
-            paragraph = {"words": [{"text": w, "start": round(offset / SR + t, 3)}
-                                   for w, t in zip(words, starts)]}
+            aligned = align.align(words, audio, SR, segments=segments)
+            paragraph = {"words": [{"text": word["text"],
+                                    "start": round(offset / SR + word["start"], 3),
+                                    "end": round(offset / SR + word["end"], 3)}
+                                   for word in aligned]}
             if "speaker" in item:
                 paragraph.update(speaker=item["speaker"], hostID=item["host"])
             paragraphs.append(paragraph)

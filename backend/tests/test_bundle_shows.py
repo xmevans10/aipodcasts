@@ -12,6 +12,7 @@ sys.path.insert(0, str(ROOT / "backend"))
 sys.path.insert(0, str(ROOT / "tools/tts"))
 from bundle_shows import slug, story_for, timings  # noqa: E402
 from envelope import envelope_wav  # noqa: E402
+from publish_feed import build_feed  # noqa: E402
 
 
 def write_tone(path: Path, seconds: float, sr: int = 24000, freq: float = 440.0):
@@ -77,6 +78,20 @@ class EnvelopeTests(unittest.TestCase):
         self.assertTrue(all(len(f) == 5 for f in frames))
         self.assertTrue(all(0.0 <= v <= 1.0 for f in frames for v in f))
         self.assertTrue(any(v > 0.5 for f in frames for v in f))
+
+
+class FeedTests(unittest.TestCase):
+    def test_build_feed_rewrites_audio_urls(self):
+        episodes = [{"_file": "/tmp/gradient.json",
+                     "story": {"id": "episode-gradient", "title": "T", "published": "2026-09-21"}}]
+        feed = build_feed(episodes, "https://cdn.example.com/", "v1")
+        self.assertEqual(feed[0]["audioURL"], "https://cdn.example.com/v1/audio/gradient.m4a")
+
+    def test_build_feed_orders_newest_first(self):
+        episodes = [{"_file": "/tmp/a.json", "story": {"id": "a", "published": "2026-09-19"}},
+                    {"_file": "/tmp/b.json", "story": {"id": "b", "published": "2026-09-21"}}]
+        feed = build_feed(episodes, "https://c.example", "v1")
+        self.assertEqual([s["id"] for s in feed], ["b", "a"])
 
 
 if __name__ == "__main__":

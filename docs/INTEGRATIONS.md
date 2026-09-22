@@ -50,6 +50,24 @@ Host voice variables follow each presenter id: `ELEVENLABS_VOICE_NOVA`, `_FERN`,
 - **Data/limits:** `LILT_MAX_PROVIDER_CALLS_PER_DAY`, `LILT_MAX_SOURCE_CHARS`,
   `LILT_DATA`, `PORT`.
 
+## Episode delivery: public Cloudflare R2
+
+Rendered episodes are served, not bundled. `tools/publish_feed.py` uploads the audio and
+a `feed.json` to R2's S3-compatible API; the app's Settings → feed field points at
+`<R2_PUBLIC_BASE>/<prefix>/feed.json`. `render-episodes.yml` runs it automatically after
+rendering when the secrets exist.
+
+| Secret | Value |
+|---|---|
+| `R2_ENDPOINT` | `https://<account-id>.r2.cloudflarestorage.com` |
+| `R2_BUCKET` | bucket name (leave unset to skip publishing) |
+| `R2_ACCESS_KEY_ID` | R2 API token access key |
+| `R2_SECRET_ACCESS_KEY` | R2 API token secret |
+| `R2_PUBLIC_BASE` | public origin for the bucket (`https://<hash>.r2.dev` or a custom domain) |
+
+The bucket needs public read for `audio/*` and `feed.json`. `R2_PREFIX` (default `v1`)
+versions a feed so a bad publish can be rolled back by pointing the app at the old prefix.
+
 ## Story discovery (no keys)
 
 Selection fuses publicity/metadata signals; see

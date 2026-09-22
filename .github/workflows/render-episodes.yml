@@ -25,6 +25,14 @@ jobs:
     env:
       HF_HOME: ${{ github.workspace }}/.hf
       PYTHONUNBUFFERED: "1"
+      # Set these repo secrets to publish the feed + audio to Cloudflare R2; when
+      # R2_BUCKET is empty the publish step is skipped and only the artifact is produced.
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_PUBLIC_BASE: ${{ secrets.R2_PUBLIC_BASE }}
+      R2_PREFIX: v1
     steps:
       - uses: actions/checkout@v4
 
@@ -60,3 +68,9 @@ jobs:
           path: ios/Zwicky/Episodes/
           if-no-files-found: warn
           retention-days: 90
+
+      - name: Publish to R2 and write the feed
+        if: env.R2_BUCKET != ''
+        run: |
+          python -m pip install boto3
+          python3 tools/publish_feed.py --episodes ios/Zwicky/Episodes

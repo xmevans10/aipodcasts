@@ -70,6 +70,15 @@ out-of-distribution text.
 Compute cost at our volume is negligible (a 500-word episode is ~4 minutes of
 audio); the real decisions are **licensing and voice consistency**, not GPU spend.
 
+## Production path (implemented)
+
+Solo shows render with **Kokoro directly** — no cloning step. `tools/tts/bundle_shows.py`
+reads the weekly transcripts, synthesises each host's distinct voice, and writes app-ready
+`ios/Zwicky/Episodes/<slug>.{json,m4a}` plus `index.json`. It runs in
+`.github/workflows/render-episodes.yml` (manual, or when transcripts change) and, once repo
+secrets exist, as the `episodes` job of `full-run.yml`. **Co-hosted shows (Ground Truth,
+Star Bros) are deferred** until multi-speaker narration is settled; the script skips them.
+
 ## Provider seam (implemented)
 
 `backend/dialogue.py` returns provider-agnostic `turns_narration_inputs`, and

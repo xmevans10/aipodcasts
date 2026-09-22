@@ -21,14 +21,25 @@ def decode(path: Path) -> array.array:
             return array.array('h', w.readframes(w.getnframes()))
 
 
-def goertzel(samples, start, length, frequency):
+def goertzel(samples, start, length, frequency, sr: int = SR):
     """Energy at one frequency over one window (Goertzel, one bin, no FFT needed)."""
-    k = 2 * math.cos(2 * math.pi * frequency / SR)
+    k = 2 * math.cos(2 * math.pi * frequency / sr)
     s1 = s2 = 0.0
     for i in range(start, min(start + length, len(samples))):
         s0 = samples[i] / 32768 + k * s1 - s2
         s2, s1 = s1, s0
     return math.sqrt(max(0.0, s1 * s1 + s2 * s2 - k * s1 * s2)) / max(1, length)
+
+
+def _normalise(frames):
+    for band in range(len(BANDS)):
+        values = sorted(frame[band] for frame in frames)
+        ceiling = values[int(len(values) * 0.95)] if values else 0
+        if ceiling <= 0:
+            continue
+        for frame in frames:
+            frame[band] = round(min(1.0, frame[band] / ceiling), 3)
+    return frames
 
 
 def envelope(path: Path, hop: float = HOP) -> list[list[float]]:
@@ -38,14 +49,25 @@ def envelope(path: Path, hop: float = HOP) -> list[list[float]]:
     frames = []
     for start in range(0, len(samples) - 1, window):
         frames.append([goertzel(samples, start, window, f) for f in BANDS])
-    for band in range(len(BANDS)):
-        values = sorted(frame[band] for frame in frames)
-        ceiling = values[int(len(values) * 0.95)] if values else 0
-        if ceiling <= 0:
-            continue
-        for frame in frames:
-            frame[band] = round(min(1.0, frame[band] / ceiling), 3)
-    return frames
+    return _normalise(frames)
+
+
+def envelope_wav(path: Path, hop: float = HOP) -> list[list[float]]:
+    """Envelope from a WAV file directly, at its own sample rate (no afconvert).
+
+    Lets free/CI narration (Kokoro writes WAV) be bundled without macOS tooling; the
+    Goertzel bands are the same and still normalise per episode.
+    """
+    with wave.open(str(path)) as w:
+        sr, channels = w.getframerate(), w.getnchannels()
+        samples = array.array('h', w.readframes(w.getnframes()))
+    if channels > 1:
+        samples = array.array('h', samples[::channels])
+    window = int(hop * sr)
+    frames = []
+    for start in range(0, len(samples) - 1, window):
+        frames.append([goertzel(samples, start, window, f, sr) for f in BANDS])
+    return _normalise(frames)
 
 
 if __name__ == '__main__':

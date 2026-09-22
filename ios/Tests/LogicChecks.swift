@@ -112,7 +112,13 @@ private func testShowsAndHosts() {
 // MARK: - bundled episodes
 
 private func testEpisodes(directory: URL) {
-    let names = ["mira", "clara", "elias", "theo"]
+    let names: [String]
+    if let data = try? Data(contentsOf: directory.appendingPathComponent("index.json")),
+       let ids = try? JSONDecoder().decode([String].self, from: data), !ids.isEmpty {
+        names = ids
+    } else {
+        names = ["mira", "clara", "elias", "theo"]
+    }
     for name in names {
         let url = directory.appendingPathComponent("\(name).json")
         guard let data = try? Data(contentsOf: url),

@@ -47,6 +47,23 @@ platform :ios do
     )
   end
 
+  desc "Create the App Store Connect app record if it does not already exist"
+  lane :setup_app do
+    asc_key
+    # Zwicky has never shipped, so there may be no app record to upload against and the
+    # first TestFlight upload would fail on an unknown bundle id. `produce` is idempotent:
+    # it reports the existing record rather than failing when one is already there.
+    produce(
+      app_identifier: "com.xmevans10.Zwicky",
+      app_name: "Zwicky",
+      language: "English (U.S.)",
+      sku: "zwicky-ios-001",
+      team_id: "8K5ZVPCQ42",
+      skip_itc: false,
+      skip_devcenter: false
+    )
+  end
+
   desc "Build and upload the current commit to TestFlight"
   lane :beta do
     key = asc_key

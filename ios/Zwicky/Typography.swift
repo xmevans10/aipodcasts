@@ -4,7 +4,7 @@ import SwiftUI
 /// Every step scales with Dynamic Type via `@ScaledMetric`, anchored to a system text style.
 ///
 /// Scale (at the default content size):
-///   hero 48 · largeTitle 40 · title 26 · numeral 40 (rounded) · headline 17 · body 15 · meta 13 · overline 11
+///   hero 42 · largeTitle 40 · title 26 · numeral 40 (rounded) · headline 17 · body 15 · meta 13 · overline 11
 extension Theme {
     struct TypeStyle {
         var size: CGFloat
@@ -21,7 +21,7 @@ extension Theme {
 /// The steps of the scale, so call sites read `.typeStyle(.hero)`.
 extension Theme.TypeStyle {
     /// Featured-episode titles: the one thing on screen that shouts.
-    static let hero = Theme.TypeStyle(size: 48, weight: .bold, design: .serif, relativeTo: .largeTitle, tracking: -1.4)
+    static let hero = Theme.TypeStyle(size: 42, weight: .bold, design: .serif, relativeTo: .largeTitle, tracking: -1.2)
     /// Screen greetings and page titles.
     static let largeTitle = Theme.TypeStyle(size: 40, weight: .semibold, design: .serif, relativeTo: .largeTitle, tracking: -1.0)
     /// Section headers.

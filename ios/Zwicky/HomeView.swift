@@ -248,12 +248,13 @@ private struct FeaturedEpisodeCard: View {
 
     private var background: some View {
         ZStack {
-            LinearGradient(colors: [show.light, show.mid, show.dark], startPoint: .topTrailing, endPoint: .bottomLeading)
-            RadialGradient(colors: [show.light.opacity(0.65), .clear], center: UnitPoint(x: 0.9, y: 0.05),
-                           startRadius: 0, endRadius: 260)
-            // Scrim: keeps the white title and dek legible where the gradient runs light.
-            LinearGradient(colors: [.clear, show.dark.opacity(0.35), .black.opacity(0.35)],
-                           startPoint: UnitPoint(x: 0.5, y: 0.25), endPoint: .bottom)
+            // The show's canonical painted cover, cropped to the hero's shape.
+            Image("cover-\(show.id)")
+                .resizable()
+                .scaledToFill()
+            // Scrim: keeps the white title, dek and controls legible over the art.
+            LinearGradient(colors: [show.dark.opacity(0.2), show.dark.opacity(0.45), .black.opacity(0.55)],
+                           startPoint: .top, endPoint: .bottom)
         }
     }
 

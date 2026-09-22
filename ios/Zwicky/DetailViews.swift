@@ -236,15 +236,12 @@ struct PlayerView: View {
                     VStack(spacing: 24) {
                         ZStack {
                             CoverGlow(show: story.show, size: 300)
-                            RoundedRectangle(cornerRadius: 34, style: .continuous)
-                                .fill(LinearGradient(colors: [story.show.light, story.show.mid, story.show.dark],
-                                                     startPoint: .topTrailing, endPoint: .bottomLeading))
-                                .overlay(RoundedRectangle(cornerRadius: 34, style: .continuous).strokeBorder(.white.opacity(0.18)))
+                            // The show's canonical painted cover, the same art as the cards.
+                            ShowCover(show: story.show)
+                                .frame(width: 300)
                                 .shadow(color: .black.opacity(0.35), radius: 30, y: 18)
-                            HostAvatar(host: story.host, size: 196)
-                                .shadow(color: story.show.dark.opacity(0.35), radius: 18, y: 10)
                         }
-                        .frame(maxWidth: 300).aspectRatio(1, contentMode: .fit).padding(.top, 4)
+                        .frame(maxWidth: 300).padding(.top, 4)
                         VStack(spacing: 8) {
                             HStack(spacing: 8) {
                                 HostAvatar(host: story.host, size: 22).overlay(Circle().strokeBorder(.white.opacity(0.6)))

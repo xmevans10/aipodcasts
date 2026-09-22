@@ -1,5 +1,12 @@
 # Working in this repo
 
+## Milestone handoff prompts
+
+`prompts/` holds goal-oriented handoff prompts for the next major milestones (co-hosted
+shows, new-episode notifications, audio/read-along quality, production feed, cloud
+release). Start at `prompts/README.md`; paste `prompts/00-shared-context.md` first, then a
+milestone file.
+
 ## Commits
 
 - **Commit incrementally.** One logical change per commit, not a mixed grab-bag.

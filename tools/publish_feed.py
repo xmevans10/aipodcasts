@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Publish rendered episodes to a public Cloudflare R2 bucket and write the app feed.
 
-Reads the bundled Episodes payloads, rewrites each story's audioURL to the bucket's
-public URL, writes feed.json, and uploads the audio plus the feed with R2's S3-compatible
-API. The app's Settings feed field then points at ``<public-base>/<prefix>/feed.json``.
+Each episode has an opaque id (its file name, from bundle_shows.episode_key). The feed
+lists stories with an absolute ``audioURL`` and a ``detailURL`` sidecar that carries the
+word-timed transcript and the cover envelope, so read-along works for streamed episodes.
+The audio is keyed by the same id, so only the matching id streams.
 
 Env:
   R2_ENDPOINT          https://<account>.r2.cloudflarestorage.com
@@ -26,15 +27,18 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def story_payload(payload: dict, name: str, base: str) -> dict:
+    """The feed story: audio and detail sidecar at absolute public URLs."""
+    story = dict(payload["story"])
+    story["audioURL"] = f"{base}/audio/{name}.m4a"
+    story["detailURL"] = f"{base}/episodes/{name}.json"
+    return story
+
+
 def build_feed(episodes: list, public_base: str, prefix: str) -> list:
-    """Story payloads with absolute audio URLs, newest published first."""
+    """Story payloads with absolute URLs, newest published first."""
     base = public_base.rstrip("/") + "/" + prefix.strip("/")
-    feed = []
-    for payload in episodes:
-        story = dict(payload["story"])
-        name = Path(payload["_file"]).stem
-        story["audioURL"] = f"{base}/audio/{name}.m4a"
-        feed.append(story)
+    feed = [story_payload(payload, Path(payload["_file"]).stem, base) for payload in episodes]
     return sorted(feed, key=lambda s: s.get("published", ""), reverse=True)
 
 
@@ -47,7 +51,7 @@ def load_episodes(directory: Path) -> list:
     return episodes
 
 
-def upload(feed: list, directory: Path, prefix: str) -> dict:
+def upload(episodes: list, feed: list, directory: Path, prefix: str) -> dict:
     import boto3  # imported lazily so local runs without R2 can still build the feed
 
     endpoint = os.environ["R2_ENDPOINT"]
@@ -56,14 +60,23 @@ def upload(feed: list, directory: Path, prefix: str) -> dict:
                           aws_access_key_id=os.environ["R2_ACCESS_KEY_ID"],
                           aws_secret_access_key=os.environ["R2_SECRET_ACCESS_KEY"])
     key = prefix.strip("/")
-    for episode in load_episodes(directory):
-        name = Path(episode["_file"]).stem
+    base = os.environ["R2_PUBLIC_BASE"].rstrip("/") + "/" + key
+    stories = {story["id"]: story for story in feed}
+    audio = 0
+    for payload in episodes:
+        name = Path(payload["_file"]).stem
         client.upload_file(str(directory / f"{name}.m4a"), bucket, f"{key}/audio/{name}.m4a",
                            ExtraArgs={"ContentType": "audio/mp4", "CacheControl": "public, max-age=86400"})
+        sidecar = {k: v for k, v in payload.items() if k != "_file"}
+        sidecar["story"] = stories[payload["story"]["id"]]
+        client.put_object(Bucket=bucket, Key=f"{key}/episodes/{name}.json",
+                          Body=json.dumps(sidecar, ensure_ascii=False).encode(),
+                          ContentType="application/json", CacheControl="public, max-age=86400")
+        audio += 1
     body = json.dumps(feed, ensure_ascii=False).encode()
     client.put_object(Bucket=bucket, Key=f"{key}/feed.json", Body=body,
                       ContentType="application/json", CacheControl="no-cache")
-    return {"feed_key": f"{key}/feed.json", "audio": len(feed), "bytes": len(body)}
+    return {"feed": f"{base}/feed.json", "audio": audio, "sidecars": audio, "bytes": len(body)}
 
 
 def main() -> None:
@@ -76,15 +89,16 @@ def main() -> None:
     directory = Path(args.episodes)
     prefix = os.environ.get("R2_PREFIX", "v1")
     public_base = os.environ.get("R2_PUBLIC_BASE", "https://example.invalid")
-    feed = build_feed(load_episodes(directory), public_base, prefix)
+    episodes = load_episodes(directory)
+    feed = build_feed(episodes, public_base, prefix)
     if args.out:
         Path(args.out).write_text(json.dumps(feed, indent=2, ensure_ascii=False) + "\n")
     print(f"feed has {len(feed)} episodes; base {public_base.rstrip('/')}/{prefix}")
     if args.dry_run:
         for story in feed[:3]:
-            print("  ", story["hostID"], "->", story["audioURL"])
+            print("  ", story["hostID"], "->", story["audioURL"], "| detail:", story["detailURL"])
         return
-    print(json.dumps(upload(feed, directory, prefix), indent=2))
+    print(json.dumps(upload(episodes, feed, directory, prefix), indent=2))
 
 
 if __name__ == "__main__":

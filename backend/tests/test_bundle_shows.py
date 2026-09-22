@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "backend"))
 sys.path.insert(0, str(ROOT / "tools/tts"))
 sys.path.insert(0, str(ROOT / "tools"))
-from bundle_shows import slug, story_for, timings  # noqa: E402
+from bundle_shows import episode_key, slug, story_for, timings  # noqa: E402
 from envelope import envelope_wav  # noqa: E402
 from publish_feed import build_feed  # noqa: E402
 
@@ -67,6 +67,19 @@ class StoryTests(unittest.TestCase):
 
     def test_slug(self):
         self.assertEqual(slug("Signal & Noise"), "signal-noise")
+
+
+class EpisodeIdTests(unittest.TestCase):
+    def test_deterministic_and_opaque(self):
+        first = episode_key("2026-09-21", "10.1/x", "Mycelium")
+        self.assertEqual(first, episode_key("2026-09-21", "10.1/x", "Mycelium"))
+        self.assertRegex(first, r"^[0-9a-f]{16}$")
+
+    def test_distinct_per_episode(self):
+        self.assertNotEqual(episode_key("2026-09-21", "10.1/x", "Mycelium"),
+                            episode_key("2026-09-22", "10.1/x", "Mycelium"))
+        self.assertNotEqual(episode_key("2026-09-21", "10.1/x", "Mycelium"),
+                            episode_key("2026-09-21", "10.2/y", "Mycelium"))
 
 
 class EnvelopeTests(unittest.TestCase):

@@ -122,6 +122,8 @@ struct Story: Identifiable, Codable, Hashable {
     let audioURL: String?
     let isDemo: Bool
     var published: String? = nil
+    /// Absolute URL of the streamed episode's transcript + envelope sidecar, if any.
+    var detailURL: String? = nil
     /// Spoken conversation when an episode is co-hosted. Optional so older
     /// single-host JSON without the key keeps decoding.
     let turns: [DialogueTurn]?
@@ -204,10 +206,24 @@ enum Episodes {
         guard let url = Bundle.main.url(forResource: name, withExtension: "json"), let data = try? Data(contentsOf: url) else { return nil }
         return try? JSONDecoder().decode(BundledEpisode.self, from: data)
     }
-    static func transcript(for storyID: String) -> [TranscriptParagraph]? { bundled.first { $0.story.id == storyID }?.transcript }
-    static func duration(for storyID: String) -> Double? { bundled.first { $0.story.id == storyID }?.duration }
+    /// Streamed episodes' transcript + envelope, fetched on demand from `Story.detailURL`.
+    static var remote: [String: BundledEpisode] = [:]
+    static func episode(for storyID: String) -> BundledEpisode? {
+        bundled.first { $0.story.id == storyID } ?? remote[storyID]
+    }
+    /// Fetch and cache a streamed episode's sidecar so read-along works off the feed.
+    static func load(_ story: Story) async {
+        if episode(for: story.id) != nil { return }
+        guard let raw = story.detailURL, let url = URL(string: raw), url.scheme == "https" else { return }
+        guard let (data, response) = try? await URLSession.shared.data(from: url),
+              (response as? HTTPURLResponse)?.statusCode == 200,
+              let decoded = try? JSONDecoder().decode(BundledEpisode.self, from: data) else { return }
+        remote[story.id] = decoded
+    }
+    static func transcript(for storyID: String) -> [TranscriptParagraph]? { episode(for: storyID)?.transcript }
+    static func duration(for storyID: String) -> Double? { episode(for: storyID)?.duration }
     static func levels(for storyID: String) -> (frames: [[Double]], hop: Double)? {
-        guard let episode = bundled.first(where: { $0.story.id == storyID }), !episode.levels.isEmpty else { return nil }
+        guard let episode = episode(for: storyID), !episode.levels.isEmpty else { return nil }
         return (episode.levels, episode.levelHop)
     }
 }

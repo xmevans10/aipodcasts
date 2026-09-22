@@ -9,6 +9,7 @@ struct EpisodeView: View {
     private var queued: Bool { player.listening.queue.contains(story.id) }
 
     @State private var headerPassed = false
+    @State private var detailLoaded = false
     private let fade: CGFloat = 72
 
     var body: some View {
@@ -97,6 +98,10 @@ struct EpisodeView: View {
         }
         .background(Theme.canvas)
         .immersiveNavigationBar(show: story.show, title: story.show.title, solid: headerPassed)
+        .task(id: story.id) {
+            await Episodes.load(story)
+            detailLoaded = true
+        }
     }
 
     /// Colour band in the show's wash behind the show chip and title, fading into the canvas.
@@ -150,6 +155,7 @@ struct PlayerView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let soft = Color.white.opacity(0.75)
+    @State private var detailLoaded = false
 
     /// Paging position across the playlist; moving to a page plays that episode.
     private var currentID: Binding<String?> {
@@ -213,6 +219,10 @@ struct PlayerView: View {
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.4), value: player.story?.show.id)
+        }
+        .task(id: player.story?.id) {
+            if let story = player.story { await Episodes.load(story) }
+            detailLoaded = true
         }
     }
 

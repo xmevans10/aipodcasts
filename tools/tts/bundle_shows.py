@@ -16,6 +16,7 @@ real audio duration, since Kokoro reads the exact reviewed script.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -41,6 +42,15 @@ def load_cast(path: Path) -> dict:
     return {k: v for k, v in data.items() if not k.startswith("_")}
 
 
+def episode_key(published: str, doi: str, show: str) -> str:
+    """Opaque, deterministic per-episode identifier; the audio key and feed use it.
+
+    Deterministic so re-rendering the same episode keeps its id (saved/queue history
+    survives), opaque so audio cannot be guessed from the show name.
+    """
+    return hashlib.sha256(f"{slug(show)}|{published}|{doi}".encode()).hexdigest()[:16]
+
+
 def timings(words: list[str], duration: float) -> list[float]:
     """Monotonic start time per word, spread by word length across the audio."""
     weights = [len(w) + 1 for w in words]
@@ -62,10 +72,11 @@ def https(url: str, doi: str = "") -> str:
     return url
 
 
-def story_for(transcript: dict, duration: float, published: str) -> dict:
+def story_for(transcript: dict, duration: float, published: str, episode: str = None) -> dict:
     """Build the app Story + transcript payload from one full-run transcript artifact."""
     draft, source = transcript["draft"], transcript["source"]
     host = transcript["host"]
+    name = episode or slug(transcript["show"])
     body = draft["body"].strip()
     words = body.split()
     starts = timings(words, duration)
@@ -73,7 +84,7 @@ def story_for(transcript: dict, duration: float, published: str) -> dict:
     topic = (meta.topic.upper() if meta and meta.topic else transcript["show"].upper())
     return {
         "story": {
-            "id": "episode-" + slug(transcript["show"]),
+            "id": "episode-" + name,
             "title": draft["title"],
             "dek": draft["dek"],
             "topic": topic,
@@ -87,7 +98,7 @@ def story_for(transcript: dict, duration: float, published: str) -> dict:
                 "attribution": source.get("attribution") or "Authors listed at source",
                 "license": source.get("license") or "See source",
             }],
-            "audioURL": "bundle:" + slug(transcript["show"]) + ".m4a",
+            "audioURL": "bundle:" + name + ".m4a",
             "isDemo": False,
             "published": published,
         },
@@ -159,14 +170,14 @@ def main() -> None:
         if not voice:
             skipped.append(f"{transcript['show']} (no cast voice for {host})")
             continue
-        name = slug(transcript["show"])
+        name = episode_key(published, transcript.get("doi", ""), transcript["show"])
         wav = out / f"{name}.wav"
         print(f"rendering {transcript['show']} -> {name} voice={voice} ...", flush=True)
         import soundfile as sf
         audio = render_kokoro(transcript["draft"]["body"].strip(), voice, args.speed)
         sf.write(str(wav), audio, SR)
         duration = wav_duration(wav)
-        payload = story_for(transcript, duration, published)
+        payload = story_for(transcript, duration, published, episode=name)
         payload["levels"] = envelope_wav(wav)
         to_m4a(wav, out / f"{name}.m4a")
         wav.unlink()

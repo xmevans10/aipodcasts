@@ -65,8 +65,17 @@ rendering when the secrets exist.
 | `R2_SECRET_ACCESS_KEY` | R2 API token secret |
 | `R2_PUBLIC_BASE` | public origin for the bucket (`https://<hash>.r2.dev` or a custom domain) |
 
-The bucket needs public read for `audio/*` and `feed.json`. `R2_PREFIX` (default `v1`)
-versions a feed so a bad publish can be rolled back by pointing the app at the old prefix.
+The bucket needs public read for `audio/*`, `episodes/*` and `feed.json`. `R2_PREFIX`
+(default `v1`) versions a feed so a bad publish can be rolled back by pointing the app at
+the old prefix.
+
+Each episode has an **opaque 16-hex id** (`bundle_shows.episode_key`, derived from show +
+date + DOI): the audio key and the feed's `audioURL` use it, so audio can't be guessed
+from the show name. The feed story also carries a `detailURL` sidecar
+(`episodes/<id>.json`) with the word-timed transcript and cover envelope, which the app
+fetches on demand so **read-along works for streamed episodes**, not just bundled ones.
+(True per-listener restriction would need presigned URLs or a Worker gate; r2.dev is
+public-by-key.)
 
 ## Story discovery (no keys)
 

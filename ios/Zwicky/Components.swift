@@ -61,8 +61,11 @@ struct EpisodeRow: View {
                 HStack(alignment: .top, spacing: 14) {
                     ShowCover(show: story.show).frame(width: 60)
                     VStack(alignment: .leading, spacing: 5) {
-                        if showsShow {
-                            Text(story.show.title.uppercased()).font(.caption2.weight(.semibold)).tracking(0.6).foregroundStyle(Theme.secondary)
+                        HStack(spacing: 6) {
+                            if showsShow {
+                                Text(story.show.title.uppercased()).font(.caption2.weight(.semibold)).tracking(0.6).foregroundStyle(Theme.secondary)
+                            }
+                            if story.isFresh { NewPill() }
                         }
                         Text(story.title).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
                             .multilineTextAlignment(.leading).lineLimit(2)
@@ -77,6 +80,17 @@ struct EpisodeRow: View {
             PlayButton(story: story)
         }
         .padding(.vertical, 10)
+    }
+}
+
+/// Small "NEW" capsule for episodes published in the last week.
+struct NewPill: View {
+    var body: some View {
+        Text("NEW")
+            .font(.system(size: 10, weight: .bold)).tracking(0.5)
+            .padding(.horizontal, 7).padding(.vertical, 3)
+            .background(Theme.ink, in: Capsule()).foregroundStyle(.white)
+            .accessibilityLabel("New episode")
     }
 }
 

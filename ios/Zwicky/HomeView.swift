@@ -38,6 +38,7 @@ struct HomeView: View {
                     if library.isOffline { offlineBanner }
                     if let story = featured { FeaturedEpisodeCard(story: story) }
                     if let story = continueStory { continueCard(story) }
+                    if !freshThisWeek.isEmpty { newShelf }
                     showsSection
                     latestSection
                     statsSection
@@ -124,8 +125,25 @@ struct HomeView: View {
         .card()
     }
 
-    private var showsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
+    private var newShelf: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HomeSectionHeader(title: "New this week") {
+                Button { player.playEdition(freshThisWeek) } label: { Label("Play all", systemImage: "play.fill") }
+                    .accessibilityLabel("Play all new episodes")
+            }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 14) {
+                    ForEach(freshThisWeek) { story in
+                        NavigationLink { EpisodeView(story: story) } label: { NewEpisodeCard(story: story) }
+                            .buttonStyle(.pressable)
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+        }
+    }
+
+    private var showsSection: some View {        VStack(alignment: .leading, spacing: 16) {
             HomeSectionHeader(title: "Your shows") { NavigationLink("Browse") { BrowseView(embedded: true) } }
             LazyVGrid(columns: [GridItem(.flexible(), spacing: 14), GridItem(.flexible(), spacing: 14)], spacing: 20) {
                 ForEach(shows) { show in
@@ -322,5 +340,52 @@ private struct HomeStat: View {
         .background(Theme.surface, in: RoundedRectangle(cornerRadius: OpenAIKit.Radius.card, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: OpenAIKit.Radius.card, style: .continuous).strokeBorder(Theme.hairline))
         .accessibilityElement(children: .combine)
+    }
+}
+
+/// Compact card for the "New this week" shelf: cover with a NEW pill, show, title, meta.
+private struct NewEpisodeCard: View {
+    var story: Story
+    private var show: Show { story.show }
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            ShowCover(show: show).frame(width: 156)
+                .overlay(alignment: .topLeading) { NewPill().padding(8) }
+            VStack(alignment: .leading, spacing: 4) {
+                Text(show.title.uppercased()).font(.caption2.weight(.semibold)).tracking(0.6).foregroundStyle(Theme.secondary).lineLimit(1)
+                Text(story.title).font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink)
+                    .lineLimit(3).multilineTextAlignment(.leading).frame(height: 58, alignment: .top)
+                EpisodeMeta(story: story)
+            }
+            .frame(width: 156, alignment: .leading)
+        }
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("New episode from \(show.title): \(story.title). \(story.minutes) minutes.")
+    }
+}
+
+/// Launch sheet that names the episodes published since the listener last looked.
+struct NewEpisodesSheet: View {
+    @EnvironmentObject var library: Library
+    @EnvironmentObject var player: AudioPlayer
+    @Environment(\.dismiss) private var dismiss
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(library.newEpisodes) { story in EpisodeRow(story: story) }
+            }
+            .listStyle(.plain)
+            .navigationTitle(library.newEpisodes.count == 1 ? "A new episode is in" : "\(library.newEpisodes.count) new episodes are in")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button { player.playEdition(library.newEpisodes) } label: { Label("Play all", systemImage: "play.fill") }
+                        .accessibilityLabel("Play all new episodes")
+                }
+                ToolbarItem(placement: .topBarTrailing) { Button("Done") { dismiss() } }
+            }
+        }
+        .presentationDetents([.medium, .large])
     }
 }

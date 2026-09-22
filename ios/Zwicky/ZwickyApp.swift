@@ -7,6 +7,7 @@ import SwiftUI
         #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("--demo") { UserDefaults.standard.set(true, forKey: "onboarded") }
         if ProcessInfo.processInfo.arguments.contains("--onboarding") { UserDefaults.standard.set(false, forKey: "onboarded") }
+        if ProcessInfo.processInfo.arguments.contains("--newepisodes") { UserDefaults.standard.set("2000-01-01", forKey: "lastSeenPublished") }
         #endif
         // Frosted tab bar: content scrolls softly beneath it, separated by a warm hairline.
         let tabBar = UITabBarAppearance()
@@ -31,6 +32,7 @@ struct RootView: View {
     @EnvironmentObject var player: AudioPlayer
     @AppStorage("onboarded") private var onboarded = false
     @State private var tab = 0
+    @State private var showNewEpisodes = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Namespace private var playerZoom
     /// Each tab has its own mini player, so the zoom source ID is per tab.
@@ -39,7 +41,7 @@ struct RootView: View {
     }
     var body: some View {
         TabView(selection: $tab) {
-            HomeView().modifier(inset(0)).tag(0).tabItem { Label("Home", systemImage: "house") }
+            HomeView().modifier(inset(0)).tag(0).badge(library.unseenNewCount).tabItem { Label("Home", systemImage: "house") }
             BrowseView().modifier(inset(1)).tag(1).tabItem { Label("Browse", systemImage: "square.grid.2x2") }
             HostsView().modifier(inset(2)).tag(2).tabItem { Label("Hosts", systemImage: "person.2") }
             LibraryView().modifier(inset(3)).tag(3).tabItem { Label("Library", systemImage: "books.vertical") }
@@ -47,11 +49,13 @@ struct RootView: View {
         }
         .onChange(of: scenePhase) { _, phase in if phase != .active { player.checkpoint() } }
         .onChange(of: library.stories) { _, stories in player.restore(stories) }
+        .onChange(of: library.shouldAnnounceNew) { _, show in if show { showNewEpisodes = true } }
         .onChange(of: player.listening.queue) { _, _ in library.pin(player.queuedStories + [player.story].compactMap { $0 }) }
         .onChange(of: player.story?.id) { _, _ in if let story = player.story { library.pin([story]) } }
         .sheet(isPresented: $player.isPlayerPresented) {
             PlayerView().playerZoomDestination(id: MiniPlayerInset.zoomID(tab: tab), in: reduceMotion ? nil : playerZoom)
         }
+        .sheet(isPresented: $showNewEpisodes) { NewEpisodesSheet().onDisappear { library.markNewSeen() } }
         .fullScreenCover(isPresented: Binding(get: { !onboarded }, set: { onboarded = !$0 })) { WelcomeView() }
         .task {
             #if DEBUG
@@ -67,6 +71,7 @@ struct RootView: View {
             await library.refresh()
             player.restore(library.stories)
             library.pin(player.queuedStories + [player.story].compactMap { $0 })
+            if library.shouldAnnounceNew { showNewEpisodes = true }
         }
     }
 }

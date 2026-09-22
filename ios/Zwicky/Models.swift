@@ -135,6 +135,11 @@ struct Story: Identifiable, Codable, Hashable {
     var publishedDate: Date? { published.flatMap { Story.dayFormatter.date(from: $0) } }
     /// "Sep 17", or "Sample" for device-voice demos without a date.
     var dateText: String { publishedDate?.formatted(.dateTime.month(.abbreviated).day()) ?? (isDemo ? "Sample" : "") }
+    /// Published within the last seven days, so it can carry a NEW badge.
+    var isFresh: Bool {
+        guard let date = publishedDate else { return false }
+        return date >= Calendar.current.date(byAdding: .day, value: -7, to: .now) ?? .distantPast
+    }
     static let dayFormatter: DateFormatter = { let f = DateFormatter(); f.dateFormat = "yyyy-MM-dd"; f.locale = Locale(identifier: "en_US_POSIX"); return f }()
     /// A device-voice demo for the four-host comedy show, so the co-hosted
     /// format is playable before any produced narration exists.
@@ -240,6 +245,11 @@ enum Episodes {
     /// True when a configured feed failed to refresh and the cached copy is shown.
     @Published var isOffline = false
     @Published private(set) var feedCachedAt: Date?
+    /// Newest published date the listener has already been told about, so we only
+    /// announce genuinely new episodes (stored across launches).
+    @AppStorage("lastSeenPublished") var lastSeenPublished = ""
+    /// Set once the new-episodes sheet has been shown this launch.
+    @Published var announcedNew = false
     @AppStorage("host") var hostID = "nova"
     @AppStorage("dailyGoalMinutes") var dailyGoalMinutes = 10
     /// A local, anonymous profile. No account exists yet; these fields are the
@@ -309,6 +319,19 @@ enum Episodes {
         UserDefaults.standard.set(Array(history), forKey: "history")
         pin([story])
     }
+    /// Episodes published after the last acknowledged marker, newest first.
+    var newEpisodes: [Story] {
+        guard !lastSeenPublished.isEmpty else { return [] }
+        return stories.filter { ($0.published ?? "") > lastSeenPublished }
+            .sorted { ($0.published ?? "") > ($1.published ?? "") }
+    }
+    var unseenNewCount: Int { newEpisodes.count }
+    var shouldAnnounceNew: Bool { !announcedNew && !newEpisodes.isEmpty }
+    /// Acknowledge the new episodes: advance the marker and stop announcing this launch.
+    func markNewSeen() {
+        lastSeenPublished = stories.compactMap { $0.published }.max() ?? lastSeenPublished
+        announcedNew = true
+    }
     func refresh() async {
         guard !feedURL.isEmpty else { return }
         guard let url = URL(string: feedURL), url.scheme == "https" else { error = "Use an HTTPS feed URL."; return }
@@ -322,6 +345,10 @@ enum Episodes {
             isOffline = false
             error = nil
             rebuild()
+            // First run: remember where "new" starts so we don't announce the back catalogue.
+            if lastSeenPublished.isEmpty {
+                lastSeenPublished = feed.compactMap { $0.published }.max() ?? ""
+            }
         } catch {
             if feedCachedAt != nil {
                 isOffline = true

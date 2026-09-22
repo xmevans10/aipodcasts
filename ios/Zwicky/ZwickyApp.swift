@@ -58,6 +58,7 @@ struct RootView: View {
         .sheet(isPresented: $showNewEpisodes) { NewEpisodesSheet().onDisappear { library.markNewSeen() } }
         .fullScreenCover(isPresented: Binding(get: { !onboarded }, set: { onboarded = !$0 })) { WelcomeView() }
         .task {
+            let launchStart = Telemetry.now()
             #if DEBUG
             let args = ProcessInfo.processInfo.arguments
             if args.contains("--browse") { tab = 1 }
@@ -72,6 +73,7 @@ struct RootView: View {
             player.restore(library.stories)
             library.pin(player.queuedStories + [player.story].compactMap { $0 })
             if library.shouldAnnounceNew { showNewEpisodes = true }
+            Telemetry.app.info("launch ready in \(Telemetry.ms(since: launchStart), format: .fixed(precision: 1)) ms; \(library.stories.count, privacy: .public) stories")
         }
     }
 }

@@ -225,6 +225,7 @@ import UIKit
         } catch {
             message = "Audio couldn't start. Please try again."
             playing = false
+            Telemetry.audio.error("audio session activation failed: \(String(describing: error), privacy: .public)")
             return false
         }
     }

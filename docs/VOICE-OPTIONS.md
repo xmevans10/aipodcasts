@@ -80,8 +80,9 @@ separately, with a 180 ms pause between turns. Paragraph word starts are estimat
 within the measured turn duration and offset by the exact sample count, including pauses.
 These are approximate word timings; forced alignment remains milestone 3.
 
-Both rendering workflows write a clean `build/episodes/` batch, require all 16 shows,
-and publish audio, speaker-labelled sidecars and the feed to R2 when configured.
+Both rendering workflows require all 16 shows and retain the four older bundled
+episodes in `ios/Zwicky/Episodes/`. They publish audio, speaker-labelled sidecars
+and the feed to R2 when configured.
 Every script must pass verification for its current content hash before any synthesis;
 a failed, missing or stale approval aborts the batch without replacing the live feed.
 Dialogue validation also requires every presenter to speak their own sign-off.

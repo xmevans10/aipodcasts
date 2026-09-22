@@ -528,7 +528,9 @@ def draft_story(db, story_id, *, extra_instructions: str = "", redraft: bool = F
     record = row(db, story_id)
     if record["draft"] and not redraft:
         return json.loads(record["draft"])
-    allowed = ("ingested", "review") if redraft else ("ingested",)
+    # Stage-4 rewrites revisit already approved legacy scripts. A redraft always
+    # clears their approval and audience report below before another release.
+    allowed = ("ingested", "review", "approved") if redraft else ("ingested",)
     if record["state"] not in allowed:
         raise ValueError("Story must be ingested first")
     key = os.environ.get("OPENAI_API_KEY")

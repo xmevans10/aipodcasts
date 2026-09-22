@@ -211,4 +211,23 @@ class PipelineTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'failed after 2 attempts'):
                     p.draft_story(self.db, self.id)
 
+    def test_redrafting_approved_legacy_script_invalidates_both_approvals(self):
+        self.db.execute("UPDATE stories SET state='approved',draft=?,reviewer='Editor',"
+                        "review_hash='old',audience_report='{}' WHERE id=?",
+                        (json.dumps(self.draft), self.id))
+        self.db.commit()
+        revised = {**self.draft, 'title': 'A different scientific wonder',
+                   'body': self.draft['body'].replace('A little scientific wonder',
+                                                      'A different scientific wonder')}
+        response = {'status': 'completed', 'output': [
+            {'content': [{'type': 'output_text', 'text': json.dumps(revised)}]}]}
+        with patch.dict(os.environ, {'OPENAI_API_KEY': 'test', 'OPENAI_MODEL': 'test-model'}):
+            with patch.object(p, 'request', return_value=json.dumps(response).encode()):
+                p.draft_story(self.db, self.id, redraft=True)
+        record = p.row(self.db, self.id)
+        self.assertEqual(record['state'], 'review')
+        self.assertIsNone(record['reviewer'])
+        self.assertIsNone(record['review_hash'])
+        self.assertIsNone(record['audience_report'])
+
 if __name__ == '__main__': unittest.main()

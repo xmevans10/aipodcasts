@@ -186,7 +186,13 @@ struct Story: Identifiable, Codable, Hashable {
     static let demos: [Story] = Episodes.bundled.map(\.story) + [starBrosSample]
 }
 
-struct TranscriptWord: Codable, Hashable { let text: String; let start: Double }
+struct TranscriptWord: Codable, Hashable {
+    let text: String
+    let start: Double
+    /// When the word finishes in the audio, from the waveform aligner. Optional so
+    /// sidecars rendered before alignment (start-only) still decode.
+    var end: Double? = nil
+}
 struct TranscriptParagraph: Codable, Hashable {
     let words: [TranscriptWord]
     var speaker: String? = nil

@@ -98,8 +98,20 @@ struct TranscriptView: View {
         return paragraphs.lastIndex { ($0.words.first?.start ?? .infinity) <= time } ?? 0
     }
 
+    /// Index of the word being spoken right now, using the aligned end time when present
+    /// (falling back to the next word's start). Between words, the last word started stays
+    /// lit so a pause does not blank the line.
+    private func currentWord(in paragraph: TranscriptParagraph) -> Int? {
+        guard now >= 0 else { return nil }
+        for (index, word) in paragraph.words.enumerated() {
+            let end = word.end ?? (index + 1 < paragraph.words.count ? paragraph.words[index + 1].start : .infinity)
+            if word.start <= now && now < end { return index }
+        }
+        return paragraph.words.lastIndex { $0.start <= now }
+    }
+
     private func attributed(_ paragraph: TranscriptParagraph, active: Bool) -> AttributedString {
-        let spokenCount = paragraph.words.lastIndex { $0.start <= now }.map { $0 + 1 } ?? 0
+        let current = currentWord(in: paragraph)
         var result = AttributedString()
         if let speaker = paragraph.speaker {
             var label = AttributedString(speaker + "\n")
@@ -109,9 +121,9 @@ struct TranscriptView: View {
         }
         for (index, word) in paragraph.words.enumerated() {
             var piece = AttributedString(word.text)
-            let spoken = index < spokenCount
+            let spoken = current != nil && index <= current!
             piece.foregroundColor = spoken ? Theme.ink : Theme.tertiary
-            if active && index == spokenCount - 1 && isCurrent { piece.backgroundColor = story.show.light.opacity(0.35) }
+            if active && index == current && isCurrent { piece.backgroundColor = story.show.light.opacity(0.35) }
             result += piece
             if index < paragraph.words.count - 1 { result += AttributedString(" ") }
         }

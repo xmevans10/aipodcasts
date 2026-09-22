@@ -1,0 +1,62 @@
+name: render-episodes
+
+# Render committed transcripts into app-ready episodes with the free Kokoro cast
+# (Apache-2.0, one distinct voice per host; no key, no cloning). Solo shows only;
+# co-hosted shows are deferred until multi-speaker narration is settled. The bundled
+# Episodes/ output is uploaded as an artifact to drop into ios/Zwicky/Episodes.
+on:
+  workflow_dispatch:
+    inputs:
+      transcripts:
+        description: Transcripts directory to render
+        default: experiments/full-run/latest/transcripts
+  push:
+    branches: [main]
+    paths:
+      - "experiments/full-run/latest/**"
+      - "tools/tts/bundle_shows.py"
+      - "tools/tts/voice_cast.json"
+      - ".github/workflows/render-episodes.yml"
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      HF_HOME: ${{ github.workspace }}/.hf
+      PYTHONUNBUFFERED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache Kokoro weights
+        uses: actions/cache@v4
+        with:
+          path: .hf
+          key: kokoro-${{ runner.os }}-v1
+
+      - name: System deps (espeak-ng, ffmpeg)
+        run: sudo apt-get update && sudo apt-get install -y espeak-ng ffmpeg
+
+      - name: Install Kokoro
+        run: |
+          python -m pip install --upgrade pip
+          pip install kokoro soundfile numpy
+
+      - name: Render and bundle episodes
+        run: |
+          python3 tools/tts/bundle_shows.py \
+            --transcripts "${{ inputs.transcripts || 'experiments/full-run/latest/transcripts' }}" \
+            --out ios/Zwicky/Episodes
+
+      - name: Upload bundled episodes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundled-episodes
+          path: ios/Zwicky/Episodes/
+          if-no-files-found: warn
+          retention-days: 90

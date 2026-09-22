@@ -1,0 +1,130 @@
+{
+  "show": "Star Bros",
+  "host": "jax",
+  "story_id": "781a7722eb5977106b67",
+  "doi": "10.1051/0004-6361/202660142",
+  "requested_by": "existing",
+  "publicity_sources": [],
+  "source": {
+    "title": "Learning cosmic web environments with diffusion models",
+    "attribution": "M. Noor, T. Bonnaire, N. Aghanim, A. Decelle",
+    "journal": "Astronomy and Astrophysics",
+    "url": "https://doi.org/10.1051/0004-6361/202660142",
+    "license": "cc-by",
+    "evidence_tier": "abstract",
+    "evidence_note": "Abstract-only evidence; no full-text reuse."
+  },
+  "words": 604,
+  "verification": {
+    "story": "781a7722eb5977106b67",
+    "status": "abstained",
+    "pass": false,
+    "failures": [
+      "entail_0=0.75 below 0.8"
+    ],
+    "backend": "jev",
+    "evidence_sha256": "9ccf1094d1875e4e",
+    "notes": {
+      "claims_checked": 6,
+      "missing_numbers": [],
+      "entail_0": 0.75,
+      "entail_1": 0.98,
+      "entail_2": 0.95,
+      "entail_3": 0.97,
+      "entail_4": 0.97,
+      "entail_5": 0.97,
+      "primary_finding": 0.91,
+      "no_overstatement": 0.77
+    },
+    "reviewer": "auto-verifier:jev"
+  },
+  "draft": {
+    "title": "Learning cosmic web environments with diffusion models",
+    "dek": "A diffusion model trained on simulated universes appears to learn more than a convincing cosmic makeover: it picks up the cosmic web’s dense knots, thin bridges, and vast empty regions at several scales.",
+    "turns": [
+      {
+        "speaker": "Jackson \"Jax\" Ruiz",
+        "text": "Okay, wait, the universe has a web made of voids, walls, filaments, and nodes, and a model can learn its different neighborhoods? That can't be right in the casual sense, so what does it really mean?"
+      },
+      {
+        "speaker": "Kai Nakamura",
+        "text": "It means researchers trained a diffusion model on an N-body simulation suite, then asked what information the model's internal attention maps contained. The paper is titled \"Learning cosmic web environments with diffusion models,\" by M. Noor and colleagues, published in Astronomy and Astrophysics."
+      },
+      {
+        "speaker": "Benny Ortiz",
+        "text": "That question starts with someone looking up at the night sky and wondering whether the pattern has a grammar. The cosmic web carries information about how structure formed and about the cosmological parameters that govern it, but the researchers were asking whether the model had learned distinct kinds of cosmic surroundings, not just a blurry average universe."
+      },
+      {
+        "speaker": "Chase Whitaker",
+        "text": "The team compared attention maps from different layers and spatial resolutions with environments identified by a classifier called T-Web. They used measures including the Dice coefficient and cross-power spectra, which are ways of checking how much two patterns overlap and how their structures line up."
+      },
+      {
+        "speaker": "Jackson \"Jax\" Ruiz",
+        "text": "And the answer is yes, with some lovely cosmic fine print. The attention maps showed strong positive correlations and anti-correlations with the overall matter pattern and with individual environments, so dense regions and underdense regions were being represented in different ways."
+      },
+      {
+        "speaker": "Kai Nakamura",
+        "text": "Comparison, from me: think of an itemised receipt. The model did more than print the total amount, meaning broad two-point statistics. Its internal maps also separated contributions across scales, including information about shapes and patterns that ordinary bell-curve summaries miss."
+      },
+      {
+        "speaker": "Benny Ortiz",
+        "text": "That is the intriguing part. The researchers report a multi-scale representation, including non-Gaussian information, while finding that cosmological information was encoded mostly at intermediate to large spatial scales. In plain language, the model seems especially attentive to globally coherent structures, the long stretches of the web rather than only tiny local details."
+      },
+      {
+        "speaker": "Chase Whitaker",
+        "text": "Still, this is a model study built from simulations, and the result comes from interpreting internal attention maps with statistical comparisons. It doesn't show that a model has understood the universe in a human sense, and it doesn't replace the simulations or establish a causal mechanism. The supplied packet is partial, so we should keep the claim to what was tested here."
+      },
+      {
+        "speaker": "Jackson \"Jax\" Ruiz",
+        "text": "Selected source paragraphs only. Omitted sections may contain additional evidence or limitations. Do not claim a complete review. That sentence is a little stern, but it keeps our scoreboard honest. The exciting result is narrower and better: the model appears to learn cosmic-web information at several scales, not merely reproduce a couple of headline statistics."
+      },
+      {
+        "speaker": "Kai Nakamura",
+        "text": "And that narrower result is still useful. If these models can capture structure that simulations contain, researchers may have a faster way to study large simulated ensembles, while checking carefully what the models preserve and what they smooth away. I changed my mind from “pretty picture generator” to “potentially informative compression,” with the error bars still very much invited."
+      },
+      {
+        "speaker": "Benny Ortiz",
+        "text": "A model can draw an old map of the cosmos, perhaps even preserve blank edges and hidden contours, but the map remains a map. The physics is in the tested correspondence between its attention patterns and the simulated environments, while the larger meaning belongs to philosophy, not measurement. I'm Benny Ortiz. Same sky, bigger questions."
+      },
+      {
+        "speaker": "Chase Whitaker",
+        "text": "So the clean scorecard is: simulated training data, attention maps, several spatial scales, and evidence for both ordinary and non-Gaussian structure. No claim here that one model settles how the real universe works. I'm Chase Whitaker. Check the numbers — I did."
+      },
+      {
+        "speaker": "Jackson \"Jax\" Ruiz",
+        "text": "I'm Jax Ruiz. Look up — isn't that wild?"
+      },
+      {
+        "speaker": "Kai Nakamura",
+        "text": "I'm Kai Nakamura. Show me the error bars."
+      }
+    ],
+    "caveat": "Selected source paragraphs only. Omitted sections may contain additional evidence or limitations. Do not claim a complete review.",
+    "claims": [
+      {
+        "claim": "The cosmic web contains several distinct environments and carries information about structure formation and cosmological parameters.",
+        "quote": "The cosmic web, consisting of an intricate network of voids, walls, filaments, and nodes, encodes key information about structure formation and the cosmological parameters that govern it."
+      },
+      {
+        "claim": "The study trained a diffusion model on N-body simulations and examined its self-attention maps.",
+        "quote": "For this study, we trained a diffusion model on the N-body simulation suite to investigate the semantic information learnt by its self-attention maps."
+      },
+      {
+        "claim": "Attention maps corresponded to cosmic-web environments in distinct ways.",
+        "quote": "We find that attention maps of varying spatial resolutions across different layers capture overdense and underdense structures in distinct ways"
+      },
+      {
+        "claim": "The maps showed correlations with matter distribution and individual environments.",
+        "quote": "exhibiting strong positive correlations and anti-correlations with both the overall matter distribution and individual cosmic web environments."
+      },
+      {
+        "claim": "The model primarily encoded cosmological information at intermediate-to-large scales.",
+        "quote": "Moreover, the diffusion model predominantly encodes cosmological information at intermediate-to-large spatial scales, indicating that attention maps primarily capture globally coherent structures."
+      },
+      {
+        "claim": "The model learned a multi-scale representation that included non-Gaussian information.",
+        "quote": "Our results show that, beyond accurately reproducing two-point statistics, diffusion models learn a multi-scale representation of the cosmic web through self-attention, including non-Gaussian information."
+      }
+    ]
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "show": "Marginal Gains",
+  "host": "tomas",
+  "story_id": "2bf31e350df888a399cb",
+  "doi": "10.1016/j.exer.2026.111239",
+  "requested_by": "beat",
+  "publicity_sources": [],
+  "source": {
+    "title": "Biomechanical interplay between lamina cribrosa and peripapillary sclera characterized by 3D ultrasound elastography",
+    "attribution": "Zihao Chen, Sunny Kwok, Manqi Pan, Xueliang Pan, He Zhang, Hongli Yang, Jun Liu",
+    "journal": "Experimental Eye Research",
+    "url": "https://doi.org/10.1016/j.exer.2026.111239",
+    "license": "cc-by",
+    "evidence_tier": "abstract",
+    "evidence_note": "Abstract-only evidence; no full-text reuse."
+  },
+  "words": 448,
+  "verification": {
+    "story": "2bf31e350df888a399cb",
+    "status": "approved",
+    "pass": true,
+    "failures": [],
+    "backend": "jev",
+    "evidence_sha256": "51686b92fd4d3358",
+    "notes": {
+      "claims_checked": 5,
+      "missing_numbers": [],
+      "entail_0": 0.99,
+      "entail_1": 0.98,
+      "entail_2": 0.98,
+      "entail_3": 0.98,
+      "entail_4": 0.98,
+      "primary_finding": 0.97,
+      "no_overstatement": 0.83
+    },
+    "reviewer": "auto-verifier:jev"
+  },
+  "draft": {
+    "title": "Biomechanical interplay between lamina cribrosa and peripapillary sclera characterized by 3D ultrasound elastography",
+    "dek": "A study of 22 donated human eyes finds coordinated deformation between two structures near the optic nerve as eye pressure rises.",
+    "body": "What moves when pressure rises inside an eye? The answer may involve a quiet mechanical conversation between two tissues at the back of the eye, rather than one structure acting alone.\n\nThis episode is called “Biomechanical interplay between lamina cribrosa and peripapillary sclera characterized by 3D ultrasound elastography.” The paper, with the same title, comes from Zihao Chen and colleagues in Experimental Eye Research. The researchers studied the lamina cribrosa, a support structure where the optic nerve leaves the eye, and the peripapillary sclera, the tough tissue around it.\n\nThey worked with 22 donated human whole eyes. In the lab, they raised pressure inside each eye from 15 to 30 millimetres of mercury, in steps. At each step, they used three-dimensional ultrasound to track how the tissues moved and changed shape through their full thickness.\n\nThe key result was coordination. Pressure-driven sideways distortions, called shear strains, were significantly correlated between the peripapillary sclera and the lamina cribrosa. Every reported correlation was stronger than 0.6. In plain terms, when one region sheared more, the other tended to shear more too.\n\nThe shape of the surrounding sclera mattered as well. Its radius of curvature was related to all the measured shear changes in both tissues. A thicker sclera was linked with less of one type of deformation. The depth of the lamina cribrosa was related to its own shear, while the thickness of the lamina cribrosa was related to shear in the surrounding sclera.\n\nComparison: think of two parts of a bicycle under load. They aren’t identical components, but the way one flexes changes the forces felt by the other. That’s the mechanical picture this experiment supports.\n\nBut correlation is the important word. The study shows linked deformation under controlled pressure. It doesn’t prove that one tissue directly causes the other to change, and it doesn’t show what happens in a living person over time. These were donated eyes, not eyes carrying out ordinary visual life, and the sample was small. The pressure range was controlled in a laboratory, so it may not capture every condition found in disease. The measurements also describe tissue motion, not glaucoma risk in an individual.\n\nThis study used 22 human donor whole globes tested outside the body, so its findings may not represent living eyes or changes that develop over time. The results show correlations between tissue deformation and anatomical measurements, not proof of cause, and the controlled pressure experiment cannot by itself establish glaucoma susceptibility or clinical usefulness.\n\nThe useful takeaway is modest and solid: pressure-related strain appears to be shared across the optic nerve’s supporting tissues. A good mechanical model has to include both pieces. I'm Tomas Iversen. Trust the boring work.",
+    "caveat": "This study used 22 human donor whole globes tested outside the body, so its findings may not represent living eyes or changes that develop over time. The results show correlations between tissue deformation and anatomical measurements, not proof of cause, and the controlled pressure experiment cannot by itself establish glaucoma susceptibility or clinical usefulness.",
+    "claims": [
+      {
+        "claim": "The study tested 22 donated human whole eyes while raising intraocular pressure from 15 to 30 mmHg.",
+        "quote": "Inflation testing from 15 to 30 mmHg was performed in 22 human donor whole globes."
+      },
+      {
+        "claim": "The researchers used three-dimensional high-frequency ultrasound elastography to measure deformation through the full thickness of the tissues.",
+        "quote": "we applied 3D high-frequency ultrasound elastography technique to quantify full-thickness deformation of PPS and LC"
+      },
+      {
+        "claim": "Shear strains in the peripapillary sclera and lamina cribrosa were significantly correlated under increased pressure.",
+        "quote": "IOP-induced shear strains were significantly correlated between the PPS and LC (all r > 0.6, P < 0.01)."
+      },
+      {
+        "claim": "The peripapillary sclera’s radius of curvature was correlated with shear strains in both regions.",
+        "quote": "PPS radius of curvature was correlated with all PPS and LC shear strains (r: 0.54 to 0.71)."
+      },
+      {
+        "claim": "The findings provide experimental evidence of biomechanical coupling associated with shear deformation.",
+        "quote": "These findings provide experimental evidence that PPS/LC biomechanical coupling under IOP elevation is associated with shear deformation."
+      }
+    ]
+  }
+}

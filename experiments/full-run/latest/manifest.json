@@ -1,0 +1,167 @@
+{
+  "generated": "2026-09-21T15:15:08.125969+00:00",
+  "window_days": 14,
+  "prompt": "podcast-v4 general-audience",
+  "shows": [
+    {
+      "show": "The Long View",
+      "host": "nova",
+      "status": "approved",
+      "doi": "10.1038/s43247-026-04038-1",
+      "title": "Nickel isotopes reveal micrometeorite accretion on the lunar farside dominated by inner Solar System materials",
+      "words": 442,
+      "evidence_tier": "abstract",
+      "verification_pass": true
+    },
+    {
+      "show": "Wild Company",
+      "host": "fern",
+      "status": "approved",
+      "doi": "10.1111/1749-4877.70182",
+      "title": "Ecology and Brain Size Drive Feeding Innovations in Birds",
+      "words": 480,
+      "evidence_tier": "abstract",
+      "verification_pass": true
+    },
+    {
+      "show": "Signal & Noise",
+      "host": "ada",
+      "status": "approved",
+      "doi": "10.1007/s11357-026-02516-0",
+      "title": "Enhancing fall risk assessment in the oldest old: The interplay of cognition and gait speed",
+      "words": 467,
+      "evidence_tier": "abstract",
+      "verification_pass": true
+    },
+    {
+      "show": "Common Ground",
+      "host": "atlas",
+      "status": "abstained",
+      "doi": "10.1016/j.srs.2026.100506",
+      "title": "Automating glacier facies classification: Benchmark dataset and deep learning baseline from pan-European sample",
+      "words": 455,
+      "evidence_tier": "abstract",
+      "verification_pass": false
+    },
+    {
+      "show": "Webwork",
+      "host": "spinner",
+      "status": "approved",
+      "doi": "10.1016/j.jad.2026.122490",
+      "title": "Mapping mental representations of fear-relevant stimuli through similarity modeling",
+      "words": 440,
+      "evidence_tier": "abstract",
+      "verification_pass": true
+    },
+    {
+      "show": "Star Stuff",
+      "host": "yusuf",
+      "status": "abstained",
+      "doi": "10.1038/s42004-026-01968-x",
+      "title": "Ultrahigh resolution 19F and 31P NMR spectroscopy",
+      "words": 436,
+      "evidence_tier": "abstract",
+      "verification_pass": false
+    },
+    {
+      "show": "Gradient",
+      "host": "noor",
+      "status": "approved",
+      "doi": "10.1515/jdis-2026-0048",
+      "title": "Can Large Language Models Evaluate Grant Proposal Quality? Revisiting the Wennerås and Wold Peer Review Data",
+      "words": 422,
+      "evidence_tier": "abstract",
+      "verification_pass": true
+    },
+    {
+      "show": "Layer by Layer",
+      "host": "marek",
+      "status": "approved",
+      "doi": "10.1016/j.icheatmasstransfer.2026.112564",
+      "title": "Effects of surface defects on flow and heat transfer in additively manufactured ellipsoidal Kelvin lattices",
+      "words": 448,
+      "evidence_tier": "abstract",
+      "verification_pass": true
+    },
+    {
+      "show": "Marginal Gains",
+      "host": "tomas",
+      "status": "approved",
+      "doi": "10.1016/j.exer.2026.111239",
+      "title": "Biomechanical interplay between lamina cribrosa and peripapillary sclera characterized by 3D ultrasound elastography",
+      "words": 448,
+      "evidence_tier": "abstract",
+      "verification_pass": true
+    },
+    {
+      "show": "Slow Wave",
+      "host": "lena",
+      "status": "approved",
+      "doi": "10.1163/22134913-bja10087",
+      "title": "When Paintings Change Time: Visual Structure and Circadian Context Shape Subjective Duration",
+      "words": 459,
+      "evidence_tier": "abstract",
+      "verification_pass": true
+    },
+    {
+      "show": "Mycelium",
+      "host": "rosa",
+      "status": "approved",
+      "doi": "10.1038/s44512-026-00002-3",
+      "title": "Cell wall-forming chitin synthases in a chytrid fungus",
+      "words": 508,
+      "evidence_tier": "abstract",
+      "verification_pass": true
+    },
+    {
+      "show": "Hive Mind",
+      "host": "amara",
+      "status": "approved",
+      "doi": "10.1016/j.atech.2026.102559",
+      "title": "Determining blooming-phase dynamics through intra-day hive-weight analysis",
+      "words": 435,
+      "evidence_tier": "abstract",
+      "verification_pass": true
+    },
+    {
+      "show": "The Deep",
+      "host": "kenji",
+      "status": "approved",
+      "doi": "10.1038/s43247-026-04042-5",
+      "title": "Pronounced megafaunal community transition driven by polymetallic nodule cover in the Northwest Pacific abyss",
+      "words": 498,
+      "evidence_tier": "abstract",
+      "verification_pass": true
+    },
+    {
+      "show": "Old Bones",
+      "host": "freya",
+      "status": "approved",
+      "doi": "10.1186/s13059-026-04242-4",
+      "title": "COSIGT: population-scalable genotyping of complex loci from low-coverage sequencing data using pangenome graphs",
+      "words": 445,
+      "evidence_tier": "abstract",
+      "verification_pass": true
+    },
+    {
+      "show": "Ground Truth",
+      "host": "ines",
+      "status": "abstained",
+      "doi": "10.1038/s41586-026-11034-0",
+      "title": "Cohesin reshapes replication fork contacts to aid fork slowing and reversal",
+      "words": 391,
+      "evidence_tier": "abstract",
+      "verification_pass": false
+    },
+    {
+      "show": "Star Bros",
+      "host": "jax",
+      "status": "abstained",
+      "doi": "10.1051/0004-6361/202660142",
+      "title": "Learning cosmic web environments with diffusion models",
+      "words": 604,
+      "evidence_tier": "abstract",
+      "verification_pass": false
+    }
+  ]
+}

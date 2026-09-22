@@ -1,0 +1,66 @@
+{
+  "show": "Wild Company",
+  "host": "fern",
+  "story_id": "9ca60053526fbff94cce",
+  "doi": "10.1111/1749-4877.70182",
+  "requested_by": "beat",
+  "publicity_sources": [],
+  "source": {
+    "title": "Ecology and Brain Size Drive Feeding Innovations in Birds",
+    "attribution": "Yating LIU, Ying Jiang, Jiliang Xu, Wen Bo Liao",
+    "journal": "Integrative Zoology",
+    "url": "https://doi.org/10.1111/1749-4877.70182",
+    "license": "cc-by",
+    "evidence_tier": "abstract",
+    "evidence_note": "Abstract-only evidence; no full-text reuse."
+  },
+  "words": 480,
+  "verification": {
+    "story": "9ca60053526fbff94cce",
+    "status": "approved",
+    "pass": true,
+    "failures": [],
+    "backend": "jev",
+    "evidence_sha256": "fe6e51074de24933",
+    "notes": {
+      "claims_checked": 5,
+      "missing_numbers": [],
+      "entail_0": 0.99,
+      "entail_1": 0.98,
+      "entail_2": 0.96,
+      "entail_3": 0.98,
+      "entail_4": 0.96,
+      "primary_finding": 0.94,
+      "no_overstatement": 0.83
+    },
+    "reviewer": "auto-verifier:jev"
+  },
+  "draft": {
+    "title": "Ecology and Brain Size Drive Feeding Innovations in Birds",
+    "dek": "Across 955 bird species, brain size and ecology are linked with different kinds of feeding innovation.",
+    "body": "A bird finds a new way to get at food. Perhaps it handles a familiar meal differently, or tries a food type it hasn’t used before. Somewhere between clever solution and fortunate accident, that’s a feeding innovation. Birds have plenty of them, which makes them useful for asking a big question in a very practical way.\n\nThe paper is called “Ecology and Brain Size Drive Feeding Innovations in Birds”. It comes from Yating LIU and colleagues, published in Integrative Zoology. The researchers compared feeding innovations across 955 bird species, looking at brain size alongside ecological details such as whether a species stayed put or migrated, and whether it ate a broad range of foods.\n\nTheir first result is a link between feeding innovation rate and what they call residual brain size. In plain English, that means brain size after accounting for the bird’s body size. Species with relatively larger brains tended to show more feeding innovations.\n\nEcology added another layer. High rates of feeding innovation were commonly seen in resident species, those that don’t migrate, and in birds with omnivorous feeding strategies. That makes a certain amount of everyday sense. A bird eating a wider range of things may meet more opportunities for a new trick, while a bird living in one place may encounter the same local challenges often enough for unusual solutions to matter.\n\nComparison: it’s a little like living in one neighbourhood with a varied food shop nearby. You have repeated chances to try something different, and more than one sort of dinner on offer. The comparison is only a guide, though. Birds aren’t miniature pub regulars, and the study tracks patterns across species rather than watching one individual invent a snack hack.\n\nThe researchers also separated innovations into two kinds: technical innovations, meaning new ways of handling food, and food-type innovations, meaning new kinds of food. The links with brain size and ecology weren’t the same for both. Their further analysis suggested that brain size and seasonal temperature changes were connected to innovation through migration type, feeding strategy, or both.\n\nThat wording matters. This is a study of relationships across species, so it doesn’t show that a larger relative brain directly causes a bird to invent a feeding behaviour. The selected material also gives us a broad result, rather than the details of how innovations were recorded or how each ecological factor was measured. As far as anyone can tell from this paper extract, the pattern is useful evidence about association, not a complete recipe for predicting behaviour in an individual bird.\n\nSo, picture that small moment again: a bird at a meal, doing something slightly different. The study suggests that such differences sit where body biology and local circumstances meet. The clever bit may be in the brain, the menu, the climate, or the route between them. I'm Clara Rowan. There's always more going on.",
+    "caveat": "This is a study of relationships across species, so it doesn’t show that a larger relative brain directly causes a bird to invent a feeding behaviour. The selected material also gives us a broad result, rather than the details of how innovations were recorded or how each ecological factor was measured. As far as anyone can tell from this paper extract, the pattern is useful evidence about association, not a complete recipe for predicting behaviour in an individual bird.",
+    "claims": [
+      {
+        "claim": "The study analysed feeding innovations across 955 bird species.",
+        "quote": "Here, we analyzed feeding innovations across 955 bird species, examining relationships with brain size and ecological variables."
+      },
+      {
+        "claim": "Relative brain size was positively associated with feeding innovation rate.",
+        "quote": "Our results reveal that residual brain size positively correlates with feeding innovation rate."
+      },
+      {
+        "claim": "Resident and omnivorous species commonly had high feeding innovation rates.",
+        "quote": "A high feeding innovation rate is commonly observed in resident species that employ omnivorous feeding strategies."
+      },
+      {
+        "claim": "Technical and food-type innovations showed different associations with brain size and ecology.",
+        "quote": "Moreover, the patterns of association with residual brain size and ecological variables differed between the two innovation subtypes, namely technical and food type innovation rates."
+      },
+      {
+        "claim": "Migration type and feeding strategy mediated some relationships involving brain size and temperature seasonality.",
+        "quote": "Phylogenetic path analysis further indicates that the effects of residual brain size and temperature seasonality on feeding innovation are mediated via migration type and/or feeding strategy."
+      }
+    ]
+  }
+}

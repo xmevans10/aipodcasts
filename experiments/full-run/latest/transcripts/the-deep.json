@@ -1,0 +1,66 @@
+{
+  "show": "The Deep",
+  "host": "kenji",
+  "story_id": "5e7f70cb197606379f18",
+  "doi": "10.1038/s43247-026-04042-5",
+  "requested_by": "beat",
+  "publicity_sources": [],
+  "source": {
+    "title": "Pronounced megafaunal community transition driven by polymetallic nodule cover in the Northwest Pacific abyss",
+    "attribution": "Leyi Fang, Dongsheng Zhang, Chengcheng Shen, Yuntian Pang, Shiquan Lin, Runxuan Yan, Rui Li, Huaiming Li, Chunsheng Wang",
+    "journal": "Communications Earth & Environment",
+    "url": "https://doi.org/10.1038/s43247-026-04042-5",
+    "license": "cc-by-nc-nd",
+    "evidence_tier": "abstract",
+    "evidence_note": "Abstract-only evidence; no full-text reuse."
+  },
+  "words": 498,
+  "verification": {
+    "story": "5e7f70cb197606379f18",
+    "status": "approved",
+    "pass": true,
+    "failures": [],
+    "backend": "jev",
+    "evidence_sha256": "90bed0b9ff5d788b",
+    "notes": {
+      "claims_checked": 5,
+      "missing_numbers": [],
+      "entail_0": 0.99,
+      "entail_1": 0.98,
+      "entail_2": 0.98,
+      "entail_3": 0.97,
+      "entail_4": 0.99,
+      "primary_finding": 0.93,
+      "no_overstatement": 0.83
+    },
+    "reviewer": "auto-verifier:jev"
+  },
+  "draft": {
+    "title": "Pronounced megafaunal community transition driven by polymetallic nodule cover in the Northwest Pacific abyss",
+    "dek": "Photographic surveys found a U-shaped relationship between nodule cover and abyssal megafaunal density, with community composition shifting from mobile to sessile animals.",
+    "body": "Far below the surface, where sunlight fails, the seafloor is scattered with rocks that animals use as living space. In that quiet darkness, a sea cucumber moves across the sediment while a sponge stays fixed in place, filtering what drifts past. The animals are different, but the rocks may help decide who gets the better address.\n\nThis is the question behind “Pronounced megafaunal community transition driven by polymetallic nodule cover in the Northwest Pacific abyss,” a study by Leyi Fang and colleagues, published in Communications Earth & Environment. The researchers asked how the amount of polymetallic nodules, rocky lumps on the abyssal plain, relates to large animals living on or near the seafloor.\n\nThey used a large set of seafloor images from a nodule-rich basin in the northwest Pacific. Across those photographs, they recorded 169 animal forms from 14 major groups. Sea cucumbers and sponges were the most common kinds.\n\nThe main pattern ran in a U shape. Megafaunal density fell as nodule cover rose from low to intermediate levels. It then stayed fairly steady through the intermediate range, before rising sharply where nodule cover was high. So a thicker scattering of nodules didn’t simply mean more animals at every step.\n\nThe community itself changed, too. At low nodule cover, mobile animals that feed on material settled into the sediment were more common. At high cover, animals fixed to the seafloor and filtering food from the water became dominant. The shift was driven mainly by changes in the abundance of the dominant groups, rather than by many species disappearing and being replaced by entirely different ones.\n\nComparison: think of a slow shipping lane changing its traffic. The route is still there, but the balance of vehicles using it can change as conditions along the lane change. Here, the researchers found a similar change in the relative numbers of animal types across the nodule gradient. That’s a comparison, not a claim that the animals are responding to traffic.\n\nThe Northwest Pacific basin had lower megafaunal density and a different community composition than the Clarion–Clipperton Zone, another well-studied nodule region. Yet its diversity was comparable. The authors say broad regional conditions, including the supply of organic particles and the chemistry of carbonate in seawater, are consistent with helping explain those differences.\n\nThere are limits to what these photographs can tell us. A photographic survey records what appears in the sampled images, not every animal across the whole abyss. The packet gives results for this nodule-rich Northwest Pacific basin and does not establish that the same pattern applies elsewhere. The relationship also shows association, not proof that nodule cover alone caused the community shift. This account uses only the selected source paragraphs, so omitted sections may contain additional evidence or limitations.\n\nThe dark seafloor is a neighbourhood, and its rocks alter who can settle, crawl, or filter in place. The pattern is clear in these images, while much of the wider abyss remains unmeasured. I'm Kenji Watanabe. Down here, patience pays.",
+    "caveat": "There are limits to what these photographs can tell us. A photographic survey records what appears in the sampled images, not every animal across the whole abyss. The packet gives results for this nodule-rich Northwest Pacific basin and does not establish that the same pattern applies elsewhere. The relationship also shows association, not proof that nodule cover alone caused the community shift. This account uses only the selected source paragraphs, so omitted sections may contain additional evidence or limitations.",
+    "claims": [
+      {
+        "claim": "The researchers recorded 169 morphospecies from 14 phyla, with holothurians and sponges dominant.",
+        "quote": "A total of 169 morphospecies from 14 phyla were recorded, with holothurians and sponges comprising the dominant taxa."
+      },
+      {
+        "claim": "Megafaunal density followed a U-shaped response to nodule cover.",
+        "quote": "megafaunal density exhibited a U-shaped response to nodule cover, declining from low to intermediate nodule cover, remaining relatively stable at intermediate levels, and increasing sharply at high nodule cover."
+      },
+      {
+        "claim": "Community composition shifted from mobile deposit feeders to sessile filter feeders.",
+        "quote": "Community composition shifted markedly from mobile deposit-feeder dominance at low cover to sessile filter-feeder dominance at high cover."
+      },
+      {
+        "claim": "The transition was mainly driven by changes in the abundance of dominant taxa.",
+        "quote": "This transition was primarily driven by changes in the relative density of dominant taxa rather than species turnover."
+      },
+      {
+        "claim": "The Northwest Pacific differed from the Clarion–Clipperton Zone in density and composition but had comparable diversity.",
+        "quote": "Compared with the Clarion–Clipperton Zone (CCZ), the NWP showed lower megafaunal density and distinct assemblage composition but comparable diversity"
+      }
+    ]
+  }
+}

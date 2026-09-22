@@ -1,0 +1,66 @@
+{
+  "show": "Webwork",
+  "host": "spinner",
+  "story_id": "7be0ddfe907f6573dc2a",
+  "doi": "10.1016/j.jad.2026.122490",
+  "requested_by": "beat",
+  "publicity_sources": [],
+  "source": {
+    "title": "Mapping mental representations of fear-relevant stimuli through similarity modeling",
+    "attribution": "Mengfan Zhang, Dominik Pegler, Alexander Karner, Cindy Sumaly Lor, Frank Scharnowski, Filip Melinscak",
+    "journal": "Journal of Affective Disorders",
+    "url": "https://doi.org/10.1016/j.jad.2026.122490",
+    "license": "cc-by",
+    "evidence_tier": "abstract",
+    "evidence_note": "Abstract-only evidence; no full-text reuse."
+  },
+  "words": 440,
+  "verification": {
+    "story": "7be0ddfe907f6573dc2a",
+    "status": "approved",
+    "pass": true,
+    "failures": [],
+    "backend": "jev",
+    "evidence_sha256": "cc367625418febb8",
+    "notes": {
+      "claims_checked": 5,
+      "missing_numbers": [],
+      "entail_0": 0.98,
+      "entail_1": 0.98,
+      "entail_2": 0.98,
+      "entail_3": 0.97,
+      "entail_4": 0.97,
+      "primary_finding": 0.9,
+      "no_overstatement": 0.8
+    },
+    "reviewer": "auto-verifier:jev"
+  },
+  "draft": {
+    "title": "Mapping mental representations of fear-relevant stimuli through similarity modeling",
+    "dek": "A large study of spider-related images finds that fear is organized across several mental dimensions, not just one simple feeling.",
+    "body": "A single picture of a spider can feel like a whole bundle of information at once. Shape, texture, movement imagined in the mind, and the feeling of threat may arrive together, even though they’re different things. How could researchers map that bundle without deciding in advance what the important parts must be?\n\n“Mapping mental representations of fear-relevant stimuli through similarity modeling” comes from Mengfan Zhang and colleagues in the Journal of Affective Disorders. The team focused on arachnophobia as a model for understanding fear-related mental representations.\n\nThey showed 705 people a set of 314 spider-related images. Instead of asking only, “How afraid are you?” they asked participants to judge how similar pairs of images seemed. Altogether, the researchers analyzed 49,141 pairwise judgments. That gives them a map based on patterns in people’s responses, rather than on a few categories chosen ahead of time.\n\nThe map had five dimensions. Four of those dimensions strongly predicted fear ratings. Just as important, they carried information beyond fear itself. The result suggests that spider-related images are arranged in the mind along several related but distinct lines. Fear and disgust alone don’t capture the full structure.\n\nComparison: think of a woven cloth. You can describe its overall color, but that misses the direction of the threads, the tightness of the weave, and the pattern made where those threads cross. In a similar way, a single fear score compresses a richer mental pattern into one number.\n\nThat distinction matters for how researchers think about treatment. The authors say this kind of mapping could help refine exposure therapy and other approaches to anxiety. But the study did not test a treatment, and it did not show that changing any one dimension would reduce fear. The findings describe how responses to images are organized. They don’t reveal a spider’s purpose, and they don’t show that every person, or every spider-related fear, has the same map.\n\nThis study used similarity judgments about spider-related images from 705 individuals, so the results describe patterns in reported perception rather than direct measurements of fear in everyday settings. The selected material does not provide details about the participants, the images, or how the five dimensions were interpreted, and omitted sections may contain further limitations. The findings come from a model condition, arachnophobia, so they should not automatically be generalized to all anxiety disorders or all spiders.\n\nA strand can carry several kinds of information at once, depending on its angle and tension. This study suggests that fear-related images may work much the same way in the mind: one visible object, several dimensions of meaning. I'm Priya Nandakumar. Look closer at the quiet engineering.",
+    "caveat": "This study used similarity judgments about spider-related images from 705 individuals, so the results describe patterns in reported perception rather than direct measurements of fear in everyday settings. The selected material does not provide details about the participants, the images, or how the five dimensions were interpreted, and omitted sections may contain further limitations. The findings come from a model condition, arachnophobia, so they should not automatically be generalized to all anxiety disorders or all spiders.",
+    "claims": [
+      {
+        "claim": "The study analyzed similarity judgments from 705 individuals across 314 spider-related images.",
+        "quote": "From 705 individuals, we analyzed 49,141 pairwise similarity judgments among 314 spider-related images, constituting the largest dataset of its kind."
+      },
+      {
+        "claim": "The researchers identified a five-dimensional representational space.",
+        "quote": "Multidimensional Scaling identified a 5-dimensional representational space"
+      },
+      {
+        "claim": "Four dimensions strongly predicted fear ratings and added information beyond fear.",
+        "quote": "with four dimensions strongly predicting fear ratings and capturing complementary information beyond fear."
+      },
+      {
+        "claim": "The representation could not be reduced to conventional dimensions such as fear and disgust.",
+        "quote": "These findings indicate that perceptual representations are structured along specific dimensions with complex information that cannot be reduced to conventional predetermined dimensions, such as fear and disgust."
+      },
+      {
+        "claim": "The approach may have applications for refining anxiety treatments.",
+        "quote": "Our approach provides a scalable and flexible framework for studying the representational structure of fear-relevant stimuli, offering potential applications for refining exposure therapy and anxiety treatment strategies."
+      }
+    ]
+  }
+}

@@ -1,0 +1,66 @@
+name: retitle-feed
+
+# Publish the listener-facing episode headlines to the live feed WITHOUT re-rendering.
+#
+# The 2026-09-21 retitling never reached production: the live catalog still shows paper
+# titles such as "Cell wall-forming chitin synthases in a chytrid fungus". The rendered
+# audio does not speak the episode headline, so the displayed title can be corrected on
+# its own. This workflow changes the `title` field in feed.json and in each episode's
+# detail sidecar, and touches nothing else.
+#
+# It deliberately does NOT use publish_feed.py. That script republishes the catalog from
+# ios/Zwicky/Episodes, which holds only the four older bundled episodes, so running it
+# here would drop the fourteen recent shows out of the feed.
+#
+# Manual only, and dry run by default. Read the plan in the log, then run it again with
+# apply = true.
+on:
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: Write the changes. Leave false to print the plan only.
+        type: boolean
+        default: false
+
+jobs:
+  retitle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_PUBLIC_BASE: ${{ secrets.R2_PUBLIC_BASE }}
+      R2_PREFIX: v1
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Plan
+        run: python3 tools/retitle_feed.py --dry-run
+
+      - name: Apply
+        if: inputs.apply && env.R2_BUCKET != ''
+        run: |
+          python -m pip install boto3
+          python3 tools/retitle_feed.py --apply
+
+      - name: Verify the published feed
+        if: inputs.apply && env.R2_BUCKET != ''
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request
+          base = os.environ["R2_PUBLIC_BASE"].rstrip("/") + "/" + os.environ["R2_PREFIX"]
+          req = urllib.request.Request(base + "/feed.json",
+                                       headers={"User-Agent": "ZwickyResearch/0.1"})
+          with urllib.request.urlopen(req, timeout=60) as response:
+              feed = json.loads(response.read())
+          print(f"{len(feed)} entries live")
+          for entry in feed:
+              print(" ", entry["hostID"], "|", entry["title"])
+          assert len(feed) >= 18, "feed shrank; the catalog was partially overwritten"
+          PY

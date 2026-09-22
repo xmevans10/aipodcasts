@@ -40,7 +40,10 @@ class HostPersonalityTests(unittest.TestCase):
 
     def test_sign_off_is_required_in_the_closing(self):
         source = {'title': 'A paper', 'attribution': 'Ada Lovelace, others'}
-        body = 'A clearer picture. ' + ('A paper by Ada Lovelace and colleagues. ' * 5) + 'Limitations apply here. ' + HOSTS['ada'].sign_off
+        # The paper title is spoken once: repeating it now fails spoken_defects.
+        body = ('A clearer picture. A paper by Ada Lovelace and colleagues. '
+                + ('They followed the same question for years. ' * 5)
+                + 'Limitations apply here. ' + HOSTS['ada'].sign_off)
         draft = {'title': 'A clearer picture', 'dek': 'd', 'body': body, 'caveat': 'Limitations apply here.', 'claims': []}
         validate_podcast(draft, source, HOSTS['ada'])
         draft['body'] = body.replace(HOSTS['ada'].sign_off, "That's all for today.")

@@ -66,7 +66,11 @@ def build_packet(source, max_chars=18000):
               'source_title': source['title'],
               'source_attribution': source.get('attribution', ''),
               'source_journal': source.get('journal', ''),
-              'scope': 'Selected source paragraphs only. Omitted sections may contain additional evidence or limitations. Do not claim a complete review.',
+              # An internal control for the writer, never spoken content. The key name
+              # and the leading marker both say so; editorial.INTERNAL_CONTROLS lists it.
+              'internal_scope_note': 'INTERNAL CONTROL, NEVER SPOKEN: selected source paragraphs only. '
+                                     'Omitted sections may contain additional evidence or limitations. '
+                                     'Do not treat this packet as a complete review, and do not read this note aloud.',
               'source_characters': len(source['text']), 'omitted_paragraphs': len(passages), 'passages': []}
     selected = set()
     # Coverage requirements are selected before optional context. They may expand the

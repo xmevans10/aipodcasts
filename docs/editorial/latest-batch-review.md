@@ -84,19 +84,19 @@ These are editorial judgements about why the batch came out this way.
 |---|---|---|
 | Episode title distinct from paper title, ≤72 chars / ≤12 words | `podcast.validate_episode_title` | yes |
 | Exact paper title + episode title + first author in opening | `podcast.validate_podcast`, `dialogue.validate_dialogue_contract` | yes |
-| Hook precedes the paper citation | nobody | **no** |
-| Caveat spoken verbatim, once | validators check presence | presence only; **no** duplicate check |
+| Hook precedes the paper citation | `editorial.spoken_defects` (`citation_before_hook`) | yes, floor only |
+| Caveat spoken verbatim, once | validators + `editorial.spoken_defects` (`duplicate_caveat`) | yes |
 | Host sign-off, own presenter, own turn | `validate_podcast`, `validate_dialogue_contract` | yes |
 | Speaker names, turn count, run limit, participation | `validate_dialogue_contract` | yes |
 | Claim quotes verbatim in source | `provenance.quotes_in_source`, `verify.verify_draft` | yes |
 | Numeric fidelity against the packet | `verify.numeric_fidelity` | yes |
 | Entailment, primary finding, no overstatement | `verify.verify_draft` typed questions | yes, when a decider is reachable |
 | Word count / structural bounds | `pipeline.validate_draft`, `validate_dialogue_contract` | yes |
-| Internal `scope` text absent from speech | nobody | **no** |
-| Production labels ("Comparison:", "Limitations:") absent from speech | nobody | **no** |
-| Markdown / stage directions absent from speech | `anti_slop.analyze` reports, nothing blocks | **no** |
-| Stale "the paper, with the same title" | nobody | **no** |
-| Malformed `?.` / `!.` inside quoted titles | nobody | **no** |
+| Internal `scope` text absent from speech | `editorial.spoken_defects` (`scope_leak`); packet field renamed `internal_scope_note` | yes |
+| Production labels ("Comparison:", "Limitations:") absent from speech | `editorial.spoken_defects` (`production_label`) | yes |
+| Markdown / stage directions absent from speech | `editorial.spoken_defects` (`markdown_or_stage_direction`) | yes |
+| Stale "the paper, with the same title" | `editorial.spoken_defects` (`stale_same_title`) | yes |
+| Malformed `?.` / `!.` inside quoted titles | `editorial.spoken_defects` (`malformed_title_punctuation`) | yes |
 | Surface style (slop vocabulary, em dashes, staged reveals) | `anti_slop.analyze` / `penalty` | advisory only |
 | **Comprehensibility after one listen** | nobody | **no** |
 | **Term-before-use ordering** | nobody | **no** |
@@ -108,6 +108,14 @@ These are editorial judgements about why the batch came out this way.
 Rows in the first block are stage-2 work: unambiguous defects that deterministic checks
 can catch. Rows in bold at the bottom are stage-3 work: judgements that need structured
 audience review.
+
+**Stage-2 status (2026-09-22).** The deterministic rows above are now enforced by
+`backend/editorial.py`, called from `podcast.validate_podcast` and
+`dialogue.validate_dialogue_contract`, so failures reach the bounded repair loop with an
+actionable message. Re-run against the 2026-09-21 batch, fifteen of the sixteen episodes
+now fail at least one deterministic check; Gradient is the exception, and its defects are
+number load, which is stage-3 territory. `citation_before_hook` is a floor only: it rejects
+an opening sentence that is the citation, not a weak hook.
 
 ## 5. What did not cause the problem
 

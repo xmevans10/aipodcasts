@@ -5,8 +5,12 @@ The Evidence rules are identical to the single-host contract; only the spoken
 shape changes. Quotes are still checked verbatim against the source.
 """
 from __future__ import annotations
+from editorial import contract_block, spoken_defects
 from provenance import provenance_text, quotes_in_source
 from podcast import TITLE_GUIDE, validate_episode_title
+from hosts import dialogue_dynamic
+
+DIALOGUE_PROMPT_VERSION = 'dialogue-v2'  # audience contract: progressive turns, hook first
 
 DIALOGUE_SCHEMA = {
     "type": "object", "additionalProperties": False,
@@ -37,13 +41,18 @@ headings.
 
 Shape the episode naturally:
 1. Open with a concrete curiosity hook or vivid question from one presenter.
-2. Within the first 220 words, work in the exact episode title as the headline, introduce
-   the paper by its exact source_title and credit the first named author from
-   source_attribution followed by 'and colleagues' when there are multiple authors.
-   Mention the journal if provided. Do not infer author seniority or say 'led by'.
-3. Explain the question, what the researchers did and the interesting finding, with the
-   presenters trading explanation, reaction and one marked comparison. One useful analogy,
-   attributed to whoever offers it, is better than several.
+2. Then, still within the first 220 words, work in the exact episode title as the
+   headline, introduce the paper by its exact source_title and credit the first named
+   author from source_attribution followed by 'and colleagues' when there are multiple
+   authors. Mention the journal if provided. Do not infer author seniority or say 'led by'.
+   The opening SENTENCE is never the citation. Credit the paper once, not once per
+   presenter, and do not speak either title twice.
+3. Explain the question, what the researchers did and the interesting finding. Make the
+   exchange PROGRESSIVE: one presenter asks the question a listener would actually ask,
+   and the next answers it in EASIER words without introducing new terms. A turn that
+   adds more jargon than the turn before it is wrong, however accurate it is. Do not
+   split one academic monologue between names. At most one analogy in the whole episode,
+   offered by one presenter in ordinary English such as 'it is a bit like'.
 4. Include the important uncertainty and study limitations before the close. Put that exact
    limitations paragraph, verbatim, in the caveat field too.
 5. Close with each presenter's exact sign-off in that presenter's own final turn.
@@ -62,27 +71,43 @@ result into a direct experimental observation or a single study into consensus.
 Provide 3-8 key scientific claims with exact supporting quotations from supplied
 paragraphs in claims. Quote verbatim; join omitted text with an ellipsis (...).
 Those quotes are internal review evidence, never read aloud.
-''' + '\n' + TITLE_GUIDE
+''' + '\n' + TITLE_GUIDE + '\n' + contract_block()
 
 
 def dialogue_guide(hosts) -> str:
-    """The personality block for a multi-host show, appended to DIALOGUE_INSTRUCTIONS."""
+    """The personality block for a multi-host show, appended to DIALOGUE_INSTRUCTIONS.
+
+    Carries each presenter's signature moves and lexicon, plus the cast dynamic, because
+    a roster of adjectives produces four interchangeable experts taking turns.
+    """
     names = [host.name for host in hosts]
     lines = [
         "",
         f"CO-HOST FORMAT — {', '.join(names[:-1])} and {names[-1]} co-host {hosts[0].show} ({hosts[0].beat}).",
         "Use these exact speaker strings: " + ", ".join('"' + name + '"' for name in names) + ".",
     ]
+    dynamic = dialogue_dynamic(hosts[0].show)
+    if dynamic:
+        lines += ["How this cast works: " + dynamic]
     for host in hosts:
         lines += [
             f"{host.name}: {host.persona}",
             f"  Delivery: {host.delivery}",
             f"  Openings: {host.hook_style}",
-            f"  Draw analogies from: {', '.join(host.analogies_from)}. Keep to one, marked as a comparison.",
+            f"  Signature moves: {'; '.join(host.signature_moves)}.",
+            f"  Characteristic phrasing, never as catchphrases: {'; '.join(host.lexicon)}.",
+            f"  Draw analogies from: {', '.join(host.analogies_from)}.",
             f"  Avoid: {', '.join(host.avoid)}.",
             f"  End with this exact sentence: \"{host.sign_off}\"",
         ]
-    lines.append("Personality changes the delivery only. Never let it alter a finding, a number, a limitation or an attribution.")
+    lines += [
+        "At most one analogy in the whole episode, offered by one presenter, in ordinary",
+        "English and never labelled.",
+        "Each presenter must be identifiable from their turns alone, with names and sign-offs",
+        "removed. Interchangeable presenters are a failed script.",
+        "Personality changes the delivery only. Never let it alter a finding, a number, a",
+        "limitation or an attribution, and never let a flourish cost the listener clarity.",
+    ]
     return "\n".join(lines)
 
 
@@ -141,6 +166,10 @@ def validate_dialogue_contract(draft: dict, source: dict, hosts) -> None:
         raise ValueError("Dialogue opening must credit the first named author")
     if provenance_text(draft["caveat"]).casefold() not in provenance_text(text).casefold():
         raise ValueError("The spoken dialogue must include its limitations paragraph")
+    defects = spoken_defects(text, caveat=draft["caveat"], source_title=source["title"],
+                             episode_title=draft["title"])
+    if defects:
+        raise ValueError(" | ".join(defects))
     closing = provenance_text(" ".join(words[-120:])).casefold()
     for host in hosts:
         if provenance_text(host.sign_off).casefold() not in closing:

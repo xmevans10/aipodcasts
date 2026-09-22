@@ -49,6 +49,7 @@ struct HomeView: View {
             .background(Theme.canvas)
             .toolbar(.hidden, for: .navigationBar)
             .refreshable { await library.refresh() }
+            .task { await library.refresh() }
             .sheet(isPresented: $settings) { SettingsView() }
         }
     }

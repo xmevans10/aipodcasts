@@ -229,6 +229,8 @@ enum Episodes {
 }
 
 @MainActor final class Library: ObservableObject {
+    /// Published feed of streamed episodes (R2). Settings can override it.
+    static let defaultFeedURL = "https://pub-e19f5de621fd4b4ea01c0465d0251407.r2.dev/v1/feed.json"
     @Published private(set) var stories: [Story]
     @Published var saved: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "saved") ?? [])
     @Published var history: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "history") ?? [])
@@ -267,6 +269,7 @@ enum Episodes {
             feed = Story.demos
         }
         stories = []
+        if feedURL.isEmpty { feedURL = Library.defaultFeedURL }
         rebuild()
     }
 
@@ -295,7 +298,7 @@ enum Episodes {
     /// Newest first; undated samples last.
     var latest: [Story] { stories.sorted { ($0.published ?? "") > ($1.published ?? "") } }
     func episodes(of show: Show) -> [Story] { latest.filter { show.hostIDs.contains($0.hostID) } }
-    @AppStorage("feedURL") var feedURL = ""
+    @AppStorage("feedURL") var feedURL = Library.defaultFeedURL
     func toggle(_ story: Story) {
         if saved.contains(story.id) { saved.remove(story.id) } else { saved.insert(story.id) }
         UserDefaults.standard.set(Array(saved), forKey: "saved")

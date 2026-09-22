@@ -10,6 +10,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "backend"))
 sys.path.insert(0, str(ROOT / "tools/tts"))
+sys.path.insert(0, str(ROOT / "tools"))
 from bundle_shows import slug, story_for, timings  # noqa: E402
 from envelope import envelope_wav  # noqa: E402
 from publish_feed import build_feed  # noqa: E402

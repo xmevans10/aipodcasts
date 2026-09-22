@@ -1,0 +1,244 @@
+{
+  "fixture_version": "editorial-cases-v1",
+  "contract_version": "audience-contract-v1",
+  "about": [
+    "Regression cases for the audience contract (docs/editorial/audience-contract.md).",
+    "Short excerpts are drawn from our own generated scripts; the rest are purpose-written.",
+    "No raw source-paper prose and no private evidence packets appear here.",
+    "`improvement` is an illustrative rewrite for calibration only. It is NOT an approved",
+    "production script and must never be published or used as generation output."
+  ],
+  "deterministic_checks": {
+    "scope_leak": "Internal evidence-packet scope/control language reached the spoken script.",
+    "production_label": "A formatting label such as 'Comparison:' or 'Limitations:' is spoken.",
+    "markdown_or_stage_direction": "Markdown, headings or bracketed stage directions are spoken.",
+    "stale_same_title": "Post-retitling phrase claiming the paper shares the episode title.",
+    "malformed_title_punctuation": "A quoted title ends '?.' or '!.' inside the sentence.",
+    "duplicate_caveat": "The limitations passage is spoken more than once."
+  },
+  "cases": [
+    {
+      "id": "leak_scope_solo",
+      "format": "solo",
+      "issue": "internal-instruction leakage",
+      "severity": "blocker",
+      "deterministic": ["scope_leak"],
+      "audience": "fail",
+      "note": "Excerpt shape from Star Stuff. The packet's scope control is read aloud as if it were a caveat.",
+      "text": "The supplied material is an abstract, so it doesn't tell us how the method performs across every sample. Selected source paragraphs only. Omitted sections may contain additional evidence and limitations. Do not claim a complete review.",
+      "improvement": "This episode is built from the paper's abstract, so the full set of test samples isn't in front of us."
+    },
+    {
+      "id": "leak_scope_quad",
+      "format": "quad",
+      "issue": "internal-instruction leakage, in character",
+      "severity": "blocker",
+      "deterministic": ["scope_leak"],
+      "audience": "fail",
+      "note": "Excerpt shape from Star Bros. The writer speaks the control string and then comments on it, which is the strongest evidence that controls are reaching the writer as content.",
+      "turns": [
+        {"speaker": "Jackson \"Jax\" Ruiz", "text": "Selected source paragraphs only. Omitted sections may contain additional evidence or limitations. Do not claim a complete review. That sentence is a little stern, but it keeps our scoreboard honest."},
+        {"speaker": "Kai Nakamura", "text": "It does. The narrower result is still the interesting one."}
+      ],
+      "improvement": "We're working from what the paper's abstract reports, so treat this as the headline, not the full accounting."
+    },
+    {
+      "id": "leak_production_label",
+      "format": "solo",
+      "issue": "spoken production label",
+      "severity": "blocker",
+      "deterministic": ["production_label"],
+      "audience": "fail",
+      "note": "Ten of sixteen scripts in the 2026-09-21 batch spoke 'Comparison:' because the prompt says to mark analogies as comparisons while banning headings.",
+      "text": "Comparison: it's a little like redirecting traffic around a blocked city street, so vehicles use safer connecting roads instead of crowding the jam.",
+      "improvement": "It's a bit like redirecting traffic around a blocked street, so cars take the quieter roads instead of piling into the jam."
+    },
+    {
+      "id": "leak_stage_direction",
+      "format": "solo",
+      "issue": "markdown and stage directions in speech",
+      "severity": "blocker",
+      "deterministic": ["markdown_or_stage_direction"],
+      "audience": "fail",
+      "note": "Purpose-written. Guards the narration path, which speaks the body as-is.",
+      "text": "## The finding\n[pause] So **here is what they measured**, and it is stranger than it sounds.",
+      "improvement": "So here's what they measured, and it's stranger than it sounds."
+    },
+    {
+      "id": "stale_retitle_phrase",
+      "format": "solo",
+      "issue": "stale same-title phrase and malformed punctuation after retitling",
+      "severity": "blocker",
+      "deterministic": ["stale_same_title", "malformed_title_punctuation"],
+      "audience": "fail",
+      "note": "Excerpt shape from Marginal Gains. The episode was retitled; the sentence asserting a shared title was not updated.",
+      "text": "This episode is called “What Happens When Eye Pressure Rises?.” The paper, with the same title, comes from Zihao Chen and colleagues in Experimental Eye Research.",
+      "improvement": "This is “What Happens When Eye Pressure Rises?” The paper behind it comes from Zihao Chen and colleagues in Experimental Eye Research."
+    },
+    {
+      "id": "duplicate_limitations",
+      "format": "solo",
+      "issue": "the same limitation spoken twice",
+      "severity": "major",
+      "deterministic": ["duplicate_caveat"],
+      "audience": "fail",
+      "note": "Excerpt shape from Marginal Gains and Signal & Noise, where a plain-language caveat paragraph is immediately followed by a formal restatement of the same points.",
+      "caveat": "These were 22 donated human eyes tested outside the body, so the results may not describe living eyes over time.",
+      "text": "These were 22 donated human eyes tested outside the body, so the results may not describe living eyes over time. This study used 22 human donor whole globes tested outside the body, so its findings may not represent living eyes or changes that develop over time. These were 22 donated human eyes tested outside the body, so the results may not describe living eyes over time.",
+      "improvement": "Say it once, in the plain version, and let the caveat field carry the same sentence."
+    },
+    {
+      "id": "fluent_but_opaque",
+      "format": "solo",
+      "issue": "fluent, accurate, incomprehensible",
+      "severity": "blocker",
+      "deterministic": [],
+      "audience": "fail",
+      "note": "Short sentences, plain syntax, no slop vocabulary, passes factual verification, and a listener learns nothing. This is the case a readability gate cannot catch.",
+      "text": "Loop-forming cohesin reduced direct coupling between sister forks. It favoured contacts between separate replication regions. That was linked to active fork slowing and reversal. It also prevented PRIMPOL from acting on exposed single-stranded DNA.",
+      "improvement": "When copying stalls, a protein that clamps DNA into loops seems to pull the stalled machinery away from its partner and hold it near other stretches of DNA instead. That pause looks deliberate, not like damage."
+    },
+    {
+      "id": "jargon_chain",
+      "format": "solo",
+      "issue": "terms used to explain other unexplained terms",
+      "severity": "blocker",
+      "deterministic": [],
+      "audience": "fail",
+      "note": "Violates the contract's term-before-use rule: every noun here is defined by another undefined noun.",
+      "text": "COSIGT assigns diploid genotypes by matching coverage profiles across candidate haplotype paths in a pangenome graph, outperforming likelihood-based genotypers at one to two times coverage.",
+      "improvement": "When a sample is this degraded, you only get a thin scattering of DNA fragments. This tool compares the shape of that scattering against a set of possible genetic versions, and picks the pair that fits best."
+    },
+    {
+      "id": "number_pileup",
+      "format": "solo",
+      "issue": "too many numbers, none interpretable by ear",
+      "severity": "major",
+      "deterministic": [],
+      "audience": "fail",
+      "note": "Excerpt shape from Common Ground and Gradient. Each number is accurate and traceable to the packet; together they are unusable.",
+      "text": "Experts marked 137,592 points across eight classes. Pruning cut sixteen percent of the labels. On the cleaned dataset the overall F1 score was eighty-two percent, with a per-glacier average of about eighty-two percent and a spread of roughly ten percentage points. On the unpruned labels it was seventy-four percent.",
+      "improvement": "Experts hand-labelled well over a hundred thousand points. Once the ambiguous ones were dropped, the model agreed with them about four times in five, and it held up across different glaciers and different satellites."
+    },
+    {
+      "id": "unitless_number",
+      "format": "solo",
+      "issue": "a number with no unit and no meaning",
+      "severity": "major",
+      "deterministic": [],
+      "audience": "fail",
+      "note": "Excerpt from The Long View. The figures are faithful to the packet and convey nothing to a listener.",
+      "text": "Two nickel measures were seven plus or minus three, and minus six plus or minus nine. Those ranges matter.",
+      "improvement": "Both of those readings come with error bars wide enough to overlap zero, which is why the authors call the source an inference rather than a measurement."
+    },
+    {
+      "id": "causal_overreach_from_simplifying",
+      "format": "solo",
+      "issue": "simplification that introduces causality",
+      "severity": "blocker",
+      "deterministic": [],
+      "audience": "fail",
+      "note": "Purpose-written from Wild Company's across-species association. Plainer language, wrong science. Must fail audience review AND overstatement checks.",
+      "text": "Bigger brains make birds better at inventing new ways to eat. Stay in one place, eat a bit of everything, and your brain will find the trick.",
+      "improvement": "Across 955 species, the ones with relatively larger brains also showed more feeding innovations. That's a pattern across species, not a claim that a bigger brain produces the trick."
+    },
+    {
+      "id": "simulation_as_observation",
+      "format": "quad",
+      "issue": "simulation presented as reality",
+      "severity": "blocker",
+      "deterministic": [],
+      "audience": "fail",
+      "note": "Purpose-written from the Star Bros paper, which trains a model on simulated universes only.",
+      "turns": [
+        {"speaker": "Jackson \"Jax\" Ruiz", "text": "So the model looked at the real cosmic web and found the filaments and the voids on its own."},
+        {"speaker": "Kai Nakamura", "text": "Right, it discovered the structure of our universe without being told what to look for."}
+      ],
+      "improvement": "Every universe this model has ever seen was simulated. What it found is structure inside the simulations, which is a claim about the model, not yet about the sky."
+    },
+    {
+      "id": "packet_gap_as_study_weakness",
+      "format": "solo",
+      "issue": "our packet gap asserted as the paper's failing",
+      "severity": "blocker",
+      "deterministic": [],
+      "audience": "fail",
+      "note": "Excerpt from Old Bones. The packet omits error rates; the script converts that into a claim about the evidence itself.",
+      "text": "We aren't given detailed error rates across different kinds of complex regions, nor a full comparison of performance across all sample qualities. The samples don't reach that far.",
+      "improvement": "We aren't shown the error rates for different kinds of regions here, because this episode is built from a summary rather than the full paper."
+    },
+    {
+      "id": "wrong_show_metaphor",
+      "format": "solo",
+      "issue": "a topic attached to the wrong show by metaphor",
+      "severity": "blocker",
+      "deterministic": [],
+      "audience": "fail",
+      "note": "Excerpt from Star Stuff. A laboratory NMR method paper opened with stellar nucleosynthesis so it would belong on an astronomy show. Beat fit must come from the paper.",
+      "text": "The calcium in your bones was forged in ancient stars. Iron in your blood passed through furnaces too. I follow those atoms from cloud to star and back out again, so I'm always listening for the clues they leave in a spectrum. Today, the clue is made on Earth, in a laboratory.",
+      "improvement": "Withhold or reselect. There is no honest route from stellar nucleosynthesis to a bench method for reading crowded fluorine spectra."
+    },
+    {
+      "id": "dialogue_as_split_monologue",
+      "format": "duo",
+      "issue": "dialogue that does not clarify",
+      "severity": "major",
+      "deterministic": [],
+      "audience": "fail",
+      "note": "Excerpt shape from Ground Truth. Both presenters are accurate and neither makes the other's point easier. The second turn introduces more new terms than the first.",
+      "turns": [
+        {"speaker": "Ines Marlowe", "text": "The researchers asked whether nearby replication forks communicate under stress, and whether cohesin helps organize that contact."},
+        {"speaker": "Dev Raman", "text": "More specifically, loop-forming cohesin reduced direct coupling between sister forks and favoured contacts between separate replication regions, while preventing PRIMPOL from acting on exposed single-stranded DNA."}
+      ],
+      "improvement": "Ines: 'So what is cohesin actually doing?' / Dev: 'Think of it as a clasp that gathers slack DNA into loops. When copying stalls, more of those clasps show up right at the stall.'"
+    },
+    {
+      "id": "good_plain_language",
+      "format": "solo",
+      "issue": "none — accurate, plain, complete",
+      "severity": "none",
+      "deterministic": [],
+      "audience": "pass",
+      "note": "Positive control. Question, method as ordinary actions, one result, one boundary, one number that carries meaning.",
+      "text": "One bee comes home carrying a little nectar, and the hive gets very slightly heavier. Researchers put fifteen hives on scales and weighed them every five minutes for two seasons. During the bloom, the hive's weight swung about half a kilo more across a day than it did before or after. That swing is a usable signal for when the flowers are out. It came from one apiary, though, so nobody yet knows how well it travels.",
+      "improvement": null
+    },
+    {
+      "id": "good_hard_term_explained",
+      "format": "solo",
+      "issue": "none — a difficult subject handled well",
+      "severity": "none",
+      "deterministic": [],
+      "audience": "pass",
+      "note": "Positive control against a gate that learns to reject difficult science. One necessary technical term, explained before it is used, then dropped in favour of the plain phrase.",
+      "text": "Nickel comes in slightly different weights, and the heavier and lighter versions behave differently when rock is flash-heated and vapourised. Those weights are what the team measured in dust brought back from the Moon's far side. The heavy-leaning readings fit a surface hit over and over by tiny impacts, with the vapour settling back onto the grains rather than escaping.",
+      "improvement": null
+    },
+    {
+      "id": "good_duo_progressive",
+      "format": "duo",
+      "issue": "none — the second host makes the first easier",
+      "severity": "none",
+      "deterministic": [],
+      "audience": "pass",
+      "note": "Positive control for dialogue. One presenter asks the listener's question; the next answers in easier words and adds no new terms.",
+      "turns": [
+        {"speaker": "Ines Marlowe", "text": "When a cell is copying its DNA and the copying stalls, why would that be anything other than a failure?"},
+        {"speaker": "Dev Raman", "text": "Because the cell seems to slow it down on purpose. Something gathers at the stall and holds the loose end out of trouble, instead of letting it fray."},
+        {"speaker": "Ines Marlowe", "text": "So the pause is the repair, not the damage."}
+      ],
+      "improvement": null
+    },
+    {
+      "id": "good_number_that_earns_it",
+      "format": "solo",
+      "issue": "none — essential study facts retained",
+      "severity": "none",
+      "deterministic": [],
+      "audience": "pass",
+      "note": "Positive control against over-simplification. The population and design facts that keep the claim honest survive, and are the only numbers present.",
+      "text": "They followed just over a thousand people, all of them ninety or older, checking in every six months. The ones who walked more slowly went on to fall more often, and the pattern was stronger in men than in women. Nobody tested a treatment here, so this tells you who is at risk, not what to do about it.",
+      "improvement": null
+    }
+  ]
+}

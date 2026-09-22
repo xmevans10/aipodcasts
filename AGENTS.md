@@ -7,6 +7,18 @@ shows, new-episode notifications, audio/read-along quality, production feed, clo
 release). Start at `prompts/README.md`; paste `prompts/00-shared-context.md` first, then a
 milestone file.
 
+## Editorial standard
+
+`docs/editorial/audience-contract.md` is the canonical standard for spoken episodes:
+who is listening, what must survive a rewrite, the spoken-citation policy, and the
+precedence order when requirements conflict. Generation prompts, deterministic
+validators and audience review all answer to it.
+
+- Diagnosis of the current batch and who enforces what:
+  `docs/editorial/latest-batch-review.md`
+- Shared calibration set: `backend/tests/fixtures/editorial_cases.json`, loaded through
+  `backend/tests/editorial_fixtures.py`
+
 ## Commits
 
 - **Commit incrementally.** One logical change per commit, not a mixed grab-bag.

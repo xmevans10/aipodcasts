@@ -117,14 +117,18 @@ def wav_duration(path: Path) -> float:
         return w.getnframes() / w.getframerate()
 
 
+_PIPELINES: dict = {}
+
+
 def render_kokoro(text: str, voice: str, speed: float):
+    """Render text in one Kokoro voice; pipelines are cached per language (model load is slow)."""
     import numpy as np
-    import soundfile as sf
     from kokoro import KPipeline
 
     language = "b" if voice.startswith("b") else "a"
-    pipeline = KPipeline(lang_code=language)
-    chunks = [audio for _, _, audio in pipeline(text, voice=voice, speed=speed)]
+    if language not in _PIPELINES:
+        _PIPELINES[language] = KPipeline(lang_code=language)
+    chunks = [audio for _, _, audio in _PIPELINES[language](text, voice=voice, speed=speed)]
     return np.concatenate(chunks) if chunks else np.zeros(SR, dtype="float32")
 
 

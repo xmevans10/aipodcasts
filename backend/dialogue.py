@@ -1,11 +1,12 @@
-"""Two-host dialogue contract: prompt, schema, validation and narration inputs.
+"""Multi-host dialogue contract: prompt, schema, validation and narration inputs.
 
-A dialogue episode is one paper discussed by two presenters in alternating turns.
+A dialogue episode is one paper discussed by its presenters in alternating turns.
 The Evidence rules are identical to the single-host contract; only the spoken
 shape changes. Quotes are still checked verbatim against the source.
 """
 from __future__ import annotations
 from provenance import provenance_text, quotes_in_source
+from podcast import TITLE_GUIDE, validate_episode_title
 
 DIALOGUE_SCHEMA = {
     "type": "object", "additionalProperties": False,
@@ -45,7 +46,8 @@ Shape the episode naturally:
    attributed to whoever offers it, is better than several.
 4. Include the important uncertainty and study limitations before the close. Put that exact
    limitations paragraph, verbatim, in the caveat field too.
-5. Close with each presenter's exact sign-off, in the final lines of the last turn.
+5. Close with each presenter's exact sign-off in that presenter's own final turn.
+   Never put another presenter's sign-off in a speaker's turn.
 
 Do not read a DOI, URL, full author roll call, bracketed citations, stage directions,
 markdown or production notes. Full author credit belongs in the source card.
@@ -60,7 +62,7 @@ result into a direct experimental observation or a single study into consensus.
 Provide 3-8 key scientific claims with exact supporting quotations from supplied
 paragraphs in claims. Quote verbatim; join omitted text with an ellipsis (...).
 Those quotes are internal review evidence, never read aloud.
-'''
+''' + '\n' + TITLE_GUIDE
 
 
 def dialogue_guide(hosts) -> str:
@@ -97,13 +99,15 @@ def turns_narration_inputs(draft: dict, hosts) -> list[dict]:
             for turn in draft["turns"]]
 
 
-def validate_dialogue(draft: dict, source: dict, hosts) -> None:
+def validate_dialogue_contract(draft: dict, source: dict, hosts) -> None:
+    """Validate spoken structure and attribution, without needing private source text."""
     if set(draft) != set(DIALOGUE_SCHEMA["required"]):
         raise ValueError("Dialogue draft has unexpected fields")
     for field, low, high in [("title", 10, 120), ("dek", 10, 220), ("caveat", 10, 1800)]:
         value = draft[field]
         if not isinstance(value, str) or not low <= len(value) <= high:
             raise ValueError("Invalid " + field)
+    validate_episode_title(draft["title"], source["title"])
     turns = draft["turns"]
     if not isinstance(turns, list) or not 6 <= len(turns) <= 60:
         raise ValueError("Dialogue must have between 6 and 60 turns")
@@ -141,13 +145,22 @@ def validate_dialogue(draft: dict, source: dict, hosts) -> None:
     for host in hosts:
         if provenance_text(host.sign_off).casefold() not in closing:
             raise ValueError("The dialogue must close with the sign-off: " + host.sign_off)
+        for turn in turns:
+            if (provenance_text(host.sign_off).casefold() in provenance_text(turn["text"]).casefold()
+                    and turn["speaker"] != host.name):
+                raise ValueError("A sign-off must be spoken by its own presenter: " + host.name)
     if not isinstance(draft["claims"], list) or not 1 <= len(draft["claims"]) <= 15:
         raise ValueError("Claim evidence is required")
-    normalized = provenance_text(source["text"])
     for claim in draft["claims"]:
         if not isinstance(claim, dict) or set(claim) != {"claim", "quote"}:
             raise ValueError("Invalid claim format")
         if not all(isinstance(claim[key], str) and len(claim[key]) >= 15 for key in ("claim", "quote")):
             raise ValueError("Empty or insufficient evidence")
+
+
+def validate_dialogue(draft: dict, source: dict, hosts) -> None:
+    validate_dialogue_contract(draft, source, hosts)
+    normalized = provenance_text(source["text"])
+    for claim in draft["claims"]:
         if not quotes_in_source(claim["quote"], normalized):
             raise ValueError("Evidence quote not found in original source")

@@ -108,5 +108,81 @@ class FeedTests(unittest.TestCase):
         self.assertEqual([s["id"] for s in feed], ["b", "a"])
 
 
+class DialogueRenderTests(unittest.TestCase):
+    def fixture(self, host='ines'):
+        from test_dialogue import build_draft, SOURCE
+        from hosts import HOSTS
+        from bundle_shows import load_cast
+        from verify import draft_fingerprint
+        draft = build_draft()
+        if host == 'jax':
+            replacements = {'Ines Marlowe': HOSTS['jax'].name, 'Dev Raman': HOSTS['kai'].name}
+            for turn in draft['turns']:
+                turn['speaker'] = replacements[turn['speaker']]
+                turn['text'] = turn['text'].replace(HOSTS['ines'].sign_off, HOSTS['jax'].sign_off).replace(HOSTS['dev'].sign_off, HOSTS['kai'].sign_off)
+            for _ in range(2):
+                draft['turns'] += [{'speaker': HOSTS[h].name, 'text': HOSTS[h].sign_off} for h in ['benny', 'chase']]
+        return ({'host': host, 'show': HOSTS[host].show, 'draft': draft, 'source': SOURCE,
+                 'verification': {'pass': True, 'draft_sha256': draft_fingerprint(draft)}}, load_cast(ROOT / 'tools/tts/voice_cast.json'))
+
+    def test_two_and_four_host_audio_offsets_and_payload(self):
+        from bundle_shows import narration_inputs, render_turns, wav_duration, SR, TURN_GAP
+        for host, count in [('ines', 2), ('jax', 4)]:
+            with self.subTest(host=host), tempfile.TemporaryDirectory() as tmp:
+                artifact, cast = self.fixture(host)
+                inputs = narration_inputs(artifact, cast)
+                calls = []
+                def synthesize(text, voice, speed):
+                    calls.append((text, voice))
+                    return [0.1] * (SR if len(calls) % 2 else SR * 2)
+                wav = Path(tmp) / 'dialogue.wav'
+                paragraphs = render_turns(inputs, wav, 1, render=synthesize)
+                duration = wav_duration(wav)
+                payload = story_for(artifact, duration, '2026-09-22', paragraphs=paragraphs)
+                self.assertEqual(len(set(v for _, v in calls)), count)
+                self.assertEqual([text for text, _ in calls], [t['text'] for t in artifact['draft']['turns']])
+                self.assertEqual(len(payload['story']['hostIDs']), count)
+                self.assertEqual(payload['story']['turns'], artifact['draft']['turns'])
+                offset = 0
+                for i, paragraph in enumerate(paragraphs):
+                    turn_duration = 1 if i % 2 == 0 else 2
+                    self.assertAlmostEqual(paragraph['words'][0]['start'], offset, places=3)
+                    self.assertLess(paragraph['words'][-1]['start'], offset + turn_duration)
+                    self.assertEqual(paragraph['speaker'], inputs[i]['speaker'])
+                    self.assertEqual(paragraph['hostID'], inputs[i]['host'])
+                    offset += turn_duration + TURN_GAP
+                self.assertAlmostEqual(duration, offset - TURN_GAP)
+                self.assertTrue(envelope_wav(wav))
+
+    def test_rejects_unverified_unknown_and_missing_voices(self):
+        from bundle_shows import narration_inputs
+        artifact, cast = self.fixture()
+        artifact['verification']['pass'] = False
+        with self.assertRaisesRegex(ValueError, 'verification'):
+            narration_inputs(artifact, cast)
+        artifact['verification']['pass'] = True
+        with self.assertRaisesRegex(ValueError, 'Missing voice'):
+            narration_inputs(artifact, {k: v for k, v in cast.items() if k != 'dev'})
+        cast['dev']['voice'] = cast['ines']['voice']
+        with self.assertRaisesRegex(ValueError, 'distinct'):
+            narration_inputs(artifact, cast)
+        artifact['draft']['turns'][0]['speaker'] = 'Unknown'
+        with self.assertRaisesRegex(ValueError, 'speaker'):
+            narration_inputs(artifact, cast)
+
+    def test_edited_script_cannot_reuse_approval(self):
+        from bundle_shows import narration_inputs
+        artifact, cast = self.fixture()
+        artifact['draft']['turns'][1]['text'] += ' A new sentence.'
+        with self.assertRaisesRegex(ValueError, 'stale'):
+            narration_inputs(artifact, cast)
+
+    def test_empty_audio_fails(self):
+        from bundle_shows import render_turns
+        with tempfile.TemporaryDirectory() as tmp, self.assertRaisesRegex(ValueError, 'empty'):
+            render_turns([{'text': 'Hello.', 'voice': 'af_alloy'}], Path(tmp) / 'bad.wav', 1,
+                         render=lambda *args: [])
+
+
 if __name__ == "__main__":
     unittest.main()

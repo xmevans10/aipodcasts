@@ -77,6 +77,13 @@ class DialogueValidationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "sign-off"):
             validate_dialogue(draft, SOURCE, duo)
 
+    def test_rejects_another_presenters_sign_off(self):
+        draft = build_draft()
+        draft["turns"][2]["text"] = draft["turns"][2]["text"].replace(HOSTS["ines"].sign_off, "")
+        draft["turns"][-1]["text"] += " " + HOSTS["ines"].sign_off
+        with self.assertRaisesRegex(ValueError, "own presenter"):
+            validate_dialogue(draft, SOURCE, dialogue_hosts("ines"))
+
     def test_rejects_paraphrased_quote(self):
         duo = dialogue_hosts("ines")
         draft = build_draft()

@@ -194,6 +194,16 @@ private func testDialogueFields() {
     checkEqual(decoded.turns?.first?.speaker, "Ines Marlowe", "a turn keeps its speaker")
     checkEqual(decoded.hostIDs, ["ines", "dev"], "co-hosts decode")
     checkEqual(decoded.show.id, "ground-truth", "a co-hosted story resolves its show")
+    let paragraphs = """
+    [{"words":[{"text":"Hello.","start":0}]},{"speaker":"Dev Raman","hostID":"dev","words":[{"text":"Hi.","start":1.18}]}]
+    """.data(using: .utf8)!
+    let timed = try! JSONDecoder().decode([TranscriptParagraph].self, from: paragraphs)
+    checkEqual(timed[0].speaker, nil, "legacy solo paragraphs decode without speakers")
+    checkEqual(timed[1].speaker, "Dev Raman", "read-along preserves speaker attribution")
+    checkEqual(timed[1].hostID, "dev", "read-along preserves stable host id")
+    checkEqual(timed[1].words[0].start, 1.18, "read-along preserves absolute turn offset")
+    checkEqual(try! JSONDecoder().decode([TranscriptParagraph].self, from: JSONEncoder().encode(timed)),
+               timed, "speaker paragraphs round-trip without loss")
 }
 
 // MARK: - cover layout

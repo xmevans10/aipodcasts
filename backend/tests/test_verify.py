@@ -34,6 +34,16 @@ class VerifyTests(unittest.TestCase):
         self.assertFalse(report["pass"])
         self.assertTrue(any("numbers_not_in_evidence" in f for f in report["failures"]))
 
+    def test_grouped_source_numbers_match_spoken_digits(self):
+        self.assertEqual(numeric_fidelity("137,592 labels", "137 592 labels"), [])
+        self.assertEqual(numeric_fidelity("137,592 labels", "137\u202f592 labels"), [])
+        self.assertEqual(numeric_fidelity("137,593 labels", "137 592 labels"), ["137593"])
+
+    def test_required_paper_title_numbers_are_evidence(self):
+        source, packet, draft = fixtures(body="Ultrahigh resolution 19F and 31P NMR spectroscopy.")
+        packet["source_title"] = "Ultrahigh resolution 19F and 31P NMR spectroscopy"
+        self.assertTrue(verify_draft(draft, source, packet, FakeDecider(0.95))["pass"])
+
     def test_missing_quote_fails(self):
         source, packet, draft = fixtures(quote="Bananas orbit the Moon")
         report = verify_draft(draft, source, packet, FakeDecider(0.99))

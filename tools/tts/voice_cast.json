@@ -17,8 +17,8 @@
   "freya":   { "voice": "bf_lily",     "accent": "UK", "gender": "F", "name": "Dr. Freya Lindqvist",    "show": "Old Bones",     "line": "I'm Freya Lindqvist. Old Bones. Deep time, read from a fragment." },
   "ines":    { "voice": "af_alloy",    "accent": "US", "gender": "F", "name": "Ines Marlowe",           "show": "Ground Truth",  "line": "I'm Ines Marlowe. Ground Truth. Check the method." },
   "dev":     { "voice": "am_liam",     "accent": "US", "gender": "M", "name": "Dev Raman",              "show": "Ground Truth",  "line": "I'm Dev Raman. Ground Truth. Keep asking what it changes." },
-  "jax":     { "voice": "am_adam",     "accent": "US", "gender": "M", "name": "Jax Moreno",             "show": "Star Bros",     "line": "I'm Jax Moreno. Star Bros. The universe is rude and I love it." },
-  "kai":     { "voice": "am_onyx",     "accent": "US", "gender": "M", "name": "Kai Nakamura",           "show": "Star Bros",     "line": "I'm Kai Nakamura. Star Bros. Check the assumptions." },
-  "benny":   { "voice": "bm_fable",    "accent": "UK", "gender": "M", "name": "Benny Osei",             "show": "Star Bros",     "line": "I'm Benny Osei. Star Bros. Stay curious about the dark." },
-  "chase":   { "voice": "bm_daniel",   "accent": "UK", "gender": "M", "name": "Chase Delacroix",        "show": "Star Bros",     "line": "I'm Chase Delacroix. Star Bros. Look it up." }
+  "jax":     { "voice": "am_adam",     "accent": "US", "gender": "M", "name": "Jackson \"Jax\" Ruiz",             "show": "Star Bros",     "line": "I'm Jax Ruiz. Look up — isn't that wild?" },
+  "kai":     { "voice": "am_onyx",     "accent": "US", "gender": "M", "name": "Kai Nakamura",           "show": "Star Bros",     "line": "I'm Kai Nakamura. Show me the error bars." },
+  "benny":   { "voice": "bm_fable",    "accent": "UK", "gender": "M", "name": "Benny Ortiz",             "show": "Star Bros",     "line": "I'm Benny Ortiz. Same sky, bigger questions." },
+  "chase":   { "voice": "bm_daniel",   "accent": "UK", "gender": "M", "name": "Chase Whitaker",        "show": "Star Bros",     "line": "I'm Chase Whitaker. Check the numbers — I did." }
 }

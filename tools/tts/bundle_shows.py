@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """Render the weekly transcripts to audio with Kokoro and bundle them for the app.
 
-Solo shows only, for now. Each host keeps its distinct Kokoro-82M fixed voicepack from
-tools/tts/voice_cast.json (Apache-2.0 code and weights; no cloning, no key, no consent).
-Co-hosted shows (Ground Truth, Star Bros) are deferred until multi-speaker narration is
-settled, so they are skipped rather than half-rendered.
+Solo and co-hosted shows use stable per-presenter Kokoro voicepacks (Apache-2.0).
+Dialogue is rendered turn by turn; word times are estimated within each measured turn,
+then offset into the final audio. No speaker labels are spoken aloud.
 
-For each show it writes ios/Zwicky/Episodes/<slug>.m4a plus <slug>.json in the shape the
+For each show it writes <episode-id>.m4a plus <episode-id>.json in the output directory in the shape the
 app's BundledEpisode decoder expects (story, duration, word-timed transcript, envelope),
 and refreshes Episodes/index.json. Word timings are distributed by word length across the
 real audio duration, since Kokoro reads the exact reviewed script.
@@ -28,6 +27,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "backend"))
 from envelope import HOP, envelope_wav  # noqa: E402
+from podcast import validate_podcast
+from verify import draft_fingerprint
+from dialogue import turns_body, turns_narration_inputs, validate_dialogue_contract
 from hosts import HOSTS, dialogue_hosts  # noqa: E402
 
 SR = 24000
@@ -72,12 +74,12 @@ def https(url: str, doi: str = "") -> str:
     return url
 
 
-def story_for(transcript: dict, duration: float, published: str, episode: str = None) -> dict:
+def story_for(transcript: dict, duration: float, published: str, episode: str = None, paragraphs: list | None = None) -> dict:
     """Build the app Story + transcript payload from one full-run transcript artifact."""
     draft, source = transcript["draft"], transcript["source"]
     host = transcript["host"]
     name = episode or slug(transcript["show"])
-    body = draft["body"].strip()
+    body = turns_body(draft) if "turns" in draft else draft["body"].strip()
     words = body.split()
     starts = timings(words, duration)
     meta = HOSTS.get(host)
@@ -101,9 +103,11 @@ def story_for(transcript: dict, duration: float, published: str, episode: str = 
             "audioURL": "bundle:" + name + ".m4a",
             "isDemo": False,
             "published": published,
+            **({"turns": draft["turns"], "hostIDs": [h.id for h in dialogue_hosts(host)]}
+               if "turns" in draft else {}),
         },
         "duration": round(duration, 2),
-        "transcript": [{"words": [{"text": w, "start": s} for w, s in zip(words, starts)]}],
+        "transcript": paragraphs if paragraphs is not None else [{"words": [{"text": w, "start": s} for w, s in zip(words, starts)]}],
         "levelHop": HOP,
     }
 
@@ -140,7 +144,71 @@ def render_kokoro(text: str, voice: str, speed: float):
     if language not in _PIPELINES:
         _PIPELINES[language] = KPipeline(lang_code=language)
     chunks = [audio for _, _, audio in _PIPELINES[language](text, voice=voice, speed=speed)]
-    return np.concatenate(chunks) if chunks else np.zeros(SR, dtype="float32")
+    if not chunks:
+        raise ValueError("Kokoro returned no audio")
+    return np.concatenate(chunks)
+
+
+TURN_GAP = 0.18
+
+
+def narration_inputs(transcript: dict, cast: dict) -> list[dict]:
+    """Preflight every turn before synthesis; never silently drop a speaker/show."""
+    host = transcript["host"]
+    hosts = dialogue_hosts(host)
+    if hosts:
+        validate_dialogue_contract(transcript["draft"], transcript["source"], hosts)
+        inputs = turns_narration_inputs(transcript["draft"], hosts)
+    else:
+        validate_podcast(transcript["draft"], transcript["source"], HOSTS[host])
+        inputs = [{"host": host, "text": transcript["draft"]["body"].strip()}]
+    report = transcript.get("verification") or {}
+    if report.get("pass") is not True:
+        raise ValueError(f"{transcript['show']}: script has not passed evidence verification")
+    if report.get("draft_sha256") != draft_fingerprint(transcript["draft"]):
+        raise ValueError(f"{transcript['show']}: verification is stale; reverify the edited script")
+    for item in inputs:
+        voice = (cast.get(item["host"]) or {}).get("voice")
+        if not voice or not item["text"].strip():
+            raise ValueError(f"Missing voice or text for {item['host']}")
+        item["voice"] = voice
+    voices = [cast[h]["voice"] for h in dict.fromkeys(i["host"] for i in inputs)]
+    if len(voices) != len(set(voices)):
+        raise ValueError("Each presenter must have a distinct voice")
+    return inputs
+
+
+def render_turns(inputs: list[dict], wav: Path, speed: float, render=None) -> list[dict]:
+    """Write mono PCM and anchor each paragraph to its actual sample offset."""
+    import array
+    import math
+    render = render or render_kokoro
+    paragraphs, offset = [], 0
+    with wave.open(str(wav), "wb") as stream:
+        stream.setnchannels(1)
+        stream.setsampwidth(2)
+        stream.setframerate(SR)
+        for index, item in enumerate(inputs):
+            audio = render(item["text"], item["voice"], speed)
+            if len(audio) == 0 or not all(math.isfinite(float(v)) for v in audio):
+                raise ValueError("Narration returned empty or non-finite audio")
+            if index:
+                gap = round(TURN_GAP * SR)
+                stream.writeframes(b"\0\0" * gap)
+                offset += gap
+            words = item["text"].split()
+            starts = timings(words, len(audio) / SR)
+            paragraph = {"words": [{"text": w, "start": round(offset / SR + t, 3)}
+                                   for w, t in zip(words, starts)]}
+            if "speaker" in item:
+                paragraph.update(speaker=item["speaker"], hostID=item["host"])
+            paragraphs.append(paragraph)
+            pcm = array.array("h", (round(max(-1, min(1, float(v))) * 32767) for v in audio))
+            if sys.byteorder != "little":
+                pcm.byteswap()
+            stream.writeframes(pcm.tobytes())
+            offset += len(audio)
+    return paragraphs
 
 
 def main() -> None:
@@ -150,6 +218,7 @@ def main() -> None:
     parser.add_argument("--voices", default=str(ROOT / "tools/tts/voice_cast.json"))
     parser.add_argument("--date", default="")
     parser.add_argument("--speed", type=float, default=1.0)
+    parser.add_argument("--require-all-shows", action="store_true", help="fail before rendering unless all 16 shows are present")
     args = parser.parse_args()
 
     import datetime as dt
@@ -159,25 +228,27 @@ def main() -> None:
     out.mkdir(parents=True, exist_ok=True)
     legacy = sorted(p.stem for p in out.glob("*.json") if p.stem != "index")
 
-    rendered, skipped = [], []
+    jobs = []
     for path in sorted(Path(args.transcripts).glob("*.json")):
         transcript = json.loads(path.read_text())
-        host = transcript.get("host", "")
-        if dialogue_hosts(host):
-            skipped.append(f"{transcript['show']} (co-hosted: deferred)")
-            continue
-        voice = (cast.get(host) or {}).get("voice")
-        if not voice:
-            skipped.append(f"{transcript['show']} (no cast voice for {host})")
-            continue
+        jobs.append((transcript, narration_inputs(transcript, cast)))
+    if not jobs:
+        raise ValueError("No transcript artifacts found")
+
+    if args.require_all_shows:
+        expected = {host.show for host in HOSTS.values()}
+        actual = {transcript["show"] for transcript, _ in jobs}
+        if actual != expected:
+            raise ValueError(f"Incomplete show batch: missing {sorted(expected - actual)}, unknown {sorted(actual - expected)}")
+
+    rendered = []
+    for transcript, inputs in jobs:
         name = episode_key(published, transcript.get("doi", ""), transcript["show"])
         wav = out / f"{name}.wav"
-        print(f"rendering {transcript['show']} -> {name} voice={voice} ...", flush=True)
-        import soundfile as sf
-        audio = render_kokoro(transcript["draft"]["body"].strip(), voice, args.speed)
-        sf.write(str(wav), audio, SR)
+        print(f"rendering {transcript['show']} -> {name} ({len(inputs)} turns) ...", flush=True)
+        paragraphs = render_turns(inputs, wav, args.speed)
         duration = wav_duration(wav)
-        payload = story_for(transcript, duration, published, episode=name)
+        payload = story_for(transcript, duration, published, episode=name, paragraphs=paragraphs)
         payload["levels"] = envelope_wav(wav)
         to_m4a(wav, out / f"{name}.m4a")
         wav.unlink()
@@ -188,8 +259,6 @@ def main() -> None:
     index = sorted(set(legacy) | set(rendered))
     (out / "index.json").write_text(json.dumps(index, indent=2) + "\n")
     print(f"bundled {len(rendered)} episode(s); index has {len(index)}")
-    for note in skipped:
-        print("  skipped:", note)
 
 
 if __name__ == "__main__":

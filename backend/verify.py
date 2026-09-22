@@ -196,7 +196,10 @@ def decider(mode: str = "auto") -> Decider:
 def hard_numbers(text: str) -> set[str]:
     """Numbers worth checking: 2+ digits or a decimal. Single digits are prose, not data."""
     found = set()
-    for match in NUMBER.findall(text or ""):
+    # Scientific PDFs often use spaces (including thin/NBSP) for digit grouping.
+    text = re.sub(r"(?<![\d.])\d{1,3}(?:[ \u00a0\u202f]\d{3})+(?!\d)",
+                  lambda m: re.sub(r"\s", "", m.group()), text or "")
+    for match in NUMBER.findall(text):
         token = match.replace(",", "")
         if len(token.replace(".", "")) >= 2:
             found.add(token)
@@ -214,6 +217,11 @@ def _text_of(draft: dict) -> str:
     return " ".join(str(draft.get(field, "")) for field in ("title", "dek", "body", "caveat"))
 
 
+def draft_fingerprint(draft: dict) -> str:
+    """Bind editorial approval to the exact script that will be rendered."""
+    return hashlib.sha256(json.dumps(draft, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
+
 def verify_draft(draft: dict, source: dict, packet: dict, decider_: Decider,
                  caveats: list | None = None) -> dict:
     failures: list[str] = []
@@ -227,7 +235,9 @@ def verify_draft(draft: dict, source: dict, packet: dict, decider_: Decider,
     if missing_quotes:
         failures.append(f"quote_not_in_source: {missing_quotes}")
     from evidence import evidence_text
-    missing_numbers = numeric_fidelity(_text_of(draft), evidence_text(packet))
+    # The exact paper title must be spoken, including isotope numbers etc.
+    numeric_source = evidence_text(packet) + "\n" + packet.get("source_title", "")
+    missing_numbers = numeric_fidelity(_text_of(draft), numeric_source)
     if missing_numbers:
         failures.append(f"numbers_not_in_evidence: {missing_numbers}")
     notes["claims_checked"] = len(claims)
@@ -278,6 +288,7 @@ def verify_draft(draft: dict, source: dict, packet: dict, decider_: Decider,
 
     report = {
         "pass": not failures,
+        "draft_sha256": draft_fingerprint(draft),
         "failures": failures,
         "backend": decider_.name,
         "evidence_sha256": hashlib.sha256(evidence_text(packet).encode()).hexdigest()[:16],

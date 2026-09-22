@@ -40,8 +40,8 @@ class HostPersonalityTests(unittest.TestCase):
 
     def test_sign_off_is_required_in_the_closing(self):
         source = {'title': 'A paper', 'attribution': 'Ada Lovelace, others'}
-        body = ('A paper by Ada Lovelace and colleagues. ' * 5) + 'Limitations apply here. ' + HOSTS['ada'].sign_off
-        draft = {'title': 'A paper', 'dek': 'd', 'body': body, 'caveat': 'Limitations apply here.', 'claims': []}
+        body = 'A clearer picture. ' + ('A paper by Ada Lovelace and colleagues. ' * 5) + 'Limitations apply here. ' + HOSTS['ada'].sign_off
+        draft = {'title': 'A clearer picture', 'dek': 'd', 'body': body, 'caveat': 'Limitations apply here.', 'claims': []}
         validate_podcast(draft, source, HOSTS['ada'])
         draft['body'] = body.replace(HOSTS['ada'].sign_off, "That's all for today.")
         with self.assertRaises(ValueError):

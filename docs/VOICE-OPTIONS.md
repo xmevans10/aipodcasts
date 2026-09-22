@@ -1,7 +1,7 @@
 # Voice options for Zwicky
 
 Decision record for synthetic narration, written after adding the two-host show
-(Ground Truth: Ines Marlowe and Dev Raman). Current baseline is ElevenLabs.
+(Ground Truth: Ines Marlowe and Dev Raman). Production uses the free Kokoro cast; ElevenLabs remains an optional provider.
 
 ## What ElevenLabs actually offers
 
@@ -27,7 +27,7 @@ Commercial-use licenses are marked. Popularity is a rough tie-breaker.
 | **Higgs Audio v2** | [boson-ai/higgs-audio](https://github.com/boson-ai/higgs-audio) | Community (commercial under 100k users) | Yes | **Yes** | Only self-hosted option with cloning **and** native multi-speaker; wants ≥24GB VRAM |
 | **Dia2** | [nari-labs/dia2](https://github.com/nari-labs/dia2) | **Apache-2.0** | Yes | **Yes** | Native `[S1]/[S2]` dialogue; English-only; lower fidelity than the top tier |
 | **VoxCPM2** | [openbmb/VoxCPM2](https://huggingface.co/openbmb/VoxCPM2) | **Apache-2.0** | Yes | No | 48kHz, style prompts, ~8GB VRAM |
-| **Kokoro-82M** | [hexgrad/kokoro](https://github.com/hexgrad/kokoro) | Apache-2.0 | **No** | No | Tiny and fast, but no cloning — cannot voice our hosts |
+| **Kokoro-82M** | [hexgrad/kokoro](https://github.com/hexgrad/kokoro) | Apache-2.0 | **No** | No | Tiny and fast; stable preset voices assigned per host |
 | XTTS-v2 / F5-TTS / Fish S2 / Higgs v3 | — | **non-commercial** | — | — | Excluded on license |
 
 ## Cheaper commercial APIs
@@ -56,9 +56,9 @@ out-of-distribution text.
 
 ## Recommendation
 
-1. **Primary (current):** ElevenLabs Text to Dialogue with two licensed voice IDs
-   and `ELEVENLABS_DIALOGUE_MODEL=eleven_v3`. Keep the provider seam below.
-2. **Free cast (implemented):** Kokoro-82M with the 20-voice cast above — no key, no cost.
+1. **Production:** Kokoro-82M with the 20-voice cast above. Render co-hosted shows
+   turn by turn with the same fixed voices, with no narration key or paid service.
+2. **Optional:** ElevenLabs Text to Dialogue with licensed voice IDs.
 3. **Free cloning path:** **Chatterbox** (MIT) with a short reference clip per host,
    generating each turn and stitching by speaker — the harness already exposes
    `turns_narration_inputs()` to drive this. Runs on Apple Silicon via MPS.
@@ -72,12 +72,22 @@ audio); the real decisions are **licensing and voice consistency**, not GPU spen
 
 ## Production path (implemented)
 
-Solo shows render with **Kokoro directly** — no cloning step. `tools/tts/bundle_shows.py`
-reads the weekly transcripts, synthesises each host's distinct voice, and writes app-ready
-`ios/Zwicky/Episodes/<slug>.{json,m4a}` plus `index.json`. It runs in
-`.github/workflows/render-episodes.yml` (manual, or when transcripts change) and, once repo
-secrets exist, as the `episodes` job of `full-run.yml`. **Co-hosted shows (Ground Truth,
-Star Bros) are deferred** until multi-speaker narration is settled; the script skips them.
+All 16 shows render with **Kokoro directly** — no cloning step. The
+[model card](https://huggingface.co/hexgrad/Kokoro-82M) documents Apache-2.0 weights.
+`tools/tts/bundle_shows.py` resolves each dialogue speaker through `backend/hosts.py`
+and selects its stable voice by host ID from `voice_cast.json`. Each turn is synthesized
+separately, with a 180 ms pause between turns. Paragraph word starts are estimated
+within the measured turn duration and offset by the exact sample count, including pauses.
+These are approximate word timings; forced alignment remains milestone 3.
+
+Both rendering workflows write a clean `build/episodes/` batch, require all 16 shows,
+and publish audio, speaker-labelled sidecars and the feed to R2 when configured.
+Every script must pass verification for its current content hash before any synthesis;
+a failed, missing or stale approval aborts the batch without replacing the live feed.
+Dialogue validation also requires every presenter to speak their own sign-off.
+
+The iOS read-along shows the speaker above each turn and seeks/highlights using the
+absolute word times. Legacy solo sidecars without speaker fields remain compatible.
 
 ## Provider seam (implemented)
 

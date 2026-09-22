@@ -1,8 +1,8 @@
 name: render-episodes
 
 # Render committed transcripts into app-ready episodes with the free Kokoro cast
-# (Apache-2.0, one distinct voice per host; no key, no cloning). Solo shows only;
-# co-hosted shows are deferred until multi-speaker narration is settled. The bundled
+# (Apache-2.0, one distinct voice per host; no key, no cloning). Co-hosted shows
+# render each validated speaker turn with its own voice. The bundled
 # Episodes/ output is uploaded as an artifact to drop into ios/Zwicky/Episodes.
 on:
   workflow_dispatch:
@@ -16,6 +16,8 @@ on:
       - "experiments/full-run/latest/**"
       - "tools/tts/bundle_shows.py"
       - "tools/tts/voice_cast.json"
+      - "backend/dialogue.py"
+      - "backend/hosts.py"
       - ".github/workflows/render-episodes.yml"
 
 jobs:
@@ -58,14 +60,14 @@ jobs:
         run: |
           python3 tools/tts/bundle_shows.py \
             --transcripts "${{ inputs.transcripts || 'experiments/full-run/latest/transcripts' }}" \
-            --out ios/Zwicky/Episodes
+            --out build/episodes --require-all-shows
 
       - name: Upload bundled episodes
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: bundled-episodes
-          path: ios/Zwicky/Episodes/
+          path: build/episodes/
           if-no-files-found: warn
           retention-days: 90
 
@@ -73,4 +75,4 @@ jobs:
         if: env.R2_BUCKET != ''
         run: |
           python -m pip install boto3
-          python3 tools/publish_feed.py --episodes ios/Zwicky/Episodes
+          python3 tools/publish_feed.py --episodes build/episodes

@@ -47,3 +47,15 @@ Three directed episodes are in [`demos/three-hosts-2026-09-17`](demos/three-host
 Zwicky is a platform for four shows, each with its own host: **The Long View** (Mira Vale, space), **Wild Company** (Clara Rowan, nature), **Signal & Noise** (Elias Reed, brain and technology) and **Common Ground** (Theo Mercer, Earth; sample only). Five tabs: **Home** (your shows as cards, continue listening, latest episodes, listening stats), **Browse** (search shows and episodes), **Hosts** (each presenter, their show and how they work), **Library** (followed shows, queue, saved / in progress / played) and **You** (daily goal ring, a week of listening minutes, totals, following and settings). Onboarding is four steps: what this is, pick shows, set a daily goal, play a first episode.
 
 The three voiced episodes ship inside the app (`ios/Zwicky/Episodes`, built by [`backend/bundle_episodes.py`](backend/bundle_episodes.py)). **Read along** opens a transcript set in Charter that highlights each word as it is spoken, follows the narrator and plays from any tapped paragraph; word timings come from ElevenLabs Scribe on the final mix, aligned onto the reviewed script. Host portraits are DiceBear "Notionists" illustrations (CC0). Design notes: [docs/DESIGN.md](docs/DESIGN.md).
+
+### Production narration and episode titles
+
+The weekly and manual render workflows support all 16 shows with the fixed Kokoro cast.
+Ground Truth and Star Bros render each speaker turn separately; sidecars carry speaker
+names, host IDs, approximate word times anchored to each turn, and the final audio envelope.
+See [voice options](docs/VOICE-OPTIONS.md) for the production path and timing limitations.
+A missing, failed or stale script approval stops rendering before publication.
+
+`backend/podcast.py` owns the shared title-writing guide used by solo and dialogue drafts:
+short, specific listener hooks, with a 72-character/12-word ceiling and no copied paper titles.
+Exact paper titles, authors, evidence quotes and limitations remain required separately.

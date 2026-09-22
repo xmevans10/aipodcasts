@@ -28,10 +28,10 @@ struct Host: Identifiable, Codable, Hashable {
         Host(id: "freya", name: "Dr. Freya Lindqvist", niche: "Ancient DNA", personality: "Deep time, read from a fragment of bone.", symbol: "fossil.shell", hue: 0.36),
         Host(id: "ines", name: "Ines Marlowe", niche: "Methods & evidence", personality: "Precise, gently sceptical, always checking the method.", symbol: "checkmark.seal", hue: 0.00),
         Host(id: "dev", name: "Dev Raman", niche: "Methods & evidence", personality: "Warm translator from a result to what it changes.", symbol: "text.bubble", hue: 0.41),
-        Host(id: "jax", name: "Jax Moreno", niche: "Astrophysics", personality: "Loud questions, quick jokes, real science.", symbol: "star", hue: 0.72),
+        Host(id: "jax", name: "Jackson \"Jax\" Ruiz", niche: "Astrophysics", personality: "Loud questions, quick jokes, real science.", symbol: "star", hue: 0.72),
         Host(id: "kai", name: "Kai Nakamura", niche: "Astrophysics", personality: "The quiet one who does the maths.", symbol: "function", hue: 0.20),
-        Host(id: "benny", name: "Benny Osei", niche: "Astrophysics", personality: "Allergic to a boring comparison.", symbol: "flame", hue: 0.88),
-        Host(id: "chase", name: "Chase Delacroix", niche: "Astrophysics", personality: "The sceptic with the best punchlines.", symbol: "star.fill", hue: 0.96)
+        Host(id: "benny", name: "Benny Ortiz", niche: "Astrophysics", personality: "Allergic to a boring comparison.", symbol: "flame", hue: 0.88),
+        Host(id: "chase", name: "Chase Whitaker", niche: "Astrophysics", personality: "The sceptic with the best punchlines.", symbol: "star.fill", hue: 0.96)
     ]
 }
 /// A show may be fronted by one host or a small cast; `id` is a stable slug.
@@ -187,7 +187,11 @@ struct Story: Identifiable, Codable, Hashable {
 }
 
 struct TranscriptWord: Codable, Hashable { let text: String; let start: Double }
-struct TranscriptParagraph: Codable, Hashable { let words: [TranscriptWord] }
+struct TranscriptParagraph: Codable, Hashable {
+    let words: [TranscriptWord]
+    var speaker: String? = nil
+    var hostID: String? = nil
+}
 struct BundledEpisode: Codable {
     let story: Story
     let duration: Double

@@ -14,12 +14,17 @@ struct TranscriptView: View {
     private static let bodyFont = Theme.reading(21)
     private static let titleFont = Font.custom("Charter", size: 31, relativeTo: .title).weight(.bold)
 
+    private var presenterNames: String {
+        (story.hostIDs ?? [story.hostID]).compactMap { id in Host.all.first { $0.id == id }?.name }
+            .joined(separator: ", ")
+    }
+
     var body: some View {
         let active = activeParagraph(at: now)
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
-                    HStack(spacing: 8) { HostAvatar(host: story.host, size: 24); Text("\(story.show.title) · \(story.host.name)").font(.subheadline).foregroundStyle(Theme.secondary) }
+                    HStack(spacing: 8) { HostAvatar(host: story.host, size: 24); Text("\(story.show.title) · \(presenterNames)").font(.subheadline).foregroundStyle(Theme.secondary) }
                     Text(story.title).font(Self.titleFont).foregroundStyle(Theme.ink).accessibilityAddTraits(.isHeader)
                     ForEach(paragraphs.indices, id: \.self) { index in
                         Text(attributed(paragraphs[index], active: index == active))
@@ -96,6 +101,12 @@ struct TranscriptView: View {
     private func attributed(_ paragraph: TranscriptParagraph, active: Bool) -> AttributedString {
         let spokenCount = paragraph.words.lastIndex { $0.start <= now }.map { $0 + 1 } ?? 0
         var result = AttributedString()
+        if let speaker = paragraph.speaker {
+            var label = AttributedString(speaker + "\n")
+            label.font = .caption.weight(.semibold)
+            label.foregroundColor = active ? Theme.ink : Theme.secondary
+            result += label
+        }
         for (index, word) in paragraph.words.enumerated() {
             var piece = AttributedString(word.text)
             let spoken = index < spokenCount

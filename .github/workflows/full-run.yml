@@ -58,8 +58,8 @@ jobs:
           retention-days: 90
 
   # Turn the weekly transcripts into app-ready episodes with the free Kokoro cast
-  # (Apache-2.0, one distinct voice per host). Solo shows only; co-hosted shows are
-  # deferred until multi-speaker narration is settled. No key, no cloning.
+  # (Apache-2.0, one distinct voice per host). Co-hosted dialogue is spliced by turn.
+  # No key, no cloning.
   episodes:
     needs: transcripts
     runs-on: ubuntu-latest
@@ -67,6 +67,12 @@ jobs:
     env:
       HF_HOME: ${{ github.workspace }}/.hf
       PYTHONUNBUFFERED: "1"
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_PUBLIC_BASE: ${{ secrets.R2_PUBLIC_BASE }}
+      R2_PREFIX: v1
     steps:
       - uses: actions/checkout@v4
 
@@ -98,14 +104,19 @@ jobs:
         run: |
           python3 tools/tts/bundle_shows.py \
             --transcripts full-run-artifacts/transcripts \
-            --out ios/Zwicky/Episodes
+            --out build/episodes --require-all-shows
 
       - name: Upload bundled episodes
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: bundled-episodes
-          path: ios/Zwicky/Episodes/
+          path: build/episodes/
           if-no-files-found: warn
           retention-days: 90
 
+      - name: Publish to R2 and write the feed
+        if: env.R2_BUCKET != ''
+        run: |
+          python -m pip install boto3
+          python3 tools/publish_feed.py --episodes build/episodes

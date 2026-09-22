@@ -7,6 +7,16 @@ class PodcastTests(unittest.TestCase):
         self.draft = {'title': 'The quiet achievement', 'caveat': 'The sample was small.',
                       'body': 'How does a leaf stay flat? Today: The quiet achievement. Kate Harline and colleagues explore this in Growth across a leaf. The sample was small. Look again at that leaf.'}
     def test_spoken_citation(self): validate_podcast(self.draft, self.source)
+    def test_paper_title_is_not_an_episode_headline(self):
+        self.draft['title'] = self.source['title']
+        with self.assertRaisesRegex(ValueError, 'listener-facing'):
+            validate_podcast(self.draft, self.source)
+
+    def test_long_headline_is_rejected(self):
+        self.draft['title'] = 'A very long technical headline ' * 4
+        with self.assertRaisesRegex(ValueError, '72 characters'):
+            validate_podcast(self.draft, self.source)
+
     def test_missing_author_is_rejected(self):
         self.draft['body'] = self.draft['body'].replace('Kate Harline', 'A scientist')
         with self.assertRaisesRegex(ValueError, 'author'): validate_podcast(self.draft, self.source)

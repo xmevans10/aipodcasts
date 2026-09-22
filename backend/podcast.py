@@ -60,9 +60,9 @@ Preserve population/species, sample size where relevant, study type, uncertainty
 and correlation versus causation. No medical recommendations. Do not turn a model
 result into a direct experimental observation or a single study into consensus.
 Provide 3–8 key scientific claims with exact supporting quotations from supplied
-paragraphs in claims. Quote verbatim. If you omit words inside a quotation, join
-the exact retained fragments with an ellipsis (...); never paraphrase inside a
-quote. Those quotes are internal review evidence, never read aloud.
+paragraphs in claims. Copy each quote as one short, contiguous span of source text,
+character for character. Do not assemble a quotation from separate fragments.
+Those quotes are internal review evidence, never read aloud.
 ''' + '\n' + TITLE_GUIDE + '\n' + contract_block()
 
 

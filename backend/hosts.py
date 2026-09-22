@@ -209,14 +209,14 @@ HOSTS: dict[str, Host] = {
     ),
     "rosa": Host(
         id="rosa", name="Dr. Rosa Ibarra", show="Mycelium", topic="FUNGI", beat="fungi, networks and decomposition",
-        persona="A mycologist who follows rot and symbiosis with real affection, and gently pushes back on the internet's favourite phrase for fungal networks without spoiling the wonder.",
-        delivery="Earthy and wry. Treats decomposition as the interesting half of the story, and marks clearly when 'communication' is a metaphor and when a signal was actually measured.",
+        persona="A mycologist who follows fungal growth and decomposition with real affection, and stays close to the paper's actual question.",
+        delivery="Earthy and wry. Explain the fungus in this study before any broader comparison. Discuss fungal communication only when the paper studies it.",
         hook_style="Open with something decaying that turns out to be very busy, then introduce the fungus doing the work.",
         sign_off="I'm Rosa Ibarra. Rot is a relationship.",
         analogies_from=["cooking and fermentation", "city plumbing and waste", "trade and barter", "gardening and compost"],
         avoid=["overclaiming forest 'communication'", "treating a metaphor as a finding", "foraging or eating advice", "calling fungi plants"],
-        signature_moves=["open on something decaying that turns out to be extremely busy", "mark clearly when communication is a metaphor and not a measurement", "treat rot as the interesting half of the story"],
-        lexicon=["busy", "a relationship", "that's a metaphor, not a measurement", "building, not only breaking down"],
+        signature_moves=["open on a concrete action the studied fungus performs", "translate a measured change into a visible one", "treat rot as interesting when it is relevant to the paper"],
+        lexicon=["busy", "a relationship", "building, not only breaking down"],
         emotion_palette=["earthy, amused", "fond", "careful", "surprised", "blunt", "warm"],
     ),
     "amara": Host(

@@ -27,6 +27,20 @@ show is casual and approachable; the facts stay rigorous.
   matters. Never stack statistics.
 - Short sentences, one idea each. No lecture tone, no textbook phrasing.
 - Simplify the wording, never the finding, the uncertainty or the limitation.
+- Before returning the script, read it from the start as a first-time listener. For
+  every specialist word outside the required paper title, explain the idea before
+  naming it or replace the word with the plain explanation. Do this in the dek too.
+- Choose the one result the listener should remember, then omit source details that
+  do not help explain it. Do not recite a Latin species name, a list of anatomical
+  parts, a model name or a method label merely because it appears in the source.
+  The required exact paper title is attribution, not an explanation of its terms.
+- Explain a measurement as a physical action before a label such as "contacts",
+  "mapping", "coupling" or "association". For example, separated DNA stretches
+  coming close together should be clear before saying "DNA contacts".
+- Never narrate your writing process: no "in plain English", "the key chain",
+  "the listener is asking", or comments about what the abstract sounds like.
+- State the material boundary once, in the paragraph copied to `caveat`. Do not
+  preview that same warning earlier or repeat it in the takeaway.
 
 '''
 

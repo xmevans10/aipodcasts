@@ -1,0 +1,72 @@
+{
+  "show": "Hive Mind",
+  "host": "amara",
+  "story_id": "f43862dcd857751fd256",
+  "doi": "10.1016/j.atech.2026.102559",
+  "requested_by": "beat",
+  "publicity_sources": [],
+  "source": {
+    "title": "Determining blooming-phase dynamics through intra-day hive-weight analysis",
+    "attribution": "José Luis Ávila-Jiménez, Francisco J. Rodriguez-Lozano, Manuel Ortíz-López, Hector Martínez, Jose M. Flores",
+    "journal": "Smart Agricultural Technology",
+    "url": "https://doi.org/10.1016/j.atech.2026.102559",
+    "license": "cc-by-nc-nd",
+    "evidence_tier": "abstract",
+    "evidence_note": "Abstract-only evidence; no full-text reuse."
+  },
+  "words": 363,
+  "verification": {
+    "status": "approved",
+    "pass": true,
+    "draft_sha256": "93974763fdb73aa766143e98351a9080ee2c3e6a2834c418b43b21be13202308",
+    "reviewer": "auto-verifier:jev"
+  },
+  "draft": {
+    "title": "How a Hive’s Weight Tracks the Bloom",
+    "dek": "Fifteen hives were weighed every five minutes across two seasons to see how daily weight changes tracked flowering phases.",
+    "body": "One bee leaves the hive, finds a flower, and returns with a load that barely registers in your hand. But thousands of those small trips can make the whole hive’s weight rise and fall in a daily pattern. What can that pattern tell us about flowering?\n\nThis is the question behind “How a Hive’s Weight Tracks the Bloom.” The paper, “Determining blooming-phase dynamics through intra-day hive-weight analysis,” comes from José Luis Ávila-Jiménez and colleagues, published in Smart Agricultural Technology.\n\nThe researchers monitored fifteen hives at a research site with beehives in Córdoba over two seasons. A remote scale recorded each hive’s weight every five minutes. The team then compared the shape of those daily weight changes before flowers were in full bloom, during bloom, and after bloom.\n\nThe main result was clear: the hives’ daily weight swings were largest during the bloom phase. The average size of that swing was about three-quarters of a kilogram during bloom, compared with roughly half a kilogram before and after it. The time of day when each hive reached its maximum weight also shifted between phases.\n\nThat makes sense when you picture the colony as many small decisions adding up. Bees leave, forage, return, and sometimes stay home, while weather and available flowers change around them. The scale doesn’t identify what any one bee carried. It captures the colony’s changing balance of departures, arrivals, and stored material. It is a bit like watching traffic flow from above: the pattern can reveal a busy period even when you can’t follow every vehicle.\n\nThe researchers also compared these weight patterns with environmental conditions and bee activity. Continuous weighing picked up differences between the three flowering phases and could help monitor colonies as conditions shift.\n\nThis study followed fifteen hives at one site over two seasons. Their weight changes tracked flowering phases, but the observations do not show that flowering alone caused each change. More sites and seasons are needed to know how well the pattern holds elsewhere.\n\nSo the next time one bee returns with a tiny load, remember what the scale sees: a colony pattern emerging from countless small movements. I'm Amara Okafor. Small choices make a colony.",
+    "caveat": "This study followed fifteen hives at one site over two seasons. Their weight changes tracked flowering phases, but the observations do not show that flowering alone caused each change. More sites and seasons are needed to know how well the pattern holds elsewhere.",
+    "claims": [
+      {
+        "claim": "The study monitored fifteen hives every five minutes across two consecutive beekeeping seasons.",
+        "quote": "Hive weights were recorded every 5 minutes over two consecutive beekeeping seasons from fifteen hives (six in 2016, nine in 2017)."
+      },
+      {
+        "claim": "Daily hive-weight variation was greatest during the bloom phase.",
+        "quote": "Daily hive-weight amplitude differed significantly between blooming phases ... and was highest during the Bloom phase (0.76 ± 0.55 kg) compared with Post-bloom (0.50 ± 0.98 kg) and Pre-bloom (0.47 ± 0.26 kg)"
+      },
+      {
+        "claim": "The time of the daily maximum hive weight differed between flowering phases.",
+        "quote": "with the timing of daily maximum weight also differing significantly between phases"
+      },
+      {
+        "claim": "The analysis related daily weight patterns to flowering phases, environmental conditions, and bee activity.",
+        "quote": "The analysis examined temporal intra-day weight-variation patterns associated with pre-bloom, bloom and post-bloom phases and related daily weight variation to environmental conditions and bee activity."
+      },
+      {
+        "claim": "The exploratory findings need validation beyond one apiary and the small sample.",
+        "quote": "the small sample size and single-apiary design of this exploratory study call for validation across additional sites and seasons."
+      }
+    ]
+  },
+  "audience": {
+    "pass": true,
+    "decision": "pass",
+    "failures": [],
+    "issues": [],
+    "first_hard_sentence": "",
+    "unexplained_terms": [],
+    "beat_fit": "grounded",
+    "listener_paraphrase": {
+      "question": "Can changes in a hive’s weight reveal which phase of flowering is happening?",
+      "method": "Researchers weighed fifteen hives every five minutes at one site over two seasons, then compared the daily weight patterns before, during, and after bloom and with environmental conditions and bee activity.",
+      "finding": "Daily weight swings were largest during bloom—about three-quarters of a kilogram, compared with roughly half a kilogram before and after—and the time of maximum weight also changed.",
+      "limit": "The observations show an association, not that flowering alone caused every change. Because the study covered one site and two seasons, more locations and seasons are needed to know whether the pattern holds elsewhere."
+    },
+    "paraphrase_numbers_not_in_script": [],
+    "draft_sha256": "93974763fdb73aa766143e98351a9080ee2c3e6a2834c418b43b21be13202308",
+    "contract_version": "audience-contract-v1",
+    "review_version": "audience-review-v1",
+    "reviewer": "audience-reviewer:audience-review-v1"
+  }
+}

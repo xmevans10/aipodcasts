@@ -161,6 +161,8 @@ jobs:
 
       - name: Select two new episodes for today's release
         if: ${{ inputs.release_fresh_batch == true }}
+        env:
+          LILT_ENTERTAINMENT_RELEASE: "1"
         run: |
           mkdir -p "daily-batches/$GITHUB_RUN_ID"
           cp -R full-run-artifacts/. "daily-batches/$GITHUB_RUN_ID/"

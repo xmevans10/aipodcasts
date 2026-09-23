@@ -31,7 +31,7 @@ struct YouView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         SectionHeader(title: "Settings")
                         Button { settings = true } label: {
-                            row("gearshape", "App settings", "Feed, privacy, credits")
+                            row("gearshape", "App settings", "Episodes, privacy, credits")
                         }.buttonStyle(PressableStyle(scale: 0.98))
                         NavigationLink { QueueView() } label: {
                             row("list.bullet", "Up next", "\(player.queuedStories.count) episode\(player.queuedStories.count == 1 ? "" : "s") queued")
@@ -58,6 +58,12 @@ struct YouView: View {
                     Text(library.displayName).font(.title3.weight(.semibold)).foregroundStyle(Theme.ink)
                     Text(library.joined.map { "Listener since \($0.formatted(.dateTime.month(.abbreviated).year()))" } ?? "Local profile")
                         .font(.caption).foregroundStyle(Theme.secondary)
+                    if !library.profileBio.isEmpty {
+                        Text(library.profileBio).font(.caption).foregroundStyle(Theme.secondary).lineLimit(2)
+                    }
+                    if let show = library.favoriteShow {
+                        Text("Favorite show: \(show.title)").font(.caption).foregroundStyle(Theme.secondary)
+                    }
                 }
                 Spacer(minLength: 0)
                 Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary).accessibilityHidden(true)

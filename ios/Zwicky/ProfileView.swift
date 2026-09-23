@@ -47,10 +47,19 @@ struct ProfileView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             TextField("Display name", text: $library.profileName)
                                 .font(.headline).textInputAutocapitalization(.words)
-                            Text("Local profile · no account yet").font(.caption).foregroundStyle(Theme.secondary)
+                            Text("Your private profile on this device").font(.caption).foregroundStyle(Theme.secondary)
                         }
                     }
                     .padding(.vertical, 4)
+                    TextField("A little about you", text: $library.profileBio, axis: .vertical)
+                        .lineLimit(2...4)
+                        .onChange(of: library.profileBio) { _, value in
+                            if value.count > 160 { library.profileBio = String(value.prefix(160)) }
+                        }
+                    Picker("Favorite show", selection: $library.favoriteShowID) {
+                        Text("None").tag("")
+                        ForEach(Show.all) { show in Text(show.title).tag(show.id) }
+                    }
                 }
 
                 Section("Avatar") {
@@ -88,7 +97,7 @@ struct ProfileView: View {
 
                 Section("Listening") {
                     LabeledContent("Total minutes", value: "\(player.totalMinutes)")
-                    LabeledContent("Episodes finished", value: "\(library.history.count)")
+                    LabeledContent("Episodes finished", value: "\(player.listening.completed.count)")
                     LabeledContent("Streak", value: "\(player.streakDays) day\(player.streakDays == 1 ? "" : "s")")
                     LabeledContent("Following", value: "\(library.following.count) show\(library.following.count == 1 ? "" : "s")")
                     if let joined = library.joined {
@@ -97,7 +106,7 @@ struct ProfileView: View {
                 }
 
                 Section {
-                    Text("Your profile and listening data stay on this device. There is no account and no analytics SDK. Friends, sharing and social profiles are planned in docs/SOCIAL-PLAN.md.")
+                    Text("Your profile and listening data stay on this device. You can share episodes without an account.")
                         .font(.caption).foregroundStyle(Theme.secondary)
                 }
             }

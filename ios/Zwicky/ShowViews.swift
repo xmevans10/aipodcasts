@@ -25,8 +25,13 @@ struct ShowView: View {
                             ProgressView()
                             Text("Loading episodes…").font(.subheadline).foregroundStyle(Theme.secondary)
                         }
+                    } else if episodes.isEmpty, let error = library.error {
+                        Text(error).font(.subheadline).foregroundStyle(Theme.secondary)
+                        Button("Retry") { Task { await library.refresh() } }
+                            .disabled(library.loading)
                     } else if episodes.isEmpty {
-                        Text("The first episode is in production.").font(.subheadline).foregroundStyle(Theme.secondary)
+                        Text("No episodes from this show have been released yet.")
+                            .font(.subheadline).foregroundStyle(Theme.secondary)
                     }
                 }
                 .padding(.horizontal, 20)

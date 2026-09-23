@@ -5,6 +5,18 @@ It assumes the production backend from [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-P
 M2 (ASGI + Postgres, authenticated writes); the current stdlib read-only server has no
 accounts, sessions or write path, so every account-bearing milestone is blocked on it.
 
+## First shipped slice (23 September 2026)
+
+- The feed publisher creates a static listening page and `shareURL` for each episode.
+  `publish-share-pages` in GitHub Actions backfills existing feed entries.
+- The iOS share action sends that page URL with the episode title and summary. Older
+  entries fall back to their public audio URL until their page is available.
+- Listener profiles remain private to the device and now include a short bio and
+  favorite show alongside the existing name and avatar.
+
+Next: account identity, public profile visibility controls, and follows require an
+authenticated write service. The local profile does not claim a public handle.
+
 ## Principles
 
 1. **Local-first, account-free by default.** The free listening journey must work with no

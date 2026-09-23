@@ -47,11 +47,17 @@ struct RootView: View {
             LibraryView().modifier(inset(3)).tag(3).tabItem { Label("Library", systemImage: "books.vertical") }
             YouView().modifier(inset(4)).tag(4).tabItem { Label("You", systemImage: "chart.bar") }
         }
-        .onChange(of: scenePhase) { _, phase in if phase != .active { player.checkpoint() } }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active {
+                if library.feedCachedAt.map({ Date().timeIntervalSince($0) > 60 }) ?? true {
+                    Task { await library.refresh() }
+                }
+            } else {
+                player.checkpoint()
+            }
+        }
         .onChange(of: library.stories) { _, stories in player.restore(stories) }
         .onChange(of: library.shouldAnnounceNew) { _, show in if show { showNewEpisodes = true } }
-        .onChange(of: player.listening.queue) { _, _ in library.pin(player.queuedStories + [player.story].compactMap { $0 }) }
-        .onChange(of: player.story?.id) { _, _ in if let story = player.story { library.pin([story]) } }
         .sheet(isPresented: $player.isPlayerPresented) {
             PlayerView().playerZoomDestination(id: MiniPlayerInset.zoomID(tab: tab), in: reduceMotion ? nil : playerZoom)
         }
@@ -78,7 +84,6 @@ struct RootView: View {
                 player.isPlayerPresented = true
             }
             #endif
-            library.pin(player.queuedStories + [player.story].compactMap { $0 })
             if library.shouldAnnounceNew { showNewEpisodes = true }
             Telemetry.app.info("launch ready in \(Telemetry.ms(since: launchStart), format: .fixed(precision: 1)) ms; \(library.stories.count, privacy: .public) stories")
         }

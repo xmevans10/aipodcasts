@@ -66,7 +66,7 @@ struct WelcomeView: View {
     private var intro: some View {
         Group {
             title("Science worth\nlistening to.")
-            Text("Big ideas. Easy listening. A short weekday science edition — one good idea in about three minutes.")
+            Text("Big ideas. Easy listening. Two fresh science episodes each day.")
                 .font(.body).foregroundStyle(Theme.secondary)
             featureStrip
             VStack(alignment: .leading, spacing: 14) {
@@ -192,8 +192,15 @@ struct WelcomeView: View {
                 }.card()
                 Text("Hosts are fictional presenters. Every episode is written and narrated with AI and checked against its sources.")
                     .font(.caption).foregroundStyle(Theme.secondary)
+            } else if library.loading {
+                ProgressView("Loading episodes…")
+            } else if let error = library.error {
+                Text(error).foregroundStyle(Theme.secondary)
+                Button("Retry") { Task { await library.refresh() } }
+                    .disabled(library.loading)
             } else {
-                Text("Your shows are warming up. Browse what's available while new episodes are produced.").foregroundStyle(Theme.secondary)
+                Text("Your shows have no released episodes yet. Browse the other shows while you wait.")
+                    .foregroundStyle(Theme.secondary)
             }
         }
     }

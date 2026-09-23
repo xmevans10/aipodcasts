@@ -29,9 +29,12 @@ struct EpisodeView: View {
                     iconButton(queued ? "text.badge.checkmark" : "text.badge.plus", label: queued ? "In your queue" : "Add to queue") { player.enqueue(story) }
                         .disabled(queued || isCurrent)
                     iconButton(library.saved.contains(story.id) ? "bookmark.fill" : "bookmark", label: library.saved.contains(story.id) ? "Unsave" : "Save") { library.toggle(story) }
-                    ShareLink(item: "\(story.title) — \(story.show.title) on Zwicky") {
-                        Image(systemName: "square.and.arrow.up").modifier(IconCircle())
-                    }.accessibilityLabel("Share")
+                    if let url = story.sharingURL {
+                        ShareLink(item: url, subject: Text(story.title), message: Text(story.dek),
+                                  preview: SharePreview(story.title)) {
+                            Image(systemName: "square.and.arrow.up").modifier(IconCircle())
+                        }.accessibilityLabel("Share episode")
+                    }
                 }
 
                 if story.audioURL == nil {
@@ -250,7 +253,7 @@ struct PlayerView: View {
                         if !preview {
                             PlayerTimeline(clock: player.clock, story: story, active: active)
                         } else {
-                            Text("Device voice sample. Produced episodes use licensed ElevenLabs narration.").font(.caption).foregroundStyle(soft).multilineTextAlignment(.center)
+                            Text("This sample uses your device's voice. Released episodes use synthetic narration.").font(.caption).foregroundStyle(soft).multilineTextAlignment(.center)
                         }
                         HStack(spacing: 44) {
                             Button { if active { player.seek(player.position - 15) } } label: { Image(systemName: "gobackward.15").font(.title2) }.disabled(preview || !active).accessibilityLabel("Back 15 seconds")
@@ -350,18 +353,17 @@ struct SettingsView: View {
                     Text("Preview build · All episodes are free").font(.caption).foregroundStyle(Theme.secondary)
                 }
                 #endif
-                Section("Connected feed") {
-                    TextField("HTTPS feed URL", text: $library.feedURL).keyboardType(.URL).textInputAutocapitalization(.never).autocorrectionDisabled()
+                Section("Episodes") {
                     Button(library.loading ? "Refreshing…" : "Refresh episodes") { Task { await library.refresh() } }.disabled(library.loading)
                     if let error = library.error { Text(error).foregroundStyle(.red).font(.caption) }
                 }
                 Section("Trust & privacy") {
-                    NavigationLink("How an episode is made") { PolicyView(title: "How an episode is made", text: "We select sources with explicit reuse permission, write an original explanation, check its claims against the source, and require an editor’s approval before publishing.\n\nAI can make mistakes. Every episode includes attribution, a note on what the evidence can and can’t show, and links to the original sources. Hosts are fictional AI presenters, never the researchers themselves.\n\nThe episodes in this preview build were checked against their sources by an assistant; independent editorial approval is still pending.") }
-                    NavigationLink("Privacy") { PolicyView(title: "Privacy", text: "This preview stores your saved episodes, followed shows, listening queue, playback positions, finished episodes and listening minutes on your device using UserDefaults. It contains no advertising or analytics SDKs and does not create an account.\n\nConnecting a feed sends normal network requests, including your IP address, to the server you configure. Opening source links is subject to the destination’s privacy policy. Production privacy terms must name the operating company and its data processors before launch.") }
+                    NavigationLink("How an episode is made") { PolicyView(title: "How an episode is made", text: "We select research sources, write an original explanation, and check claims against the source before publishing.\n\nAI can make mistakes. Every episode includes attribution, a note on what the evidence can and can’t show, and links to the original sources. Hosts are fictional AI presenters, never the researchers themselves.") }
+                    NavigationLink("Privacy") { PolicyView(title: "Privacy", text: "Zwicky stores your profile, saved episodes, followed shows, listening queue, playback positions, finished episodes and listening minutes on your device. It contains no advertising or analytics SDKs and does not create an account.\n\nLoading episodes sends normal network requests, including your IP address, to the episode host. Opening source links is subject to the destination’s privacy policy.") }
                     Button("Delete local listening data", role: .destructive) { reset = true }
                 }
                 Section("Credits") {
-                    Text("Host illustrations: DiceBear “Notionists” (CC0). Narration: ElevenLabs. Reading typeface: Charter.").font(.caption).foregroundStyle(Theme.secondary)
+                    Text("Host illustrations: DiceBear “Notionists” (CC0). Narration: synthetic voices. Reading typeface: Charter.").font(.caption).foregroundStyle(Theme.secondary)
                 }
                 Section { Button("Show welcome again") { onboarded = false; dismiss() }; Text("Zwicky 0.1").font(.caption).foregroundStyle(Theme.secondary) }
             }

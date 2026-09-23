@@ -7,7 +7,7 @@ struct HostsView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    Text("Four hosts, four beats. Each one fronts a show and never leaves their evidence behind.")
+                    Text("Meet the fictional hosts behind each show and the ideas they explore.")
                         .font(.subheadline).foregroundStyle(Theme.secondary)
                     ForEach(Show.all) { show in
                         NavigationLink { HostView(show: show) } label: { HostCard(show: show) }.buttonStyle(.plain)
@@ -100,7 +100,7 @@ struct HostView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     SectionHeader(title: "How \(show.host.name.components(separatedBy: " ")[0]) works")
                     detail("theatermasks", "A written character", "\(show.host.name) is an original fictional presenter. The name, interests and delivery are ours; no real researcher is portrayed.")
-                    detail("waveform", "A licensed voice", "Episodes are narrated with a synthetic ElevenLabs voice, directed line by line for pace and emotion.")
+                    detail("waveform", "A synthetic voice", "Episodes use AI narration matched to each presenter.")
                     detail("checkmark.seal", "The same evidence rules", "Hosts shape the delivery, never the findings. Every claim is checked against the source paper before an episode is approved.")
                 }.card()
             }

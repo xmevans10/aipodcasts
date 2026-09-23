@@ -128,15 +128,17 @@ private func testShowsAndHosts() {
 
 // MARK: - episode cache migration
 
-private func testEpisodeCacheMigration() {
+@MainActor private func testEpisodeCacheMigration() {
     let oldFeed = #"{"stories":[],"cachedAt":0}"#.data(using: .utf8)!
-    let oldPinned = #"[{"id":"old-web-work"}]"#.data(using: .utf8)!
-    check(StoryCache.decodeFeed(oldFeed) == nil, "unversioned episode feed caches are discarded")
-    check(StoryCache.decodePinned(oldPinned) == nil, "legacy pinned episode caches are discarded")
-    let current = StoryCache.Feed(schemaVersion: StoryCache.schemaVersion, stories: [], cachedAt: .now)
+    let officialURL = Library.defaultFeedURL
+    check(StoryCache.decodeFeed(oldFeed, for: officialURL) == nil, "unversioned episode feed caches are discarded")
+    let current = StoryCache.Feed(schemaVersion: StoryCache.schemaVersion, sourceURL: officialURL,
+                                  stories: [], cachedAt: .now)
     let currentData = try! JSONEncoder().encode(current)
-    checkEqual(StoryCache.decodeFeed(currentData)?.schemaVersion, StoryCache.schemaVersion,
-               "versioned feed caches remain readable")
+    checkEqual(StoryCache.decodeFeed(currentData, for: officialURL)?.schemaVersion,
+               StoryCache.schemaVersion, "official feed caches remain readable")
+    check(StoryCache.decodeFeed(currentData, for: "https://other.example/feed.json") == nil,
+          "a different feed cannot reuse the official catalog cache")
 }
 
 // MARK: - story helpers
@@ -148,6 +150,13 @@ private func testStoryHelpers() {
     checkEqual(story.publishedDate.map { Story.dayFormatter.string(from: $0) }, "2026-09-17", "published dates parse")
     check(story.dateText.contains("17"), "a published episode shows its date")
     checkEqual(story.durationSeconds, 180, "an unbundled episode falls back to its minute count")
+    check(story.sharingURL == nil, "an episode without a link has no share action")
+    var shareable = story
+    shareable.shareURL = "http://example.org/episode"
+    check(shareable.sharingURL == nil, "insecure episode share URLs are ignored")
+    shareable.shareURL = "https://example.org/episode"
+    checkEqual(shareable.sharingURL?.absoluteString, "https://example.org/episode",
+               "published listening pages are shareable")
     let undated = Story(id: "y", title: "T", dek: "D", topic: "EARTH", hostID: "atlas", minutes: 1,
                         body: "b", caveat: "c", sources: [], audioURL: nil, isDemo: true,
                         turns: nil, hostIDs: nil)
@@ -214,8 +223,10 @@ private func testDialogueFields() {
         testShowsAndHosts()
         testStoryHelpers()
         testDialogueFields()
-        testEpisodeCacheMigration()
-        MainActor.assumeIsolated { testCoverLayout() }
+        MainActor.assumeIsolated {
+            testEpisodeCacheMigration()
+            testCoverLayout()
+        }
 
         if failures.isEmpty {
             print("✓ \(checks) checks passed")

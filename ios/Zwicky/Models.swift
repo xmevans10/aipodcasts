@@ -61,7 +61,7 @@ struct Show: Identifiable, Hashable {
              about: "Neuroscience, perception and computing, taken apart one mechanism at a time. Expect careful distinctions between what was measured and what was modelled.",
              symbol: "waveform.path.ecg", light: Color(hex: 0xFF9A5A), mid: Color(hex: 0xE4572E), dark: Color(hex: 0x5B1A12), hostIDs: ["ada"]),
         Show(id: "common-ground", title: "Common Ground", category: "Earth & Climate", tagline: "The planet beneath the headlines.",
-             about: "Oceans, weather, geology and climate, with the patience these slow systems deserve. New episodes are on the way; a sample is available now.",
+             about: "Oceans, weather, geology and climate, with the patience these slow systems deserve.",
              symbol: "globe.americas", light: Color(hex: 0x59D8D0), mid: Color(hex: 0x139BB0), dark: Color(hex: 0x07374A), hostIDs: ["atlas"]),
         Show(id: "webwork", title: "Webwork", category: "Spiders & Arachnids", tagline: "Eight legs, one extraordinary material.",
              about: "Spiders, their webs and the silk they spin, from garden orb-weavers to the physics of a thread thinner than a hair. Every claim is traced back to the study that made it.",
@@ -124,6 +124,8 @@ struct Story: Identifiable, Codable, Hashable {
     var published: String? = nil
     /// Absolute URL of the streamed episode's transcript + envelope sidecar, if any.
     var detailURL: String? = nil
+    /// Public listening page. Older feed entries can still share their audio URL.
+    var shareURL: String? = nil
     /// Spoken conversation when an episode is co-hosted. Optional so older
     /// single-host JSON without the key keeps decoding.
     let turns: [DialogueTurn]?
@@ -132,6 +134,12 @@ struct Story: Identifiable, Codable, Hashable {
     var host: Host { Host.all.first { $0.id == hostID } ?? Show.forHost(hostID)?.host ?? Host.all[0] }
     var show: Show { Show.forHost(hostID) ?? Show.all[0] }
     var durationSeconds: Double { Episodes.duration(for: id) ?? Double(minutes * 60) }
+    var sharingURL: URL? {
+        for raw in [shareURL, audioURL].compactMap({ $0 }) {
+            if let url = URL(string: raw), url.scheme == "https" { return url }
+        }
+        return nil
+    }
     var publishedDate: Date? { published.flatMap { Story.dayFormatter.date(from: $0) } }
     /// "Sep 17", or "Sample" for device-voice demos without a date.
     var dateText: String { publishedDate?.formatted(.dateTime.month(.abbreviated).day()) ?? (isDemo ? "Sample" : "") }
@@ -192,7 +200,7 @@ enum Episodes {
 }
 
 @MainActor final class Library: ObservableObject {
-    /// Published feed of streamed episodes (R2). Settings can override it.
+    /// Published feed of streamed episodes (R2).
     static let defaultFeedURL = "https://pub-e19f5de621fd4b4ea01c0465d0251407.r2.dev/v1/feed.json"
     @Published private(set) var stories: [Story]
     @Published var saved: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "saved") ?? [])
@@ -212,9 +220,21 @@ enum Episodes {
     @AppStorage("dailyGoalMinutes") var dailyGoalMinutes = 10
     /// A local, anonymous profile. No account exists yet; these fields are the
     /// upgradeable identity described in docs/SOCIAL-PLAN.md.
-    @AppStorage("profileName") var profileName = ""
-    @AppStorage("profileSymbol") var profileSymbol = "person.fill"
-    @AppStorage("profileHue") var profileHue = 0.66
+    @Published var profileName = UserDefaults.standard.string(forKey: "profileName") ?? "" {
+        didSet { UserDefaults.standard.set(profileName, forKey: "profileName") }
+    }
+    @Published var profileBio = UserDefaults.standard.string(forKey: "profileBio") ?? "" {
+        didSet { UserDefaults.standard.set(profileBio, forKey: "profileBio") }
+    }
+    @Published var favoriteShowID = UserDefaults.standard.string(forKey: "favoriteShowID") ?? "" {
+        didSet { UserDefaults.standard.set(favoriteShowID, forKey: "favoriteShowID") }
+    }
+    @Published var profileSymbol = UserDefaults.standard.string(forKey: "profileSymbol") ?? "person.fill" {
+        didSet { UserDefaults.standard.set(profileSymbol, forKey: "profileSymbol") }
+    }
+    @Published var profileHue = (UserDefaults.standard.object(forKey: "profileHue") as? Double) ?? 0.66 {
+        didSet { UserDefaults.standard.set(profileHue, forKey: "profileHue") }
+    }
     @AppStorage("joinedStamp") private var joinedStamp = ""
     var displayName: String {
         let trimmed = profileName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -224,63 +244,43 @@ enum Episodes {
         displayName.split(separator: " ").prefix(2).compactMap { $0.first.map(String.init) }.joined().uppercased()
     }
     var joined: Date? { Story.dayFormatter.date(from: joinedStamp) }
+    var favoriteShow: Show? { Show.all.first { $0.id == favoriteShowID } }
     func ensureJoined() { if joinedStamp.isEmpty { joinedStamp = Story.dayFormatter.string(from: .now) } }
     private var feed: [Story] = []
-    private var pinned: [Story] = []
-
     init() {
         let start = Telemetry.now()
-        pinned = StoryCache.loadPinned()
-        if let cached = StoryCache.loadFeed() {
+        stories = []
+        StoryCache.removeLegacyPins()
+        UserDefaults.standard.removeObject(forKey: "feedURL")
+        if let cached = StoryCache.loadFeed(for: feedURL) {
             feed = cached.stories
             feedCachedAt = cached.cachedAt
-        } else {
-            feed = []
         }
-        stories = []
-        if feedURL.isEmpty { feedURL = Library.defaultFeedURL }
         rebuild()
-        Telemetry.app.info("Library init \(Telemetry.ms(since: start), format: .fixed(precision: 1)) ms; \(self.feed.count, privacy: .public) feed, \(self.pinned.count, privacy: .public) pinned")
+        Telemetry.app.info("Library init \(Telemetry.ms(since: start), format: .fixed(precision: 1)) ms; \(self.feed.count, privacy: .public) cached episodes")
     }
 
-    /// The feed is the sole source of the episode catalog. Pins are only useful
-    /// for retaining current feed records across playback and save actions.
     private func rebuild() {
-        let feedIDs = Set(feed.map(\.id))
-        pinned.removeAll { !feedIDs.contains($0.id) }
         stories = feed
     }
 
-    /// Keep full records for items the listener saved, heard, queued or is playing.
-    func pin(_ items: [Story]) {
-        guard !items.isEmpty else { return }
-        let feedIDs = Set(feed.map(\.id))
-        for item in items where feedIDs.contains(item.id) {
-            if let index = pinned.firstIndex(where: { $0.id == item.id }) { pinned[index] = item }
-            else { pinned.append(item) }
-        }
-        StoryCache.savePinned(pinned)
-        rebuild()
-    }
     func isFollowing(_ show: Show) -> Bool { following.contains(show.id) }
     func toggleFollow(_ show: Show) {
         if following.contains(show.id) { following.remove(show.id) } else { following.insert(show.id) }
         UserDefaults.standard.set(Array(following), forKey: "following")
     }
     func setFollowing(_ ids: Set<String>) { following = ids; UserDefaults.standard.set(Array(ids), forKey: "following") }
-    /// Newest first; undated samples last.
+    /// Newest first.
     var latest: [Story] { stories.sorted { ($0.published ?? "") > ($1.published ?? "") } }
     func episodes(of show: Show) -> [Story] { latest.filter { show.hostIDs.contains($0.hostID) } }
-    @AppStorage("feedURL") var feedURL = Library.defaultFeedURL
+    var feedURL: String { Library.defaultFeedURL }
     func toggle(_ story: Story) {
         if saved.contains(story.id) { saved.remove(story.id) } else { saved.insert(story.id) }
         UserDefaults.standard.set(Array(saved), forKey: "saved")
-        pin([story])
     }
     func heard(_ story: Story) {
         history.insert(story.id)
         UserDefaults.standard.set(Array(history), forKey: "history")
-        pin([story])
     }
     /// Episodes published after the last acknowledged marker, newest first.
     var newEpisodes: [Story] {
@@ -296,22 +296,21 @@ enum Episodes {
         announcedNew = true
     }
     func refresh() async {
+        guard !loading else { return }
         guard !feedURL.isEmpty else { return }
         guard let url = URL(string: feedURL), url.scheme == "https" else { error = "Use an HTTPS feed URL."; return }
         loading = true; defer { loading = false }
         let start = Telemetry.now()
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData)
+            let (data, response) = try await URLSession.shared.data(for: request)
             let status = (response as? HTTPURLResponse)?.statusCode ?? -1
             let fetchedAt = Telemetry.ms(since: start)
             guard status == 200 else { throw URLError(.badServerResponse) }
             feed = try JSONDecoder().decode([Story].self, from: data)
-            let feedIDs = Set(feed.map(\.id))
-            pinned.removeAll { !feedIDs.contains($0.id) }
-            StoryCache.savePinned(pinned)
             let decodedAt = Telemetry.ms(since: start)
             feedCachedAt = .now
-            StoryCache.saveFeed(feed)
+            StoryCache.saveFeed(feed, sourceURL: feedURL)
             isOffline = false
             error = nil
             rebuild()
@@ -327,7 +326,7 @@ enum Episodes {
                 self.error = nil
                 Telemetry.feed.error("refresh failed after \(elapsed, format: .fixed(precision: 1)) ms (status/error), showing cached feed: \(String(describing: error), privacy: .public)")
             } else {
-                self.error = "Couldn't refresh your stories. Your current collection is still available."
+                self.error = "Couldn't load episodes. Check your connection and retry."
                 Telemetry.feed.error("refresh failed after \(elapsed, format: .fixed(precision: 1)) ms with no cache: \(String(describing: error), privacy: .public)")
             }
         }

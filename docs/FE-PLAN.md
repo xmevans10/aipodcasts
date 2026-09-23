@@ -5,9 +5,20 @@ newsletter surface. It assumes no new backend services and no paid provider
 calls; work is validated against published-feed and unit-test fixtures. Backend milestones remain
 in [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md).
 
-## Current state
+## Cleanup shipped on 23 September 2026
 
-Progress: Phases 1–3 implemented, plus interactive player paging; device verification pending.
+- The app reads only the official feed. Its offline cache is tied to that
+  URL, and old pinned episode copies are removed on launch.
+- Feed refreshes bypass the HTTP cache, coalesce while in flight, and run when the
+  app returns to the foreground. Home no longer starts a second launch request.
+- Empty and offline states distinguish loading from a failed fetch. Preview voice
+  and review claims have been replaced with current product copy.
+- Episode sharing and private profile fields are tracked in [SOCIAL-PLAN.md](SOCIAL-PLAN.md).
+
+## Baseline state (18 September 2026)
+
+The notes below record the starting point for this plan. The newer cleanup above
+supersedes the feed and copy items.
 
 - One `AudioPlayer` ([`Player.swift`](../ios/Zwicky/Player.swift)) with
   `AVAudioSession.playback` and play/pause remote commands, and Now Playing set

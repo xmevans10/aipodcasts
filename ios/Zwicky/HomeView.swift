@@ -50,7 +50,6 @@ struct HomeView: View {
             .background(Theme.canvas)
             .toolbar(.hidden, for: .navigationBar)
             .refreshable { await library.refresh() }
-            .task { await library.refresh() }
             .sheet(isPresented: $settings) { SettingsView() }
         }
     }
@@ -99,7 +98,7 @@ struct HomeView: View {
     }
 
     private var cachedText: String {
-        guard let date = library.feedCachedAt else { return "Showing your saved episodes." }
+        guard let date = library.feedCachedAt else { return "Showing the last loaded episodes." }
         return "Last updated \(date.formatted(.relative(presentation: .named)))."
     }
 
@@ -162,14 +161,20 @@ struct HomeView: View {
                 }
             }
             .padding(.bottom, 4)
-            if episodes.isEmpty {
-                Text("New episodes will appear here after editorial review.").typeStyle(.body).foregroundStyle(Theme.secondary).padding(.vertical, 12)
+            if episodes.isEmpty && library.loading {
+                ProgressView("Loading episodes…").padding(.vertical, 12)
+            } else if episodes.isEmpty && library.error == nil {
+                Text("New episodes will appear here when they are released.").typeStyle(.body).foregroundStyle(Theme.secondary).padding(.vertical, 12)
             }
             ForEach(Array(episodes.enumerated()), id: \.element.id) { index, story in
                 EpisodeRow(story: story)
                 if index < episodes.count - 1 { Divider().overlay(Theme.hairline) }
             }
-            if let error = library.error { Text(error).typeStyle(.meta).foregroundStyle(.red) }
+            if let error = library.error {
+                Text(error).typeStyle(.meta).foregroundStyle(.red)
+                Button("Retry") { Task { await library.refresh() } }
+                    .disabled(library.loading)
+            }
         }
     }
 

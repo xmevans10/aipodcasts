@@ -157,18 +157,19 @@ workflow never renders or publishes audio.
 ## Daily rolling release
 
 `.github/workflows/daily-episodes.yml` runs at 08:00 UTC each day or on demand. It
-downloads successful full-run artifacts, rechecks each complete batch, and takes the
+starts with the approved scripts in the committed stage 4 batch, then reads completed
+full-run artifacts. It rechecks every approved script, even in a partial batch, and takes the
 oldest two approved scripts not yet represented by that exact spoken text in the R2
 feed. Those two scripts alone are rendered with Kokoro, uploaded as a daily audio
 artifact, and merged into the existing feed with word-timed sidecars. A reviewed rewrite
 of an older episode replaces that paper's older feed entry; unrelated archive entries
 stay available, and existing audio files are not deleted. The Action then checks the
 app's default public feed URL and both new audio/detail URLs. It uses the feed as the
-publication ledger, counts
-episodes already published on the current UTC date, and refuses to exceed two. A rerun
+publication ledger, counts episodes already published on the current UTC date, and
+refuses to exceed two. A rerun
 after the day's two releases is a no-op. If fewer than two reviewed, unpublished
-episodes are available, the Action fails without changing the feed. The 16-show buffer
-lasts eight days at this pace; weekly successful batches replenish it.
+episodes are available, the Action fails without changing the feed. A complete 16-show
+buffer lasts eight days at this pace; approved episodes from later review runs replenish it.
 Before rendering, it also requires the configured R2 public feed URL to match the app's
 default feed URL.
 

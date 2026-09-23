@@ -1,4 +1,5 @@
 import json
+import shutil
 import sys
 import tempfile
 import unittest
@@ -49,10 +50,10 @@ class DailyReleaseTests(unittest.TestCase):
                 directory.mkdir()
                 (directory / "transcripts").mkdir()
             (old / "manifest.json").write_text(json.dumps({"shows": [
-                {"show": "Wild Company", "host": "fern", "doi": "10.1234/old"},
-                {"show": "Mycelium", "host": "rosa", "doi": "10.1234/new"}]}))
+                {"show": "Wild Company", "host": "fern", "doi": "10.1234/old", "status": "approved"},
+                {"show": "Mycelium", "host": "rosa", "doi": "10.1234/new", "status": "approved"}]}))
             (new / "manifest.json").write_text(json.dumps({"shows": [
-                {"show": "Hive Mind", "host": "amara", "doi": "10.1234/later"}]}))
+                {"show": "Hive Mind", "host": "amara", "doi": "10.1234/later", "status": "approved"}]}))
             for directory, stem, body in ((old, "wild-company", "already published"),
                                            (old, "mycelium", "new episode"),
                                            (new, "hive-mind", "later episode")):
@@ -74,6 +75,14 @@ class DailyReleaseTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             with self.assertRaisesRegex(ValueError, "need 2"):
                 select(Path(tmp), [], "2026-09-22")
+
+    def test_partial_reviewed_batch_can_supply_two_safe_episodes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            shutil.copytree(ROOT / "experiments" / "full-run" / "stage4-2026-09-22",
+                            Path(tmp) / "0")
+            picked = select(Path(tmp), [], "2026-09-23")
+            self.assertEqual([entry["show"] for _, entry in picked],
+                             ["Ground Truth", "Hive Mind"])
 
     def test_public_app_feed_must_contain_both_new_episodes(self):
         expected = [{"show": "Mycelium", "host": "rosa", "doi": "10.1234/fungus"},

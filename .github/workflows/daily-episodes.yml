@@ -1,7 +1,7 @@
 name: daily-episodes
 
-# The full-run workflow prepares a private, fully reviewed buffer. This workflow
-# releases exactly two unpublished episodes per UTC day from the oldest valid batch.
+# The full-run workflow prepares reviewed scripts. This workflow releases exactly
+# two approved episodes per UTC day, including approved scripts from partial batches.
 on:
   schedule:
     - cron: "0 8 * * *"
@@ -39,10 +39,11 @@ jobs:
       - name: Set publication date
         run: echo "RELEASE_DATE=$(date -u +%F)" >> "$GITHUB_ENV"
 
-      - name: Download reviewed batch history
+      - name: Collect reviewed batch history
         run: |
-          mkdir -p batches
-          gh run list --workflow full-run.yml --status success --limit 30 \
+          mkdir -p batches/0
+          cp -R experiments/full-run/stage4-2026-09-22/. batches/0/
+          gh run list --workflow full-run.yml --status completed --limit 30 \
             --json databaseId --jq '.[].databaseId' | sort -n > run-ids.txt
           while IFS= read -r run_id; do
             if ! gh run download "$run_id" --name full-run-transcripts \

@@ -64,13 +64,20 @@ def select(batches: Path, feed: list, day: str, *, limit: int = 2) -> list[tuple
         if not directory.is_dir():
             continue
         try:
-            check_batch(directory)
+            # A batch may be incomplete, but every script we consider must have
+            # its own current factual and audience approvals.
+            check_batch(directory, require_all=False)
         except (FileNotFoundError, KeyError, ValueError, TypeError) as error:
             print(f"Skipping invalid batch {directory.name}: {error}", file=sys.stderr)
             continue
         manifest = json.loads((directory / "manifest.json").read_text())
         for entry in manifest["shows"]:
+            if entry.get("status") != "approved":
+                continue
             key = (entry["host"], doi_from_url(entry.get("doi", "")))
+            if not key[1]:
+                path = directory / "transcripts" / (slug(entry["show"]) + ".json")
+                key = (entry["host"], doi_from_url(json.loads(path.read_text()).get("doi", "")))
             if not key[1]:
                 raise ValueError(f"{entry['show']}: approved artifact has no DOI")
             path = directory / "transcripts" / (slug(entry["show"]) + ".json")

@@ -118,13 +118,12 @@ LANGUAGE_CLUES: dict[str, str] = {
         "remains unknown. Let quiet do some of the work."
     ),
     "rosa": (
-        "Write earthy, wry, and fond. Open on something decaying that turns out to be busy, then "
-        "introduce the fungus doing the work. Treat decomposition as the interesting half: enzymes, "
-        "trade, rot, and return. Use fermentation, compost, plumbing, and barter comparisons. When "
-        "you say 'communication', immediately mark it as metaphor and say what signal, if any, was "
-        "measured; push back on the wood-wide-web line without spoiling the wonder. Avoid foraging "
-        "or eating advice and never call fungi plants. Blunt when the evidence is thin, warm always. "
-        "One wry aside per episode."
+        "Write earthy, wry, and fond. Start with a concrete change in the fungus actually "
+        "studied, then explain how the researchers observed it. Use at most one comparison, "
+        "only if it makes that specific result easier to follow. Mention decomposition, fungal "
+        "networks or communication only when the paper studies them; do not add a stock "
+        "correction about the wood-wide web. Avoid foraging or eating advice and never call "
+        "fungi plants. Be blunt when the evidence is thin and warm throughout."
     ),
     "amara": (
         "Write bright, structured, and precise. Open on one bee doing one small thing, then show the "

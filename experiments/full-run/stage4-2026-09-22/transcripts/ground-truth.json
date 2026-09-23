@@ -1,0 +1,109 @@
+{
+  "show": "Ground Truth",
+  "host": "ines",
+  "story_id": "c2dca1574521d5ba35f6",
+  "doi": "10.1038/s41586-026-11034-0",
+  "requested_by": "existing",
+  "publicity_sources": [],
+  "source": {
+    "title": "Cohesin reshapes replication fork contacts to aid fork slowing and reversal",
+    "attribution": "Daniel González‐Acosta, Daniel Giménez-Llorente, M. do C. Rodrigues, Moses Aouami, Orhi Barroso‐Gomila, Javier Muñoz, Ana Cuadrado, Ana Losada, Massimo Lopes",
+    "journal": "Nature",
+    "url": "https://doi.org/10.1038/s41586-026-11034-0",
+    "license": "cc-by",
+    "evidence_tier": "abstract",
+    "evidence_note": "Abstract-only evidence; no full-text reuse."
+  },
+  "words": 374,
+  "verification": {
+    "status": "approved",
+    "pass": true,
+    "draft_sha256": "06640b99a707491d922a0dd6ff1354c51e35310b62d3baab6e52ead51c1b5e20",
+    "reviewer": "auto-verifier:jev"
+  },
+  "draft": {
+    "title": "How DNA Copying Slows Safely",
+    "dek": "A Nature study finds that cohesin helps rearrange contacts around stressed DNA-copying points, supporting a controlled slowdown and reversal. The work is mechanistic, not a clinical test.",
+    "turns": [
+      {
+        "speaker": "Ines Marlowe",
+        "text": "When a cell copies its DNA, the copying machinery can slow under treatment. How does the cell keep that slowdown from becoming lasting damage? The researchers measured which separated stretches of newly copied DNA came close together as copying slowed."
+      },
+      {
+        "speaker": "Dev Raman",
+        "text": "That is the question behind How DNA Copying Slows Safely. The paper is “Cohesin reshapes replication fork contacts to aid fork slowing and reversal,” by Daniel González‐Acosta and colleagues, published in Nature. The researchers looked at how DNA is arranged around places where copying has stalled."
+      },
+      {
+        "speaker": "Ines Marlowe",
+        "text": "Before the result, let’s make the picture concrete. DNA is being copied at a moving point, and a treatment can leave one exposed strand while the copying work slows. They then asked whether those nearby DNA stretches came together differently when copying was stressed."
+      },
+      {
+        "speaker": "Dev Raman",
+        "text": "They used a new way to record where those stretches came close at newly copied DNA. They also changed or removed cohesin, a protein complex that helps form loops in DNA, and compared what happened. In practice, this let them ask whether cohesin was merely nearby or was actively organizing the response."
+      },
+      {
+        "speaker": "Ines Marlowe",
+        "text": "And the main result is about what touched what. When copying stalled, cohesin built up there and changed which stretches of newly copied DNA came close together. What did that change in the copying process?"
+      },
+      {
+        "speaker": "Dev Raman",
+        "text": "It helped the copying point slow down actively and reverse when needed. Cohesin appears to help the copying machinery back up safely instead of pushing ahead on an exposed DNA strand. The paper links that rearrangement to avoiding lasting damage while DNA copying is under stress."
+      },
+      {
+        "speaker": "Ines Marlowe",
+        "text": "This episode is built from the paper's abstract, so it cannot establish what happens in patients, how often these effects matter in tumours, or whether changing cohesin would improve cancer treatment. The study supports a mechanism in cells, but the available abstract does not show how broadly it applies."
+      },
+      {
+        "speaker": "Dev Raman",
+        "text": "So the careful takeaway is small but useful: stressed DNA-copying points do not operate as isolated pieces. The study suggests cohesin helps coordinate their contacts, slowing and reversing copying in a way associated with genome stability. I'm Dev Raman. Keep asking what it changes."
+      },
+      {
+        "speaker": "Ines Marlowe",
+        "text": "The claim rests on measuring nearby DNA stretches and testing cohesin’s role. I'm Ines Marlowe. Check the method."
+      }
+    ],
+    "caveat": "This episode is built from the paper's abstract, so it cannot establish what happens in patients, how often these effects matter in tumours, or whether changing cohesin would improve cancer treatment. The study supports a mechanism in cells, but the available abstract does not show how broadly it applies.",
+    "claims": [
+      {
+        "claim": "Replication forks can be stressed by cancer treatments, causing exposed single-stranded DNA and slower synthesis.",
+        "quote": "DNA replication forks can be challenged by cancer chemotherapeutic treatments, leading to accumulation of single-stranded DNA and slowdown of DNA synthesis."
+      },
+      {
+        "claim": "Cohesin-mediated loop extrusion rearranges contacts at stressed replication forks in a way linked to genome stability.",
+        "quote": "Here we show that cohesin-mediated loop extrusion rearranges nascent DNA contacts at stressed replication forks to promote genome stability."
+      },
+      {
+        "claim": "The researchers developed a method to capture contacts at newly copied DNA.",
+        "quote": "a newly developed Micro-C-based technique to capture chromatin contacts at nascent DNA (Repli-C)"
+      },
+      {
+        "claim": "Cohesin accumulates at stalled replication forks and shifts contacts away from sister-fork coupling.",
+        "quote": "loop-extruding cohesin accumulates at stalled replication forks, limiting sister-fork coupling in favour of inter-replicon contacts."
+      },
+      {
+        "claim": "The process promotes fork slowing and reversal by preventing PRIMPOL action on exposed DNA.",
+        "quote": "This process promotes active fork slowing and reversal by preventing PRIMPOL action on single-stranded DNA"
+      }
+    ]
+  },
+  "audience": {
+    "pass": true,
+    "decision": "pass",
+    "failures": [],
+    "issues": [],
+    "first_hard_sentence": "",
+    "unexplained_terms": [],
+    "beat_fit": "grounded",
+    "listener_paraphrase": {
+      "question": "How does a cell keep DNA-copying slowdowns from becoming lasting damage?",
+      "method": "The researchers measured which newly copied DNA segments came close together and altered or removed cohesin, a protein complex that helps organize DNA loops.",
+      "finding": "When copying was stressed, cohesin gathered at the copying points and rearranged nearby DNA contacts. This helped the copying machinery slow down and reverse rather than continue on exposed DNA.",
+      "limit": "The episode is based on the paper’s abstract, so it does not establish what happens in patients, how often this matters in tumours, whether changing cohesin would improve cancer treatment, or how broadly the mechanism applies."
+    },
+    "paraphrase_numbers_not_in_script": [],
+    "draft_sha256": "06640b99a707491d922a0dd6ff1354c51e35310b62d3baab6e52ead51c1b5e20",
+    "contract_version": "audience-contract-v1",
+    "review_version": "audience-review-v1",
+    "reviewer": "audience-reviewer:audience-review-v1"
+  }
+}

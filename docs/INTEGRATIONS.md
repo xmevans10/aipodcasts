@@ -54,13 +54,20 @@ Host voice variables follow each presenter id: `ELEVENLABS_VOICE_NOVA`, `_FERN`,
 
 Rendered episodes are served, not bundled. `tools/publish_feed.py` uploads the audio and
 a `feed.json` to R2's S3-compatible API; the app's Settings → feed field points at
-`<R2_PUBLIC_BASE>/<prefix>/feed.json`. `render-episodes.yml` runs it automatically after
-rendering when the secrets exist.
+`<R2_PUBLIC_BASE>/<prefix>/feed.json`. The daily `daily-episodes.yml` Action selects
+two approved, unpublished episodes, renders them, and merges them into the existing
+feed. It never replaces the archive with only that day's episodes.
+
+The weekly `full-run.yml` checks complete review before marking a batch successful.
+The daily Action checks the batch again before rendering. An incomplete or edited
+transcript batch cannot reach the R2 publish step. The weekly Action can resume a
+partially approved batch from a committed `seed_dir` or a prior `seed_run_id`; see
+[story discovery](editorial/story-discovery.md#weekly-full-run).
 
 | Secret | Value |
 |---|---|
 | `R2_ENDPOINT` | `https://<account-id>.r2.cloudflarestorage.com` |
-| `R2_BUCKET` | bucket name (leave unset to skip publishing) |
+| `R2_BUCKET` | bucket name; required for the daily publisher |
 | `R2_ACCESS_KEY_ID` | R2 API token access key |
 | `R2_SECRET_ACCESS_KEY` | R2 API token secret |
 | `R2_PUBLIC_BASE` | public origin for the bucket (`https://<hash>.r2.dev` or a custom domain) |

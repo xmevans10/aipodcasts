@@ -1,0 +1,72 @@
+{
+  "show": "Mycelium",
+  "host": "rosa",
+  "story_id": "00b134c2a51523ddb04b",
+  "doi": "10.1038/s44512-026-00002-3",
+  "requested_by": "beat",
+  "publicity_sources": [],
+  "source": {
+    "title": "Cell wall-forming chitin synthases in a chytrid fungus",
+    "attribution": "Trupti Gaikwad, Michael Cunliffe",
+    "journal": "npj Fungal Science",
+    "url": "https://doi.org/10.1038/s44512-026-00002-3",
+    "license": "cc-by-nc-nd",
+    "evidence_tier": "abstract",
+    "evidence_note": "Abstract-only evidence; no full-text reuse."
+  },
+  "words": 418,
+  "verification": {
+    "status": "approved",
+    "pass": true,
+    "draft_sha256": "984067b8d7aa3049715329e66ca6f5d13173093edf78a70c1d0cdb5fece77b57",
+    "reviewer": "auto-verifier:jev"
+  },
+  "draft": {
+    "title": "How Fungi Build Their Walls",
+    "dek": "A saprotrophic fungus uses different wall-building genes as its cells grow and change shape.",
+    "body": "A fungus feeding on dead material must also build a wall around its own cells. That wall contains a tough material called chitin, made with the help of proteins called chitin synthases. How do those wall builders move as the fungus grows? This is How Fungi Build Their Walls.\n\nThe paper is called “Cell wall-forming chitin synthases in a chytrid fungus,” by Trupti Gaikwad and colleagues, published in npj Fungal Science. The researchers studied a chytrid, one group of fungi. Its life includes swimming cells, newly settled young cells, and a larger spore-making structure.\n\nThe question was simple to ask, even if the biology is not: how does this fungus make the tough material in its cell wall as its body changes? The researchers read the fungus’s genetic instructions to identify wall-making genes, checked when those genes were active, and attached glowing markers to two wall-building proteins. Then they tracked where those proteins appeared inside developing cells.\n\nThey found twenty genes for making chitin, a sturdy material that helps support fungal cell walls. Those genes weren’t all doing the same job at the same time. Their activity shifted across the fungus’s growth stages, as the cells became more structurally complex.\n\nThe clearest result came from watching the tagged proteins move. Early in development, the signals were spread through the cell. Later, they gathered at the wall of the spore-making structure. The researchers also saw them at a narrow connection underneath that structure, a place where the structure joins the rest of the cell. That changing location suggests the fungus sends different wall-building tools to different parts of itself as construction proceeds. It is a bit like moving supplies from a general storeroom to a particular repair site.\n\nThis is a study of genes, gene activity, and tagged proteins in a laboratory model, not a direct measurement of every wall-building event in a natural environment. The results show patterns and locations associated with development, but they don’t by themselves prove that any one wall-building protein causes a particular shape or stage. This episode is built from the paper’s abstract, so details about sample sizes, experimental controls, and how widely the findings apply are not available here.\n\nStill, the image is useful: in this fungus, the cell wall is being built in a changing pattern, not laid down as one uniform shell. Decay is doing its usual quiet work, and inside it, a fungal cell is managing its building materials with remarkable precision.\n\nI'm Rosa Ibarra. Rot is a relationship.",
+    "caveat": "This is a study of genes, gene activity, and tagged proteins in a laboratory model, not a direct measurement of every wall-building event in a natural environment. The results show patterns and locations associated with development, but they don’t by themselves prove that any one wall-building protein causes a particular shape or stage. This episode is built from the paper’s abstract, so details about sample sizes, experimental controls, and how widely the findings apply are not available here.",
+    "claims": [
+      {
+        "claim": "The fungus has twenty chitin synthase genes, including distinct gene types.",
+        "quote": "We identified 20 chitin synthase genes in the Rg genome, including canonical Division I and II types, and a distinctive chitin synthase gene containing a glycoside hydrolase domain linked to β-glucan synthesis."
+      },
+      {
+        "claim": "Gene activity changes across developmental stages.",
+        "quote": "Transcriptomic analysis through zoospore, germling and immature thallus developmental stages revealed stage-specific expression patterns"
+      },
+      {
+        "claim": "The researchers successfully tracked two chitin synthases during cell development.",
+        "quote": "Using electroporation-based transformation and fluorescent fusion constructs, we demonstrated successful expression and localisation of two chitin synthases during cell development."
+      },
+      {
+        "claim": "The tagged signals shift from dispersed locations to the spore-making structure’s wall.",
+        "quote": "Localisation patterns showed dynamic redistribution from cytoplasmic dispersion in early encysted cells to concentrated signals at the sporangium wall."
+      },
+      {
+        "claim": "The narrow connection beneath the spore-making structure is associated with enzyme expression.",
+        "quote": "Expression in the apophysis and at the apophysis–sporangium junction indicates the importance of these structures in cell maintenance."
+      }
+    ]
+  },
+  "audience": {
+    "pass": true,
+    "decision": "pass",
+    "failures": [],
+    "issues": [],
+    "first_hard_sentence": "",
+    "unexplained_terms": [],
+    "beat_fit": "grounded",
+    "listener_paraphrase": {
+      "question": "How does this fungus build its chitin-containing cell wall as its body changes during growth?",
+      "method": "The researchers identified the fungus’s chitin-making genes, checked when those genes were active, and used glowing markers to track two wall-building proteins in developing cells.",
+      "finding": "They found twenty chitin-related genes with activity that changed across growth stages. The tagged proteins were spread through early cells, then became concentrated at the wall and at a connection beneath the spore-making structure later on.",
+      "limit": "The study shows patterns linked with development in a laboratory model; it does not prove that a particular protein causes a particular shape or stage, and the episode lacks details from the full paper about sample sizes, controls, and how broadly the findings apply."
+    },
+    "paraphrase_numbers_not_in_script": [],
+    "draft_sha256": "984067b8d7aa3049715329e66ca6f5d13173093edf78a70c1d0cdb5fece77b57",
+    "contract_version": "audience-contract-v1",
+    "review_version": "audience-review-v1",
+    "reviewer": "audience-reviewer:audience-review-v1"
+  }
+}

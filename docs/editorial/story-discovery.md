@@ -128,11 +128,51 @@ parsed; `lena` matched the REM-sleep reaction and `ada` the brain ones. Covered 
 
 ## Weekly full run
 
-`experiments/full-run/run_all_shows.py` runs the whole chain — select → ingest → draft →
-verify — for every show and writes one transcript per show plus a manifest. `.github/workflows/full-run.yml`
-runs it every Monday (`0 13 * * 1`) and on demand, uploading `full-run-artifacts/` as a
-build artifact. Required repo secrets: `OPENAI_API_KEY`, `LILT_OPENALEX_KEY`,
-`LILT_CONTACT_EMAIL`; optional: `CORE_API_KEY`, `DEEPSEEK_API_KEY`, `TYPESAFE_AI_API_KEY`.
-The per-run provider cap is raised to 96 because the run drafts every show. It never
-narrates or publishes.
+`experiments/full-run/run_all_shows.py` runs select → ingest → draft → factual
+verification → audience review for every show. `.github/workflows/full-run.yml` runs it
+on Mondays (`0 13 * * 1`) and on demand. Approved JSON/Markdown pairs go under
+`full-run-artifacts/transcripts/`; rejected drafts go under `withheld/` with their
+manifest disposition. The Action always uploads that artifact, even if the release gate
+fails. `check_batch.py` permits the daily release queue only when all sixteen
+canonical shows have approved, current factual and audience fingerprints and their
+Markdown matches the approved JSON. An incomplete run leaves the feed unchanged.
 
+To continue the stage 4 batch entirely in Actions, dispatch `full-run-transcripts`
+with `seed_dir=experiments/full-run/stage4-2026-09-22`. The five approved scripts are
+checked and reused; the other eleven are selected and reviewed in that run. For another
+attempt, dispatch it with `seed_run_id` set to the previous full-run Actions run ID.
+That downloads its artifact and reuses only approved scripts. `seed_run_id` takes
+precedence over `seed_dir`. The two off-beat papers in the stage 4 manifest are excluded
+from reselection. Review failures and missing candidates stay visible in the manifest;
+the workflow never treats them as approvals.
+
+Required repository secrets for drafting: `OPENAI_API_KEY`, `TYPESAFE_AI_API_KEY`,
+`LILT_OPENALEX_KEY`, `LILT_CONTACT_EMAIL`. Optional selection inputs include
+`CORE_API_KEY` and `DEEPSEEK_API_KEY`. The writer and reviewer model come from
+`OPENAI_MODEL` (default `gpt-5.6-luna`); `OPENAI_REASONING_EFFORT` is a repository
+variable (default `low`). The per-run provider cap is 96. Secrets are injected into the
+Action environment, never committed or uploaded with the transcripts. This weekly
+workflow never renders or publishes audio.
+
+## Daily rolling release
+
+`.github/workflows/daily-episodes.yml` runs at 08:00 UTC each day or on demand. It
+downloads successful full-run artifacts, rechecks each complete batch, and takes the
+oldest two approved scripts not yet represented by that exact spoken text in the R2
+feed. Those two scripts alone are rendered with Kokoro, uploaded as a daily audio
+artifact, and merged into the existing feed with word-timed sidecars. A reviewed rewrite
+of an older episode replaces that paper's older feed entry; unrelated archive entries
+stay available, and existing audio files are not deleted. The Action then checks the
+app's default public feed URL and both new audio/detail URLs. It uses the feed as the
+publication ledger, counts
+episodes already published on the current UTC date, and refuses to exceed two. A rerun
+after the day's two releases is a no-op. If fewer than two reviewed, unpublished
+episodes are available, the Action fails without changing the feed. The 16-show buffer
+lasts eight days at this pace; weekly successful batches replenish it.
+Before rendering, it also requires the configured R2 public feed URL to match the app's
+default feed URL.
+
+This Action requires the five `R2_*` repository secrets in
+[Integrations](../INTEGRATIONS.md#episode-delivery-public-cloudflare-r2). It never needs
+writer or reviewer keys. `render-episodes.yml` remains an artifact-only preview path;
+it does not publish the full batch in one day.

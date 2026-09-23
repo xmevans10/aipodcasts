@@ -1,0 +1,142 @@
+{
+  "snapshot": "2026-09-22",
+  "release_ready": false,
+  "approved": 5,
+  "total": 16,
+  "shows": [
+    {
+      "show": "Common Ground",
+      "host": "atlas",
+      "story_id": "cc8503a3911924fdfaa9",
+      "status": "withheld",
+      "reason": "factual_verification_abstained"
+    },
+    {
+      "show": "Gradient",
+      "host": "noor",
+      "story_id": "c06c29b98acfd9ebe4fa",
+      "status": "withheld",
+      "reason": "audience_review_rejected"
+    },
+    {
+      "show": "Ground Truth",
+      "host": "ines",
+      "story_id": "c2dca1574521d5ba35f6",
+      "status": "approved",
+      "reason": "",
+      "title": "How DNA Copying Slows Safely",
+      "words": 374,
+      "factual": "pass",
+      "audience": "pass"
+    },
+    {
+      "show": "Hive Mind",
+      "host": "amara",
+      "story_id": "f43862dcd857751fd256",
+      "status": "approved",
+      "reason": "",
+      "title": "How a Hive’s Weight Tracks the Bloom",
+      "words": 363,
+      "factual": "pass",
+      "audience": "pass"
+    },
+    {
+      "show": "Layer by Layer",
+      "host": "marek",
+      "story_id": "94d73be41b889fcb0b32",
+      "status": "withheld",
+      "reason": "audience_review_rejected"
+    },
+    {
+      "show": "Marginal Gains",
+      "host": "tomas",
+      "story_id": "2bf31e350df888a399cb",
+      "status": "withheld",
+      "reason": "paper_reselection_needed",
+      "excluded_dois": ["10.1016/j.exer.2026.111239"]
+    },
+    {
+      "show": "Mycelium",
+      "host": "rosa",
+      "story_id": "00b134c2a51523ddb04b",
+      "status": "approved",
+      "reason": "",
+      "title": "How Fungi Build Their Walls",
+      "words": 418,
+      "factual": "pass",
+      "audience": "pass"
+    },
+    {
+      "show": "Old Bones",
+      "host": "freya",
+      "story_id": "7c6002769a4413ddbf82",
+      "status": "withheld",
+      "reason": "audience_review_rejected"
+    },
+    {
+      "show": "Signal & Noise",
+      "host": "ada",
+      "story_id": "a92a674c9f22c1c841d2",
+      "status": "withheld",
+      "reason": "audience_review_rejected"
+    },
+    {
+      "show": "Slow Wave",
+      "host": "lena",
+      "story_id": "0c3e5a05db2390d9bc85",
+      "status": "withheld",
+      "reason": "factual_or_audience_review_pending"
+    },
+    {
+      "show": "Star Bros",
+      "host": "jax",
+      "story_id": "781a7722eb5977106b67",
+      "status": "withheld",
+      "reason": "draft_failed_exact_source_title_contract"
+    },
+    {
+      "show": "Star Stuff",
+      "host": "yusuf",
+      "story_id": "3499e42924e961fa3480",
+      "status": "withheld",
+      "reason": "paper_reselection_needed",
+      "excluded_dois": ["10.1038/s42004-026-01968-x"]
+    },
+    {
+      "show": "The Deep",
+      "host": "kenji",
+      "story_id": "5e7f70cb197606379f18",
+      "status": "approved",
+      "reason": "",
+      "title": "Where Abyssal Life Follows the Nodules",
+      "words": 414,
+      "factual": "pass",
+      "audience": "pass"
+    },
+    {
+      "show": "The Long View",
+      "host": "nova",
+      "story_id": "63faa1f64a81b637f5e2",
+      "status": "withheld",
+      "reason": "audience_review_rejected"
+    },
+    {
+      "show": "Webwork",
+      "host": "spinner",
+      "story_id": "7be0ddfe907f6573dc2a",
+      "status": "withheld",
+      "reason": "audience_review_rejected"
+    },
+    {
+      "show": "Wild Company",
+      "host": "fern",
+      "story_id": "9ca60053526fbff94cce",
+      "status": "approved",
+      "reason": "",
+      "title": "Which Birds Find New Ways to Eat?",
+      "words": 360,
+      "factual": "pass",
+      "audience": "pass"
+    }
+  ]
+}

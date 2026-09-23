@@ -27,7 +27,7 @@ The implemented beta has four original evergreen demo scripts, not a live news f
 
 ## Pricing hypothesis
 
-Free: daily three-story edition, all four hosts, sources and transcripts. Plus: proposed US $5.99/month or $39.99/year, localized by App Store storefront; archive, offline audio, longer themed collections. No ads, no sale of listening data, no lifetime deal. Do not charge until Plus features are delivered. No trial in initial paid release; the free edition is the trial. Annual renewal and cancellation must be explicit in the native purchase sheet.
+Free: two new episodes per day, all four hosts, sources and transcripts. Plus: proposed US $5.99/month or $39.99/year, localized by App Store storefront; archive, offline audio, longer themed collections. No ads, no sale of listening data, no lifetime deal. Do not charge until Plus features are delivered. No trial in initial paid release; the free edition is the trial. Annual renewal and cancellation must be explicit in the native purchase sheet.
 
 Prices are proposed business decisions, not researched willingness-to-pay. Test with 20 interviews and two landing-page price variants before finalizing. StoreKit merchandising is included but disabled without configured product IDs. Production must verify entitlements, handle renewals/refunds/revocation and gate archive access on the server. Never trust a client boolean as proof of purchase.
 

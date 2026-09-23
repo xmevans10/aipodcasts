@@ -10,6 +10,13 @@ on:
     paths:
       - "backend/**"
       - "experiments/selection/**"
+      - "experiments/full-run/**"
+      - ".github/workflows/full-run.yml"
+      - ".github/workflows/daily-episodes.yml"
+      - ".github/workflows/render-episodes.yml"
+      - "tools/daily_release.py"
+      - "tools/publish_feed.py"
+      - "tools/verify_daily_feed.py"
       - ".github/workflows/backend-tests.yml"
 
 jobs:

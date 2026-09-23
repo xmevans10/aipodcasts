@@ -104,7 +104,7 @@ platform :ios do
       # much longer than the upload and tells us nothing new.
       skip_waiting_for_build_processing: true,
       distribute_external: false,
-      changelog: ENV["TESTFLIGHT_CHANGELOG"] || "Painted show covers for all sixteen shows."
+      changelog: ENV["TESTFLIGHT_CHANGELOG"].to_s.empty? ? "App improvements and fixes." : ENV["TESTFLIGHT_CHANGELOG"]
     )
   end
 

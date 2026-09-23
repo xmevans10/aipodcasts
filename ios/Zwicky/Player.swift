@@ -3,10 +3,19 @@ import MediaPlayer
 import SwiftUI
 import UIKit
 
+/// Only the visible transport and read-along views observe this frequent value.
+@MainActor final class PlaybackClock: ObservableObject {
+    @Published var position = 0.0
+}
+
 @MainActor final class AudioPlayer: NSObject, ObservableObject, AVSpeechSynthesizerDelegate {
     @Published var story: Story?
     @Published var playing = false
-    @Published var position = 0.0
+    let clock = PlaybackClock()
+    var position: Double {
+        get { clock.position }
+        set { clock.position = newValue }
+    }
     @Published var duration = 1.0
     @Published var rate: Float = 1
     @Published var message: String?
@@ -180,7 +189,7 @@ import UIKit
     private func recordListeningTime(at now: Date) {
         let day = Story.dayFormatter.string(from: now)
         if pendingListenDay != day { flushListeningTime(); pendingListenDay = day }
-        if let lastTick { pendingListenSeconds += min(max(now.timeIntervalSince(lastTick), 0), 0.5) }
+        pendingListenSeconds += PlaybackTickPolicy.listenedInterval(since: lastTick, now: now)
         lastTick = now
     }
     private func flushListeningTime() {
@@ -300,7 +309,7 @@ import UIKit
                 Task { @MainActor in
                     guard let self, self.story?.id == item.id else { return }
                     let position = time.seconds.isFinite ? time.seconds : 0
-                    if abs(self.position - position) > 0.05 { self.position = position }
+                    if PlaybackTickPolicy.shouldPublish(current: self.position, next: position) { self.position = position }
                     if self.playing {
                         self.recordListeningTime(at: .now)
                     } else { self.lastTick = nil }
@@ -373,7 +382,7 @@ import UIKit
     }
     func toggle() { playing ? pause() : resume() }
     func seek(_ value: Double) {
-        guard player != nil else { return }
+        guard player != nil, value.isFinite else { return }
         position = min(max(0, value), duration)
         player?.seek(to: CMTime(seconds: position, preferredTimescale: 600))
         updateNowPlaying()

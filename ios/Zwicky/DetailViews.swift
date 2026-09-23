@@ -230,8 +230,6 @@ struct PlayerView: View {
         let active = player.story?.id == story.id
         let preview = story.audioURL == nil
         let playing = active && player.playing
-        let position = active ? player.position : (player.listening.positions[story.id] ?? 0)
-        let duration = active ? player.duration : Double(story.minutes * 60)
         return ScrollView {
                     VStack(spacing: 24) {
                         ZStack {
@@ -250,25 +248,19 @@ struct PlayerView: View {
                             Text(story.title).font(.system(size: 24, weight: .semibold, design: .serif)).foregroundStyle(.white).multilineTextAlignment(.center).accessibilityAddTraits(.isHeader)
                         }
                         if !preview {
-                            VStack(spacing: 4) {
-                                Slider(value: Binding(get: { min(position, duration) }, set: { if active { player.seek($0) } }), in: 0...max(duration, 1))
-                                    .tint(.white).accessibilityLabel("Playback position")
-                                    .accessibilityValue("\(clock(position)) of \(clock(duration))")
-                                HStack { Text(clock(position)); Spacer(); Text("-" + clock(max(0, duration - position))) }
-                                    .font(.caption.monospacedDigit()).foregroundStyle(soft)
-                            }
+                            PlayerTimeline(clock: player.clock, story: story, active: active)
                         } else {
                             Text("Device voice sample. Produced episodes use licensed ElevenLabs narration.").font(.caption).foregroundStyle(soft).multilineTextAlignment(.center)
                         }
                         HStack(spacing: 44) {
-                            Button { if active { player.seek(position - 15) } } label: { Image(systemName: "gobackward.15").font(.title2) }.disabled(preview || !active).accessibilityLabel("Back 15 seconds")
+                            Button { if active { player.seek(player.position - 15) } } label: { Image(systemName: "gobackward.15").font(.title2) }.disabled(preview || !active).accessibilityLabel("Back 15 seconds")
                             Button { if active { player.toggle() } else { player.play(story) } } label: {
                                 Image(systemName: playing ? "pause.fill" : "play.fill").font(.title).foregroundStyle(story.show.dark)
                                     .frame(width: 76, height: 76)
                                     .background(Circle().fill(.white))
                                     .shadow(color: .black.opacity(0.3), radius: 14, y: 6)
                             }.accessibilityLabel(playing ? "Pause" : "Play")
-                            Button { if active { player.seek(position + 15) } } label: { Image(systemName: "goforward.15").font(.title2) }.disabled(preview || !active).accessibilityLabel("Forward 15 seconds")
+                            Button { if active { player.seek(player.position + 15) } } label: { Image(systemName: "goforward.15").font(.title2) }.disabled(preview || !active).accessibilityLabel("Forward 15 seconds")
                         }.foregroundStyle(.white)
                         HStack {
                             Button { if active { player.cycleRate() } } label: { Text(String(format: "%.2gx", active ? player.rate : 1)).font(.subheadline.weight(.semibold)).frame(width: 52, height: 44) }
@@ -318,7 +310,28 @@ struct PlayerView: View {
                     .padding(.horizontal, 24).padding(.bottom, 24)
         }
     }
-    func clock(_ time: Double) -> String { "\(Int(time) / 60):\(String(format: "%02d", Int(time) % 60))" }
+}
+
+private struct PlayerTimeline: View {
+    @EnvironmentObject var player: AudioPlayer
+    @ObservedObject var clock: PlaybackClock
+    let story: Story
+    let active: Bool
+
+    private var position: Double { active ? clock.position : (player.listening.positions[story.id] ?? 0) }
+    private var duration: Double { active ? player.duration : Double(story.minutes * 60) }
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Slider(value: Binding(get: { min(position, duration) }, set: { if active { player.seek($0) } }), in: 0...max(duration, 1))
+                .tint(.white).accessibilityLabel("Playback position")
+                .accessibilityValue("\(clockText(position)) of \(clockText(duration))")
+            HStack { Text(clockText(position)); Spacer(); Text("-" + clockText(max(0, duration - position))) }
+                .font(.caption.monospacedDigit()).foregroundStyle(Color.white.opacity(0.75))
+        }
+    }
+
+    private func clockText(_ time: Double) -> String { "\(Int(time) / 60):\(String(format: "%02d", Int(time) % 60))" }
 }
 
 struct SettingsView: View {

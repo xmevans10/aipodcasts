@@ -4,6 +4,7 @@ import SwiftUI
 /// and tapping a paragraph jumps the audio there. Set in Charter for long-form reading.
 struct TranscriptView: View {
     @EnvironmentObject var player: AudioPlayer
+    @EnvironmentObject var clock: PlaybackClock
     let story: Story
     let paragraphs: [TranscriptParagraph]
     private let plainParagraphs: [String]
@@ -11,7 +12,7 @@ struct TranscriptView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var isCurrent: Bool { player.story?.id == story.id }
-    private var now: Double { isCurrent ? player.position : -1 }
+    private var now: Double { isCurrent ? clock.position : -1 }
     private static let bodyFont = Theme.reading(21)
     private static let titleFont = Font.custom("Charter", size: 31, relativeTo: .title).weight(.bold)
 
@@ -81,17 +82,17 @@ struct TranscriptView: View {
                 .foregroundStyle(Theme.ink)
             }
             HStack(spacing: 18) {
-                Button { player.seek(player.position - 15) } label: { Image(systemName: "gobackward.15").frame(width: 44, height: 44) }
+                Button { player.seek(clock.position - 15) } label: { Image(systemName: "gobackward.15").frame(width: 44, height: 44) }
                     .disabled(!isCurrent).accessibilityLabel("Back 15 seconds")
                 Button { isCurrent ? player.toggle() : player.play(story) } label: {
                     Image(systemName: isCurrent && player.playing ? "pause.fill" : "play.fill").font(.title3)
                         .frame(width: 54, height: 54).background(.white, in: Circle()).foregroundStyle(Theme.ink)
                 }.accessibilityLabel(isCurrent && player.playing ? "Pause" : "Play")
-                Button { player.seek(player.position + 15) } label: { Image(systemName: "goforward.15").frame(width: 44, height: 44) }
+                Button { player.seek(clock.position + 15) } label: { Image(systemName: "goforward.15").frame(width: 44, height: 44) }
                     .disabled(!isCurrent).accessibilityLabel("Forward 15 seconds")
                 VStack(alignment: .leading, spacing: 6) {
-                    ProgressView(value: isCurrent ? min(player.position, player.duration) : 0, total: max(player.duration, 1)).tint(.white)
-                    Text(isCurrent ? "\(clock(player.position)) / \(clock(player.duration))" : "Tap play or any paragraph")
+                    ProgressView(value: isCurrent ? min(clock.position, player.duration) : 0, total: max(player.duration, 1)).tint(.white)
+                    Text(isCurrent ? "\(clockText(clock.position)) / \(clockText(player.duration))" : "Tap play or any paragraph")
                         .font(.caption2.monospacedDigit()).foregroundStyle(Color.white.opacity(0.7))
                 }
             }
@@ -153,5 +154,5 @@ struct TranscriptView: View {
         if !player.playing { player.resume() }
     }
 
-    private func clock(_ time: Double) -> String { "\(Int(time) / 60):\(String(format: "%02d", Int(time) % 60))" }
+    private func clockText(_ time: Double) -> String { "\(Int(time) / 60):\(String(format: "%02d", Int(time) % 60))" }
 }

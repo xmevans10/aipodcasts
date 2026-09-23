@@ -87,6 +87,23 @@ private func testListeningMath() {
                "a gap of two days ends the streak")
 }
 
+private func testPlaybackTickPolicy() {
+    check(!PlaybackTickPolicy.shouldPublish(current: 12, next: 12.03), "tiny clock changes do not refresh the UI")
+    check(PlaybackTickPolicy.shouldPublish(current: 12, next: 12.25), "visible clock changes refresh the UI")
+    check(PlaybackTickPolicy.shouldPublish(current: 42, next: 12), "seeking backwards refreshes the UI")
+    check(!PlaybackTickPolicy.shouldPublish(current: 12, next: .nan), "invalid player time is ignored")
+    check(PlaybackTickPolicy.shouldPublish(current: .nan, next: 12), "a valid tick repairs invalid clock state")
+
+    let start = Date(timeIntervalSince1970: 100)
+    checkEqual(PlaybackTickPolicy.listenedInterval(since: nil, now: start), 0, "the first tick adds no listening time")
+    checkEqual(PlaybackTickPolicy.listenedInterval(since: start, now: start.addingTimeInterval(0.25)), 0.25,
+               "normal playback counts elapsed time")
+    checkEqual(PlaybackTickPolicy.listenedInterval(since: start, now: start.addingTimeInterval(3)), 0.5,
+               "a stalled callback cannot overcount listening")
+    checkEqual(PlaybackTickPolicy.listenedInterval(since: start, now: start.addingTimeInterval(-1)), 0,
+               "clock changes cannot subtract listening time")
+}
+
 // MARK: - shows and hosts
 
 private func testShowsAndHosts() {
@@ -228,6 +245,7 @@ private func testDialogueFields() {
         let episodes = URL(fileURLWithPath: CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "Zwicky/Episodes")
         testListeningState()
         testListeningMath()
+        testPlaybackTickPolicy()
         testShowsAndHosts()
         testStoryHelpers()
         testDialogueFields()

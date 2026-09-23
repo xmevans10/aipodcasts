@@ -20,7 +20,7 @@ import SwiftUI
     }
     var body: some Scene {
         WindowGroup {
-            RootView().environmentObject(library).environmentObject(player)
+            RootView().environmentObject(library).environmentObject(player).environmentObject(player.clock)
                 .tint(Theme.ink).preferredColorScheme(.light)
         }
     }
@@ -100,8 +100,6 @@ struct MiniPlayerInset: ViewModifier {
         reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity)
     }
 
-    private var fraction: Double { min(1, player.position / max(player.duration, 1)) }
-
     private func bar(_ story: Story) -> some View {
         HStack(spacing: 10) {
             Button { player.isPlayerPresented = true } label: {
@@ -131,15 +129,26 @@ struct MiniPlayerInset: ViewModifier {
         .background(Theme.surface)
         .overlay(alignment: .bottom) {
             if !player.isPreview {
-                GeometryReader { g in
-                    Rectangle().fill(story.show.mid).frame(width: g.size.width * fraction, height: 2)
-                        .animation(.easeOut(duration: 0.25), value: fraction)
-                }.frame(height: 2)
+                MiniPlayerProgress(clock: player.clock, duration: player.duration, color: story.show.mid)
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).strokeBorder(Theme.hairline))
         .shadow(color: .black.opacity(0.08), radius: 14, y: 6)
         .padding(.horizontal, 10).padding(.bottom, 6)
+    }
+}
+
+private struct MiniPlayerProgress: View {
+    @ObservedObject var clock: PlaybackClock
+    let duration: Double
+    let color: Color
+
+    var body: some View {
+        let fraction = min(1, clock.position / max(duration, 1))
+        GeometryReader { geometry in
+            Rectangle().fill(color).frame(width: geometry.size.width * fraction, height: 2)
+                .animation(.easeOut(duration: 0.25), value: fraction)
+        }.frame(height: 2)
     }
 }

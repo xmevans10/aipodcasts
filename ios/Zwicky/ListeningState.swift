@@ -28,6 +28,18 @@ enum ListeningMath {
     }
 }
 
+/// Ignore tiny or invalid player-time changes before updating the visible clock.
+enum PlaybackTickPolicy {
+    static func shouldPublish(current: Double, next: Double) -> Bool {
+        next.isFinite && (!current.isFinite || abs(current - next) > 0.05)
+    }
+
+    static func listenedInterval(since last: Date?, now: Date) -> Double {
+        guard let last else { return 0 }
+        return min(max(now.timeIntervalSince(last), 0), 0.5)
+    }
+}
+
 /// Device-local listening state, independent of audio and view lifecycles.
 struct ListeningState: Codable {
     var currentID: String?

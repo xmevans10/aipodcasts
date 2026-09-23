@@ -163,13 +163,15 @@ def load_existing_feed(client, bucket: str, prefix: str) -> list:
     return feed
 
 
-def upload(episodes: list, feed: list, directory: Path, prefix: str, client=None) -> dict:
+def upload(episodes: list, feed: list, directory: Path, prefix: str, client=None,
+           page_ids: set[str] | None = None) -> dict:
     client = client or r2_client()
     bucket = os.environ["R2_BUCKET"]
     key = prefix.strip("/")
     base = os.environ["R2_PUBLIC_BASE"].rstrip("/") + "/" + key
     stories = {story["id"]: story for story in feed}
-    pages = [(story["id"], episode_page(story)) for story in feed]
+    pages = [(story["id"], episode_page(story)) for story in feed
+             if page_ids is None or story["id"] in page_ids]
     audio = 0
     for payload in episodes:
         name = Path(payload["_file"]).stem
@@ -189,7 +191,7 @@ def upload(episodes: list, feed: list, directory: Path, prefix: str, client=None
     client.put_object(Bucket=bucket, Key=f"{key}/feed.json", Body=body,
                       ContentType="application/json", CacheControl="no-cache")
     return {"feed": f"{base}/feed.json", "audio": audio, "sidecars": audio,
-            "listening_pages": len(feed), "bytes": len(body)}
+            "listening_pages": len(pages), "bytes": len(body)}
 
 
 def main() -> None:
@@ -210,6 +212,7 @@ def main() -> None:
     if not episodes and not args.share_pages_only:
         raise ValueError("No rendered episodes to publish")
     client = None
+    missing_pages = set()
     if args.share_pages_only:
         client = r2_client()
         feed = load_existing_feed(client, os.environ["R2_BUCKET"], prefix)
@@ -220,6 +223,7 @@ def main() -> None:
     if args.merge_existing and not args.share_pages_only:
         client = r2_client()
         existing = load_existing_feed(client, os.environ["R2_BUCKET"], prefix)
+        missing_pages = {story["id"] for story in existing if not story.get("shareURL")}
         dates = {story["published"] for story in feed}
         if len(dates) != 1:
             raise ValueError("Daily release must contain episodes from one publication date")
@@ -232,7 +236,11 @@ def main() -> None:
         for story in feed[:3]:
             print("  ", story["hostID"], "->", story["audioURL"], "| detail:", story["detailURL"])
         return
-    print(json.dumps(upload(episodes, feed, directory, prefix, client=client), indent=2))
+    page_ids = None if args.share_pages_only else (
+        {payload["story"]["id"] for payload in episodes} | missing_pages
+    )
+    print(json.dumps(upload(episodes, feed, directory, prefix, client=client,
+                            page_ids=page_ids), indent=2))
 
 
 if __name__ == "__main__":

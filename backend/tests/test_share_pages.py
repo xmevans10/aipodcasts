@@ -53,6 +53,22 @@ class SharePageTests(unittest.TestCase):
                 upload([], [story], Path(directory), "v1", client=client)
         self.assertEqual(client.keys, ["v1/listen/episode-webwork-1.html", "v1/feed.json"])
 
+    def test_daily_release_skips_unchanged_archive_pages(self):
+        class Client:
+            def __init__(self):
+                self.keys = []
+
+            def put_object(self, **kwargs):
+                self.keys.append(kwargs["Key"])
+
+        client = Client()
+        story = add_share_urls([self.story()], "https://cdn.example", "v1")[0]
+        with patch.dict(os.environ, {"R2_BUCKET": "test", "R2_PUBLIC_BASE": "https://cdn.example"}):
+            with tempfile.TemporaryDirectory() as directory:
+                result = upload([], [story], Path(directory), "v1", client=client, page_ids=set())
+        self.assertEqual(client.keys, ["v1/feed.json"])
+        self.assertEqual(result["listening_pages"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()

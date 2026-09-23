@@ -139,6 +139,8 @@ jobs:
         env:
           DAYS: ${{ inputs.days || '14' }}
           PER_SHOW: ${{ inputs.per_show || '3' }}
+          LILT_SMC: ${{ inputs.release_fresh_batch && '0' || '1' }}
+          LILT_AUDIENCE_REPAIRS: ${{ inputs.release_fresh_batch && '2' || '1' }}
 
       - name: Upload reviewed and withheld transcripts
         if: always()

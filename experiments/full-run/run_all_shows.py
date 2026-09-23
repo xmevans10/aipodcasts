@@ -180,11 +180,11 @@ def build(args):
                               "beat_fit": listener.get("beat_fit"),
                               "audience_repairs": (verification or {}).get("audience_repairs")})
                 print(f"  {show:16} {entry['status']:24} {draft.get('title', '')[:52]}")
-                if listener.get("decision") == "withhold" or listener.get("beat_fit") == "unfounded":
-                    # A paper rejected for show fit must not prevent a different
-                    # candidate from being considered in this same bounded run.
-                    continue
-                break
+                if approved:
+                    break
+                # A rejected, withheld, or abstained draft is never shipped;
+                # try the next distinct paper within this show's candidate window.
+                continue
             except Exception as error:  # one bad show must not abort the batch
                 errors.append(f"{work['doi']}: {type(error).__name__}: {error}"[:200])
                 continue

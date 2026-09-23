@@ -10,8 +10,10 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "experiments" / "full-run"))
+sys.path.insert(0, str(ROOT / "tools"))
 from check_batch import check_batch  # noqa: E402
 import run_all_shows  # noqa: E402
+from extend_doi_exclusions import failed_dois  # noqa: E402
 
 SEED = ROOT / "experiments" / "full-run" / "stage4-2026-09-22"
 
@@ -21,6 +23,44 @@ class FullRunActionsTests(unittest.TestCase):
         candidates = [{"doi": "10.1234/old"}, {"doi": "10.1234/new"}]
         result = run_all_shows.exclude_published(candidates, {"10.1234/OLD"})
         self.assertEqual(result, [{"doi": "10.1234/new"}])
+
+    def test_retry_excludes_failed_candidate_but_not_approved_seed(self):
+        manifest = {"shows": [
+            {"status": "approved", "doi": "10.1234/approved"},
+            {"status": "audience_rejected", "doi": "10.1234/rejected"},
+            {"status": "no_candidate", "errors": ["10.5678/failed: no abstract"]},
+        ]}
+        self.assertEqual(failed_dois(manifest), {"10.1234/rejected", "10.5678/failed"})
+
+    def test_rejected_candidate_does_not_block_next_candidate_for_show(self):
+        draft = {"title": "A measured result", "dek": "A careful summary",
+                 "body": "Three useful science words", "caveat": "Small sample size",
+                 "claims": [{"claim": "A supported result", "quote": "The evidence supports this result."}]}
+        source = {"title": "Paper title", "attribution": "Author Name",
+                  "journal": "Journal", "url": "https://doi.org/10.1234/new",
+                  "license": "cc-by", "evidence_tier": "abstract"}
+        selection = {"selected": [{"host": "fern", "doi": "10.1234/rejected"},
+                                   {"host": "fern", "doi": "10.1234/approved"}],
+                     "papers_pulled": 2, "candidates": 2, "publicity_events": 0,
+                     "publicized_candidates": 0}
+        records = {"source": json.dumps(source), "draft": json.dumps(draft)}
+        review_results = [{"status": "audience_rejected", "pass": False,
+                           "audience": {"decision": "revise"}},
+                          {"status": "approved", "pass": True}]
+        with tempfile.TemporaryDirectory() as tmp:
+            args = SimpleNamespace(seed_dir="", days=14, per_show=3,
+                                   limit=80, out=tmp, decider="auto",
+                                   select_only=False, no_verify=False)
+            with patch.object(run_all_shows, "canonical_hosts", return_value=["fern"]), \
+                 patch.object(run_all_shows, "select_stories", return_value=selection), \
+                 patch.object(run_all_shows, "connect", side_effect=lambda: __import__("sqlite3").connect(":memory:")), \
+                 patch.object(run_all_shows, "ingest_any", side_effect=["story-1", "story-2"]), \
+                 patch.object(run_all_shows, "draft_story", return_value=draft), \
+                 patch.object(run_all_shows, "row", return_value=records), \
+                 patch.object(run_all_shows, "approve_auto", side_effect=review_results):
+                run_all_shows.build(args)
+            artifact = json.loads((Path(tmp) / "transcripts" / "wild-company.json").read_text())
+            self.assertEqual(artifact["doi"], "10.1234/approved")
 
     def test_partial_stage4_seed_is_valid_but_cannot_release(self):
         self.assertEqual(check_batch(SEED, require_all=False), (5, 16))

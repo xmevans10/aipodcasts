@@ -1,8 +1,7 @@
 name: full-run-transcripts
 
-# Draft and review all sixteen shows. A dispatch can resume from the approved
-# scripts in a committed batch or a prior Actions artifact. Incomplete runs upload
-# their manifest and withheld drafts but cannot start rendering or publishing.
+# Draft and review all sixteen shows. A fresh-release dispatch may clear dev
+# episodes, synthesize two approved shows, and publish them under the daily limit.
 on:
   schedule:
     - cron: "0 13 * * 1"   # Mondays, 13:00 UTC
@@ -38,7 +37,7 @@ concurrency:
 jobs:
   transcripts:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-5.6-luna' }}
@@ -51,8 +50,8 @@ jobs:
       LILT_EUREKALERT: "1"
       LILT_SMC: "1"
       LILT_DRAFT_ATTEMPTS: "2"
-      # The weekly run drafts every show, so the per-run cap must exceed the show count.
-      LILT_MAX_PROVIDER_CALLS_PER_DAY: "96"
+      # The replacement release can try more papers when review rejects a candidate.
+      LILT_MAX_PROVIDER_CALLS_PER_DAY: ${{ inputs.release_fresh_batch && '192' || '96' }}
       SEED_DIR: ${{ inputs.seed_dir || '' }}
       SEED_RUN_ID: ${{ inputs.seed_run_id || '' }}
       R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
@@ -66,11 +65,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Require an unseeded batch for the dev-feed replacement
+      - name: Reject committed transcript seeds for a fresh release
         if: ${{ inputs.release_fresh_batch == true }}
         run: |
-          if [ -n "$SEED_DIR" ] || [ -n "$SEED_RUN_ID" ]; then
-            echo "A full fresh release cannot reuse a transcript seed" >&2
+          if [ -n "$SEED_DIR" ]; then
+            echo "A fresh release cannot reuse a committed transcript directory" >&2
             exit 1
           fi
 
@@ -93,6 +92,32 @@ jobs:
       - name: Load previously used paper exclusions
         run: python3 tools/clear_app_feed.py --load-exclusions "$RUNNER_TEMP/excluded-dois.json"
 
+      - name: Resume from prior Actions run
+        if: env.SEED_RUN_ID != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ inputs.release_fresh_batch }}" = "true" ]; then
+            if ! [[ "$SEED_RUN_ID" =~ ^[0-9]+$ ]]; then
+              echo "A fresh release retry needs a numeric prior run ID" >&2
+              exit 1
+            fi
+            python3 tools/clear_app_feed.py --baseline-out "$RUNNER_TEMP/release-baseline.json"
+            baseline=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["minimum_run_id"])' \
+              "$RUNNER_TEMP/release-baseline.json")
+            if [ "$SEED_RUN_ID" -lt "$baseline" ]; then
+              echo "The seed run predates the net-new release baseline" >&2
+              exit 1
+            fi
+          fi
+          gh run download "$SEED_RUN_ID" --repo "$GITHUB_REPOSITORY" \
+            --name full-run-transcripts --dir seed-artifacts
+          if [ "${{ inputs.release_fresh_batch }}" = "true" ]; then
+            python3 tools/extend_doi_exclusions.py \
+              seed-artifacts/manifest.json "$RUNNER_TEMP/excluded-dois.json"
+          fi
+          echo "SEED_DIR=seed-artifacts" >> "$GITHUB_ENV"
+
       - name: Clear dev episodes from the app
         if: ${{ inputs.release_fresh_batch == true }}
         run: >-
@@ -102,15 +127,6 @@ jobs:
       - name: Prepare empty feed input
         if: ${{ inputs.release_fresh_batch == true }}
         run: echo '[]' > "$RUNNER_TEMP/empty-feed.json"
-
-      - name: Resume from prior Actions run
-        if: env.SEED_RUN_ID != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh run download "$SEED_RUN_ID" --repo "$GITHUB_REPOSITORY" \
-            --name full-run-transcripts --dir seed-artifacts
-          echo "SEED_DIR=seed-artifacts" >> "$GITHUB_ENV"
 
       - name: Generate one transcript per show
         run: |

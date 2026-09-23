@@ -14,7 +14,7 @@ Env:
   R2_PUBLIC_BASE       public origin for the bucket (r2.dev or a custom domain)
   R2_PREFIX            optional key prefix (default "v1")
 
-    python3 tools/publish_feed.py --episodes ios/Zwicky/Episodes
+    python3 tools/publish_feed.py --episodes rendered-episodes
 """
 from __future__ import annotations
 
@@ -131,7 +131,7 @@ def upload(episodes: list, feed: list, directory: Path, prefix: str, client=None
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--episodes", default=str(ROOT / "ios/Zwicky/Episodes"))
+    parser.add_argument("--episodes", default=str(ROOT / "rendered-episodes"))
     parser.add_argument("--out", default="", help="also write feed.json here for inspection")
     parser.add_argument("--dry-run", action="store_true", help="build the feed, do not upload")
     parser.add_argument("--merge-existing", action="store_true", help="append to the existing R2 feed")

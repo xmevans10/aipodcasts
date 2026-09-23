@@ -2,7 +2,7 @@
 
 Planning baseline: 18 September 2026. Scope is the iPhone client and the
 newsletter surface. It assumes no new backend services and no paid provider
-calls; work is validated against the bundled episodes. Backend milestones remain
+calls; work is validated against published-feed and unit-test fixtures. Backend milestones remain
 in [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md).
 
 ## Current state

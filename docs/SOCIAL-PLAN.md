@@ -29,7 +29,7 @@ URL instead of the title string.
 |---|---|---|---|---|---|
 | SH0 | Canonical identity & URL contract (`/e/<slug>`, `/s/<slug>`, configurable origin) | FE+BE | — | Versioned spec; every story id maps to a public slug; no hard-coded domain | no |
 | SH1 | Static episode/show pages + OG/oEmbed/`twitter:` meta + canonical | BE+infra | SH0 | Pages work without JS; withdrawn/revised stories show a correction, not stale copy | no |
-| SH2 | Native share: episode URL + `SharePreview`, excerpt quote card via `ImageRenderer` | FE | SH0 | Share works offline for bundled episodes; quote card renders at accessibility sizes | no |
+| SH2 | Native share: episode URL + `SharePreview`, excerpt quote card via `ImageRenderer` | FE | SH0 | Share works offline for cached episode metadata; quote card renders at accessibility sizes | no |
 | SH3 | Deep links / Universal Links + `zwicky://` scheme + Smart App Banner fallback | FE+infra | SH1 | Tapping a link opens `EpisodeView`; AASA served with no redirect; unknown slug falls back to web | no |
 | SH4 | Web discovery + podcast RSS feed | BE+infra | SH1 | Valid RSS/iTunes feed and sitemap; free-vs-premium audio decision recorded | opt |
 | SH5 | Newsletter cross-pollination (CTAs target canonical pages) | BE | SH1 | Newsletter tests still pass; no dead CTA domains | opt |

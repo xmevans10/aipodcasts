@@ -121,7 +121,7 @@ Each profile ends with the rule that personality changes delivery only and never
 ## Tests
 
 - Backend: `python3 -m pytest -q backend/tests` (42 tests) covers the pipeline, evidence packet, host personalities, the podcast contract and newsletter rendering.
-- App logic: `./scripts/run-ios-tests.sh` (117 checks, no simulator needed) compiles the pure-logic files with `swiftc` and runs [`ios/Tests/LogicChecks.swift`](../ios/Tests/LogicChecks.swift): queue and resume state, `ListeningMath` (progress, minutes left, streaks including broken and stale ones), show/host wiring, story date and duration helpers, and every bundled episode — audio present, sources HTTPS, transcript word-for-word identical to the body, word timings monotonic and inside the episode, and the audio envelope five-band, in range, the right length and actually peaking.
+- App logic: `./scripts/run-ios-tests.sh` (186 checks, no simulator needed) compiles the pure-logic files with `swiftc` and runs [`ios/Tests/LogicChecks.swift`](../ios/Tests/LogicChecks.swift): queue and resume state, `ListeningMath` (progress, minutes left, streaks including broken and stale ones), show/host wiring, story date and duration helpers, and legacy episode-cache migration; episode content itself is loaded from the published feed.
 - UI behaviour still needs a device or simulator; these checks deliberately avoid SwiftUI rendering.
 
 ## Writing experiments and the AI judge
@@ -142,7 +142,7 @@ Caveat: the bundled baseline scripts record `writing_provenance` in `backend/dat
 
 ## Newsletter
 
-`backend/newsletter.py` renders any bundled episode (transcript + audio + sources) as a responsive HTML email and a plain-text alternative, with a gradient show cover, a listen button, the full transcript, the synthetic-narration disclosure and an app-download CTA that currently reads "in development". It is standard-library only.
+`backend/newsletter.py` renders any rendered episode (transcript + audio + sources) as a responsive HTML email and a plain-text alternative, with a gradient show cover, a listen button, the full transcript, the synthetic-narration disclosure and an app-download CTA that currently reads "in development". It is standard-library only.
 
 ```
 python3 backend/newsletter.py render --open          # previews for every episode

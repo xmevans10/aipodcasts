@@ -2,8 +2,8 @@ name: render-episodes
 
 # Render committed transcripts into app-ready episodes with the free Kokoro cast
 # (Apache-2.0, one distinct voice per host; no key, no cloning). Co-hosted shows
-# render each validated speaker turn with its own voice. The bundled
-# Episodes/ output is uploaded as an artifact to drop into ios/Zwicky/Episodes.
+# render each validated speaker turn with its own voice. Rendered files are uploaded
+# as a CI artifact; the iOS app consumes episodes through the published feed.
 on:
   workflow_dispatch:
     inputs:
@@ -43,17 +43,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install kokoro soundfile numpy
 
-      - name: Render and bundle episodes
+      - name: Render episodes
         run: |
           python3 tools/tts/bundle_shows.py \
             --transcripts "${{ inputs.transcripts || 'experiments/full-run/latest/transcripts' }}" \
-            --out ios/Zwicky/Episodes --require-all-shows
+            --out rendered-episodes --require-all-shows
 
-      - name: Upload bundled episodes
+      - name: Upload rendered episodes
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: bundled-episodes
-          path: ios/Zwicky/Episodes/
+          name: rendered-episodes
+          path: rendered-episodes/
           if-no-files-found: warn
           retention-days: 90

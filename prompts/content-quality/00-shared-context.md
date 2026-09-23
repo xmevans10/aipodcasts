@@ -55,7 +55,7 @@ Do not guarantee comprehension for real listeners from an automated score alone.
 - `tools/publish_feed.py`: uploads audio, sidecars, then the public feed. Inspect how
   it handles existing entries and interrupted uploads before claiming atomic publication.
 - `.github/workflows/render-episodes.yml`, `.github/workflows/full-run.yml`: rendering
-  and R2 publication. Both retain the four older bundled episodes.
+  and R2 publication. Both render to a separate output directory; the iOS app loads its episode catalog from the feed.
 - `ios/Zwicky/Models.swift`, `Player.swift`, `TranscriptView.swift`, `DetailViews.swift`:
   feed decoding, streaming, optional speaker labels, read-along and seeking.
 

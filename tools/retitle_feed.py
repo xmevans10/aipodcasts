@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """Update only the listener-facing titles in the published feed. Audio is never touched.
 
-Why this exists rather than `publish_feed.py`. That script republishes the whole catalog
-from `ios/Zwicky/Episodes`, which locally holds only the four older bundled episodes. Run
-against the live bucket it would upload four episodes, write a four-entry feed, and drop
-the fourteen recent shows out of the catalog. This tool edits titles in place instead.
+Why this exists rather than `publish_feed.py`. This tool edits only listener-facing titles
+in the existing live catalog; it avoids republishing audio and replacing unrelated feed entries.
 
 What it changes: the `title` field of matching entries in `feed.json`, and the same field
 inside each episode's detail sidecar. Nothing else. No audio is read, uploaded or deleted,

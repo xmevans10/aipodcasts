@@ -56,9 +56,8 @@ fastlane ios beta            # build, sign, upload
 - Do not bump `MARKETING_VERSION`, change the bundle id, or alter signing style.
 - Do not touch `backend/`, `experiments/`, or the live feed. Content ships through
   `https://pub-e19f5de621fd4b4ea01c0465d0251407.r2.dev/v1/feed.json`, not through a build.
-- Do not run `tools/publish_feed.py` against the live bucket. It republishes from
-  `ios/Zwicky/Episodes`, which holds only four older bundled episodes, and would drop the
-  fourteen recent shows out of the catalog.
+- Do not run `tools/publish_feed.py` against the live bucket as part of an app release.
+  Episodes publish independently through the reviewed content workflow.
 - Do not distribute externally. `distribute_external: false` is deliberate.
 - Do not launch the simulator (`AGENTS.md`). Install to a connected iPhone instead.
 

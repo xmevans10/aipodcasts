@@ -30,7 +30,7 @@ ROOT = HERE.parent
 sys.path.insert(0, str(HERE))
 from hosts import HOSTS
 
-EPISODES = ROOT / "ios" / "Zwicky" / "Episodes"
+EPISODES = ROOT / "rendered-episodes"
 DEFAULT_OUT = ROOT / "build" / "newsletter"
 APP_URL = "https://zwicky.app"
 UNSUBSCRIBE_URL = "https://zwicky.app/newsletter/unsubscribe?token={{token}}"
@@ -54,9 +54,9 @@ def esc(value):
 def load_episode(episode_id):
     path = EPISODES / (episode_id + ".json")
     if not path.exists():
-        raise SystemExit("No bundled episode " + episode_id + " (expected " + str(path) + ")")
+        raise SystemExit("No rendered episode " + episode_id + " (expected " + str(path) + ")")
     document = __import__("json").loads(path.read_text())
-    # Bundled files wrap the feed story (which carries title/body/sources) alongside timings.
+    # Rendered files wrap the feed story (which carries title/body/sources) alongside timings.
     return document.get("story", document)
 
 

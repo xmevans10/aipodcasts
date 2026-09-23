@@ -84,9 +84,9 @@ than a letter count. espeak-ng (present in the render runner) supplies phonemes;
 it a spelling-based syllable estimate stands in. This replaces the earlier length-weighted
 estimate.
 
-Both rendering workflows require all 16 shows and retain the four older bundled
-episodes in `ios/Zwicky/Episodes/`. They publish audio, speaker-labelled sidecars
-and the feed to R2 when configured.
+Both rendering workflows require all 16 shows. They render into a separate output directory;
+the app catalog is loaded from the feed, and never embeds episode assets. The publishing
+workflow sends audio, speaker-labelled sidecars and the feed to R2.
 Every script must pass verification for its current content hash before any synthesis;
 a failed, missing or stale approval aborts the batch without replacing the live feed.
 Dialogue validation also requires every presenter to speak their own sign-off.

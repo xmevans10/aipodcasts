@@ -110,7 +110,7 @@ def add_bundled_candidates(candidates):
             "source": "bundled", "host_id": story.get("hostID", "fern"),
             "title": story.get("title", ""), "dek": story.get("dek", ""), "body": body,
             "evidence": None, "style_penalty": penalty(analyze(body)),
-            "valid_draft": None, "valid_podcast": None, "origin": "ios/Zwicky/Episodes/" + path.name,
+            "valid_draft": None, "valid_podcast": None, "origin": "rendered-episodes/" + path.name,
         })
     return candidates
 

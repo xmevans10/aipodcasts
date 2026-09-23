@@ -284,7 +284,7 @@ def main() -> None:
     global _GOOGLE_ACCENTS
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--transcripts", required=True, help="a full-run transcripts directory")
-    parser.add_argument("--out", default=str(ROOT / "ios/Zwicky/Episodes"))
+    parser.add_argument("--out", default=str(ROOT / "rendered-episodes"))
     parser.add_argument("--voices", default=str(ROOT / "tools/tts/voice_cast.json"))
     parser.add_argument("--date", default="")
     parser.add_argument("--speed", type=float, default=1.0)

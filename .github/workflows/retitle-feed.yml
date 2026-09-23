@@ -8,9 +8,7 @@ name: retitle-feed
 # its own. This workflow changes the `title` field in feed.json and in each episode's
 # detail sidecar, and touches nothing else.
 #
-# It deliberately does NOT use publish_feed.py. That script republishes the catalog from
-# ios/Zwicky/Episodes, which holds only the four older bundled episodes, so running it
-# here would drop the fourteen recent shows out of the feed.
+# It deliberately avoids republishing audio or replacing the live episode catalog.
 #
 # Manual only, and dry run by default. Read the plan in the log, then run it again with
 # apply = true.

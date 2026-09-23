@@ -1,0 +1,39 @@
+name: ios-build
+
+# Compile the app and run its logic checks on every iOS change. Device signing
+# and installation remain separate because they require a registered iPhone.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ios/**"
+      - "scripts/run-ios-tests.sh"
+      - ".github/workflows/ios-build.yml"
+  pull_request:
+    paths:
+      - "ios/**"
+      - "scripts/run-ios-tests.sh"
+      - ".github/workflows/ios-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: xcodegen generate --spec ios/project.yml
+      - name: Run iOS logic checks
+        run: ./scripts/run-ios-tests.sh
+      - name: Compile iOS Release app
+        run: |
+          xcodebuild -project ios/Zwicky.xcodeproj -scheme Zwicky \
+            -configuration Release -destination 'generic/platform=iOS' \
+            -derivedDataPath "${RUNNER_TEMP}/ZwickyDerivedData" \
+            CODE_SIGNING_ALLOWED=NO build -quiet

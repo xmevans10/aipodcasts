@@ -32,8 +32,8 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install pytest
-        run: python3 -m pip install --upgrade pip pytest
+      - name: Install test dependencies
+        run: python3 -m pip install --upgrade pip pytest numpy
 
       - name: Backend tests
         run: python3 -m pytest -q backend/tests

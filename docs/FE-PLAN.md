@@ -14,6 +14,12 @@ in [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md).
 - Empty and offline states distinguish loading from a failed fetch. Preview voice
   and review claims have been replaced with current product copy.
 - Episode sharing and private profile fields are tracked in [SOCIAL-PLAN.md](SOCIAL-PLAN.md).
+- Playback updates lock-screen elapsed-time metadata every ten seconds during
+  steady playback, while transport and seek changes update immediately.
+- Transcript, queue, and host screens have improved VoiceOver actions and
+  layout at accessibility text sizes. A physical-device pass is still needed.
+- A manual GitHub Actions TestFlight workflow is available once its signing
+  secrets are configured; the existing iOS build workflow checks pushes.
 
 ## Baseline state (18 September 2026)
 

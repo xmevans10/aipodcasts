@@ -13,6 +13,12 @@ accounts, sessions or write path, so every account-bearing milestone is blocked 
   entries fall back to their public audio URL until their page is available.
 - Listener profiles remain private to the device and now include a short bio and
   favorite show alongside the existing name and avatar.
+- Listening pages include audio preview metadata and an "Open in the Zwicky app"
+  link. The app handles `zwicky://episode/<id>` and safely routes known episodes.
+  Incoming HTTPS episode URLs are parsed, but automatic Universal Links still
+  need an AASA file on the public host and an associated-domains entitlement.
+- The local profile editor limits and normalizes text and has larger, labelled
+  avatar controls.
 
 Next: account identity, public profile visibility controls, and follows require an
 authenticated write service. The local profile does not claim a public handle.

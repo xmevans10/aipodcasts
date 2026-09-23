@@ -168,6 +168,16 @@ def render_kokoro(text: str, voice: str, speed: float):
     return np.concatenate(chunks), segments
 
 
+def render_google_cloud(text: str, voice: str, speed: float):
+    if speed != 1.0:
+        raise ValueError("Google Cloud Gemini TTS speed is instruction-controlled; use --speed 1.0")
+    from cloud_tts import synthesize
+    return synthesize(text, voice, _GOOGLE_ACCENTS.get(voice, "US"))
+
+
+_GOOGLE_ACCENTS: dict[str, str] = {}
+
+
 def _rendered(result):
     """Accept either ``(audio, segments)`` from render_kokoro or a bare audio sequence."""
     if isinstance(result, tuple) and len(result) == 2 and isinstance(result[1], list):
@@ -182,7 +192,7 @@ def solo_sections(body: str) -> list[str]:
     return [paragraph.strip() for paragraph in re.split(r"\n\s*\n", body.strip()) if paragraph.strip()]
 
 
-def narration_inputs(transcript: dict, cast: dict) -> list[dict]:
+def narration_inputs(transcript: dict, cast: dict, voice_key: str = "voice") -> list[dict]:
     """Preflight every turn before synthesis; never silently drop a speaker/show."""
     host = transcript["host"]
     hosts = dialogue_hosts(host)
@@ -209,7 +219,7 @@ def narration_inputs(transcript: dict, cast: dict) -> list[dict]:
         raise ValueError(f"{transcript['show']}: audience review is stale for this script, "
                          "contract or review version; re-review before rendering")
     for item in inputs:
-        voice = (cast.get(item["host"]) or {}).get("voice")
+        voice = (cast.get(item["host"]) or {}).get(voice_key)
         if not voice or not item["text"].strip():
             raise ValueError(f"Missing voice or text for {item['host']}")
         item["voice"] = voice
@@ -267,18 +277,24 @@ def render_turns(inputs: list[dict], wav: Path, speed: float, render=None,
 
 
 def main() -> None:
+    global _GOOGLE_ACCENTS
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--transcripts", required=True, help="a full-run transcripts directory")
     parser.add_argument("--out", default=str(ROOT / "ios/Zwicky/Episodes"))
     parser.add_argument("--voices", default=str(ROOT / "tools/tts/voice_cast.json"))
     parser.add_argument("--date", default="")
     parser.add_argument("--speed", type=float, default=1.0)
+    parser.add_argument("--tts-provider", choices=("kokoro", "google-cloud"), default="kokoro")
     parser.add_argument("--require-all-shows", action="store_true", help="fail before rendering unless all 16 shows are present")
     args = parser.parse_args()
 
     import datetime as dt
     published = args.date or dt.date.today().isoformat()
     cast = load_cast(Path(args.voices))
+    voice_key = "geminiVoice" if args.tts_provider == "google-cloud" else "voice"
+    if args.tts_provider == "google-cloud":
+        _GOOGLE_ACCENTS = {entry["geminiVoice"]: entry.get("accent", "US")
+                           for entry in cast.values() if entry.get("geminiVoice")}
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     legacy = sorted(p.stem for p in out.glob("*.json") if p.stem != "index")
@@ -286,7 +302,7 @@ def main() -> None:
     jobs = []
     for path in sorted(Path(args.transcripts).glob("*.json")):
         transcript = json.loads(path.read_text())
-        jobs.append((transcript, narration_inputs(transcript, cast)))
+        jobs.append((transcript, narration_inputs(transcript, cast, voice_key=voice_key)))
     if not jobs:
         raise ValueError("No transcript artifacts found")
 
@@ -302,7 +318,8 @@ def main() -> None:
         wav = out / f"{name}.wav"
         print(f"rendering {transcript['show']} -> {name} ({len(inputs)} turns) ...", flush=True)
         sound_design = SoundDesign(name)
-        paragraphs = render_turns(inputs, wav, args.speed, sound_design=sound_design)
+        renderer = render_google_cloud if args.tts_provider == "google-cloud" else render_kokoro
+        paragraphs = render_turns(inputs, wav, args.speed, render=renderer, sound_design=sound_design)
         duration = wav_duration(wav)
         payload = story_for(transcript, duration, published, episode=name, paragraphs=paragraphs)
         payload["audioDesign"] = {"stingerSHA256": sound_design.fingerprint,

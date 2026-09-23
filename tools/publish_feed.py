@@ -48,7 +48,7 @@ def build_feed(episodes: list, public_base: str, prefix: str) -> list:
 def add_share_urls(feed: list, public_base: str, prefix: str) -> list:
     """Give every feed entry a stable, browser-friendly listening page."""
     base = public_base.rstrip("/") + "/" + prefix.strip("/")
-    if urlparse(base).scheme != "https":
+    if not is_https_url(base):
         raise ValueError("Public listening pages require an HTTPS origin")
     updated = []
     for story in feed:
@@ -59,20 +59,36 @@ def add_share_urls(feed: list, public_base: str, prefix: str) -> list:
     return updated
 
 
+def is_https_url(value: str) -> bool:
+    if not isinstance(value, str):
+        return False
+    parsed = urlparse(value)
+    return (parsed.scheme == "https" and bool(parsed.netloc) and not parsed.username
+            and not parsed.password and not parsed.query and not parsed.fragment)
+
+
 def episode_page(story: dict) -> bytes:
     """A standalone page with metadata, audio, transcript and sources."""
     escape = lambda value: html.escape(str(value or ""), quote=True)
     share_url = story["shareURL"]
     audio_url = story.get("audioURL", "")
-    if urlparse(share_url).scheme != "https" or urlparse(audio_url).scheme != "https":
+    if not is_https_url(share_url) or not is_https_url(audio_url):
         raise ValueError("Listening pages require HTTPS share and audio URLs")
+    body_text = story.get("body", "")
+    if not isinstance(body_text, str):
+        raise ValueError("Listening page transcript must be text")
     title, dek = escape(story.get("title")), escape(story.get("dek"))
-    body = "\n".join(f"<p>{escape(paragraph)}</p>" for paragraph in story.get("body", "").split("\n\n") if paragraph)
+    published = escape(story.get("published"))
+    publication = (f' · <time datetime="{published}">{published}</time>'
+                   if published else "")
+    published_meta = (f'<meta property="article:published_time" content="{published}">'
+                      if published else "")
+    body = "\n".join(f"<p>{escape(paragraph)}</p>" for paragraph in body_text.split("\n\n") if paragraph)
     sources = "\n".join(
         f'<li><a href="{escape(source["url"])}">{escape(source.get("title"))}</a>'
         f' — {escape(source.get("attribution"))}</li>'
         for source in story.get("sources", [])
-        if urlparse(source.get("url", "")).scheme == "https"
+        if isinstance(source, dict) and is_https_url(source.get("url", ""))
     )
     page = f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
@@ -81,17 +97,23 @@ def episode_page(story: dict) -> bytes:
 <meta name="description" content="{dek}">
 <link rel="canonical" href="{escape(share_url)}">
 <meta property="og:type" content="article">
+<meta property="og:site_name" content="Zwicky">
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{dek}">
 <meta property="og:url" content="{escape(share_url)}">
+<meta property="og:audio" content="{escape(audio_url)}">
+<meta property="og:audio:type" content="audio/mp4">
+{published_meta}
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{title}">
+<meta name="twitter:description" content="{dek}">
 <style>body{{font:18px/1.6 system-ui,sans-serif;max-width:720px;margin:auto;padding:32px 20px;color:#161614;background:#faf9f6}}
 h1{{font:700 clamp(2rem,7vw,3.5rem)/1.12 Georgia,serif}}audio{{width:100%}}a{{color:#304c75}}
 small,.meta{{color:#68665f}}section{{margin-top:2rem}}li{{margin:.5rem 0}}</style></head>
 <body><header><p class="meta">ZWICKY · {escape(story.get("topic"))}</p>
 <h1>{title}</h1><p>{dek}</p></header>
 <main><audio controls preload="none" src="{escape(audio_url)}">Your browser cannot play this audio.</audio>
-<p class="meta">{escape(story.get("minutes"))} min · AI-narrated</p>
+<p class="meta">{escape(story.get("minutes"))} min · AI-narrated{publication}</p>
 <section aria-label="Transcript"><h2>Transcript</h2>{body}</section>
 <section aria-label="About this episode"><h2>About this episode</h2><p>{escape(story.get("caveat"))}</p></section>
 <section aria-label="Sources"><h2>Sources</h2><ol>{sources}</ol></section></main>
@@ -229,6 +251,10 @@ def main() -> None:
             raise ValueError("Daily release must contain episodes from one publication date")
         feed = merge_feed(existing, feed, day=dates.pop(), max_per_day=args.max_per_day)
     feed = add_share_urls(feed, public_base, prefix)
+    if args.dry_run:
+        # Match the publish path: fail before any writes if a page cannot render.
+        for story in feed:
+            episode_page(story)
     if args.out:
         Path(args.out).write_text(json.dumps(feed, indent=2, ensure_ascii=False) + "\n")
     print(f"feed has {len(feed)} episodes; base {public_base.rstrip('/')}/{prefix}")

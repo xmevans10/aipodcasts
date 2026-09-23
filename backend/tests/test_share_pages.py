@@ -1,4 +1,5 @@
 import os
+import json
 import sys
 import tempfile
 import unittest
@@ -6,7 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
-from publish_feed import add_share_urls, episode_page, merge_feed, upload  # noqa: E402
+from publish_feed import add_share_urls, episode_page, main, merge_feed, upload  # noqa: E402
 
 
 class SharePageTests(unittest.TestCase):
@@ -20,7 +21,8 @@ class SharePageTests(unittest.TestCase):
         }
 
     def test_page_is_shareable_and_escapes_episode_copy(self):
-        story = add_share_urls([self.story()], "https://cdn.example/", "v1")[0]
+        story = add_share_urls([{**self.story(), "published": "2026-09-23"}],
+                               "https://cdn.example/", "v1")[0]
         self.assertEqual(story["shareURL"],
                          "https://cdn.example/v1/listen/episode-webwork-1.html")
         page = episode_page(story).decode()
@@ -30,6 +32,29 @@ class SharePageTests(unittest.TestCase):
         self.assertIn("Second &lt;paragraph&gt;.", page)
         self.assertNotIn("Second <paragraph>.", page)
         self.assertIn('href="https://example.org/paper"', page)
+        self.assertIn('property="og:audio" content="https://cdn.example/v1/audio/one.m4a"', page)
+        self.assertIn('property="article:published_time" content="2026-09-23"', page)
+        self.assertIn('<time datetime="2026-09-23">2026-09-23</time>', page)
+
+    def test_rejects_malformed_public_urls_and_skips_unsafe_sources(self):
+        with self.assertRaisesRegex(ValueError, "HTTPS origin"):
+            add_share_urls([self.story()], "https:missing-host", "v1")
+        story = add_share_urls([self.story()], "https://cdn.example", "v1")[0]
+        story["sources"].append({"title": "Unsafe", "url": "https:missing-host"})
+        self.assertNotIn("Unsafe", episode_page(story).decode())
+        story["audioURL"] = "https:missing-host"
+        with self.assertRaisesRegex(ValueError, "HTTPS share and audio URLs"):
+            episode_page(story)
+
+    def test_dry_run_validates_pages_before_reporting_success(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "one.json"
+            path.write_text(json.dumps({"story": {**self.story(), "body": ["invalid"]}}))
+            with patch.dict(os.environ, {"R2_PUBLIC_BASE": "https://cdn.example"}):
+                with patch.object(sys, "argv", ["publish_feed.py", "--episodes", directory,
+                                                "--dry-run"]):
+                    with self.assertRaisesRegex(ValueError, "transcript must be text"):
+                        main()
 
     def test_existing_feed_can_gain_share_link_without_changing_episode(self):
         old = {**self.story(), "published": "2026-09-22",

@@ -31,6 +31,12 @@ class FullRunActionsTests(unittest.TestCase):
         result = run_all_shows.exclude_published(candidates, {"10.1234/OLD"})
         self.assertEqual(result, [{"doi": "10.1234/new"}])
 
+    def test_retry_never_repeats_a_failed_seed_paper(self):
+        candidates = [{"doi": "10.1234/failed"}, {"doi": "10.1234/alternate"}]
+        result = run_all_shows.exclude_failed_seed(
+            candidates, {"status": "abstained", "doi": "10.1234/failed"}, set())
+        self.assertEqual(result, [{"doi": "10.1234/alternate"}])
+
     def test_retry_excludes_failed_candidate_but_not_approved_seed(self):
         manifest = {"shows": [
             {"status": "approved", "doi": "10.1234/approved"},

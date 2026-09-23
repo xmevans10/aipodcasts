@@ -72,6 +72,15 @@ def exclude_published(candidates: list[dict], excluded_dois: set[str]) -> list[d
     return [work for work in candidates if work["doi"].casefold() not in excluded]
 
 
+def exclude_failed_seed(candidates: list[dict], previous: dict,
+                       published_dois: set[str]) -> list[dict]:
+    """Never retry a seeded paper that already failed review; move to another candidate."""
+    excluded = set(published_dois) | set(previous.get("excluded_dois", []))
+    if previous.get("status") != "approved" and previous.get("doi"):
+        excluded.add(str(previous["doi"]).casefold())
+    return exclude_published(candidates, excluded)
+
+
 def build(args):
     load_local_env()
     db = connect()
@@ -128,8 +137,7 @@ def build(args):
         if previous.get("status") == "approved" and previous_doi in excluded_dois:
             print(f"  {show:16} ignoring seed             DOI was previously published")
         excluded = set(previous.get("excluded_dois", []))
-        candidates = [w for w in exclude_published(by_host.get(host, []), excluded_dois)
-                      if w["doi"] not in excluded]
+        candidates = exclude_failed_seed(by_host.get(host, []), previous, excluded_dois)
         entry = {"host": host, "show": show, "candidates": len(candidates),
                  "status": "no_candidate", "doi": "", "title": ""}
         if excluded:

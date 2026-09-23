@@ -6,6 +6,7 @@ import tempfile
 import wave
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "backend"))
@@ -169,6 +170,14 @@ class DialogueRenderTests(unittest.TestCase):
         artifact['audience']['pass'] = False
         with self.assertRaisesRegex(ValueError, 'audience review'):
             narration_inputs(artifact, cast)
+        artifact['audience'].update(decision='revise', beat_fit='grounded')
+        with patch.dict('os.environ', {'LILT_ENTERTAINMENT_RELEASE': '1'}):
+            self.assertTrue(narration_inputs(artifact, cast))
+        artifact['audience']['decision'] = 'withhold'
+        with patch.dict('os.environ', {'LILT_ENTERTAINMENT_RELEASE': '1'}):
+            with self.assertRaisesRegex(ValueError, 'audience review'):
+                narration_inputs(artifact, cast)
+        artifact['audience']['decision'] = 'revise'
         artifact['audience']['pass'] = True
         stale = dict(artifact, audience={**artifact['audience'], 'draft_sha256': 'x' * 64})
         with self.assertRaisesRegex(ValueError, 'audience review is stale'):

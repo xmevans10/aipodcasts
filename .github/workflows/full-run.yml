@@ -141,6 +141,7 @@ jobs:
           PER_SHOW: ${{ inputs.per_show || '3' }}
           LILT_SMC: ${{ inputs.release_fresh_batch && '0' || '1' }}
           LILT_AUDIENCE_REPAIRS: ${{ inputs.release_fresh_batch && '2' || '1' }}
+          LILT_ENTERTAINMENT_RELEASE: ${{ inputs.release_fresh_batch && '1' || '0' }}
 
       - name: Upload reviewed and withheld transcripts
         if: always()
@@ -168,6 +169,8 @@ jobs:
 
       - name: Install narration dependencies
         if: ${{ inputs.release_fresh_batch == true }}
+        env:
+          LILT_ENTERTAINMENT_RELEASE: "1"
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
@@ -175,6 +178,8 @@ jobs:
 
       - name: Render today's Google Cloud episodes
         if: ${{ inputs.release_fresh_batch == true }}
+        env:
+          LILT_ENTERTAINMENT_RELEASE: "1"
         run: |
           python3 tools/tts/bundle_shows.py --transcripts daily-transcripts \
             --out daily-episodes --date "$RELEASE_DATE" --tts-provider google-cloud

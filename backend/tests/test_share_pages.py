@@ -33,6 +33,7 @@ class SharePageTests(unittest.TestCase):
         self.assertNotIn("Second <paragraph>.", page)
         self.assertIn('href="https://example.org/paper"', page)
         self.assertIn('property="og:audio" content="https://cdn.example/v1/audio/one.m4a"', page)
+        self.assertIn('href="zwicky://episode/episode-webwork-1"', page)
         self.assertIn('property="article:published_time" content="2026-09-23"', page)
         self.assertIn('<time datetime="2026-09-23">2026-09-23</time>', page)
 
@@ -44,6 +45,10 @@ class SharePageTests(unittest.TestCase):
         self.assertNotIn("Unsafe", episode_page(story).decode())
         story["audioURL"] = "https:missing-host"
         with self.assertRaisesRegex(ValueError, "HTTPS share and audio URLs"):
+            episode_page(story)
+        story["audioURL"] = "https://cdn.example/v1/audio/one.m4a"
+        story["id"] = "../unsafe"
+        with self.assertRaisesRegex(ValueError, "URL-safe slug"):
             episode_page(story)
 
     def test_dry_run_validates_pages_before_reporting_success(self):

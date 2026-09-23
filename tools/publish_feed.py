@@ -72,6 +72,9 @@ def episode_page(story: dict) -> bytes:
     escape = lambda value: html.escape(str(value or ""), quote=True)
     share_url = story["shareURL"]
     audio_url = story.get("audioURL", "")
+    story_id = story.get("id", "")
+    if not isinstance(story_id, str) or not re.fullmatch(r"[a-z0-9][a-z0-9._-]{0,159}", story_id):
+        raise ValueError("Listening page episode ID must be a URL-safe slug")
     if not is_https_url(share_url) or not is_https_url(audio_url):
         raise ValueError("Listening pages require HTTPS share and audio URLs")
     body_text = story.get("body", "")
@@ -112,7 +115,8 @@ h1{{font:700 clamp(2rem,7vw,3.5rem)/1.12 Georgia,serif}}audio{{width:100%}}a{{co
 small,.meta{{color:#68665f}}section{{margin-top:2rem}}li{{margin:.5rem 0}}</style></head>
 <body><header><p class="meta">ZWICKY · {escape(story.get("topic"))}</p>
 <h1>{title}</h1><p>{dek}</p></header>
-<main><audio controls preload="none" src="{escape(audio_url)}">Your browser cannot play this audio.</audio>
+ <main><p><a href="zwicky://episode/{story_id}">Open in the Zwicky app</a></p>
+ <audio controls preload="none" src="{escape(audio_url)}">Your browser cannot play this audio.</audio>
 <p class="meta">{escape(story.get("minutes"))} min · AI-narrated{publication}</p>
 <section aria-label="Transcript"><h2>Transcript</h2>{body}</section>
 <section aria-label="About this episode"><h2>About this episode</h2><p>{escape(story.get("caveat"))}</p></section>

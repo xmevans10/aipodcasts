@@ -3,7 +3,7 @@
 set -e
 cd "$(dirname "$0")/.."
 OUT="${TMPDIR:-/tmp}/sound-science-logic-checks"
-swiftc -parse-as-library -O -o "$OUT" \
+swiftc -parse-as-library -module-cache-path "${TMPDIR:-/tmp}/sound-science-module-cache" -O -o "$OUT" \
     ios/Zwicky/ListeningState.swift \
     ios/Zwicky/Cache.swift \
     ios/Zwicky/Models.swift \
@@ -13,4 +13,4 @@ swiftc -parse-as-library -O -o "$OUT" \
     ios/Zwicky/HostPortrait.swift \
     ios/Zwicky/OpenAIKit.swift \
     ios/Tests/LogicChecks.swift
-"$OUT" ios/Zwicky/Episodes
+"$OUT"

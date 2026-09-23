@@ -126,51 +126,17 @@ private func testShowsAndHosts() {
     }
 }
 
-// MARK: - bundled episodes
+// MARK: - episode cache migration
 
-private func testEpisodes(directory: URL) {
-    let names: [String]
-    if let data = try? Data(contentsOf: directory.appendingPathComponent("index.json")),
-       let ids = try? JSONDecoder().decode([String].self, from: data), !ids.isEmpty {
-        names = ids
-    } else {
-        names = ["mira", "clara", "elias", "theo"]
-    }
-    for name in names {
-        let url = directory.appendingPathComponent("\(name).json")
-        guard let data = try? Data(contentsOf: url),
-              let episode = try? JSONDecoder().decode(BundledEpisode.self, from: data) else {
-            failures.append("\(name).json does not decode as an episode"); checks += 1; continue
-        }
-        let story = episode.story
-        checkEqual(story.audioURL, "bundle:\(name).m4a", "\(name) points at its bundled audio")
-        check(FileManager.default.fileExists(atPath: directory.appendingPathComponent("\(name).m4a").path),
-              "\(name).m4a ships beside its metadata")
-        check(Show.forHost(story.hostID) != nil, "\(name) belongs to a real show")
-        check(!story.sources.isEmpty, "\(name) cites at least one source")
-        check(story.sources.allSatisfy { $0.url.hasPrefix("https://") }, "\(name) source links are HTTPS")
-        check(!story.caveat.isEmpty, "\(name) carries its limitations note")
-        check(episode.duration > 30, "\(name) is a real episode length")
-
-        // transcript: every word timed, in order, inside the episode
-        let words = episode.transcript.flatMap(\.words)
-        check(!words.isEmpty, "\(name) has a timed transcript")
-        check(zip(words, words.dropFirst()).allSatisfy { $0.start <= $1.start }, "\(name) word timings never go backwards")
-        check(words.first!.start >= 0 && words.last!.start <= episode.duration,
-              "\(name) word timings sit inside the episode")
-        let transcriptWords = episode.transcript.flatMap { $0.words.map(\.text) }.joined(separator: " ")
-        let bodyWords = story.body.split(whereSeparator: \.isWhitespace).joined(separator: " ")
-        checkEqual(transcriptWords, bodyWords, "\(name) transcript matches the episode body word for word")
-
-        // audio envelope: five bands per frame, 0...1, roughly one frame per hop
-        check(!episode.levels.isEmpty, "\(name) has an audio envelope")
-        check(episode.levels.allSatisfy { $0.count == 5 }, "\(name) envelope has five bands per frame")
-        check(episode.levels.allSatisfy { $0.allSatisfy { (0...1).contains($0) } }, "\(name) envelope stays in 0...1")
-        let expectedFrames = episode.duration / episode.levelHop
-        check(abs(Double(episode.levels.count) - expectedFrames) < 5,
-              "\(name) envelope covers the episode (\(episode.levels.count) frames vs \(Int(expectedFrames)))")
-        check(episode.levels.contains { $0.contains { $0 > 0.5 } }, "\(name) envelope actually peaks")
-    }
+private func testEpisodeCacheMigration() {
+    let oldFeed = #"{"stories":[],"cachedAt":0}"#.data(using: .utf8)!
+    let oldPinned = #"[{"id":"old-web-work"}]"#.data(using: .utf8)!
+    check(StoryCache.decodeFeed(oldFeed) == nil, "unversioned episode feed caches are discarded")
+    check(StoryCache.decodePinned(oldPinned) == nil, "legacy pinned episode caches are discarded")
+    let current = StoryCache.Feed(schemaVersion: StoryCache.schemaVersion, stories: [], cachedAt: .now)
+    let currentData = try! JSONEncoder().encode(current)
+    checkEqual(StoryCache.decodeFeed(currentData)?.schemaVersion, StoryCache.schemaVersion,
+               "versioned feed caches remain readable")
 }
 
 // MARK: - story helpers
@@ -242,14 +208,13 @@ private func testDialogueFields() {
 
 @main struct LogicChecks {
     static func main() {
-        let episodes = URL(fileURLWithPath: CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "Zwicky/Episodes")
         testListeningState()
         testListeningMath()
         testPlaybackTickPolicy()
         testShowsAndHosts()
         testStoryHelpers()
         testDialogueFields()
-        testEpisodes(directory: episodes)
+        testEpisodeCacheMigration()
         MainActor.assumeIsolated { testCoverLayout() }
 
         if failures.isEmpty {

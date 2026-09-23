@@ -336,12 +336,8 @@ import UIKit
         playing = true; onStarted?(item)
         updateNowPlaying()
     }
-    /// Remote audio must be HTTPS; `bundle:name.ext` plays a file shipped with the app.
+    /// Episode audio is streamed from HTTPS URLs supplied by the feed.
     static func resolve(_ raw: String) -> URL? {
-        if raw.hasPrefix("bundle:") {
-            let file = String(raw.dropFirst("bundle:".count)) as NSString
-            return Bundle.main.url(forResource: file.deletingPathExtension, withExtension: file.pathExtension)
-        }
         guard let url = URL(string: raw), url.scheme == "https" else { return nil }
         return url
     }

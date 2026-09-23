@@ -63,14 +63,21 @@ struct RootView: View {
             let args = ProcessInfo.processInfo.arguments
             if args.contains("--browse") { tab = 1 }
             if args.contains("--hosts") { tab = 2 }
-            if args.contains("--library") { library.toggle(Story.demos[0]); tab = 3 }
+            if args.contains("--library") { tab = 3 }
             if args.contains("--you") { tab = 4 }
-            if args.contains("--player") { player.story = Story.demos[0]; player.isPlayerPresented = true }
+            let openPlayer = args.contains("--player")
             #endif
             player.onStarted = { library.heard($0) }
             player.restore(library.stories)
             await library.refresh()
             player.restore(library.stories)
+            #if DEBUG
+            if args.contains("--library"), let latest = library.latest.first { library.toggle(latest) }
+            if openPlayer, let latest = library.latest.first {
+                player.story = latest
+                player.isPlayerPresented = true
+            }
+            #endif
             library.pin(player.queuedStories + [player.story].compactMap { $0 })
             if library.shouldAnnounceNew { showNewEpisodes = true }
             Telemetry.app.info("launch ready in \(Telemetry.ms(since: launchStart), format: .fixed(precision: 1)) ms; \(library.stories.count, privacy: .public) stories")

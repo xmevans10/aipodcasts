@@ -81,10 +81,18 @@ platform :ios do
       scheme: "Zwicky",
       configuration: "Release",
       export_method: "app-store",
-      # Automatic signing: let Xcode create the App Store profile for this bundle id,
-      # authenticated with the API key above. Without this there is no distribution
-      # profile for com.xmevans10.Zwicky on this machine.
-      xcargs: "-allowProvisioningUpdates",
+      # Use the installed distribution identity and Zwicky App Store profile.
+      xcargs: "CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=8K5ZVPCQ42 " \
+              "PROVISIONING_PROFILE_SPECIFIER='Zwicky App Store' CODE_SIGN_IDENTITY='Apple Distribution'",
+      export_options: {
+        signingStyle: "manual",
+        teamID: "8K5ZVPCQ42",
+        provisioningProfiles: { "com.xmevans10.Zwicky" => "Zwicky App Store" }
+      },
+      archive_path: "build/fastlane/Zwicky.xcarchive",
+      derived_data_path: "build/fastlane/DerivedData",
+      build_path: "build/fastlane",
+      buildlog_path: "build/fastlane",
       output_directory: "build/fastlane",
       output_name: "Zwicky.ipa",
       clean: true

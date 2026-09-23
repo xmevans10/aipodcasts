@@ -71,7 +71,10 @@ struct YouView: View {
             .card()
         }
         .buttonStyle(PressableStyle(scale: 0.98))
-        .accessibilityLabel("Profile, \(library.displayName). Opens profile.")
+        .accessibilityLabel("Profile, \(library.displayName)")
+        .accessibilityValue([library.profileBio, library.favoriteShow.map { "Favorite show: \($0.title)" } ?? ""]
+            .filter { !$0.isEmpty }.joined(separator: ", "))
+        .accessibilityHint("Opens your private profile on this device")
     }
 
     private struct Milestone: Identifiable { let id: String; let symbol: String; let earned: Bool }
@@ -150,6 +153,8 @@ struct YouView: View {
                 Spacer()
                 Stepper("\(library.dailyGoalMinutes) min", value: $library.dailyGoalMinutes, in: 3...60, step: 1)
                     .labelsHidden().fixedSize()
+                    .accessibilityLabel("Daily listening goal")
+                    .accessibilityValue("\(library.dailyGoalMinutes) minutes")
                     .onChange(of: library.dailyGoalMinutes) { _, _ in Haptics.selection() }
                 Text("\(library.dailyGoalMinutes) min").font(.subheadline.weight(.semibold)).monospacedDigit().frame(width: 58, alignment: .trailing)
                     .contentTransition(reduceMotion ? .identity : .numericText(value: Double(library.dailyGoalMinutes)))

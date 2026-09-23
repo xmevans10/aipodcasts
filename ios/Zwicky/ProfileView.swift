@@ -33,10 +33,37 @@ struct ProfileView: View {
     @EnvironmentObject var player: AudioPlayer
     @Environment(\.dismiss) var dismiss
 
-    private let symbols = ["initials", "person.fill", "sparkles", "leaf", "waveform.path.ecg", "globe.americas",
-                           "moon.stars", "atom", "cpu", "figure.run", "moon.zzz", "network",
-                           "hexagon", "water.waves", "fossil.shell", "star", "flame"]
-    private let hues: [Double] = [0.66, 0.58, 0.47, 0.36, 0.27, 0.14, 0.06, 0.82, 0.96]
+    private enum ProfileField: Hashable { case name, bio }
+    @FocusState private var focusedField: ProfileField?
+
+    private struct AvatarChoice: Identifiable {
+        let id: String
+        let name: String
+    }
+
+    private struct ColorChoice: Identifiable {
+        let id: String
+        let hue: Double
+    }
+
+    private let symbols: [AvatarChoice] = [
+        .init(id: "initials", name: "Initials"), .init(id: "person.fill", name: "Person"),
+        .init(id: "sparkles", name: "Sparkles"), .init(id: "leaf", name: "Leaf"),
+        .init(id: "waveform.path.ecg", name: "Waveform"), .init(id: "globe.americas", name: "Globe"),
+        .init(id: "moon.stars", name: "Moon and stars"), .init(id: "atom", name: "Atom"),
+        .init(id: "cpu", name: "Computer chip"), .init(id: "figure.run", name: "Runner"),
+        .init(id: "moon.zzz", name: "Sleeping moon"), .init(id: "network", name: "Network"),
+        .init(id: "hexagon", name: "Hexagon"), .init(id: "water.waves", name: "Waves"),
+        .init(id: "fossil.shell", name: "Shell"), .init(id: "star", name: "Star"),
+        .init(id: "flame", name: "Flame")
+    ]
+    private let colors: [ColorChoice] = [
+        .init(id: "Indigo", hue: 0.66), .init(id: "Blue", hue: 0.58),
+        .init(id: "Teal", hue: 0.47), .init(id: "Green", hue: 0.36),
+        .init(id: "Lime", hue: 0.27), .init(id: "Gold", hue: 0.14),
+        .init(id: "Orange", hue: 0.06), .init(id: "Purple", hue: 0.82),
+        .init(id: "Pink", hue: 0.96)
+    ]
 
     var body: some View {
         NavigationStack {
@@ -47,15 +74,25 @@ struct ProfileView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             TextField("Display name", text: $library.profileName)
                                 .font(.headline).textInputAutocapitalization(.words)
+                                .focused($focusedField, equals: .name)
+                                .submitLabel(.done)
+                                .onSubmit(normalizeProfile)
+                                .onChange(of: library.profileName) { _, value in
+                                    if value.count > 40 { library.profileName = String(value.prefix(40)) }
+                                }
                             Text("Your private profile on this device").font(.caption).foregroundStyle(Theme.secondary)
                         }
                     }
                     .padding(.vertical, 4)
                     TextField("A little about you", text: $library.profileBio, axis: .vertical)
                         .lineLimit(2...4)
+                        .focused($focusedField, equals: .bio)
                         .onChange(of: library.profileBio) { _, value in
                             if value.count > 160 { library.profileBio = String(value.prefix(160)) }
                         }
+                    Text("\(library.profileBio.count) of 160 characters")
+                        .font(.caption2).foregroundStyle(Theme.secondary)
+                        .accessibilityLabel("Biography, \(160 - library.profileBio.count) characters remaining")
                     Picker("Favorite show", selection: $library.favoriteShowID) {
                         Text("None").tag("")
                         ForEach(Show.all) { show in Text(show.title).tag(show.id) }
@@ -63,33 +100,35 @@ struct ProfileView: View {
                 }
 
                 Section("Avatar") {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
-                        ForEach(symbols, id: \.self) { name in
-                            Button { library.profileSymbol = name } label: {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 44), spacing: 12)], spacing: 12) {
+                        ForEach(symbols) { choice in
+                            Button { library.profileSymbol = choice.id } label: {
                                 Group {
-                                    if name == "initials" {
+                                    if choice.id == "initials" {
                                         Text("Aa").font(.subheadline.weight(.semibold))
                                     } else {
-                                        Image(systemName: name).font(.title3)
+                                        Image(systemName: choice.id).font(.title3)
                                     }
                                 }
-                                .frame(width: 40, height: 40)
-                                .foregroundStyle(library.profileSymbol == name ? .white : Theme.ink)
-                                .background(library.profileSymbol == name ? Theme.ink : Theme.subtle, in: Circle())
+                                .frame(width: 44, height: 44)
+                                .foregroundStyle(library.profileSymbol == choice.id ? .white : Theme.ink)
+                                .background(library.profileSymbol == choice.id ? Theme.ink : Theme.subtle, in: Circle())
                             }
                             .buttonStyle(.plain)
-                            .accessibilityLabel(name == "initials" ? "Initials" : name)
+                            .accessibilityLabel(choice.name)
+                            .accessibilityAddTraits(library.profileSymbol == choice.id ? .isSelected : [])
                         }
                     }
-                    HStack(spacing: 12) {
-                        ForEach(hues, id: \.self) { hue in
-                            Button { library.profileHue = hue } label: {
-                                Circle().fill(Color(hue: hue, saturation: 0.55, brightness: 0.9))
-                                    .frame(width: 28, height: 28)
-                                    .overlay(Circle().strokeBorder(Theme.ink, lineWidth: library.profileHue == hue ? 2.5 : 0))
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 44), spacing: 12)], spacing: 12) {
+                        ForEach(colors) { choice in
+                            Button { library.profileHue = choice.hue } label: {
+                                Circle().fill(Color(hue: choice.hue, saturation: 0.55, brightness: 0.9))
+                                    .frame(width: 44, height: 44)
+                                    .overlay(Circle().strokeBorder(Theme.ink, lineWidth: library.profileHue == choice.hue ? 3 : 0))
                             }
                             .buttonStyle(.plain)
-                            .accessibilityLabel("Avatar colour")
+                            .accessibilityLabel("\(choice.id) avatar color")
+                            .accessibilityAddTraits(library.profileHue == choice.hue ? .isSelected : [])
                         }
                     }
                     .padding(.vertical, 2)
@@ -111,8 +150,15 @@ struct ProfileView: View {
                 }
             }
             .navigationTitle("Profile")
-            .toolbar { Button("Done") { dismiss() } }
+            .toolbar { Button("Done") { normalizeProfile(); dismiss() } }
             .onAppear { library.ensureJoined() }
+            .onDisappear(perform: normalizeProfile)
         }
+    }
+
+    private func normalizeProfile() {
+        focusedField = nil
+        library.profileName = library.profileName.trimmingCharacters(in: .whitespacesAndNewlines)
+        library.profileBio = library.profileBio.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }

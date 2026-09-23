@@ -55,7 +55,7 @@ import UIKit
     private var routeObserver: NSObjectProtocol?
     private var wasPlayingBeforeInterruption = false
     private var artworkCache: [String: MPMediaItemArtwork] = [:]
-    private var lastSyncedSecond = -1
+    private var lastNowPlayingPosition: Double?
     /// Seconds of real audio listened, keyed by local day ("yyyy-MM-dd").
     @Published private(set) var listenedSeconds: [String: Double] = UserDefaults.standard.dictionary(forKey: "listenedSeconds") as? [String: Double] ?? [:]
     var isPreview: Bool { story?.audioURL == nil }
@@ -122,7 +122,11 @@ import UIKit
 
     /// Refresh lock-screen metadata: title, show, elapsed time, duration and rate.
     func updateNowPlaying() {
-        guard let story else { MPNowPlayingInfoCenter.default().nowPlayingInfo = nil; return }
+        guard let story else {
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+            lastNowPlayingPosition = nil
+            return
+        }
         var info: [String: Any] = [
             MPMediaItemPropertyTitle: story.title,
             MPMediaItemPropertyArtist: "Zwicky · \(story.host.name)",
@@ -136,6 +140,7 @@ import UIKit
         }
         if let art = artwork(for: story.show) { info[MPMediaItemPropertyArtwork] = art }
         MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+        lastNowPlayingPosition = position
     }
 
     private func artwork(for show: Show) -> MPMediaItemArtwork? {
@@ -297,7 +302,7 @@ import UIKit
         if let endObserver { NotificationCenter.default.removeObserver(endObserver) }; endObserver = nil
         player?.pause(); player = nil; activeUtterance = nil; speech.stopSpeaking(at: .immediate)
         dialogue = []; dialogueIndex = 0; inDialogue = false
-        story = item; position = item.audioURL == nil ? 0 : resumePosition; duration = Double(item.minutes * 60); message = nil; lastSyncedSecond = -1
+        story = item; position = item.audioURL == nil ? 0 : resumePosition; duration = Double(item.minutes * 60); message = nil; lastNowPlayingPosition = nil
         guard activateSession() else { return }
         if item.audioURL == nil, let turns = item.turns, !turns.isEmpty {
             startDialogue(turns)
@@ -314,9 +319,14 @@ import UIKit
                         self.recordListeningTime(at: .now)
                     } else { self.lastTick = nil }
                     if abs(self.position - self.lastCheckpointAt) >= 5 { self.lastCheckpointAt = self.position; self.checkpoint() }
-                    if Int(self.position) != self.lastSyncedSecond { self.lastSyncedSecond = Int(self.position); self.updateNowPlaying() }
+                    if PlaybackTickPolicy.shouldSyncNowPlaying(last: self.lastNowPlayingPosition, next: self.position) {
+                        self.updateNowPlaying()
+                    }
                     if let seconds = self.player?.currentItem?.duration.seconds, seconds.isFinite, seconds > 0,
-                       abs(self.duration - seconds) > 0.05 { self.duration = seconds }
+                       abs(self.duration - seconds) > 0.05 {
+                        self.duration = seconds
+                        self.updateNowPlaying()
+                    }
                     if self.player?.currentItem?.status == .failed { self.message = "This audio is unavailable. You can still read the story."; self.playing = false }
                 }
             }

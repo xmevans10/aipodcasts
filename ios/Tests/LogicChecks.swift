@@ -102,6 +102,11 @@ private func testPlaybackTickPolicy() {
                "a stalled callback cannot overcount listening")
     checkEqual(PlaybackTickPolicy.listenedInterval(since: start, now: start.addingTimeInterval(-1)), 0,
                "clock changes cannot subtract listening time")
+    check(PlaybackTickPolicy.shouldSyncNowPlaying(last: nil, next: 0), "first metadata update is allowed")
+    check(!PlaybackTickPolicy.shouldSyncNowPlaying(last: 0, next: 9.75), "small advances use system clock")
+    check(PlaybackTickPolicy.shouldSyncNowPlaying(last: 0, next: 10), "metadata reconciles every ten seconds")
+    check(PlaybackTickPolicy.shouldSyncNowPlaying(last: 20, next: 9), "large backwards jumps reconcile")
+    check(!PlaybackTickPolicy.shouldSyncNowPlaying(last: 0, next: .nan), "invalid time cannot reach metadata")
 }
 
 // MARK: - shows and hosts

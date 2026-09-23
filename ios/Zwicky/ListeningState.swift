@@ -38,6 +38,14 @@ enum PlaybackTickPolicy {
         guard let last else { return 0 }
         return min(max(now.timeIntervalSince(last), 0), 0.5)
     }
+
+    /// The system advances lock-screen elapsed time at the advertised playback rate.
+    /// Reconcile occasionally to correct drift without rebuilding metadata each second.
+    static func shouldSyncNowPlaying(last: Double?, next: Double, interval: Double = 10) -> Bool {
+        guard next.isFinite else { return false }
+        guard let last, last.isFinite else { return true }
+        return abs(next - last) >= interval
+    }
 }
 
 /// Device-local listening state, independent of audio and view lifecycles.

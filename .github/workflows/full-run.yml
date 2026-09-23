@@ -20,10 +20,16 @@ on:
       seed_run_id:
         description: Prior full-run Actions run ID to resume (optional; overrides seed_dir)
         default: ""
+      release_fresh_batch:
+        description: Clear dev episodes, generate all 16 shows, and publish two today
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   contents: read
   actions: read
+  id-token: write
 
 concurrency:
   group: full-run-${{ github.ref }}
@@ -49,12 +55,53 @@ jobs:
       LILT_MAX_PROVIDER_CALLS_PER_DAY: "96"
       SEED_DIR: ${{ inputs.seed_dir || '' }}
       SEED_RUN_ID: ${{ inputs.seed_run_id || '' }}
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_PUBLIC_BASE: ${{ secrets.R2_PUBLIC_BASE }}
+      R2_PREFIX: v1
+      GOOGLE_CLOUD_PROJECT: zwicky-509510
+      GOOGLE_CLOUD_REGION: eu
     steps:
       - uses: actions/checkout@v4
+
+      - name: Require an unseeded batch for the dev-feed replacement
+        if: ${{ inputs.release_fresh_batch == true }}
+        run: |
+          if [ -n "$SEED_DIR" ] || [ -n "$SEED_RUN_ID" ]; then
+            echo "A full fresh release cannot reuse a transcript seed" >&2
+            exit 1
+          fi
+
+      - id: google-auth
+        name: Authenticate to Google Cloud for episode audio
+        if: ${{ inputs.release_fresh_batch == true }}
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: zwicky-509510
+          workload_identity_provider: projects/963729700523/locations/global/workloadIdentityPools/github-actions/providers/sciencebreak-main
+          service_account: zwicky-406@zwicky-509510.iam.gserviceaccount.com
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      - name: Install R2 client
+        run: python3 -m pip install boto3
+
+      - name: Load previously used paper exclusions
+        run: python3 tools/clear_app_feed.py --load-exclusions "$RUNNER_TEMP/excluded-dois.json"
+
+      - name: Clear dev episodes from the app
+        if: ${{ inputs.release_fresh_batch == true }}
+        run: >-
+          python3 tools/clear_app_feed.py --wipe --run-id "$GITHUB_RUN_ID"
+          --exclude-dois-file "$RUNNER_TEMP/excluded-dois.json"
+
+      - name: Prepare empty feed input
+        if: ${{ inputs.release_fresh_batch == true }}
+        run: echo '[]' > "$RUNNER_TEMP/empty-feed.json"
 
       - name: Resume from prior Actions run
         if: env.SEED_RUN_ID != ''
@@ -71,6 +118,7 @@ jobs:
             --days "$DAYS" \
             --per-show "$PER_SHOW" \
             --seed-dir "$SEED_DIR" \
+            --exclude-dois-file "$RUNNER_TEMP/excluded-dois.json" \
             --out full-run-artifacts
         env:
           DAYS: ${{ inputs.days || '14' }}
@@ -87,3 +135,44 @@ jobs:
 
       - name: Require sixteen current factual and audience approvals
         run: python3 experiments/full-run/check_batch.py full-run-artifacts
+
+      - name: Set publication date
+        if: ${{ inputs.release_fresh_batch == true }}
+        run: echo "RELEASE_DATE=$(date -u +%F)" >> "$GITHUB_ENV"
+
+      - name: Select two new episodes for today's release
+        if: ${{ inputs.release_fresh_batch == true }}
+        run: |
+          mkdir -p "daily-batches/$GITHUB_RUN_ID"
+          cp -R full-run-artifacts/. "daily-batches/$GITHUB_RUN_ID/"
+          python3 tools/daily_release.py --batches daily-batches --out daily-transcripts \
+            --feed-file "$RUNNER_TEMP/empty-feed.json" --date "$RELEASE_DATE"
+
+      - name: Install narration dependencies
+        if: ${{ inputs.release_fresh_batch == true }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          python3 -m pip install numpy 'google-cloud-texttospeech>=2.31.0'
+
+      - name: Render today's Google Cloud episodes
+        if: ${{ inputs.release_fresh_batch == true }}
+        run: |
+          python3 tools/tts/bundle_shows.py --transcripts daily-transcripts \
+            --out daily-episodes --date "$RELEASE_DATE" --tts-provider google-cloud
+
+      - name: Upload today's episode audio
+        if: ${{ inputs.release_fresh_batch == true }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-episodes-${{ github.run_id }}
+          path: daily-episodes/
+          retention-days: 90
+
+      - name: Publish today's episodes to the app feed
+        if: ${{ inputs.release_fresh_batch == true }}
+        run: python3 tools/publish_feed.py --episodes daily-episodes --merge-existing --max-per-day 2
+
+      - name: Verify today's episodes in the app feed
+        if: ${{ inputs.release_fresh_batch == true }}
+        run: python3 tools/verify_daily_feed.py --transcripts daily-transcripts --date "$RELEASE_DATE"

@@ -42,7 +42,7 @@ class DailyReleaseTests(unittest.TestCase):
         merged = merge_feed([older, unrelated], [revised], day="2026-09-23")
         self.assertEqual({s["id"] for s in merged}, {"new", "other"})
 
-    def test_selection_skips_published_doi_and_uses_oldest_batch(self):
+    def test_selection_skips_published_doi_and_prioritizes_newest_batch(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             old = root / "100"; new = root / "200"
@@ -53,10 +53,12 @@ class DailyReleaseTests(unittest.TestCase):
                 {"show": "Wild Company", "host": "fern", "doi": "10.1234/old", "status": "approved"},
                 {"show": "Mycelium", "host": "rosa", "doi": "10.1234/new", "status": "approved"}]}))
             (new / "manifest.json").write_text(json.dumps({"shows": [
-                {"show": "Hive Mind", "host": "amara", "doi": "10.1234/later", "status": "approved"}]}))
+                {"show": "Hive Mind", "host": "amara", "doi": "10.1234/later", "status": "approved"},
+                {"show": "Mycelium", "host": "rosa", "doi": "10.1234/new", "status": "approved"}]}))
             for directory, stem, body in ((old, "wild-company", "already published"),
                                            (old, "mycelium", "new episode"),
-                                           (new, "hive-mind", "later episode")):
+                                           (new, "hive-mind", "later episode"),
+                                           (new, "mycelium", "newer revision")):
                 (directory / "transcripts" / (stem + ".json")).write_text(
                     json.dumps({"draft": {"body": body}}))
             feed = [{"id": "published", "hostID": "fern", "published": "2026-09-22",
@@ -66,9 +68,10 @@ class DailyReleaseTests(unittest.TestCase):
                 picked = select(root, feed, "2026-09-22")
                 first_day = select(root, [], "2026-09-22")
             self.assertEqual([(p.parent.parent.name, e["show"]) for p, e in picked],
-                             [("100", "Mycelium")])
+                             [("200", "Hive Mind")])
             self.assertEqual([e["show"] for _, e in first_day],
-                             ["Wild Company", "Mycelium"])
+                             ["Hive Mind", "Mycelium"])
+            self.assertEqual(first_day[1][0].parent.parent.name, "200")
             self.assertEqual(doi_from_url("https://doi.org/10.1038/ABC.1"), "10.1038/abc.1")
 
     def test_selection_requires_enough_inventory(self):

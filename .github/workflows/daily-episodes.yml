@@ -47,15 +47,30 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install R2 client
+        run: python3 -m pip install boto3
+
+      - name: Load release baseline
+        run: python3 tools/clear_app_feed.py --baseline-out "$RUNNER_TEMP/release-baseline.json"
+
       - name: Set publication date
         run: echo "RELEASE_DATE=$(date -u +%F)" >> "$GITHUB_ENV"
 
       - name: Collect reviewed batch history
         run: |
-          mkdir -p batches/0
-          cp -R experiments/full-run/stage4-2026-09-22/. batches/0/
-          gh run list --workflow full-run.yml --status completed --limit 30 \
-            --json databaseId --jq '.[].databaseId' | sort -n > run-ids.txt
+          mkdir -p batches
+          baseline=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["minimum_run_id"])' \
+            "$RUNNER_TEMP/release-baseline.json")
+          gh run list --workflow full-run.yml --status completed --limit 100 \
+            --json databaseId,conclusion > completed-runs.json
+          jq --argjson baseline "$baseline" -r \
+            '[.[] | select(.conclusion == "success" and .databaseId >= $baseline)] | .[].databaseId' \
+            completed-runs.json \
+            | sort -n > run-ids.txt
+          if [ ! -s run-ids.txt ]; then
+            echo "No successful full-run batches after baseline $baseline" >&2
+            exit 1
+          fi
           while IFS= read -r run_id; do
             if ! gh run download "$run_id" --name full-run-transcripts \
                 --dir "batches/$run_id"; then
@@ -63,9 +78,6 @@ jobs:
               echo "Skipping unavailable artifact from run $run_id"
             fi
           done < run-ids.txt
-
-      - name: Install R2 client
-        run: python3 -m pip install boto3
 
       - name: Select today's two approved episodes
         id: plan

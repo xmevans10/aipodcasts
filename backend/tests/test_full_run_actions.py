@@ -17,6 +17,11 @@ SEED = ROOT / "experiments" / "full-run" / "stage4-2026-09-22"
 
 
 class FullRunActionsTests(unittest.TestCase):
+    def test_net_new_generation_excludes_all_previously_published_dois(self):
+        candidates = [{"doi": "10.1234/old"}, {"doi": "10.1234/new"}]
+        result = run_all_shows.exclude_published(candidates, {"10.1234/OLD"})
+        self.assertEqual(result, [{"doi": "10.1234/new"}])
+
     def test_partial_stage4_seed_is_valid_but_cannot_release(self):
         self.assertEqual(check_batch(SEED, require_all=False), (5, 16))
         with self.assertRaisesRegex(ValueError, "Only 5/16 approved"):

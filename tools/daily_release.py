@@ -60,7 +60,9 @@ def select(batches: Path, feed: list, day: str, *, limit: int = 2) -> list[tuple
     published = published_versions(feed)
     order = []
     candidates = {}
-    for directory in sorted(batches.iterdir(), key=lambda p: int(p.name) if p.name.isdigit() else -1):
+    for directory in sorted(batches.iterdir(),
+                            key=lambda p: int(p.name) if p.name.isdigit() else -1,
+                            reverse=True):
         if not directory.is_dir():
             continue
         try:
@@ -85,9 +87,9 @@ def select(batches: Path, feed: list, day: str, *, limit: int = 2) -> list[tuple
             body = turns_body(draft) if "turns" in draft else draft["body"].strip()
             if key not in candidates:
                 order.append(key)
-            # If a later reviewed batch revised the same paper again, publish
-            # only that latest approved version when its turn arrives.
-            candidates[key] = (path, entry, body)
+                # Batches are traversed newest first, so the first approved
+                # revision for a paper is the latest one.
+                candidates[key] = (path, entry, body)
     picked = [(candidates[key][0], candidates[key][1]) for key in order
               if published.get(key) != candidates[key][2]][:slots]
     if len(picked) == slots:

@@ -67,10 +67,22 @@ def word_count(draft: dict) -> int:
     return len(draft.get("body", "").split())
 
 
+def exclude_published(candidates: list[dict], excluded_dois: set[str]) -> list[dict]:
+    excluded = {doi.casefold() for doi in excluded_dois}
+    return [work for work in candidates if work["doi"].casefold() not in excluded]
+
+
 def build(args):
     load_local_env()
     db = connect()
     seed = Path(args.seed_dir) if args.seed_dir else None
+    excluded_dois = set()
+    exclude_path = getattr(args, "exclude_dois_file", "")
+    if exclude_path:
+        excluded_value = json.loads(Path(exclude_path).read_text())
+        if not isinstance(excluded_value, list) or any(not isinstance(doi, str) for doi in excluded_value):
+            raise ValueError("Previously published DOI exclusion list is malformed")
+        excluded_dois = {doi.casefold() for doi in excluded_value}
     seed_entries = {}
     if seed:
         from check_batch import check_batch
@@ -100,7 +112,8 @@ def build(args):
     for host in canonical_hosts():
         show = HOSTS[host].show
         previous = seed_entries.get(show, {})
-        if previous.get("status") == "approved":
+        previous_doi = str(previous.get("doi", "")).casefold()
+        if previous.get("status") == "approved" and previous_doi not in excluded_dois:
             for ext in ("json", "md"):
                 shutil.copyfile(seed / "transcripts" / f"{slug(show)}.{ext}",
                                 transcripts / f"{slug(show)}.{ext}")
@@ -112,8 +125,11 @@ def build(args):
             entries.append(seeded)
             print(f"  {show:16} approved                 reused checked seed")
             continue
+        if previous.get("status") == "approved" and previous_doi in excluded_dois:
+            print(f"  {show:16} ignoring seed             DOI was previously published")
         excluded = set(previous.get("excluded_dois", []))
-        candidates = [w for w in by_host.get(host, []) if w["doi"] not in excluded]
+        candidates = [w for w in exclude_published(by_host.get(host, []), excluded_dois)
+                      if w["doi"] not in excluded]
         entry = {"host": host, "show": show, "candidates": len(candidates),
                  "status": "no_candidate", "doi": "", "title": ""}
         if excluded:
@@ -218,6 +234,8 @@ def main():
     parser.add_argument("--limit", type=int, default=80)
     parser.add_argument("--out", default="")
     parser.add_argument("--seed-dir", default="", help="reuse checked approved scripts from a prior batch")
+    parser.add_argument("--exclude-dois-file", default="",
+                        help="JSON list of previously published DOIs to avoid")
     parser.add_argument("--decider", default="auto")
     parser.add_argument("--select-only", action="store_true", help="candidates only; no API calls")
     parser.add_argument("--no-verify", action="store_true")

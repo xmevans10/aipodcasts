@@ -1,7 +1,7 @@
 # Zwicky social features: milestones
 
-Planning baseline: 18 September 2026. This is a design record, not committed work.
-It assumes the production backend from [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md)
+Planning baseline: 18 September 2026. The first no-account slice is shipped below;
+account-bearing milestones remain a design record. They assume the production backend from [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md)
 M2 (ASGI + Postgres, authenticated writes); the current stdlib read-only server has no
 accounts, sessions or write path, so every account-bearing milestone is blocked on it.
 

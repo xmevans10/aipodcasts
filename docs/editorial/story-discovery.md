@@ -133,7 +133,7 @@ verification → audience review for every show. `.github/workflows/full-run.yml
 on Mondays (`0 13 * * 1`) and on demand. Approved JSON/Markdown pairs go under
 `full-run-artifacts/transcripts/`; rejected drafts go under `withheld/` with their
 manifest disposition. The Action always uploads that artifact, even if the release gate
-fails. `check_batch.py` permits rendering and R2 publication only when all sixteen
+fails. `check_batch.py` permits the daily release queue only when all sixteen
 canonical shows have approved, current factual and audience fingerprints and their
 Markdown matches the approved JSON. An incomplete run leaves the feed unchanged.
 
@@ -151,6 +151,28 @@ Required repository secrets for drafting: `OPENAI_API_KEY`, `TYPESAFE_AI_API_KEY
 `CORE_API_KEY` and `DEEPSEEK_API_KEY`. The writer and reviewer model come from
 `OPENAI_MODEL` (default `gpt-5.6-luna`); `OPENAI_REASONING_EFFORT` is a repository
 variable (default `low`). The per-run provider cap is 96. Secrets are injected into the
-Action environment, never committed or uploaded with the transcripts. R2 secrets are
-needed only if the complete batch should be published; the same Action can still render
-and upload its audio artifact without them.
+Action environment, never committed or uploaded with the transcripts. This weekly
+workflow never renders or publishes audio.
+
+## Daily rolling release
+
+`.github/workflows/daily-episodes.yml` runs at 08:00 UTC each day or on demand. It
+downloads successful full-run artifacts, rechecks each complete batch, and takes the
+oldest two approved scripts not yet represented by that exact spoken text in the R2
+feed. Those two scripts alone are rendered with Kokoro, uploaded as a daily audio
+artifact, and merged into the existing feed with word-timed sidecars. A reviewed rewrite
+of an older episode replaces that paper's older feed entry; unrelated archive entries
+stay available, and existing audio files are not deleted. The Action then checks the
+app's default public feed URL and both new audio/detail URLs. It uses the feed as the
+publication ledger, counts
+episodes already published on the current UTC date, and refuses to exceed two. A rerun
+after the day's two releases is a no-op. If fewer than two reviewed, unpublished
+episodes are available, the Action fails without changing the feed. The 16-show buffer
+lasts eight days at this pace; weekly successful batches replenish it.
+Before rendering, it also requires the configured R2 public feed URL to match the app's
+default feed URL.
+
+This Action requires the five `R2_*` repository secrets in
+[Integrations](../INTEGRATIONS.md#episode-delivery-public-cloudflare-r2). It never needs
+writer or reviewer keys. `render-episodes.yml` remains an artifact-only preview path;
+it does not publish the full batch in one day.

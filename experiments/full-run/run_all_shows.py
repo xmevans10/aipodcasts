@@ -104,7 +104,12 @@ def build(args):
             for ext in ("json", "md"):
                 shutil.copyfile(seed / "transcripts" / f"{slug(show)}.{ext}",
                                 transcripts / f"{slug(show)}.{ext}")
-            entries.append(dict(previous))
+            artifact = json.loads((transcripts / f"{slug(show)}.json").read_text())
+            seeded = dict(previous)
+            seeded.update(doi=artifact["doi"], title=artifact["draft"]["title"],
+                          words=artifact["words"], verification_pass=True,
+                          audience_pass=True, audience_decision="pass")
+            entries.append(seeded)
             print(f"  {show:16} approved                 reused checked seed")
             continue
         excluded = set(previous.get("excluded_dois", []))

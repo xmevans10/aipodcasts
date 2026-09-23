@@ -1,0 +1,103 @@
+name: daily-episodes
+
+# The full-run workflow prepares a private, fully reviewed buffer. This workflow
+# releases exactly two unpublished episodes per UTC day from the oldest valid batch.
+on:
+  schedule:
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: daily-episodes-v1
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      HF_HOME: ${{ github.workspace }}/.hf
+      PYTHONUNBUFFERED: "1"
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_PUBLIC_BASE: ${{ secrets.R2_PUBLIC_BASE }}
+      R2_PREFIX: v1
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Set publication date
+        run: echo "RELEASE_DATE=$(date -u +%F)" >> "$GITHUB_ENV"
+
+      - name: Download reviewed batch history
+        run: |
+          mkdir -p batches
+          gh run list --workflow full-run.yml --status success --limit 30 \
+            --json databaseId --jq '.[].databaseId' | sort -n > run-ids.txt
+          while IFS= read -r run_id; do
+            if ! gh run download "$run_id" --name full-run-transcripts \
+                --dir "batches/$run_id"; then
+              rm -rf "batches/$run_id"
+              echo "Skipping unavailable artifact from run $run_id"
+            fi
+          done < run-ids.txt
+
+      - name: Install R2 client
+        run: python3 -m pip install boto3
+
+      - name: Select today's two approved episodes
+        id: plan
+        run: |
+          python3 tools/daily_release.py --batches batches \
+            --out daily-transcripts --date "$RELEASE_DATE"
+
+      - name: Cache Kokoro weights
+        if: steps.plan.outputs.count != '0'
+        uses: actions/cache@v4
+        with:
+          path: .hf
+          key: kokoro-${{ runner.os }}-v1
+
+      - name: Install narration dependencies
+        if: steps.plan.outputs.count != '0'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y espeak-ng ffmpeg
+          python3 -m pip install kokoro soundfile numpy
+
+      - name: Render only today's episodes
+        if: steps.plan.outputs.count != '0'
+        run: |
+          python3 tools/tts/bundle_shows.py \
+            --transcripts daily-transcripts --out daily-episodes \
+            --date "$RELEASE_DATE"
+
+      - name: Upload daily audio artifact
+        if: steps.plan.outputs.count != '0'
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-episodes-${{ github.run_id }}
+          path: daily-episodes/
+          retention-days: 90
+
+      - name: Append to R2 feed
+        if: steps.plan.outputs.count != '0'
+        run: |
+          python3 tools/publish_feed.py --episodes daily-episodes \
+            --merge-existing --max-per-day 2
+
+      - name: Verify episodes through the app feed URL
+        if: steps.plan.outputs.count != '0'
+        run: |
+          python3 tools/verify_daily_feed.py \
+            --transcripts daily-transcripts --date "$RELEASE_DATE"

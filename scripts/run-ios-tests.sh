@@ -14,3 +14,9 @@ swiftc -parse-as-library -module-cache-path "${TMPDIR:-/tmp}/sound-science-modul
     ios/Zwicky/OpenAIKit.swift \
     ios/Tests/LogicChecks.swift
 "$OUT"
+
+LINK_OUT="${TMPDIR:-/tmp}/zwicky-deep-link-checks"
+swiftc -parse-as-library -module-cache-path "${TMPDIR:-/tmp}/sound-science-module-cache" -O -o "$LINK_OUT" \
+    ios/Zwicky/DeepLinks.swift \
+    ios/Tests/DeepLinkChecks.swift
+"$LINK_OUT"

@@ -33,6 +33,9 @@ struct RootView: View {
     @AppStorage("onboarded") private var onboarded = false
     @State private var tab = 0
     @State private var showNewEpisodes = false
+    @State private var linkedStory: Story?
+    @State private var pendingEpisodeID: String?
+    @State private var missingLinkedEpisode = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Namespace private var playerZoom
     /// Each tab has its own mini player, so the zoom source ID is per tab.
@@ -57,11 +60,31 @@ struct RootView: View {
             }
         }
         .onChange(of: library.stories) { _, stories in player.restore(stories) }
+        .onChange(of: library.stories) { _, _ in resolvePendingEpisode() }
+        .onChange(of: library.loading) { _, loading in
+            if !loading { resolvePendingEpisode(afterRefresh: true) }
+        }
         .onChange(of: library.shouldAnnounceNew) { _, show in if show { showNewEpisodes = true } }
+        .onOpenURL(perform: openEpisodeLink)
         .sheet(isPresented: $player.isPlayerPresented) {
             PlayerView().playerZoomDestination(id: MiniPlayerInset.zoomID(tab: tab), in: reduceMotion ? nil : playerZoom)
         }
         .sheet(isPresented: $showNewEpisodes) { NewEpisodesSheet().onDisappear { library.markNewSeen() } }
+        .sheet(item: $linkedStory) { story in
+            NavigationStack {
+                EpisodeView(story: story)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Done") { linkedStory = nil }
+                        }
+                    }
+            }
+        }
+        .alert("Episode unavailable", isPresented: $missingLinkedEpisode) {
+            Button("Browse episodes") { tab = 1 }
+        } message: {
+            Text("This episode isn't in the current feed. It may have been removed or may not be available yet.")
+        }
         .fullScreenCover(isPresented: Binding(get: { !onboarded }, set: { onboarded = !$0 })) { WelcomeView() }
         .task {
             let launchStart = Telemetry.now()
@@ -77,6 +100,7 @@ struct RootView: View {
             player.restore(library.stories)
             await library.refresh()
             player.restore(library.stories)
+            if !library.loading { resolvePendingEpisode(afterRefresh: true) }
             #if DEBUG
             if args.contains("--library"), let latest = library.latest.first { library.toggle(latest) }
             if openPlayer, let latest = library.latest.first {
@@ -86,6 +110,33 @@ struct RootView: View {
             #endif
             if library.shouldAnnounceNew { showNewEpisodes = true }
             Telemetry.app.info("launch ready in \(Telemetry.ms(since: launchStart), format: .fixed(precision: 1)) ms; \(library.stories.count, privacy: .public) stories")
+        }
+    }
+
+    private func openEpisodeLink(_ url: URL) {
+        guard let feedURL = URL(string: library.feedURL),
+              let link = EpisodeLink.parse(url, feedURL: feedURL) else { return }
+        pendingEpisodeID = link.id
+        if library.stories.contains(where: { $0.id == link.id }) {
+            resolvePendingEpisode()
+        } else if !library.loading {
+            Task {
+                await library.refresh()
+                if !library.loading { resolvePendingEpisode(afterRefresh: true) }
+            }
+        }
+    }
+
+    private func resolvePendingEpisode(afterRefresh: Bool = false) {
+        guard let id = pendingEpisodeID else { return }
+        if let story = library.stories.first(where: { $0.id == id }) {
+            pendingEpisodeID = nil
+            showNewEpisodes = false
+            player.isPlayerPresented = false
+            linkedStory = story
+        } else if afterRefresh {
+            pendingEpisodeID = nil
+            missingLinkedEpisode = true
         }
     }
 }

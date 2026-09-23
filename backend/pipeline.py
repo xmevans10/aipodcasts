@@ -389,6 +389,22 @@ def openalex_source(doi: str) -> dict:
             "retrieved": dt.datetime.now(dt.timezone.utc).isoformat()}
 
 
+def crossref_authors(doi: str) -> list[str]:
+    """Return named authors from Crossref metadata for source records missing credits."""
+    url = "https://api.crossref.org/works/" + urllib.parse.quote(doi, safe="/")
+    try:
+        work = json.loads(fetch_public(url)).get("message", {})
+    except (ValueError, urllib.error.URLError, TimeoutError, OSError):
+        return []
+    names = []
+    for author in work.get("author", []):
+        name = author.get("name") or " ".join(
+            part for part in (author.get("given"), author.get("family")) if part)
+        if name.strip():
+            names.append(" ".join(name.split()))
+    return names
+
+
 def ingest_any(db: sqlite3.Connection, doi: str, host: str, refresh: bool = False) -> str:
     """PLOS or arXiv full text, then Europe PMC full text, then an OpenAlex abstract."""
     if doi.startswith("arxiv:"):
@@ -411,6 +427,10 @@ def ingest_any(db: sqlite3.Connection, doi: str, host: str, refresh: bool = Fals
         source = core_source(doi)  # CORE open-access full text, when indexed
     if source is None:
         source = openalex_source(doi)  # abstract-tier fallback; raises if no abstract
+    if not source.get("attribution") or source["attribution"] == "Authors listed at source":
+        authors = crossref_authors(doi)
+        if authors:
+            source["attribution"] = ", ".join(authors)
     with db:
         if existing:
             db.execute("UPDATE stories SET source=? WHERE id=?", (json.dumps(source), story_id))

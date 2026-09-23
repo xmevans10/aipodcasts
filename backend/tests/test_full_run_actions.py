@@ -14,7 +14,7 @@ sys.path.insert(0, str(ROOT / "experiments" / "full-run"))
 sys.path.insert(0, str(ROOT / "tools"))
 from check_batch import check_batch  # noqa: E402
 import run_all_shows  # noqa: E402
-from extend_doi_exclusions import failed_dois  # noqa: E402
+from extend_doi_exclusions import failed_dois, metadata_retry_dois  # noqa: E402
 
 SEED = ROOT / "experiments" / "full-run" / "stage4-2026-09-22"
 
@@ -38,6 +38,12 @@ class FullRunActionsTests(unittest.TestCase):
             {"status": "no_candidate", "errors": ["10.5678/failed: no abstract"]},
         ]}
         self.assertEqual(failed_dois(manifest), {"10.1234/rejected", "10.5678/failed"})
+
+    def test_metadata_only_failure_can_be_retried_after_author_fallback(self):
+        manifest = {"shows": [{"status": "no_candidate", "errors": [
+            "10.1234/no-authors: ValueError: Named author metadata is required before generation"]}]}
+        self.assertEqual(failed_dois(manifest), set())
+        self.assertEqual(metadata_retry_dois(manifest), {"10.1234/no-authors"})
 
     def test_rejected_candidate_does_not_block_next_candidate_for_show(self):
         draft = {"title": "A measured result", "dek": "A careful summary",

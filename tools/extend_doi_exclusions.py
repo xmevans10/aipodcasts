@@ -20,9 +20,22 @@ def failed_dois(manifest: dict) -> set[str]:
         if doi:
             excluded.add(str(doi).rstrip(".,:)]").casefold())
         for error in entry.get("errors", []):
+            if "Named author metadata is required before generation" in str(error):
+                continue
             for match in DOI.findall(str(error)):
                 excluded.add(match.rstrip(".,:)]").casefold())
     return excluded
+
+
+def metadata_retry_dois(manifest: dict) -> set[str]:
+    """Do not permanently exclude papers whose only ingest failure is missing author data."""
+    retry = set()
+    for entry in manifest.get("shows", []):
+        for error in entry.get("errors", []):
+            if "Named author metadata is required before generation" not in str(error):
+                continue
+            retry.update(match.rstrip(".,:)]").casefold() for match in DOI.findall(str(error)))
+    return retry
 
 
 def main() -> None:
@@ -34,7 +47,8 @@ def main() -> None:
     manifest = json.loads(args.manifest.read_text())
     if not isinstance(current, list) or any(not isinstance(doi, str) for doi in current):
         raise ValueError("DOI exclusion list is malformed")
-    result = sorted({doi.casefold() for doi in current} | failed_dois(manifest))
+    result = sorted(({doi.casefold() for doi in current} - metadata_retry_dois(manifest))
+                    | failed_dois(manifest))
     args.exclusions.write_text(json.dumps(result) + "\n")
     print(f"Added {len(result) - len(set(current))} failed paper DOI exclusions")
 

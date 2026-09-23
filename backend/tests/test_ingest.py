@@ -2,7 +2,8 @@ from pathlib import Path
 import sys
 import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from pipeline import parse_jats, parse_arxiv_html, is_cc_by, paragraphs_from_text, source_from_core
+from pipeline import (crossref_authors, parse_jats, parse_arxiv_html, is_cc_by,
+                      paragraphs_from_text, source_from_core)
 
 LONG = ("We measured many samples across sites and found a strong consistent effect. " * 8)
 
@@ -22,6 +23,14 @@ def jats(license_text="https://creativecommons.org/licenses/by/4.0/", doi="10.12
 
 
 class IngestTests(unittest.TestCase):
+    def test_crossref_author_metadata_fallback(self):
+        import json
+        from unittest.mock import patch
+        payload = {"message": {"author": [{"given": "Ada", "family": "Lovelace"},
+                                            {"name": "Research Collaboration"}]}}
+        with patch("pipeline.fetch_public", return_value=json.dumps(payload).encode()):
+            self.assertEqual(crossref_authors("10.1234/paper"),
+                             ["Ada Lovelace", "Research Collaboration"])
     def test_parse_jats_cc_by(self):
         source = parse_jats(jats(), "10.1234/x")
         self.assertEqual(source["doi"], "10.1234/x")

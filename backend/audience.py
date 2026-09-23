@@ -4,12 +4,10 @@ Separate from `verify.py` on purpose. That module asks whether the script is *tr
 this one asks whether it is *understandable*. A high audience score never compensates for
 a bad evidence result, and a passed evidence check never substitutes for this one.
 
-Why a different provider call rather than another typed question. `verify.Decider` answers
-booleans, choices and scores. It cannot return the quoted spans, severity tags and repair
-instructions a writer needs in order to fix a comprehension failure, and inventing a
-probability for "is this understandable" would be a number with no referent. So review
-runs one structured-output call against the already configured writer provider
-(OPENAI_API_KEY / OPENAI_MODEL). No new service, no new dependency, one call per review.
+The default reviewer can return detailed spans and repair instructions. Release workflows
+can use Jev instead: Jev makes typed topic-fit and one-listen comprehension judgments.
+The Jev path records those judgments directly and never calls the drafting provider for a
+review verdict.
 
 Failure semantics, in one line: anything other than an explicit parsed pass is a pass
 withheld. Provider missing, unreachable, timed out, refusing, or returning a response that
@@ -36,6 +34,13 @@ DEFAULT_MAX_REPAIRS = 1
 
 #: Severities that block a release. "minor" is advisory and recorded, not blocking.
 BLOCKING_SEVERITIES = ("blocker", "major")
+
+
+def use_jev() -> bool:
+    """Prefer Jev whenever credentials are present; allow explicit OpenAI for legacy use."""
+    requested = os.environ.get("LILT_REVIEWER")
+    return requested == "jev" or (not requested and bool(
+        os.environ.get("TYPESAFE_AI_API_KEY") or os.environ.get("JEV_API_KEY")))
 
 AUDIENCE_SCHEMA = {
     "type": "object", "additionalProperties": False,
@@ -126,6 +131,8 @@ def _spoken(draft: dict) -> str:
 
 def available() -> bool:
     """Whether a reviewer can run at all. False means pending, never pass."""
+    if use_jev():
+        return bool(os.environ.get("TYPESAFE_AI_API_KEY") or os.environ.get("JEV_API_KEY"))
     return bool(os.environ.get("OPENAI_API_KEY") and
                 (os.environ.get("OPENAI_MODEL") or os.environ.get("LILT_REVIEW_MODEL")))
 
@@ -138,6 +145,49 @@ def review_script(draft: dict, source: dict, evidence: str, show: str, beat: str
     `reserve` is the caller's provider-call accounting hook. It runs before the request so
     a failed review still counts against the operator's cap, exactly like generation.
     """
+    if use_jev():
+        from verify import TypedQuestion, decider
+        if reserve is not None:
+            reserve("audience", story_id)
+        questions = [
+            TypedQuestion("beat_fit", "choice",
+                          "Does this paper belong on this show's topic? Choose grounded, weak, or unfounded.",
+                          {"grounded": "clearly on topic", "weak": "somewhat related",
+                           "unfounded": "does not belong on this show"}),
+        ]
+        for key, label in (("question", "central question"), ("method", "what researchers did"),
+                           ("finding", "main finding"), ("limit", "important limitation")):
+            questions.append(TypedQuestion(
+                "understood_" + key, "boolean",
+                f"After one listen, could a non-specialist understand the script's {label}?"))
+        state = {
+            "show": show, "beat": beat, "title": draft.get("title", ""),
+            "script": _spoken(draft), "paper_title": source.get("title", ""),
+            "evidence_excerpt": evidence[:6000],
+        }
+        try:
+            decisions = decider("jev").ask(questions, state)
+        except RuntimeError as error:
+            raise RuntimeError(f"audience reviewer unavailable: {error}") from error
+        beat_decision = decisions.get("beat_fit")
+        fit = beat_decision.answer if beat_decision else None
+        checks = {q.id.removeprefix("understood_"): decisions[q.id].answer
+                  for q in questions[1:] if q.id in decisions}
+        if fit not in ("grounded", "weak", "unfounded") or len(checks) != 4:
+            raise RuntimeError("Jev audience review returned an incomplete judgment")
+        return {
+            "decision": "withhold" if fit == "unfounded" else
+                        "pass" if all(checks.values()) else "revise",
+            "issues": [{"severity": "major", "rule": "one_listen_comprehension",
+                        "span": "", "instruction": f"Jev found the {key} unclear after one listen."}
+                       for key, value in checks.items() if not value],
+            "first_hard_sentence": "", "unexplained_terms": [], "beat_fit": fit,
+            "listener_paraphrase": {
+                key: f"Typed listener judgment for {key}: "
+                     f"{'understood' if checks[key] else 'not understood'} after one listen."
+                for key in ("question", "method", "finding", "limit")},
+            "jev_checks": checks,
+        }
     key = os.environ.get("OPENAI_API_KEY")
     model = os.environ.get("LILT_REVIEW_MODEL") or os.environ.get("OPENAI_MODEL")
     if not key or not model:
@@ -222,8 +272,10 @@ def verdict(parsed: dict, draft: dict, evidence: str) -> dict:
     blocking = [issue for issue in parsed["issues"]
                 if issue["severity"] in BLOCKING_SEVERITIES]
     paraphrase = parsed["listener_paraphrase"]
-    thin = [field for field in ("question", "method", "finding", "limit")
-            if len((paraphrase.get(field) or "").split()) < 3]
+    jev_checks = parsed.get("jev_checks")
+    thin = ([] if jev_checks is not None else
+            [field for field in ("question", "method", "finding", "limit")
+             if len((paraphrase.get(field) or "").split()) < 3])
 
     failures: list[str] = []
     if parsed["decision"] != "pass":
@@ -243,7 +295,8 @@ def verdict(parsed: dict, draft: dict, evidence: str) -> dict:
     from verify import numeric_fidelity
     paraphrase_text = " ".join(str(paraphrase.get(f, "")) for f in
                                ("question", "method", "finding", "limit"))
-    invented = numeric_fidelity(paraphrase_text, _spoken(draft) + "\n" + evidence)
+    invented = ([] if jev_checks is not None else
+                numeric_fidelity(paraphrase_text, _spoken(draft) + "\n" + evidence))
 
     return {
         "pass": not failures,
@@ -258,7 +311,8 @@ def verdict(parsed: dict, draft: dict, evidence: str) -> dict:
         "draft_sha256": _fingerprint(draft),
         "contract_version": CONTRACT_VERSION,
         "review_version": REVIEW_VERSION,
-        "reviewer": "audience-reviewer:" + REVIEW_VERSION,
+        "reviewer": "audience-reviewer:" + ("jev" if jev_checks is not None else REVIEW_VERSION),
+        **({"jev_checks": jev_checks} if jev_checks is not None else {}),
     }
 
 
@@ -266,9 +320,11 @@ def is_fresh(report: dict | None, draft: dict) -> bool:
     """A report only counts for the exact script, contract and review version it was made for."""
     if not isinstance(report, dict):
         return False
+    jev_required = use_jev()
     return (report.get("draft_sha256") == _fingerprint(draft)
             and report.get("contract_version") == CONTRACT_VERSION
-            and report.get("review_version") == REVIEW_VERSION)
+            and report.get("review_version") == REVIEW_VERSION
+            and (not jev_required or report.get("reviewer") == "audience-reviewer:jev"))
 
 
 def repair_instructions(report: dict) -> str:

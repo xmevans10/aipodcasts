@@ -81,6 +81,8 @@ jobs:
 
       - name: Select today's two approved episodes
         id: plan
+        env:
+          LILT_REVIEWER: jev
         run: |
           python3 tools/daily_release.py --batches batches \
             --out daily-transcripts --date "$RELEASE_DATE"

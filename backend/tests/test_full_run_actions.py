@@ -1,5 +1,6 @@
 """The Actions handoff cannot render an incomplete or edited batch."""
 import json
+import os
 import shutil
 import sys
 import tempfile
@@ -19,6 +20,12 @@ SEED = ROOT / "experiments" / "full-run" / "stage4-2026-09-22"
 
 
 class FullRunActionsTests(unittest.TestCase):
+    def setUp(self):
+        # These committed seed fixtures predate Jev audience judgments.
+        self.reviewer_env = patch.dict(os.environ, {"LILT_REVIEWER": "openai"})
+        self.reviewer_env.start()
+        self.addCleanup(self.reviewer_env.stop)
+
     def test_net_new_generation_excludes_all_previously_published_dois(self):
         candidates = [{"doi": "10.1234/old"}, {"doi": "10.1234/new"}]
         result = run_all_shows.exclude_published(candidates, {"10.1234/OLD"})

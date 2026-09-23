@@ -42,7 +42,7 @@ def load_local_env(path: Path | None = None) -> None:
                "ELEVENLABS_DIALOGUE_MODEL", "VOICE_PROVIDER", "VOICE_LOCAL_URL", "OPENAI_TTS_MODEL", "OPENAI_TTS_VOICE",
                "LILT_MAX_PROVIDER_CALLS_PER_DAY", "LILT_MAX_SOURCE_CHARS",
                "LILT_OPENALEX_KEY", "LILT_CONTACT_EMAIL", "TYPESAFE_AI_API_KEY", "JEV_API_KEY", "CORE_API_KEY",
-               "TYPESAFE_BASE_URL", "JEV_MODEL", "DEEPSEEK_API_KEY", "DEEPSEEK_MODEL",
+               "TYPESAFE_BASE_URL", "JEV_MODEL", "LILT_REVIEWER", "DEEPSEEK_API_KEY", "DEEPSEEK_MODEL",
                *[h.voice_env for h in HOSTS.values()], *["VOICE_OPENAI_" + h.id.upper() for h in HOSTS.values()]}
     for line in path.read_text().splitlines():
         line = line.strip()

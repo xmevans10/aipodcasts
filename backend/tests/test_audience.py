@@ -19,6 +19,7 @@ import audience
 import editorial_fixtures as fx
 import pipeline as p
 from hosts import HOSTS
+from verify import Decision
 
 SOURCE = {"title": "A source article about leaves",
           "text": "This is a measured result with considerable uncertainty. " * 250,
@@ -113,6 +114,29 @@ class VerdictTests(unittest.TestCase):
         self.assertIn("PRIMPOL", text)
         self.assertIn("Loop-forming cohesin", text)
         self.assertIn("do not remove a number", text)
+
+    def test_jev_typed_audience_judgment(self):
+        class FakeJev:
+            def ask(self, questions, state):
+                return {q.id: Decision(q.kind,
+                                       "grounded" if q.id == "beat_fit" else True,
+                                       0.99 if q.kind == "boolean" else None)
+                        for q in questions}
+
+        with patch.dict(os.environ, {"LILT_REVIEWER": "jev", "TYPESAFE_AI_API_KEY": "key"}), \
+             patch("verify.decider", return_value=FakeJev()):
+            parsed = audience.review_script(DRAFT, SOURCE, "evidence", "The Long View", "space",
+                                            fetch=lambda *a, **k: self.fail("Jev path must not call OpenAI"))
+        self.assertEqual(parsed["decision"], "pass")
+        self.assertTrue(all(parsed["jev_checks"].values()))
+        report = audience.verdict(parsed, DRAFT, SOURCE["text"])
+        self.assertTrue(report["pass"])
+        self.assertEqual(report["reviewer"], "audience-reviewer:jev")
+
+    def test_jev_mode_rejects_old_non_jev_audience_approval(self):
+        old = audience.verdict(CLEAN_REVIEW, DRAFT, SOURCE["text"])
+        with patch.dict(os.environ, {"LILT_REVIEWER": "jev", "TYPESAFE_AI_API_KEY": "key"}):
+            self.assertFalse(audience.is_fresh(old, DRAFT))
 
 
 class MalformedResponseTests(unittest.TestCase):

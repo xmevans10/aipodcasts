@@ -17,6 +17,8 @@ on:
       - "tools/daily_release.py"
       - "tools/publish_feed.py"
       - "tools/verify_daily_feed.py"
+      - "tools/tts/**"
+      - "assets/audio/kenney/**"
       - ".github/workflows/backend-tests.yml"
 
 jobs:

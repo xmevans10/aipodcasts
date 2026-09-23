@@ -34,6 +34,7 @@ from verify import draft_fingerprint
 import audience
 from dialogue import turns_body, turns_narration_inputs, validate_dialogue_contract
 from hosts import HOSTS, dialogue_hosts  # noqa: E402
+from sound_design import SoundDesign  # noqa: E402
 
 SR = 24000
 
@@ -177,6 +178,10 @@ def _rendered(result):
 TURN_GAP = 0.18
 
 
+def solo_sections(body: str) -> list[str]:
+    return [paragraph.strip() for paragraph in re.split(r"\n\s*\n", body.strip()) if paragraph.strip()]
+
+
 def narration_inputs(transcript: dict, cast: dict) -> list[dict]:
     """Preflight every turn before synthesis; never silently drop a speaker/show."""
     host = transcript["host"]
@@ -186,7 +191,9 @@ def narration_inputs(transcript: dict, cast: dict) -> list[dict]:
         inputs = turns_narration_inputs(transcript["draft"], hosts)
     else:
         validate_podcast(transcript["draft"], transcript["source"], HOSTS[host])
-        inputs = [{"host": host, "text": transcript["draft"]["body"].strip()}]
+        # Preserve editorial paragraph breaks as acoustic scene boundaries.
+        inputs = [{"host": host, "text": paragraph}
+                  for paragraph in solo_sections(transcript["draft"]["body"])]
     report = transcript.get("verification") or {}
     if report.get("pass") is not True:
         raise ValueError(f"{transcript['show']}: script has not passed evidence verification")
@@ -212,7 +219,8 @@ def narration_inputs(transcript: dict, cast: dict) -> list[dict]:
     return inputs
 
 
-def render_turns(inputs: list[dict], wav: Path, speed: float, render=None) -> list[dict]:
+def render_turns(inputs: list[dict], wav: Path, speed: float, render=None,
+                 sound_design: SoundDesign | None = None) -> list[dict]:
     """Write mono PCM and align each paragraph's words to its own audio."""
     import array
     import math
@@ -222,14 +230,23 @@ def render_turns(inputs: list[dict], wav: Path, speed: float, render=None) -> li
         stream.setnchannels(1)
         stream.setsampwidth(2)
         stream.setframerate(SR)
+        if sound_design:
+            intro = sound_design.intro()
+            stream.writeframes(intro.tobytes())
+            offset += len(intro)
         for index, item in enumerate(inputs):
             audio, segments = _rendered(render(item["text"], item["voice"], speed))
             if len(audio) == 0 or not all(math.isfinite(float(v)) for v in audio):
                 raise ValueError("Narration returned empty or non-finite audio")
             if index:
-                gap = round(TURN_GAP * SR)
-                stream.writeframes(b"\0\0" * gap)
-                offset += gap
+                bridge = sound_design.between(index, len(inputs)) if sound_design else None
+                if bridge is not None:
+                    stream.writeframes(bridge.tobytes())
+                    offset += len(bridge)
+                else:
+                    gap = round(TURN_GAP * SR)
+                    stream.writeframes(b"\0\0" * gap)
+                    offset += gap
             words = item["text"].split()
             aligned = align.align(words, audio, SR, segments=segments)
             paragraph = {"words": [{"text": word["text"],
@@ -244,6 +261,8 @@ def render_turns(inputs: list[dict], wav: Path, speed: float, render=None) -> li
                 pcm.byteswap()
             stream.writeframes(pcm.tobytes())
             offset += len(audio)
+        if sound_design:
+            stream.writeframes(sound_design.outro().tobytes())
     return paragraphs
 
 
@@ -282,9 +301,12 @@ def main() -> None:
         name = episode_key(published, transcript.get("doi", ""), transcript["show"])
         wav = out / f"{name}.wav"
         print(f"rendering {transcript['show']} -> {name} ({len(inputs)} turns) ...", flush=True)
-        paragraphs = render_turns(inputs, wav, args.speed)
+        sound_design = SoundDesign(name)
+        paragraphs = render_turns(inputs, wav, args.speed, sound_design=sound_design)
         duration = wav_duration(wav)
         payload = story_for(transcript, duration, published, episode=name, paragraphs=paragraphs)
+        payload["audioDesign"] = {"stingerSHA256": sound_design.fingerprint,
+                                  "assets": ["Kenney Interface Sounds (CC0)", "Kenney Music Jingles (CC0)"]}
         payload["levels"] = envelope_wav(wav)
         to_m4a(wav, out / f"{name}.m4a")
         wav.unlink()

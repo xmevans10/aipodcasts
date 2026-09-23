@@ -3,6 +3,12 @@ import SwiftUI
 struct QueueView: View {
     @EnvironmentObject var player: AudioPlayer
     @EnvironmentObject var library: Library
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    private var rowLayout: AnyLayout {
+        dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+            : AnyLayout(HStackLayout(spacing: 12))
+    }
     private var suggestions: [Story] {
         library.latest.filter { $0.id != player.story?.id && !player.listening.queue.contains($0.id) && player.progress(of: $0) < 1 }
     }
@@ -10,13 +16,14 @@ struct QueueView: View {
         List {
             if let current = player.story {
                 Section("Now playing") {
-                    HStack(spacing: 12) {
-                        ShowCover(show: current.show).frame(width: 44)
+                    rowLayout {
+                        ShowCover(show: current.show).frame(width: 44).accessibilityHidden(true)
                         VStack(alignment: .leading, spacing: 3) {
-                            Text(current.title).font(.subheadline.weight(.semibold)).lineLimit(2)
+                            Text(current.title).font(.subheadline.weight(.semibold)).lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                             Text(current.show.title).font(.caption).foregroundStyle(Theme.secondary)
                         }
-                        Spacer()
+                        .accessibilityElement(children: .combine)
+                        if !dynamicTypeSize.isAccessibilitySize { Spacer() }
                         Button { player.toggle() } label: { Image(systemName: player.playing ? "pause.fill" : "play.fill").frame(width: 44, height: 44) }
                             .buttonStyle(.borderless).accessibilityLabel(player.playing ? "Pause" : "Play")
                     }
@@ -27,13 +34,14 @@ struct QueueView: View {
                     Text("Nothing queued. Add an episode below or from its page.").font(.subheadline).foregroundStyle(Theme.secondary).padding(.vertical, 8)
                 }
                 ForEach(player.queuedStories) { story in
-                    HStack(spacing: 12) {
-                        ShowCover(show: story.show).frame(width: 40)
+                    rowLayout {
+                        ShowCover(show: story.show).frame(width: 40).accessibilityHidden(true)
                         VStack(alignment: .leading, spacing: 3) {
-                            Text(story.title).font(.subheadline.weight(.semibold)).lineLimit(2)
+                            Text(story.title).font(.subheadline.weight(.semibold)).lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                             Text("\(story.show.title) · \(story.minutes) min").font(.caption).foregroundStyle(Theme.secondary)
                         }
-                        Spacer()
+                        .accessibilityElement(children: .combine)
+                        if !dynamicTypeSize.isAccessibilitySize { Spacer() }
                         Menu {
                             Button("Play now", systemImage: "play.fill") { player.play(story) }
                             Button("Move up", systemImage: "arrow.up") { player.moveQueued(story.id, by: -1) }.disabled(player.queuedStories.first?.id == story.id)
@@ -47,13 +55,14 @@ struct QueueView: View {
             if !suggestions.isEmpty {
                 Section("Suggested") {
                     ForEach(suggestions) { story in
-                        HStack(spacing: 12) {
-                            ShowCover(show: story.show).frame(width: 40)
+                        rowLayout {
+                            ShowCover(show: story.show).frame(width: 40).accessibilityHidden(true)
                             VStack(alignment: .leading, spacing: 3) {
-                                Text(story.title).font(.subheadline).lineLimit(2)
+                                Text(story.title).font(.subheadline).lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
                                 Text("\(story.show.title) · \(story.minutes) min").font(.caption).foregroundStyle(Theme.secondary)
                             }
-                            Spacer()
+                            .accessibilityElement(children: .combine)
+                            if !dynamicTypeSize.isAccessibilitySize { Spacer() }
                             Button { player.enqueue(story) } label: { Image(systemName: "plus.circle").font(.title2).frame(width: 44, height: 44) }
                                 .buttonStyle(.borderless).accessibilityLabel("Add \(story.title) to queue")
                         }

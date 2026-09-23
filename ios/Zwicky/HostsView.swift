@@ -10,7 +10,10 @@ struct HostsView: View {
                     Text("Meet the fictional hosts behind each show and the ideas they explore.")
                         .font(.subheadline).foregroundStyle(Theme.secondary)
                     ForEach(Show.all) { show in
-                        NavigationLink { HostView(show: show) } label: { HostCard(show: show) }.buttonStyle(.plain)
+                        NavigationLink { HostView(show: show) } label: { HostCard(show: show) }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("\(show.host.name), \(show.host.niche). \(show.host.personality). Show: \(show.title)")
+                            .accessibilityHint("Opens host details")
                     }
                     Label("Hosts are fictional AI presenters with synthetic voices. They present the research; they don't conduct it.", systemImage: "info.circle")
                         .font(.caption).foregroundStyle(Theme.secondary).padding(.top, 4)
@@ -25,21 +28,28 @@ struct HostsView: View {
 
 private struct HostCard: View {
     @EnvironmentObject var library: Library
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     var show: Show
     var body: some View {
-        HStack(spacing: 16) {
-            HostAvatar(host: show.host, size: 68)
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+            : AnyLayout(HStackLayout(spacing: 16))
+        layout {
+            HostAvatar(host: show.host, size: 68).accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 4) {
                 Text(show.host.name).font(.headline).foregroundStyle(Theme.ink)
                 Text(show.host.niche).font(.caption).foregroundStyle(Theme.secondary)
-                Text(show.host.personality).font(.subheadline).foregroundStyle(Theme.ink).lineLimit(2).multilineTextAlignment(.leading)
+                Text(show.host.personality).font(.subheadline).foregroundStyle(Theme.ink)
+                    .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2).multilineTextAlignment(.leading)
                 HStack(spacing: 6) {
                     Image(systemName: show.symbol).font(.caption2).accessibilityHidden(true)
                     Text(show.title).font(.caption.weight(.medium))
                 }.foregroundStyle(Theme.secondary).padding(.top, 2)
             }
-            Spacer(minLength: 0)
-            Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary).accessibilityHidden(true)
+            if !dynamicTypeSize.isAccessibilitySize {
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right").font(.caption.weight(.semibold)).foregroundStyle(Theme.tertiary).accessibilityHidden(true)
+            }
         }
         .card()
     }

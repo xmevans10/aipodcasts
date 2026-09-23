@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Read-along transcript: words light up as they are spoken, the page follows the narrator,
 /// and tapping a paragraph jumps the audio there. Set in Charter for long-form reading.
@@ -38,27 +39,31 @@ struct TranscriptView: View {
                     HStack(spacing: 8) { HostAvatar(host: story.host, size: 24); Text("\(story.show.title) · \(presenterNames)").font(.subheadline).foregroundStyle(Theme.secondary) }
                     Text(story.title).font(Self.titleFont).foregroundStyle(Theme.ink).accessibilityAddTraits(.isHeader)
                     ForEach(paragraphs.indices, id: \.self) { index in
-                        paragraphText(at: index, active: active)
-                            .font(Self.bodyFont).lineSpacing(8)
-                            .opacity(active < 0 || index == active ? 1 : 0.72)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .contentShape(Rectangle())
-                            .onTapGesture { jump(to: index) }
-                            .accessibilityAddTraits(.isButton)
-                            .accessibilityHint("Plays from this paragraph")
-                            .id(index)
+                        Button { jump(to: index) } label: {
+                            paragraphText(at: index, active: active)
+                                .font(Self.bodyFont).lineSpacing(8)
+                                .opacity(active < 0 || index == active ? 1 : 0.72)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(paragraphs[index].words.first?.start == nil)
+                        .accessibilityLabel(plainParagraphs[index])
+                        .accessibilityValue(index == active && isCurrent ? "Current paragraph" : "")
+                        .accessibilityHint("Plays from this paragraph")
+                        .id(index)
                     }
                 }
                 .padding(.horizontal, 24).padding(.top, 12).padding(.bottom, 40)
             }
             .simultaneousGesture(DragGesture(minimumDistance: 12).onChanged { _ in following = false })
             .onChange(of: active) { _, index in
-                guard following, index >= 0 else { return }
+                guard following, index >= 0, !UIAccessibility.isVoiceOverRunning else { return }
                 withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.45)) { proxy.scrollTo(index, anchor: UnitPoint(x: 0.5, y: 0.28)) }
             }
             .onAppear {
                 // after first layout, otherwise the scroll target isn't measurable yet
-                guard active > 0 else { return }
+                guard active > 0, !UIAccessibility.isVoiceOverRunning else { return }
                 Task { @MainActor in
                     try? await Task.sleep(for: .milliseconds(150))
                     proxy.scrollTo(active, anchor: UnitPoint(x: 0.5, y: 0.28))
@@ -91,7 +96,9 @@ struct TranscriptView: View {
                 Button { player.seek(clock.position + 15) } label: { Image(systemName: "goforward.15").frame(width: 44, height: 44) }
                     .disabled(!isCurrent).accessibilityLabel("Forward 15 seconds")
                 VStack(alignment: .leading, spacing: 6) {
-                    ProgressView(value: isCurrent ? min(clock.position, player.duration) : 0, total: max(player.duration, 1)).tint(.white)
+                    ProgressView(value: isCurrent ? min(clock.position, player.duration) : 0, total: max(player.duration, 1))
+                        .tint(.white)
+                        .accessibilityLabel("Playback progress")
                     Text(isCurrent ? "\(clockText(clock.position)) / \(clockText(player.duration))" : "Tap play or any paragraph")
                         .font(.caption2.monospacedDigit()).foregroundStyle(Color.white.opacity(0.7))
                 }

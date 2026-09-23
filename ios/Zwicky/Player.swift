@@ -40,6 +40,8 @@ import UIKit
     private var sleepTask: Task<Void, Never>?
     private var lastCheckpointAt = 0.0
     private var lastTick: Date?
+    private var pendingListenDay: String?
+    private var pendingListenSeconds = 0.0
     private var interruptionObserver: NSObjectProtocol?
     private var routeObserver: NSObjectProtocol?
     private var wasPlayingBeforeInterruption = false
@@ -171,8 +173,20 @@ import UIKit
         play(playlist[index + 1])
     }
     func persist() {
+        flushListeningTime()
         if let data = try? JSONEncoder().encode(listening) { UserDefaults.standard.set(data, forKey: "listeningState") }
         UserDefaults.standard.set(listenedSeconds, forKey: "listenedSeconds")
+    }
+    private func recordListeningTime(at now: Date) {
+        let day = Story.dayFormatter.string(from: now)
+        if pendingListenDay != day { flushListeningTime(); pendingListenDay = day }
+        if let lastTick { pendingListenSeconds += min(max(now.timeIntervalSince(lastTick), 0), 0.5) }
+        lastTick = now
+    }
+    private func flushListeningTime() {
+        guard let day = pendingListenDay, pendingListenSeconds > 0 else { return }
+        listenedSeconds[day, default: 0] += pendingListenSeconds
+        pendingListenSeconds = 0
     }
     func checkpoint() { if !isPreview && !listening.completed.contains(story?.id ?? "") { listening.checkpoint(position) }; persist() }
     func restore(_ stories: [Story]) {
@@ -198,7 +212,7 @@ import UIKit
         persist()
     }
     private func finished() {
-        playing = false; updateNowPlaying(); listening.finish(); persist()
+        lastTick = nil; playing = false; updateNowPlaying(); listening.finish(); persist()
         // Pop before play so a completed item's checkpoint cannot be restored.
         while let id = listening.next() {
             if let item = catalog[id] { play(item); return }
@@ -266,6 +280,7 @@ import UIKit
             if history.count > 25 { history.removeFirst() }
         }
         checkpoint()
+        lastTick = nil
         catalog[item.id] = item
         let resumePosition = listening.positions[item.id] ?? 0
         listening.begin(item.id); persist()
@@ -281,18 +296,18 @@ import UIKit
             let av = AVPlayer(url: url); player = av
             av.audiovisualBackgroundPlaybackPolicy = .continuesIfPossible
             if resumePosition > 0 { av.seek(to: CMTime(seconds: resumePosition, preferredTimescale: 600)) }
-            observer = av.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.1, preferredTimescale: 600), queue: .main) { [weak self] time in
+            observer = av.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.25, preferredTimescale: 600), queue: .main) { [weak self] time in
                 Task { @MainActor in
                     guard let self, self.story?.id == item.id else { return }
-                    self.position = time.seconds.isFinite ? time.seconds : 0
+                    let position = time.seconds.isFinite ? time.seconds : 0
+                    if abs(self.position - position) > 0.05 { self.position = position }
                     if self.playing {
-                        let now = Date.now
-                        if let last = self.lastTick { self.listenedSeconds[Story.dayFormatter.string(from: now), default: 0] += min(now.timeIntervalSince(last), 0.5) }
-                        self.lastTick = now
+                        self.recordListeningTime(at: .now)
                     } else { self.lastTick = nil }
                     if abs(self.position - self.lastCheckpointAt) >= 5 { self.lastCheckpointAt = self.position; self.checkpoint() }
                     if Int(self.position) != self.lastSyncedSecond { self.lastSyncedSecond = Int(self.position); self.updateNowPlaying() }
-                    if let seconds = self.player?.currentItem?.duration.seconds, seconds.isFinite, seconds > 0 { self.duration = seconds }
+                    if let seconds = self.player?.currentItem?.duration.seconds, seconds.isFinite, seconds > 0,
+                       abs(self.duration - seconds) > 0.05 { self.duration = seconds }
                     if self.player?.currentItem?.status == .failed { self.message = "This audio is unavailable. You can still read the story."; self.playing = false }
                 }
             }
@@ -321,7 +336,7 @@ import UIKit
         guard let url = URL(string: raw), url.scheme == "https" else { return nil }
         return url
     }
-    func pause() { player?.pause(); speech.pauseSpeaking(at: .immediate); playing = false; checkpoint(); updateNowPlaying() }
+    func pause() { player?.pause(); speech.pauseSpeaking(at: .immediate); playing = false; lastTick = nil; checkpoint(); updateNowPlaying() }
     func resume() {
         guard story != nil else { return }
         guard activateSession() else { return }

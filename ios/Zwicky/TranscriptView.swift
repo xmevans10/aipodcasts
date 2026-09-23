@@ -6,6 +6,7 @@ struct TranscriptView: View {
     @EnvironmentObject var player: AudioPlayer
     let story: Story
     let paragraphs: [TranscriptParagraph]
+    private let plainParagraphs: [String]
     @State private var following = true
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -13,6 +14,15 @@ struct TranscriptView: View {
     private var now: Double { isCurrent ? player.position : -1 }
     private static let bodyFont = Theme.reading(21)
     private static let titleFont = Font.custom("Charter", size: 31, relativeTo: .title).weight(.bold)
+
+    init(story: Story, paragraphs: [TranscriptParagraph]) {
+        self.story = story
+        self.paragraphs = paragraphs
+        self.plainParagraphs = paragraphs.map { paragraph in
+            let words = paragraph.words.map(\.text).joined(separator: " ")
+            return paragraph.speaker.map { "\($0)\n\(words)" } ?? words
+        }
+    }
 
     private var presenterNames: String {
         (story.hostIDs ?? [story.hostID]).compactMap { id in Host.all.first { $0.id == id }?.name }
@@ -27,7 +37,7 @@ struct TranscriptView: View {
                     HStack(spacing: 8) { HostAvatar(host: story.host, size: 24); Text("\(story.show.title) · \(presenterNames)").font(.subheadline).foregroundStyle(Theme.secondary) }
                     Text(story.title).font(Self.titleFont).foregroundStyle(Theme.ink).accessibilityAddTraits(.isHeader)
                     ForEach(paragraphs.indices, id: \.self) { index in
-                        Text(attributed(paragraphs[index], active: index == active))
+                        paragraphText(at: index, active: active)
                             .font(Self.bodyFont).lineSpacing(8)
                             .opacity(active < 0 || index == active ? 1 : 0.72)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -110,20 +120,25 @@ struct TranscriptView: View {
         return paragraph.words.lastIndex { $0.start <= now }
     }
 
-    private func attributed(_ paragraph: TranscriptParagraph, active: Bool) -> AttributedString {
+    private func paragraphText(at index: Int, active: Int) -> Text {
+        if index == active { return Text(attributed(paragraphs[index])) }
+        return Text(plainParagraphs[index]).foregroundColor(index < active ? Theme.ink : Theme.tertiary)
+    }
+
+    private func attributed(_ paragraph: TranscriptParagraph) -> AttributedString {
         let current = currentWord(in: paragraph)
         var result = AttributedString()
         if let speaker = paragraph.speaker {
             var label = AttributedString(speaker + "\n")
             label.font = .caption.weight(.semibold)
-            label.foregroundColor = active ? Theme.ink : Theme.secondary
+            label.foregroundColor = Theme.ink
             result += label
         }
         for (index, word) in paragraph.words.enumerated() {
             var piece = AttributedString(word.text)
             let spoken = current != nil && index <= current!
             piece.foregroundColor = spoken ? Theme.ink : Theme.tertiary
-            if active && index == current && isCurrent { piece.backgroundColor = story.show.light.opacity(0.35) }
+            if index == current && isCurrent { piece.backgroundColor = story.show.light.opacity(0.35) }
             result += piece
             if index < paragraph.words.count - 1 { result += AttributedString(" ") }
         }

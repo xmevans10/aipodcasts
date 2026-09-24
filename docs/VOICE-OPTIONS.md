@@ -70,9 +70,11 @@ out-of-distribution text.
 Compute cost at our volume is negligible (a 500-word episode is ~4 minutes of
 audio); the real decisions are **licensing and voice consistency**, not GPU spend.
 
-## Production path (implemented)
+## Rendering path (implemented)
 
-All 16 shows render with **Kokoro directly** — no cloning step. The
+The daily production workflow renders the selected two episodes with Google Cloud
+Gemini 2.5 Flash TTS. All 20 presenters have distinct `geminiVoice` IDs, checked
+before rendering. Kokoro remains the local, license-free rendering option. The
 [model card](https://huggingface.co/hexgrad/Kokoro-82M) documents Apache-2.0 weights.
 `tools/tts/bundle_shows.py` resolves each dialogue speaker through `backend/hosts.py`
 and selects its stable voice by host ID from `voice_cast.json`. Each turn is synthesized
@@ -84,7 +86,8 @@ than a letter count. espeak-ng (present in the render runner) supplies phonemes;
 it a spelling-based syllable estimate stands in. This replaces the earlier length-weighted
 estimate.
 
-Both rendering workflows require all 16 shows. They render into a separate output directory;
+The full-run review prepares all 16 shows; the overnight renderer selects up to two
+approved episodes. They render into a separate output directory;
 the app catalog is loaded from the feed, and never embeds episode assets. The publishing
 workflow sends audio, speaker-labelled sidecars and the feed to R2.
 Every script must pass verification for its current content hash before any synthesis;

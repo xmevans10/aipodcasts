@@ -54,15 +54,22 @@ Host voice variables follow each presenter id: `ELEVENLABS_VOICE_NOVA`, `_FERN`,
 
 Rendered episodes are served, not bundled. `tools/publish_feed.py` uploads the audio and
 a `feed.json` to R2's S3-compatible API; the app's Settings → feed field points at
-`<R2_PUBLIC_BASE>/<prefix>/feed.json`. The daily `daily-episodes.yml` Action selects
-two approved, unpublished episodes, renders them, and merges them into the existing
-feed. It never replaces the archive with only that day's episodes.
+`<R2_PUBLIC_BASE>/<prefix>/feed.json`. At 02:17 America/New_York,
+`prepare-daily-episodes.yml` selects up to two approved, unpublished episodes and
+renders them with Google Cloud TTS into a dated Actions artifact. At 07:43 Eastern,
+`daily-episodes.yml` loads that artifact, waits until 08:00 Eastern, then merges it
+into the feed. It never replaces the archive with only that day's episodes. GitHub
+scheduled jobs can start late or be dropped; a missing preparation fails closed.
 
 The weekly `full-run.yml` checks complete review before marking a batch successful.
-The daily Action checks the batch again before rendering. An incomplete or edited
+The overnight Action checks the batch again before rendering. An incomplete or edited
 transcript batch cannot reach the R2 publish step. The weekly Action can resume a
 partially approved batch from a committed `seed_dir` or a prior `seed_run_id`; see
 [story discovery](editorial/story-discovery.md#weekly-full-run).
+
+The preparation artifact includes `cost-estimate.json` with a per-episode audio
+duration upper bound at Google's public Gemini 2.5 Flash TTS rate. It excludes
+text input and retries; actual charges require Cloud Billing export.
 
 | Secret | Value |
 |---|---|

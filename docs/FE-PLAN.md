@@ -20,6 +20,9 @@ in [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md).
   layout at accessibility text sizes. A physical-device pass is still needed.
 - A manual GitHub Actions TestFlight workflow is available once its signing
   secrets are configured; the existing iOS build workflow checks pushes.
+- Newsletter HTML is now a separate template with semantic headings and a solid
+  color fallback. Staged email requires a public HTTPS audio link; Apple Mail
+  and Gmail rendering still need a visual pass before delivery.
 
 ## Baseline state (18 September 2026)
 

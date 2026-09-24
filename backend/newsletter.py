@@ -23,7 +23,9 @@ import re
 import shutil
 import smtplib
 import sys
+from string import Template
 import webbrowser
+from urllib.parse import urlparse
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
@@ -49,6 +51,12 @@ SANS = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-se
 
 def esc(value):
     return html.escape(value or "", quote=True)
+
+
+def hosted_audio_url(value):
+    """Only public HTTPS audio links are safe to put in a staged email."""
+    parsed = urlparse(value or "")
+    return value if parsed.scheme == "https" and parsed.netloc and not parsed.username else None
 
 
 def load_episode(episode_id):
@@ -112,116 +120,38 @@ def render_html(story, info, *, audio_url, recipient_name=None, token="preview")
         + esc(s.get("attribution", "")) + " · " + esc(s.get("license", "")) + "</p>"
         for s in story.get("sources", [])
     )
-    audio_block = ""
-    if audio_url:
-        audio_block = (
-            '<p style="margin:22px 0 0;font-family:' + SANS + ';font-size:13px;color:' + SECONDARY + ';">'
-            'Prefer to listen in your browser?</p>'
-            '<p style="margin:6px 0 0;"><audio controls preload="none" src="' + esc(audio_url) + '" '
-            'style="width:100%;max-width:480px;"></audio></p>'
-            '<p style="margin:6px 0 0;font-family:' + SANS + ';font-size:12px;color:' + SECONDARY + ';">'
-            'Some email apps hide the player. <a href="' + esc(audio_url) + '" target="_blank" '
-            'style="color:' + c["mid"] + ';">Open the audio file instead</a>.</p>'
-        )
+    audio_block = (
+        '<p style="margin:16px 0 0;font-family:' + SANS + ';font-size:13px;color:' + SECONDARY + ';">'
+        'The button opens the hosted audio in your browser.</p>'
+    ) if audio_url else ""
+    listen_button = _button("Listen to this episode", audio_url, c["mid"]) if audio_url else ""
     app_cta = (
         '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" '
         'style="background:' + SUBTLE + ';border:1px solid ' + HAIRLINE + ';border-radius:14px;">'
         '<tr><td style="padding:26px 26px 28px;">'
         '<p style="margin:0 0 6px;font-family:' + SANS + ';font-size:11px;letter-spacing:1.4px;'
-        'text-transform:uppercase;color:' + c["mid"] + ';font-weight:700;">Now in development</p>'
+        'text-transform:uppercase;color:' + c["mid"] + ';font-weight:700;">Keep listening</p>'
         '<h2 style="margin:0 0 8px;font-family:' + SERIF + ';font-size:24px;line-height:1.25;color:' + INK + ';">'
-        'The Zwicky iPhone app is on its way</h2>'
+        'More stories from Zwicky</h2>'
         '<p style="margin:0 0 18px;font-family:' + SANS + ';font-size:15px;line-height:1.6;color:' + SECONDARY + ';">'
-        'Same shows, same hosts. A daily edition, offline listening and a queue that remembers where you left off.</p>'
-        + _button("Get early access", APP_URL, c["mid"]) +
+        'Explore the shows and find your next episode.</p>'
+        + _button("Explore Zwicky", APP_URL, c["mid"]) +
         "</td></tr></table>"
     )
     preheader = esc((story.get("dek") or "")[:140])
     year = dt.datetime.now().year
 
-    return f"""<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="light only">
-<title>{esc(story.get('title'))} · Zwicky</title>
-<style>
-  @media (max-width:600px) {{
-    .wrap {{ width:100% !important; }}
-    .pad {{ padding-left:22px !important; padding-right:22px !important; }}
-    .hero-title {{ font-size:30px !important; }}
-    h1 {{ font-size:30px !important; }}
-  }}
-  a {{ text-decoration:underline; }}
-</style>
-</head>
-<body style="margin:0;padding:0;background:{CANVAS};-webkit-text-size-adjust:100%;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:{CANVAS};font-size:1px;">{preheader}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:{CANVAS};">
-<tr><td align="center" style="padding:28px 12px 44px;">
-
-<table role="presentation" class="wrap" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#FFFFFF;border:1px solid {HAIRLINE};border-radius:18px;overflow:hidden;">
-
-  <tr><td class="pad" style="padding:26px 40px 8px;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
-      <td style="font-family:{SERIF};font-size:19px;font-weight:700;letter-spacing:.6px;color:{INK};">ZWICKY</td>
-      <td align="right" style="font-family:{SANS};font-size:12px;color:{SECONDARY};">Big ideas. Easy listening.</td>
-    </tr></table>
-  </td></tr>
-
-  <tr><td class="pad" style="padding:18px 40px 0;">
-    <div style="background:linear-gradient(135deg,{c['light']} 0%,{c['mid']} 55%,{c['dark']} 100%);border-radius:14px;padding:26px 26px 24px;">
-      <p style="margin:0 0 10px;font-family:{SANS};font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:rgba(255,255,255,.85);font-weight:700;">{esc(info['show'])} · {esc(info['topic'])}</p>
-      <p class="hero-title" style="margin:0;font-family:{SERIF};font-size:34px;line-height:1.15;color:#FFFFFF;font-weight:700;">{esc(story.get('title'))}</p>
-      <p style="margin:12px 0 0;font-family:{SANS};font-size:14px;color:rgba(255,255,255,.92);">with {esc(info['host'])} · {subject_minutes} min listen</p>
-    </div>
-  </td></tr>
-
-  <tr><td class="pad" style="padding:24px 40px 0;">
-    <p style="margin:0 0 20px;font-family:{SERIF};font-size:20px;line-height:1.5;color:{INK};">{greeting}{esc(story.get('dek'))}</p>
-    {_button("Listen to this episode", audio_url or APP_URL, c['mid'])}
-    {audio_block}
-  </td></tr>
-
-  <tr><td class="pad" style="padding:30px 40px 0;">
-    <p style="margin:0 0 4px;font-family:{SANS};font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:{SECONDARY};font-weight:700;">Transcript</p>
-    <div style="height:2px;width:44px;background:{c['mid']};margin:0 0 20px;"></div>
-    {transcript}
-  </td></tr>
-
-  <tr><td class="pad" style="padding:8px 40px 0;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:{SUBTLE};border-radius:12px;">
-      <tr><td style="padding:18px 20px;">
-        <p style="margin:0 0 6px;font-family:{SANS};font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:{SECONDARY};font-weight:700;">About this episode</p>
-        <p style="margin:0;font-family:{SANS};font-size:13px;line-height:1.65;color:{SECONDARY};">{esc(story.get('caveat'))}</p>
-      </td></tr>
-    </table>
-  </td></tr>
-
-  <tr><td class="pad" style="padding:26px 40px 0;">
-    <p style="margin:0 0 14px;font-family:{SANS};font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:{SECONDARY};font-weight:700;">Read the research</p>
-    {sources}
-  </td></tr>
-
-  <tr><td class="pad" style="padding:30px 40px 36px;">{app_cta}</td></tr>
-
-  <tr><td class="pad" style="padding:24px 40px 30px;border-top:1px solid {HAIRLINE};">
-    <p style="margin:0 0 8px;font-family:{SANS};font-size:12px;line-height:1.6;color:{SECONDARY};">
-      You're getting this because you signed up for the Zwicky newsletter. Every episode is written by our editorial team and narrated by an AI-generated voice.
-    </p>
-    <p style="margin:0;font-family:{SANS};font-size:12px;line-height:1.6;color:{SECONDARY};">
-      <a href="{esc(UNSUBSCRIBE_URL.replace('{{token}}', token))}" style="color:{SECONDARY};">Unsubscribe</a> ·
-      <a href="{esc(APP_URL)}" style="color:{SECONDARY};">zwicky.app</a><br>
-      Zwicky, [mailing address placeholder] · © {year}
-    </p>
-  </td></tr>
-
-</table>
-</td></tr></table>
-</body>
-</html>
-"""
+    return Template((HERE / "templates" / "newsletter.html").read_text()).substitute(
+        canvas=CANVAS, hairline=HAIRLINE, ink=INK, sans=SANS, secondary=SECONDARY,
+        serif=SERIF, subtle=SUBTLE, app_cta=app_cta, audio_block=audio_block,
+        color_dark=c["dark"], color_light=c["light"], color_mid=c["mid"],
+        app_url=esc(APP_URL), host=esc(info["host"]), show=esc(info["show"]),
+        topic=esc(info["topic"]), caveat=esc(story.get("caveat")),
+        dek=esc(story.get("dek")), title=esc(story.get("title")),
+        greeting=greeting, listen_button=listen_button, preheader=preheader,
+        sources=sources, subject_minutes=subject_minutes, transcript=transcript,
+        year=year, unsubscribe_url=esc(UNSUBSCRIBE_URL.replace("{{token}}", token)),
+    )
 
 
 def render_text(story, info, *, audio_url, recipient_name=None, token="preview"):
@@ -249,8 +179,8 @@ def render_text(story, info, *, audio_url, recipient_name=None, token="preview")
         lines.append("  " + s.get("url", "") + " · " + s.get("license", ""))
     lines += [
         "",
-        "THE APP IS IN DEVELOPMENT",
-        "Zwicky for iPhone is on its way. Get early access: " + APP_URL,
+        "MORE FROM ZWICKY",
+        "Explore the shows: " + APP_URL,
         "",
         "You're getting this because you signed up for the Zwicky newsletter.",
         "Unsubscribe: " + UNSUBSCRIBE_URL.replace("{{token}}", token),
@@ -262,8 +192,10 @@ def render_episode(episode_id, out_dir, *, audio_url=None, recipient_name=None, 
     story = load_episode(episode_id)
     info = show_for(story.get("hostID", "fern"))
     if audio_url is None:
+        audio_url = hosted_audio_url(story.get("audioURL"))
+    if audio_url is None and copy_audio:
         audio_name = (story.get("audioURL") or "").replace("bundle:", "")
-        if copy_audio and audio_name and (EPISODES / audio_name).exists():
+        if audio_name and (EPISODES / audio_name).exists():
             (out_dir / "audio").mkdir(parents=True, exist_ok=True)
             shutil.copy2(EPISODES / audio_name, out_dir / "audio" / audio_name)
         audio_url = ("audio/" + audio_name) if audio_name else None
@@ -297,7 +229,7 @@ def command_render(args):
     ids = args.episodes.split(",") if args.episodes else available_episodes()
     rendered = []
     for episode_id in ids:
-        item = render_episode(episode_id.strip(), out_dir)
+        item = render_episode(episode_id.strip(), out_dir, audio_url=args.audio_url)
         (out_dir / (item["id"] + ".html")).write_text(item["html"])
         (out_dir / (item["id"] + ".txt")).write_text(item["text"])
         rendered.append(item)
@@ -324,9 +256,15 @@ def command_send(args):
     if not recipients:
         raise SystemExit("Pass --to with at least one address")
     sender = os.environ.get("NEWSLETTER_FROM", "Zwicky <newsletter@zwicky.app>")
-    written = 0
+    prepared = []
     for episode_id in ids:
-        item = render_episode(episode_id.strip(), out_dir, audio_url=args.audio_url)
+        item = render_episode(episode_id.strip(), out_dir, audio_url=args.audio_url, copy_audio=False)
+        public_audio = hosted_audio_url(args.audio_url or item["story"].get("audioURL"))
+        if not public_audio:
+            raise SystemExit("A public HTTPS audio URL is required for email: set --audio-url or story.audioURL")
+        prepared.append(render_episode(episode_id.strip(), out_dir, audio_url=public_audio, copy_audio=False))
+    written = 0
+    for item in prepared:
         for recipient in recipients:
             message = build_message(item, sender=sender, recipient=recipient, attach_audio=args.attach_audio)
             path = outbox / (item["id"] + "--" + re.sub(r"[^A-Za-z0-9]+", "_", recipient) + ".eml")
@@ -342,8 +280,7 @@ def command_send(args):
             user, password = os.environ.get("SMTP_USER"), os.environ.get("SMTP_PASSWORD")
             if user and password:
                 server.login(user, password)
-            for episode_id in ids:
-                item = render_episode(episode_id.strip(), out_dir, audio_url=args.audio_url)
+            for item in prepared:
                 for recipient in recipients:
                     server.send_message(build_message(item, sender=sender, recipient=recipient, attach_audio=args.attach_audio))
                     print("sent", item["id"], "to", recipient)
@@ -358,6 +295,7 @@ def main():
     r = sub.add_parser("render", help="write HTML/text previews")
     r.add_argument("--episodes", default=None, help="comma-separated ids (default: all)")
     r.add_argument("--out", default=str(DEFAULT_OUT))
+    r.add_argument("--audio-url", default=None, help="public HTTPS audio URL (defaults to the episode's hosted URL)")
     r.add_argument("--open", action="store_true")
     s = sub.add_parser("send", help="stage .eml files (and optionally deliver over SMTP)")
     s.add_argument("--to", required=True, help="comma-separated recipients")

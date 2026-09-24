@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>$title · Zwicky</title>
+<style>
+  @media (max-width:600px) {
+    .wrap { width:100% !important; }
+    .pad { padding-left:22px !important; padding-right:22px !important; }
+    .hero-title { font-size:30px !important; }
+    h1 { font-size:30px !important; }
+  }
+  a { text-decoration:underline; }
+</style>
+</head>
+<body style="margin:0;padding:0;background:$canvas;-webkit-text-size-adjust:100%;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:$canvas;font-size:1px;">$preheader</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:$canvas;">
+<tr><td align="center" style="padding:28px 12px 44px;">
+
+<table role="presentation" class="wrap" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:600px;background:#FFFFFF;border:1px solid $hairline;border-radius:18px;overflow:hidden;">
+
+  <tr><td class="pad" style="padding:26px 40px 8px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+      <td style="font-family:$serif;font-size:19px;font-weight:700;letter-spacing:.6px;color:$ink;">ZWICKY</td>
+      <td align="right" style="font-family:$sans;font-size:12px;color:$secondary;">Big ideas. Easy listening.</td>
+    </tr></table>
+  </td></tr>
+
+  <tr><td class="pad" style="padding:18px 40px 0;">
+    <div style="background-color:$color_mid;background:linear-gradient(135deg,$color_light 0%,$color_mid 55%,$color_dark 100%);border-radius:14px;padding:26px 26px 24px;">
+      <p style="margin:0 0 10px;font-family:$sans;font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:rgba(255,255,255,.85);font-weight:700;">$show · $topic</p>
+      <h1 class="hero-title" style="margin:0;font-family:$serif;font-size:34px;line-height:1.15;color:#FFFFFF;font-weight:700;">$title</h1>
+      <p style="margin:12px 0 0;font-family:$sans;font-size:14px;color:rgba(255,255,255,.92);">with $host · $subject_minutes min listen</p>
+    </div>
+  </td></tr>
+
+  <tr><td class="pad" style="padding:24px 40px 0;">
+    <p style="margin:0 0 20px;font-family:$serif;font-size:20px;line-height:1.5;color:$ink;">$greeting$dek</p>
+    $listen_button
+    $audio_block
+  </td></tr>
+
+  <tr><td class="pad" style="padding:30px 40px 0;">
+    <h2 style="margin:0 0 4px;font-family:$sans;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:$secondary;font-weight:700;">Transcript</h2>
+    <div style="height:2px;width:44px;background:$color_mid;margin:0 0 20px;"></div>
+    $transcript
+  </td></tr>
+
+  <tr><td class="pad" style="padding:8px 40px 0;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:$subtle;border-radius:12px;">
+      <tr><td style="padding:18px 20px;">
+        <h2 style="margin:0 0 6px;font-family:$sans;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:$secondary;font-weight:700;">About this episode</h2>
+        <p style="margin:0;font-family:$sans;font-size:13px;line-height:1.65;color:$secondary;">$caveat</p>
+      </td></tr>
+    </table>
+  </td></tr>
+
+  <tr><td class="pad" style="padding:26px 40px 0;">
+    <h2 style="margin:0 0 14px;font-family:$sans;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:$secondary;font-weight:700;">Read the research</h2>
+    $sources
+  </td></tr>
+
+  <tr><td class="pad" style="padding:30px 40px 36px;">$app_cta</td></tr>
+
+  <tr><td class="pad" style="padding:24px 40px 30px;border-top:1px solid $hairline;">
+    <p style="margin:0 0 8px;font-family:$sans;font-size:12px;line-height:1.6;color:$secondary;">
+      You're getting this because you signed up for the Zwicky newsletter. Every episode is written by our editorial team and narrated by an AI-generated voice.
+    </p>
+    <p style="margin:0;font-family:$sans;font-size:12px;line-height:1.6;color:$secondary;">
+      <a href="$unsubscribe_url" style="color:$secondary;">Unsubscribe</a> ·
+      <a href="$app_url" style="color:$secondary;">zwicky.app</a><br>
+      Zwicky, [mailing address placeholder] · © $year
+    </p>
+  </td></tr>
+
+</table>
+</td></tr></table>
+</body>
+</html>

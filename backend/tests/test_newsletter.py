@@ -2,6 +2,9 @@ import sys
 import tempfile
 import json
 import unittest
+from types import SimpleNamespace
+from email import policy
+from email.parser import BytesParser
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -32,7 +35,7 @@ class NewsletterTests(unittest.TestCase):
             story = rendered["story"]
             self.assertIn(story["title"], rendered["html"])
             self.assertIn(story["title"], rendered["subject"])
-            self.assertIn("The Zwicky iPhone app is on its way", rendered["html"])
+            self.assertIn("More stories from Zwicky", rendered["html"])
             self.assertIn("Transcript", rendered["html"])
             self.assertIn(story["body"].split("\n\n")[0][:40], rendered["html"])
 
@@ -47,6 +50,30 @@ class NewsletterTests(unittest.TestCase):
     def test_missing_episode_is_rejected(self):
         with self.assertRaises(SystemExit):
             render_episode("does-not-exist", self.out, copy_audio=False)
+
+    def test_staged_email_uses_hosted_audio_and_semantic_headings(self):
+        story_path = self.episodes / "clara.json"
+        data = json.loads(story_path.read_text())
+        data["story"]["audioURL"] = "https://audio.example.org/clara.m4a"
+        story_path.write_text(json.dumps(data))
+        args = SimpleNamespace(out=str(self.out), episodes="clara", to="reader@example.org",
+                               audio_url=None, attach_audio=False, deliver=False)
+        newsletter.command_send(args)
+        message = BytesParser(policy=policy.default).parsebytes(
+            (self.out / "outbox" / "clara--reader_example_org.eml").read_bytes())
+        html = message.get_body(preferencelist=("html",)).get_content()
+        self.assertIn('href="https://audio.example.org/clara.m4a"', html)
+        self.assertIn("<h1", html)
+        self.assertIn(">Transcript</h2>", html)
+        self.assertNotIn("<audio", html)
+        self.assertIn("unsubscribe?token=preview", html)
+
+    def test_staging_rejects_missing_public_audio(self):
+        args = SimpleNamespace(out=str(self.out), episodes="clara", to="reader@example.org",
+                               audio_url=None, attach_audio=False, deliver=False)
+        with self.assertRaisesRegex(SystemExit, "public HTTPS audio URL"):
+            newsletter.command_send(args)
+        self.assertEqual(list((self.out / "outbox").glob("*.eml")), [])
 
 
 if __name__ == "__main__":

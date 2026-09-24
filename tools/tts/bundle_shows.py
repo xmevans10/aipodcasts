@@ -46,7 +46,12 @@ def slug(text: str) -> str:
 
 def load_cast(path: Path) -> dict:
     data = json.loads(path.read_text())
-    return {k: v for k, v in data.items() if not k.startswith("_")}
+    cast = {k: v for k, v in data.items() if not k.startswith("_")}
+    for key in ("voice", "geminiVoice"):
+        voices = [entry.get(key) for entry in cast.values()]
+        if not all(voices) or len(voices) != len(set(voices)):
+            raise ValueError(f"Every presenter must have a distinct {key}")
+    return cast
 
 
 def episode_key(published: str, doi: str, show: str) -> str:
@@ -227,7 +232,7 @@ def narration_inputs(transcript: dict, cast: dict, voice_key: str = "voice") -> 
         if not voice or not item["text"].strip():
             raise ValueError(f"Missing voice or text for {item['host']}")
         item["voice"] = voice
-    voices = [cast[h]["voice"] for h in dict.fromkeys(i["host"] for i in inputs)]
+    voices = [cast[h][voice_key] for h in dict.fromkeys(i["host"] for i in inputs)]
     if len(voices) != len(set(voices)):
         raise ValueError("Each presenter must have a distinct voice")
     return inputs

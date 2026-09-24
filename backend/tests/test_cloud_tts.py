@@ -1,6 +1,8 @@
 import array
 import io
+import json
 import sys
+import tempfile
 import unittest
 import wave
 from pathlib import Path
@@ -14,6 +16,7 @@ sys.path.insert(0, str(ROOT / "backend"))
 
 import cloud_tts  # noqa: E402
 import bundle_shows  # noqa: E402
+from estimate_cost import estimate  # noqa: E402
 
 
 def wav_data(rate=24000, channels=1):
@@ -57,6 +60,25 @@ class CloudTtsTests(unittest.TestCase):
         voices = [host.get("geminiVoice") for host in cast.values()]
         self.assertTrue(all(voices))
         self.assertEqual(len(voices), len(set(voices)))
+
+    def test_cast_rejects_duplicate_google_cloud_voice(self):
+        cast = bundle_shows.load_cast(ROOT / "tools/tts/voice_cast.json")
+        cast["dev"]["geminiVoice"] = cast["ines"]["geminiVoice"]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "cast.json"
+            path.write_text(json.dumps(cast))
+            with self.assertRaisesRegex(ValueError, "distinct geminiVoice"):
+                bundle_shows.load_cast(path)
+
+    def test_episode_audio_cost_upper_bound(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            (directory / "episode.m4a").write_bytes(b"audio")
+            (directory / "episode.json").write_text(json.dumps({
+                "duration": 200,
+                "story": {"id": "episode", "title": "A story", "hostID": "nova"},
+            }))
+            self.assertEqual(estimate(directory)[0]["audioCostUpperBoundUSD"], 0.05)
 
     def test_decodes_cloud_linear16_wav_to_normalized_audio(self):
         audio = cloud_tts.decode_linear16(wav_data())

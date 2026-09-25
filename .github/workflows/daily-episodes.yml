@@ -1,16 +1,18 @@
 name: daily-episodes
 
-# Prepare at 02:17 Eastern, start this job at 07:43, publish at 08:00.
-# GitHub scheduled starts can be delayed; a late job publishes immediately.
+# Start before 08:00 Eastern; backup runs recover dropped or failed schedules.
 on:
   schedule:
-    - cron: "43 7 * * *"
+    - cron: "17,43 7 * * *"
+      timezone: "America/New_York"
+    - cron: "13 8 * * *"
       timezone: "America/New_York"
   workflow_dispatch:
 
 permissions:
   contents: read
   actions: read
+  id-token: write
 
 concurrency:
   group: daily-episodes-v1
@@ -19,7 +21,7 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     env:
       GH_TOKEN: ${{ github.token }}
       R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
@@ -28,6 +30,8 @@ jobs:
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       R2_PUBLIC_BASE: ${{ secrets.R2_PUBLIC_BASE }}
       R2_PREFIX: v1
+      GOOGLE_CLOUD_PROJECT: zwicky-509510
+      GOOGLE_CLOUD_REGION: eu
     steps:
       - uses: actions/checkout@v4
 
@@ -41,24 +45,54 @@ jobs:
       - name: Set Eastern publication date
         run: echo "RELEASE_DATE=$(TZ=America/New_York date +%F)" >> "$GITHUB_ENV"
 
+      - name: Check whether today already has two episodes
+        id: live
+        run: |
+          python3 - <<'PY'
+          import os, sys
+          sys.path.insert(0, "tools")
+          from publish_feed import load_existing_feed, r2_client
+          feed = load_existing_feed(r2_client(), os.environ["R2_BUCKET"], os.environ["R2_PREFIX"])
+          count = sum(story.get("published") == os.environ["RELEASE_DATE"] for story in feed)
+          if count > 2:
+              raise ValueError(f"Feed already has {count} episodes today")
+          print(f"Today's feed count: {count}")
+          if count == 2:
+              with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+                  output.write("released=true\n")
+          PY
+
       - name: Download today's prepared release
+        if: steps.live.outputs.released != 'true'
         id: prepared
         run: |
-          found=0
           for run_id in $(gh run list --workflow prepare-daily-episodes.yml \
             --status completed --limit 20 --json databaseId,conclusion \
             --jq '.[] | select(.conclusion == "success") | .databaseId'); do
             if gh run download "$run_id" \
               --name "prepared-episodes-$RELEASE_DATE" --dir prepared; then
-              found=1
-              break
+              echo 'found=true' >> "$GITHUB_OUTPUT"
+              exit 0
             fi
             rm -rf prepared
           done
-          if [ "$found" -ne 1 ]; then
-            echo "No successful overnight render for $RELEASE_DATE" >&2
-            exit 1
-          fi
+          echo 'found=false' >> "$GITHUB_OUTPUT"
+
+      - if: steps.live.outputs.released != 'true' && steps.prepared.outputs.found != 'true'
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: zwicky-509510
+          workload_identity_provider: projects/963729700523/locations/global/workloadIdentityPools/github-actions/providers/sciencebreak-main
+          service_account: zwicky-406@zwicky-509510.iam.gserviceaccount.com
+
+      - name: Render missing audio as a morning fallback
+        if: steps.live.outputs.released != 'true' && steps.prepared.outputs.found != 'true'
+        run: bash scripts/prepare-daily-episodes.sh "$RELEASE_DATE" prepared
+
+      - name: Verify prepared files
+        if: steps.live.outputs.released != 'true'
+        id: ready
+        run: |
           test "$(cat prepared/release-date.txt)" = "$RELEASE_DATE"
           count=$(cat prepared/release-count.txt)
           case "$count" in 0|1|2) ;; *) echo "Invalid prepared episode count: $count" >&2; exit 1 ;; esac
@@ -69,7 +103,7 @@ jobs:
           echo "count=$count" >> "$GITHUB_OUTPUT"
 
       - name: Wait until 08:00 Eastern
-        if: steps.prepared.outputs.count != '0'
+        if: steps.live.outputs.released != 'true' && steps.ready.outputs.count != '0'
         run: |
           python3 - <<'PY'
           from datetime import datetime
@@ -83,13 +117,13 @@ jobs:
           PY
 
       - name: Append to R2 feed
-        if: steps.prepared.outputs.count != '0'
+        if: steps.live.outputs.released != 'true' && steps.ready.outputs.count != '0'
         run: |
           python3 tools/publish_feed.py --episodes prepared/daily-episodes \
             --merge-existing --max-per-day 2
 
       - name: Verify episodes through the app feed URL
-        if: steps.prepared.outputs.count != '0'
+        if: steps.live.outputs.released != 'true' && steps.ready.outputs.count != '0'
         run: |
           python3 tools/verify_daily_feed.py \
             --transcripts prepared/daily-transcripts --date "$RELEASE_DATE"

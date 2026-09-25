@@ -56,10 +56,12 @@ Rendered episodes are served, not bundled. `tools/publish_feed.py` uploads the a
 a `feed.json` to R2's S3-compatible API; the app's Settings → feed field points at
 `<R2_PUBLIC_BASE>/<prefix>/feed.json`. At 02:17 America/New_York,
 `prepare-daily-episodes.yml` selects up to two approved, unpublished episodes and
-renders them with Google Cloud TTS into a dated Actions artifact. At 07:43 Eastern,
-`daily-episodes.yml` loads that artifact, waits until 08:00 Eastern, then merges it
-into the feed. It never replaces the archive with only that day's episodes. GitHub
-scheduled jobs can start late or be dropped; a missing preparation fails closed.
+renders them with Google Cloud TTS into a dated Actions artifact. It retries at
+03:17 and 04:17 if the artifact is missing. The release workflow starts at 07:17,
+07:43, and 08:13 Eastern; it renders a missing artifact itself, waits until 08:00
+when early, and merges the audio into the feed once. It never replaces the archive
+with only that day's episodes. GitHub scheduled jobs can still start late or be
+dropped, so 08:00 is a target rather than a hard guarantee.
 
 The weekly `full-run.yml` checks complete review before marking a batch successful.
 The overnight Action checks the batch again before rendering. An incomplete or edited

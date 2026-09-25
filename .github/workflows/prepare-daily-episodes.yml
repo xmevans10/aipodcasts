@@ -1,9 +1,9 @@
 name: prepare-daily-episodes
 
-# Render after midnight Eastern; publication happens in daily-episodes.yml.
+# Three attempts before the morning release. Later attempts reuse today's artifact.
 on:
   schedule:
-    - cron: "17 2 * * *"
+    - cron: "17 2,3,4 * * *"
       timezone: "America/New_York"
   workflow_dispatch:
 
@@ -35,74 +35,37 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: google-github-actions/auth@v3
+      - name: Set Eastern publication date
+        run: echo "RELEASE_DATE=$(TZ=America/New_York date +%F)" >> "$GITHUB_ENV"
+
+      - name: Check for today's prepared artifact
+        id: existing
+        run: |
+          artifact=$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?per_page=100" \
+            --jq ".artifacts[] | select(.name == \"prepared-episodes-$RELEASE_DATE\" and .expired == false) | .id")
+          if [ -n "$artifact" ]; then
+            echo "Today's audio is already prepared (artifact $artifact)"
+            echo 'skip=true' >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.existing.outputs.skip != 'true'
+        uses: google-github-actions/auth@v3
         with:
           project_id: zwicky-509510
           workload_identity_provider: projects/963729700523/locations/global/workloadIdentityPools/github-actions/providers/sciencebreak-main
           service_account: zwicky-406@zwicky-509510.iam.gserviceaccount.com
 
-      - uses: actions/setup-python@v5
+      - if: steps.existing.outputs.skip != 'true'
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install R2 client
-        run: python3 -m pip install boto3
-
-      - name: Load release baseline
-        run: python3 tools/clear_app_feed.py --baseline-out "$RUNNER_TEMP/release-baseline.json"
-
-      - name: Set Eastern publication date
-        run: echo "RELEASE_DATE=$(TZ=America/New_York date +%F)" >> "$GITHUB_ENV"
-
-      - name: Collect reviewed batch history
-        run: |
-          mkdir -p batches
-          baseline=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["minimum_run_id"])' \
-            "$RUNNER_TEMP/release-baseline.json")
-          gh run list --workflow full-run.yml --status completed --limit 100 \
-            --json databaseId,conclusion > completed-runs.json
-          jq --argjson baseline "$baseline" -r \
-            '[.[] | select(.conclusion == "success" and .databaseId >= $baseline)] | .[].databaseId' \
-            completed-runs.json | sort -n > run-ids.txt
-          if [ ! -s run-ids.txt ]; then
-            echo "No successful full-run batches after baseline $baseline" >&2
-            exit 1
-          fi
-          while IFS= read -r run_id; do
-            if ! gh run download "$run_id" --name full-run-transcripts \
-                --dir "batches/$run_id"; then
-              rm -rf "batches/$run_id"
-              echo "Skipping unavailable artifact from run $run_id"
-            fi
-          done < run-ids.txt
-
-      - name: Select today's two approved episodes
-        id: plan
-        env:
-          LILT_REVIEWER: jev
-        run: |
-          python3 tools/daily_release.py --batches batches \
-            --out daily-transcripts --date "$RELEASE_DATE"
-          printf '%s\n' "$RELEASE_DATE" > release-date.txt
-          find daily-transcripts -maxdepth 1 -name '*.json' | wc -l | tr -d ' ' > release-count.txt
-
-      - name: Install narration dependencies
-        if: steps.plan.outputs.count != '0'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y espeak-ng ffmpeg
-          python3 -m pip install numpy 'google-cloud-texttospeech>=2.31.0'
-
-      - name: Render and measure today's audio
-        if: steps.plan.outputs.count != '0'
-        run: |
-          python3 tools/tts/bundle_shows.py \
-            --transcripts daily-transcripts --out daily-episodes \
-            --date "$RELEASE_DATE" --tts-provider google-cloud
-          python3 tools/tts/estimate_cost.py --episodes daily-episodes \
-            --out cost-estimate.json
+      - name: Select, render, and measure today's episodes
+        if: steps.existing.outputs.skip != 'true'
+        run: bash scripts/prepare-daily-episodes.sh "$RELEASE_DATE" .
 
       - name: Save prepared release
+        if: steps.existing.outputs.skip != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: prepared-episodes-${{ env.RELEASE_DATE }}

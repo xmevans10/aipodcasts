@@ -99,6 +99,32 @@ class SharePageTests(unittest.TestCase):
         self.assertEqual(client.keys, ["v1/feed.json"])
         self.assertEqual(result["listening_pages"], 0)
 
+    def test_staging_keeps_feed_hidden_until_commit(self):
+        class Client:
+            def __init__(self):
+                self.keys = []
+
+            def upload_file(self, path, bucket, key, ExtraArgs):
+                self.keys.append(key)
+
+            def put_object(self, **kwargs):
+                self.keys.append(kwargs["Key"])
+
+        client = Client()
+        story = add_share_urls([{**self.story(), "published": "2026-09-25"}],
+                               "https://cdn.example", "v1")[0]
+        with patch.dict(os.environ, {"R2_BUCKET": "test", "R2_PUBLIC_BASE": "https://cdn.example"}):
+            with tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                (root / "one.m4a").write_bytes(b"audio")
+                payload = {"_file": str(root / "one.json"), "story": story}
+                upload([payload], [story], root, "v1", client=client, assets_only=True)
+                self.assertEqual(client.keys, ["v1/audio/one.m4a", "v1/episodes/one.json",
+                                               "v1/listen/episode-webwork-1.html"])
+                client.keys.clear()
+                upload([payload], [story], root, "v1", client=client, feed_only=True)
+        self.assertEqual(client.keys, ["v1/feed.json"])
+
 
 if __name__ == "__main__":
     unittest.main()

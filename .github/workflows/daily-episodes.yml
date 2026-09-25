@@ -1,12 +1,18 @@
 name: daily-episodes
 
-# Start before 08:00 Eastern; backup runs recover dropped or failed schedules.
+# Stage the release well before 08:00 Eastern; only the feed update waits until 08:00.
 on:
   schedule:
-    - cron: "17,43 7 * * *"
+    - cron: "17,43 6 * * *"
+      timezone: "America/New_York"
+    - cron: "13,43 7 * * *"
       timezone: "America/New_York"
     - cron: "13 8 * * *"
       timezone: "America/New_York"
+  workflow_run:
+    workflows: [prepare-daily-episodes]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -19,9 +25,30 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release:
+  arm:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    outputs:
+      ready: ${{ steps.window.outputs.ready }}
+    steps:
+      - name: Arm the preparation fallback after 06:00 Eastern
+        id: window
+        run: |
+          python3 - <<'PY'
+          import os
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          ready = (os.environ["GITHUB_EVENT_NAME"] != "workflow_run" or
+                   datetime.now(ZoneInfo("America/New_York")).hour >= 6)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as output:
+              output.write(f"ready={str(ready).lower()}\n")
+          PY
+
+  release:
+    needs: arm
+    if: needs.arm.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
     env:
       GH_TOKEN: ${{ github.token }}
       R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
@@ -102,6 +129,12 @@ jobs:
           fi
           echo "count=$count" >> "$GITHUB_OUTPUT"
 
+      - name: Stage audio, sidecars and listening pages
+        if: steps.live.outputs.released != 'true' && steps.ready.outputs.count != '0'
+        run: |
+          python3 tools/publish_feed.py --episodes prepared/daily-episodes \
+            --merge-existing --max-per-day 2 --assets-only
+
       - name: Wait until 08:00 Eastern
         if: steps.live.outputs.released != 'true' && steps.ready.outputs.count != '0'
         run: |
@@ -120,7 +153,7 @@ jobs:
         if: steps.live.outputs.released != 'true' && steps.ready.outputs.count != '0'
         run: |
           python3 tools/publish_feed.py --episodes prepared/daily-episodes \
-            --merge-existing --max-per-day 2
+            --merge-existing --max-per-day 2 --feed-only
 
       - name: Verify episodes through the app feed URL
         if: steps.live.outputs.released != 'true' && steps.ready.outputs.count != '0'

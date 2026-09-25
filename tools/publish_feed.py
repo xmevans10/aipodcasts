@@ -24,8 +24,10 @@ import json
 import os
 import re
 import sys
+import time
 from pathlib import Path
 from urllib.parse import urlparse
+from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -189,17 +191,38 @@ def load_existing_feed(client, bucket: str, prefix: str) -> list:
     return feed
 
 
+def verify_staged_assets(stories: list[dict]) -> None:
+    """Do not expose episodes until their public audio, sidecars and pages resolve."""
+    for story in stories:
+        for field in ("audioURL", "detailURL", "shareURL"):
+            url = story[field]
+            if not is_https_url(url):
+                raise ValueError(f"{story['id']}: invalid {field}")
+            for attempt in range(4):
+                try:
+                    with urlopen(Request(url, method="HEAD", headers={"Cache-Control": "no-cache"}),
+                                 timeout=20) as response:
+                        if response.status == 200:
+                            break
+                except OSError:
+                    pass
+                if attempt == 3:
+                    raise ValueError(f"{story['id']}: staged {field} is unavailable: {url}")
+                time.sleep(5)
+
+
 def upload(episodes: list, feed: list, directory: Path, prefix: str, client=None,
-           page_ids: set[str] | None = None) -> dict:
+           page_ids: set[str] | None = None, *, assets_only: bool = False,
+           feed_only: bool = False) -> dict:
     client = client or r2_client()
     bucket = os.environ["R2_BUCKET"]
     key = prefix.strip("/")
     base = os.environ["R2_PUBLIC_BASE"].rstrip("/") + "/" + key
     stories = {story["id"]: story for story in feed}
-    pages = [(story["id"], episode_page(story)) for story in feed
-             if page_ids is None or story["id"] in page_ids]
+    pages = [] if feed_only else [(story["id"], episode_page(story)) for story in feed
+                                  if page_ids is None or story["id"] in page_ids]
     audio = 0
-    for payload in episodes:
+    for payload in ([] if feed_only else episodes):
         name = Path(payload["_file"]).stem
         client.upload_file(str(directory / f"{name}.m4a"), bucket, f"{key}/audio/{name}.m4a",
                            ExtraArgs={"ContentType": "audio/mp4", "CacheControl": "public, max-age=86400"})
@@ -214,8 +237,9 @@ def upload(episodes: list, feed: list, directory: Path, prefix: str, client=None
                           Body=page, ContentType="text/html; charset=utf-8",
                           CacheControl="public, max-age=300")
     body = json.dumps(feed, ensure_ascii=False).encode()
-    client.put_object(Bucket=bucket, Key=f"{key}/feed.json", Body=body,
-                      ContentType="application/json", CacheControl="no-cache")
+    if not assets_only:
+        client.put_object(Bucket=bucket, Key=f"{key}/feed.json", Body=body,
+                          ContentType="application/json", CacheControl="no-cache")
     return {"feed": f"{base}/feed.json", "audio": audio, "sidecars": audio,
             "listening_pages": len(pages), "bytes": len(body)}
 
@@ -225,11 +249,18 @@ def main() -> None:
     parser.add_argument("--episodes", default=str(ROOT / "rendered-episodes"))
     parser.add_argument("--out", default="", help="also write feed.json here for inspection")
     parser.add_argument("--dry-run", action="store_true", help="build the feed, do not upload")
+    phase = parser.add_mutually_exclusive_group()
+    phase.add_argument("--assets-only", action="store_true",
+                       help="stage audio, sidecars and listening pages without exposing them in the feed")
+    phase.add_argument("--feed-only", action="store_true",
+                       help="expose previously staged episodes in the feed")
     parser.add_argument("--merge-existing", action="store_true", help="append to the existing R2 feed")
     parser.add_argument("--share-pages-only", action="store_true",
                         help="publish listening pages for the existing feed without new episodes")
     parser.add_argument("--max-per-day", type=int, default=2)
     args = parser.parse_args()
+    if args.share_pages_only and (args.assets_only or args.feed_only):
+        parser.error("--share-pages-only cannot be combined with a release phase")
 
     directory = Path(args.episodes)
     prefix = os.environ.get("R2_PREFIX", "v1")
@@ -269,8 +300,13 @@ def main() -> None:
     page_ids = None if args.share_pages_only else (
         {payload["story"]["id"] for payload in episodes} | missing_pages
     )
-    print(json.dumps(upload(episodes, feed, directory, prefix, client=client,
-                            page_ids=page_ids), indent=2))
+    result = upload(episodes, feed, directory, prefix, client=client,
+                    page_ids=page_ids, assets_only=args.assets_only,
+                    feed_only=args.feed_only)
+    if args.assets_only:
+        incoming_ids = {payload["story"]["id"] for payload in episodes}
+        verify_staged_assets([story for story in feed if story["id"] in incoming_ids])
+    print(json.dumps(result, indent=2))
 
 
 if __name__ == "__main__":

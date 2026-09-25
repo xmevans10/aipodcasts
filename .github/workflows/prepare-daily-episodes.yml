@@ -1,9 +1,11 @@
 name: prepare-daily-episodes
 
-# Three attempts before the morning release. Later attempts reuse today's artifact.
+# Early preparation plus a final trigger for the publisher before 08:00 Eastern.
 on:
   schedule:
     - cron: "17 2,3,4 * * *"
+      timezone: "America/New_York"
+    - cron: "7 6 * * *"
       timezone: "America/New_York"
   workflow_dispatch:
 

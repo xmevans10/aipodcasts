@@ -26,6 +26,7 @@ publication. Start there before rerendering the current batch.
 | 3 | [`03-audio-and-read-along.md`](03-audio-and-read-along.md) | Forced-alignment timings, pronunciation, loudness, QA gate | — |
 | 4 | [`04-production-feed-access.md`](04-production-feed-access.md) | Signed audio access, feed versioning, analytics | current R2 pipeline |
 | 5 | [`05-cloud-release-app-store.md`](05-cloud-release-app-store.md) | Unattended macOS CI → TestFlight; App Store ready | — |
+| 7 | [`07-cli-sound-design.md`](07-cli-sound-design.md) | CLI sound-pack experiments, blind previews, audio QA, daily rollout | current render pipeline |
 
 Suggested order: **1 → 3 → 2 → 4 → 5**. Milestones 1, 3 and 5 are independent; 2 needs
 nothing new; 4 builds on the pipeline that already publishes to R2.

@@ -11,24 +11,8 @@ python3 -m pip install boto3
 python3 tools/clear_app_feed.py --baseline-out "$out_root/release-baseline.json"
 baseline=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["minimum_run_id"])' \
   "$out_root/release-baseline.json")
-gh run list --workflow full-run.yml --status completed --limit 100 \
-  --json databaseId,conclusion > "$out_root/completed-runs.json"
-jq --argjson baseline "$baseline" -r \
-  '[.[] | select(.conclusion == "success" and .databaseId >= $baseline)] | .[].databaseId' \
-  "$out_root/completed-runs.json" | sort -n > "$out_root/run-ids.txt"
-if [ ! -s "$out_root/run-ids.txt" ]; then
-  echo "No successful full-run batches after baseline $baseline" >&2
-  exit 1
-fi
-while IFS= read -r run_id; do
-  if ! gh run download "$run_id" --name full-run-transcripts \
-      --dir "$out_root/batches/$run_id"; then
-    rm -rf "$out_root/batches/$run_id"
-    echo "Skipping unavailable artifact from run $run_id"
-  fi
-done < "$out_root/run-ids.txt"
-
 export LILT_REVIEWER=jev
+python3 tools/download_reviewed_batches.py --out "$out_root/batches" --baseline "$baseline"
 python3 tools/daily_release.py --batches "$out_root/batches" \
   --out "$out_root/daily-transcripts" --date "$release_date"
 find "$out_root/daily-transcripts" -maxdepth 1 -name '*.json' | wc -l | tr -d ' ' \

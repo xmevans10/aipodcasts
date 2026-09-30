@@ -16,6 +16,8 @@ on:
       - ".github/workflows/render-episodes.yml"
       - "tools/daily_release.py"
       - "tools/download_reviewed_batches.py"
+      - "tools/check_content_health.py"
+      - ".github/workflows/content-health.yml"
       - "scripts/prepare-daily-episodes.sh"
       - ".github/workflows/prepare-daily-episodes.yml"
       - "tools/publish_feed.py"

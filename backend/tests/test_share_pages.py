@@ -113,6 +113,29 @@ class SharePageTests(unittest.TestCase):
                 upload([], [story], Path(directory), "v1", client=client)
         self.assertEqual(client.keys, ["v1/listen/episode-webwork-1.html", "v1/feed.json"])
 
+    def test_previous_catalog_is_saved_before_commit_and_backup_failure_blocks(self):
+        class Client:
+            def __init__(self, fail=False):
+                self.keys = []
+                self.fail = fail
+            def put_object(self, **kwargs):
+                self.keys.append(kwargs["Key"])
+                if self.fail:
+                    raise OSError("snapshot storage unavailable")
+
+        story = add_share_urls([self.story()], "https://cdn.example", "v1")[0]
+        with patch.dict(os.environ, {"R2_BUCKET": "test", "R2_PUBLIC_BASE": "https://cdn.example"}), \
+             tempfile.TemporaryDirectory() as directory:
+            client = Client()
+            report = upload([], [story], Path(directory), "v1", client=client,
+                            feed_only=True, previous_feed=[{"id": "old"}])
+            self.assertEqual(client.keys, [report["previous_feed_snapshot"], "v1/feed.json"])
+            failed = Client(fail=True)
+            with self.assertRaisesRegex(OSError, "snapshot storage"):
+                upload([], [story], Path(directory), "v1", client=failed,
+                       feed_only=True, previous_feed=[{"id": "old"}])
+            self.assertNotIn("v1/feed.json", failed.keys)
+
     def test_daily_release_skips_unchanged_archive_pages(self):
         class Client:
             def __init__(self):

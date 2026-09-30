@@ -1,0 +1,30 @@
+name: content-health
+
+on:
+  workflow_run:
+    workflows: [daily-episodes]
+    types: [completed]
+    branches: [main]
+  schedule:
+    - cron: "23 9 * * *"
+      timezone: America/New_York
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: zwicky-content-health
+  cancel-in-progress: false
+
+jobs:
+  public-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check published episodes, ranged audio and read along
+        run: python3 tools/check_content_health.py

@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import html
+import hashlib
 import json
 import math
 import os
@@ -255,7 +256,7 @@ def verify_staged_assets(stories: list[dict]) -> None:
 
 def upload(episodes: list, feed: list, directory: Path, prefix: str, client=None,
            page_ids: set[str] | None = None, *, assets_only: bool = False,
-           feed_only: bool = False) -> dict:
+           feed_only: bool = False, previous_feed: list | None = None) -> dict:
     client = client or r2_client()
     bucket = os.environ["R2_BUCKET"]
     key = prefix.strip("/")
@@ -279,11 +280,17 @@ def upload(episodes: list, feed: list, directory: Path, prefix: str, client=None
                           Body=page, ContentType="text/html; charset=utf-8",
                           CacheControl="public, max-age=300")
     body = json.dumps(feed, ensure_ascii=False).encode()
+    snapshot = None
     if not assets_only:
+        if previous_feed is not None:
+            previous_body = json.dumps(previous_feed, ensure_ascii=False).encode()
+            snapshot = f"{key}/.release/feed-snapshots/{hashlib.sha256(previous_body).hexdigest()}.json"
+            client.put_object(Bucket=bucket, Key=snapshot, Body=previous_body,
+                              ContentType="application/json", CacheControl="no-store")
         client.put_object(Bucket=bucket, Key=f"{key}/feed.json", Body=body,
                           ContentType="application/json", CacheControl="no-cache")
     return {"feed": f"{base}/feed.json", "audio": audio, "sidecars": audio,
-            "listening_pages": len(pages), "bytes": len(body)}
+            "listening_pages": len(pages), "bytes": len(body), "previous_feed_snapshot": snapshot}
 
 
 def main() -> None:
@@ -313,10 +320,12 @@ def main() -> None:
     if episodes:
         validate_rendered_episodes(episodes, directory)
     client = None
+    previous_feed = None
     missing_pages = set()
     if args.share_pages_only:
         client = r2_client()
         feed = load_existing_feed(client, os.environ["R2_BUCKET"], prefix)
+        previous_feed = feed
         if not feed:
             raise ValueError("No existing feed to add listening pages to")
     else:
@@ -324,6 +333,7 @@ def main() -> None:
     if args.merge_existing and not args.share_pages_only:
         client = r2_client()
         existing = load_existing_feed(client, os.environ["R2_BUCKET"], prefix)
+        previous_feed = existing
         missing_pages = {story["id"] for story in existing if not story.get("shareURL")}
         dates = {story["published"] for story in feed}
         if len(dates) != 1:
@@ -346,7 +356,7 @@ def main() -> None:
     )
     result = upload(episodes, feed, directory, prefix, client=client,
                     page_ids=page_ids, assets_only=args.assets_only,
-                    feed_only=args.feed_only)
+                    feed_only=args.feed_only, previous_feed=previous_feed)
     if args.assets_only:
         incoming_ids = {payload["story"]["id"] for payload in episodes}
         verify_staged_assets([story for story in feed if story["id"] in incoming_ids])

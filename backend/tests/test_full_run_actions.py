@@ -81,10 +81,16 @@ class FullRunActionsTests(unittest.TestCase):
             artifact = json.loads((Path(tmp) / "transcripts" / "wild-company.json").read_text())
             self.assertEqual(artifact["doi"], "10.1234/approved")
 
+    # Exercise the historic fixture under the review version that approved it.
+    @patch("audience.REVIEW_VERSION", "audience-review-v1")
     def test_partial_stage4_seed_is_valid_but_cannot_release(self):
         self.assertEqual(check_batch(SEED, require_all=False), (5, 16))
         with self.assertRaisesRegex(ValueError, "Only 5/16 approved"):
             check_batch(SEED)
+
+    def test_old_batch_needs_personality_review_before_rendering(self):
+        with self.assertRaisesRegex(ValueError, "audience review is stale"):
+            check_batch(SEED, require_all=False)
 
     def test_edited_approved_script_fails_seed_check(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -98,6 +104,8 @@ class FullRunActionsTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "stale"):
                 check_batch(copy, require_all=False)
 
+    # Exercise the historic fixture under the review version that approved it.
+    @patch("audience.REVIEW_VERSION", "audience-review-v1")
     def test_resuming_reuses_only_approved_scripts(self):
         empty_selection = {"selected": [], "papers_pulled": 0, "candidates": 0,
                            "publicity_events": 0, "publicized_candidates": 0}

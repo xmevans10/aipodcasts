@@ -21,9 +21,10 @@ import os
 import urllib.error
 from typing import Callable
 
+from hosts import HOSTS
 from editorial import CONTRACT_VERSION
 
-REVIEW_VERSION = "audience-review-v1"
+REVIEW_VERSION = "audience-review-v2"
 
 RESPONSES_URL = "https://api.openai.com/v1/responses"
 
@@ -96,6 +97,16 @@ packet_gap: where our evidence is thin, is that stated as a limit of this episod
   authors? Inventing a missing sample, control or validation fails this.
 beat_fit: is the link between the paper and this show grounded in the paper itself, or
   manufactured by an opening metaphor?
+casual_delivery: does this sound like someone sharing an interesting discovery with a
+  friend, with natural connected sentences and room for a reaction, rather than a paper
+  summary or a perfectly polished lecture? Technical words in the required paper title
+  are attribution; judge the host's surrounding explanation. Do not demand jokes or filler.
+host_personality: compare the supplied host profiles with the words spoken, ignoring names
+  and sign-offs. Is the intended attitude and rhythm audible? In dialogue, can you tell
+  the hosts apart by how they react and respond? A generic warm expert voice fails.
+  Reactions, preferences, modest self-correction and vulnerability are welcome; do not
+  penalise them as invented evidence unless they assert a fake event, biography or fact.
+  Do not require every emotion or trait in every episode.
 dialogue: for multi-presenter scripts, does each turn answer the one before it in EASIER
   words? Alternating expert-sounding speeches fails, however accurate each one is.
   Are the presenters distinguishable from one another by voice alone?
@@ -145,6 +156,9 @@ def review_script(draft: dict, source: dict, evidence: str, show: str, beat: str
     `reserve` is the caller's provider-call accounting hook. It runs before the request so
     a failed review still counts against the operator's cap, exactly like generation.
     """
+    profiles = [{"name": h.name, "persona": h.persona, "delivery": h.delivery,
+                 "sample_cadence_not_evidence": h.sample_line}
+                for h in HOSTS.values() if h.show == show]
     if use_jev():
         from verify import TypedQuestion, decider
         if reserve is not None:
@@ -160,7 +174,18 @@ def review_script(draft: dict, source: dict, evidence: str, show: str, beat: str
             questions.append(TypedQuestion(
                 "understood_" + key, "boolean",
                 f"After one listen, could a non-specialist understand the script's {label}?"))
+        for rule, instruction in (
+            ("casual_delivery", "Does the script sound like a person sharing a discovery with a friend, "
+             "rather than a polished academic summary? Allow reactions and small imperfections; "
+             "do not demand jokes or filler. Ignore jargon inside the required paper citation."),
+            ("host_personality", "Ignoring names and sign-offs, does the script make the supplied "
+             "host personality audible through attitude, rhythm and reactions? For dialogue, "
+             "are the hosts distinct? Allow preferences, self-correction and vulnerability; "
+             "do not require every trait or invent personal experience."),
+        ):
+            questions.append(TypedQuestion(rule, "boolean", instruction))
         state = {
+            "host_profiles": profiles,
             "show": show, "beat": beat, "title": draft.get("title", ""),
             "script": _spoken(draft), "paper_title": source.get("title", ""),
             "evidence_excerpt": evidence[:6000],
@@ -173,13 +198,19 @@ def review_script(draft: dict, source: dict, evidence: str, show: str, beat: str
         fit = beat_decision.answer if beat_decision else None
         checks = {q.id.removeprefix("understood_"): decisions[q.id].answer
                   for q in questions[1:] if q.id in decisions}
-        if fit not in ("grounded", "weak", "unfounded") or len(checks) != 4:
+        if (fit not in ("grounded", "weak", "unfounded") or len(checks) != 6
+                or any(type(value) is not bool for value in checks.values())):
             raise RuntimeError("Jev audience review returned an incomplete judgment")
         return {
             "decision": "withhold" if fit == "unfounded" else
                         "pass" if all(checks.values()) else "revise",
-            "issues": [{"severity": "major", "rule": "one_listen_comprehension",
-                        "span": "", "instruction": f"Jev found the {key} unclear after one listen."}
+            "issues": [{"severity": "major", "rule": key if key in ("casual_delivery", "host_personality") else "one_listen_comprehension",
+                        "span": "", "instruction": (
+                            "Rewrite as a casual conversation, allowing an earned reaction and natural phrasing."
+                            if key == "casual_delivery" else
+                            "Make the supplied character audible in attitude, rhythm and responses; do not change the science."
+                            if key == "host_personality" else
+                            f"Jev found the {key} unclear after one listen.")}
                        for key, value in checks.items() if not value],
             "first_hard_sentence": "", "unexplained_terms": [], "beat_fit": fit,
             "listener_paraphrase": {
@@ -194,6 +225,7 @@ def review_script(draft: dict, source: dict, evidence: str, show: str, beat: str
         raise RuntimeError("audience reviewer unavailable: no provider configured")
 
     state = {
+        "host_profiles": profiles,
         "show": show, "beat": beat,
         "episode_title": draft.get("title", ""),
         "dek": draft.get("dek", ""),

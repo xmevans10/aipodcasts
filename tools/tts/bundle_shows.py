@@ -180,10 +180,12 @@ def render_google_cloud(text: str, voice: str, speed: float):
     if speed != 1.0:
         raise ValueError("Google Cloud Gemini TTS speed is instruction-controlled; use --speed 1.0")
     from cloud_tts import synthesize
-    return synthesize(text, voice, _GOOGLE_ACCENTS.get(voice, "US"))
+    return synthesize(text, voice, _GOOGLE_ACCENTS.get(voice, "US"),
+                      host_id=_GOOGLE_HOSTS.get(voice))
 
 
 _GOOGLE_ACCENTS: dict[str, str] = {}
+_GOOGLE_HOSTS: dict[str, str] = {}
 
 
 def _rendered(result):
@@ -288,7 +290,7 @@ def render_turns(inputs: list[dict], wav: Path, speed: float, render=None,
 
 
 def main() -> None:
-    global _GOOGLE_ACCENTS
+    global _GOOGLE_ACCENTS, _GOOGLE_HOSTS
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--transcripts", required=True, help="a full-run transcripts directory")
     parser.add_argument("--out", default=str(ROOT / "rendered-episodes"))
@@ -306,6 +308,8 @@ def main() -> None:
     if args.tts_provider == "google-cloud":
         _GOOGLE_ACCENTS = {entry["geminiVoice"]: entry.get("accent", "US")
                            for entry in cast.values() if entry.get("geminiVoice")}
+        _GOOGLE_HOSTS = {entry["geminiVoice"]: host_id
+                         for host_id, entry in cast.items() if entry.get("geminiVoice")}
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     legacy = sorted(p.stem for p in out.glob("*.json") if p.stem != "index")

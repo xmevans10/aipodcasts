@@ -26,7 +26,7 @@ class HostPersonalityTests(unittest.TestCase):
     def test_guide_carries_the_personality_into_the_prompt(self):
         guide = writing_guide('ada')
         host = HOSTS['ada']
-        for fragment in (host.name, host.show, host.persona, host.delivery, host.sign_off, host.avoid[0]):
+        for fragment in (host.name, host.show, host.persona, host.delivery, host.sign_off, host.avoid[0], host.sample_line):
             self.assertIn(fragment, guide)
         self.assertIn('never let it alter a finding', guide.lower())
         self.assertNotIn(HOSTS['nova'].name, guide)

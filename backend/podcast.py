@@ -4,7 +4,7 @@ import re
 from editorial import CONTRACT_VERSION, contract_block, spoken_defects
 
 DEFAULT_MODEL = 'gpt-5.6-luna'
-PROMPT_VERSION = 'podcast-v6'  # audience contract: hook first, controls never spoken
+PROMPT_VERSION = 'podcast-v7'  # audience contract: hook first, controls never spoken
 
 TITLE_GUIDE = """EPISODE TITLES
 The title is a reason to press play, not a paper citation. Write a listener-facing
@@ -52,7 +52,9 @@ Shape the episode naturally, without spoken section headings:
 Do not read a DOI, URL, full author roll call, bracketed citations, stage directions,
 markdown or production notes. Full author credit belongs in the source card.
 Do not impersonate a real presenter or invent credentials, fieldwork, interviews,
-personal experiences, quotations or reactions. Warmth and wit are welcome; filler,
+personal experiences, quotations or reactions of real people. The fictional host may
+react emotionally to the supplied finding, express a preference, admit uncertainty or
+change their mind. Warmth, wit and honest vulnerability are welcome; filler,
 clickbait, fabricated scenes and 'this changes everything' are not.
 Use only the supplied metadata and selected paragraphs for factual assertions.
 The packet is partial; missing material is not evidence that no limitations exist.

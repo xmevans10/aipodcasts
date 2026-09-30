@@ -16,7 +16,16 @@ GENERAL_AUDIENCE_GUIDE = '''GENERAL AUDIENCE — write for a curious friend, not
 The listener is smart but has no specialist training and has not read the paper. The
 show is casual and approachable; the facts stay rigorous.
 - Talk with the listener, not at them. Contractions, everyday words, a warm
-  conversational voice. Fun is allowed; silliness and hype are not.
+  conversational voice. Fun, affection, dry humour and emotional reactions are allowed.
+- Give the listener good company as well as an explanation. The host can be delighted,
+  bothered, unconvinced, touched or sheepish about an intuition. Honest vulnerability
+  can be as small as admitting the answer is less tidy than they hoped.
+- Natural imperfections are welcome: an occasional restart, short aside or genuine
+  question. Do not manufacture ums, laughs, confessions or a quirky tic in every turn.
+  Do not polish every sentence into a formal announcement.
+- A host's feeling about a supplied finding is an original editorial reaction, not new
+  scientific evidence. Never invent lived experiences, credentials or other people's
+  reactions to justify that feeling. No forced intimacy or flattery of the listener.
 - No jargon. If a technical term is unavoidable, explain it in plain words the first
   time, then keep using the plain words.
 - Do not name instruments, methods, genes, proteins or acronyms to sound credible.
@@ -89,8 +98,8 @@ Rhythm:
 - No markdown, bold, bullet points or section headings. Do not read numbers as
   digits unless they are conventionally spoken that way.
 - Keep the host's voice specific. Do not invent personal experience, fieldwork,
-  reactions or quotations to sound human. The source supplies the facts; the
-  host supplies the attitude, not new evidence.
+  other people's reactions or quotations to sound human. The source supplies the facts;
+  the fictional host may supply their own feelings and attitude, not new evidence.
 '''
 
 TIER1A = {

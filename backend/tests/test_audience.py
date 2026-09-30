@@ -133,6 +133,31 @@ class VerdictTests(unittest.TestCase):
         self.assertTrue(report["pass"])
         self.assertEqual(report["reviewer"], "audience-reviewer:jev")
 
+    def test_flat_or_interchangeable_delivery_withholds_approval(self):
+        for failed_rule in ("casual_delivery", "host_personality"):
+            class FakeJev:
+                def ask(self, questions, state):
+                    self_outer.assertTrue(state["host_profiles"])
+                    return {q.id: Decision(q.kind,
+                                           "grounded" if q.id == "beat_fit" else q.id != failed_rule,
+                                           0.99 if q.kind == "boolean" else None)
+                            for q in questions}
+            self_outer = self
+            with self.subTest(failed_rule), \
+                 patch.dict(os.environ, {"LILT_REVIEWER": "jev", "TYPESAFE_AI_API_KEY": "key"}), \
+                 patch("verify.decider", return_value=FakeJev()):
+                parsed = audience.review_script(DRAFT, SOURCE, "evidence", "The Long View", "space",
+                                               fetch=lambda *a, **k: self.fail("No writer review"))
+                self.assertEqual(parsed["decision"], "revise")
+                report = audience.verdict(parsed, DRAFT, SOURCE["text"])
+                self.assertFalse(report["pass"])
+                self.assertIn(failed_rule, " ".join(report["failures"]))
+
+    def test_old_comprehension_only_review_is_stale(self):
+        report = audience.verdict(CLEAN_REVIEW, DRAFT, SOURCE["text"])
+        report["review_version"] = "audience-review-v1"
+        self.assertFalse(audience.is_fresh(report, DRAFT))
+
     def test_jev_mode_rejects_old_non_jev_audience_approval(self):
         old = audience.verdict(CLEAN_REVIEW, DRAFT, SOURCE["text"])
         with patch.dict(os.environ, {"LILT_REVIEWER": "jev", "TYPESAFE_AI_API_KEY": "key"}):

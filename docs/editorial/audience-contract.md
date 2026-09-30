@@ -77,6 +77,20 @@ What / how / result / limit should read as one argument, each part motivating th
 Avoid a mandatory repetitive shape that makes all sixteen shows sound identical. Hosts
 have distinct voices; the contract constrains clarity, not personality.
 
+### Casual, emotionally present hosts
+
+Speak like someone sharing a discovery with a friend. The host may react to a finding,
+express affection or frustration, admit an intuition was wrong, or wish an answer were
+simpler. Natural imperfections can stay; do not manufacture ums, laughter, confessions,
+or emotional beats on a quota. Preserve the evidence and do not invent lived experience.
+
+Profiles in `backend/hosts.py` define distinct attitudes and rhythms. Names, sign-offs,
+subjects and different voice presets alone do not establish a personality. Both solo and
+co-host scripts must make the intended character audible in the words, and narration
+must receive that character's performance direction. Review version `audience-review-v2`
+checks casual delivery and host personality as well as one-listen comprehension. Older
+review reports require fresh review before they can approve an unpublished episode.
+
 ## 6. Hook, title and dek
 
 - The hook is concrete and **supported by the actual episode**. It must not promise a

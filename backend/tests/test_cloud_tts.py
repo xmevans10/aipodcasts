@@ -70,6 +70,21 @@ class CloudTtsTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "distinct geminiVoice"):
                 bundle_shows.load_cast(path)
 
+    def test_narration_uses_the_written_character_for_every_host(self):
+        from hosts import HOSTS
+        directions = set()
+        for host_id, host in HOSTS.items():
+            direction = cloud_tts.narration_direction(host_id)
+            self.assertIn(host.persona, direction)
+            self.assertIn(host.delivery, direction)
+            self.assertIn("Do not add laughter", direction)
+            directions.add(direction)
+        self.assertEqual(len(directions), len(HOSTS))
+
+    def test_unknown_narration_character_fails_instead_of_becoming_generic(self):
+        with self.assertRaises(KeyError):
+            cloud_tts.narration_direction("missing-host")
+
     def test_episode_audio_cost_upper_bound(self):
         with tempfile.TemporaryDirectory() as tmp:
             directory = Path(tmp)
@@ -90,11 +105,12 @@ class CloudTtsTests(unittest.TestCase):
             cloud_tts.decode_linear16(wav_data(rate=22050))
 
     def test_episode_renderer_routes_provider_voice_and_accent(self):
-        bundle_shows._GOOGLE_ACCENTS = {"Leda": "UK"}
-        with mock.patch.object(cloud_tts, "synthesize", return_value=np.ones(4, dtype=np.float32)) as call:
+        with mock.patch.object(bundle_shows, "_GOOGLE_ACCENTS", {"Leda": "UK"}), \
+             mock.patch.object(bundle_shows, "_GOOGLE_HOSTS", {"Leda": "nova"}), \
+             mock.patch.object(cloud_tts, "synthesize", return_value=np.ones(4, dtype=np.float32)) as call:
             audio = bundle_shows.render_google_cloud("Hello.", "Leda", 1.0)
         self.assertEqual(len(audio), 4)
-        call.assert_called_once_with("Hello.", "Leda", "UK")
+        call.assert_called_once_with("Hello.", "Leda", "UK", host_id="nova")
 
 
 if __name__ == "__main__":

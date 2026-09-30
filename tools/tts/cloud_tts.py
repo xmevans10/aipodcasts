@@ -41,7 +41,22 @@ def _synthesize_with_retry(client, request, transient_errors):
             time.sleep(2 ** attempt)
 
 
-def synthesize(text: str, voice_name: str, accent: str) -> np.ndarray:
+def narration_direction(host_id: str | None = None) -> str:
+    """Performance direction from the same character used by the writer."""
+    from hosts import HOSTS
+    if host_id is None:
+        return "Use clear, natural conversational delivery."
+    host = HOSTS[host_id]  # A bad production mapping must not silently lose the character.
+    return (f"You are performing the fictional presenter {host.name}. "
+            f"Character: {host.persona} Delivery: {host.delivery} "
+            f"Emotional range: {', '.join(host.emotion_palette)}. "
+            "Let the supplied words carry genuine-feeling reactions and small imperfections. "
+            "Use subtle changes in emphasis, pace and warmth, not a caricature. "
+            "Keep this character consistent across the episode's separate turns. "
+            "Do not add laughter, sighs, ums, words or sound effects that are not in the text. ")
+
+
+def synthesize(text: str, voice_name: str, accent: str, *, host_id: str | None = None) -> np.ndarray:
     """Synthesize text with ADC and retry transient Google service/rate errors."""
     from google.api_core.exceptions import DeadlineExceeded, InternalServerError, ServiceUnavailable, TooManyRequests
 
@@ -50,7 +65,7 @@ def synthesize(text: str, voice_name: str, accent: str) -> np.ndarray:
 
     texttospeech, client = _make_client()
     prompt = (f"Speak in a natural {accent} English voice for a science podcast. "
-              "Use clear, warm, conversational delivery at a measured pace. "
+              + narration_direction(host_id) + " "
               "Read only the supplied text; do not add words.")
     request = {
         "input": texttospeech.SynthesisInput(text=text, prompt=prompt),

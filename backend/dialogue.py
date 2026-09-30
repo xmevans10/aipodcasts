@@ -10,7 +10,7 @@ from provenance import provenance_text, quotes_in_source
 from podcast import TITLE_GUIDE, validate_episode_title
 from hosts import dialogue_dynamic
 
-DIALOGUE_PROMPT_VERSION = 'dialogue-v3'  # cast-scaled opening window
+DIALOGUE_PROMPT_VERSION = 'dialogue-v4'  # cast-scaled opening window
 
 #: Opening window in spoken words: 220 for a duo, 280 for the four-host show.
 OPENING_WORDS_BASE = 160
@@ -65,7 +65,9 @@ Shape the episode naturally:
 Do not read a DOI, URL, full author roll call, bracketed citations, stage directions,
 markdown or production notes. Full author credit belongs in the source card.
 Do not impersonate a real presenter or invent credentials, fieldwork, interviews,
-personal experiences, quotations or reactions. Warmth and wit are welcome; filler,
+personal experiences, quotations or reactions of real people. The fictional host may
+react emotionally to the supplied finding, express a preference, admit uncertainty or
+change their mind. Warmth, wit and honest vulnerability are welcome; filler,
 clickbait, fabricated scenes and 'this changes everything' are not.
 Use only the supplied metadata and selected paragraphs for factual assertions.
 The packet is partial; missing material is not evidence that no limitations exist.
@@ -98,6 +100,7 @@ def dialogue_guide(hosts) -> str:
         lines += [
             f"{host.name}: {host.persona}",
             f"  Delivery: {host.delivery}",
+            f"  Example cadence, not evidence or text to copy: {host.sample_line}",
             f"  Openings: {host.hook_style}",
             f"  Signature moves: {'; '.join(host.signature_moves)}.",
             f"  Characteristic phrasing, never as catchphrases: {'; '.join(host.lexicon)}.",

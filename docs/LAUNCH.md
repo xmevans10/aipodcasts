@@ -4,7 +4,7 @@
 
 For curious people whose eyes are tired of feeds: Zwicky turns worthwhile science into short, source-linked listening. Promise discovery, not productivity guilt. Start with English-speaking walkers and commuters, not “everyone who likes science.” No claim of scientific expertise by the synthetic hosts.
 
-> Engineering schedule and dispatch prompts: [Implementation plan](IMPLEMENTATION-PLAN.md). Its gated milestones replace the calendar below, which is retained as an earlier growth experiment sketch.
+> Current priorities and release gates: [30 September product roadmap](PRODUCT-ROADMAP.md), informed by the [content-flow audit](CONTENT-FLOW-AUDIT.md). The calendar below is an earlier growth experiment sketch; the implementation plan is historical.
 
 ## Original six-week validation sketch
 

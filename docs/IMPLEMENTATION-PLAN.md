@@ -1,5 +1,7 @@
 # Zwicky: full-stack launch milestones
 
+> Superseded for current scope and sequencing by the [30 September product roadmap](PRODUCT-ROADMAP.md) and [content-flow audit](CONTENT-FLOW-AUDIT.md). The inventory below is historical and predates the live R2 feed, sixteen-show catalog and current Actions pipeline.
+
 Planning baseline: 17 September 2026. This plan supersedes the fixed six-week engineering sequence in LAUNCH.md; that document remains the positioning and marketing reference. Estimates are working ranges for one focused builder with an available editorial/product owner, not deadlines. Allow roughly 7–11 weeks to a free public release, including overlapping work and a two-week beta. Apple review, credentials and editorial turnaround can extend that range.
 
 ## Release decision

@@ -4,13 +4,43 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from urllib.error import HTTPError
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
-from publish_feed import add_share_urls, episode_page, main, merge_feed, upload  # noqa: E402
+from publish_feed import add_share_urls, episode_page, main, merge_feed, upload, verify_staged_assets  # noqa: E402
 
 
 class SharePageTests(unittest.TestCase):
+    def test_staged_asset_checks_use_the_working_public_edge_headers(self):
+        from io import BytesIO
+        from types import SimpleNamespace
+        story = {"id": "episode-one", **{field: f"https://cdn.example/{field}"
+                 for field in ("audioURL", "detailURL", "shareURL")}}
+
+        def edge(request, timeout):
+            # Reproduce the live edge's refusal of default urllib requests.
+            if request.get_header("User-agent") != "curl/8.0":
+                raise HTTPError(request.full_url, 403, "Forbidden", {}, BytesIO())
+            self.assertEqual(request.get_method(), "HEAD")
+            self.assertEqual(request.get_header("Cache-control"), "no-cache")
+            response = unittest.mock.MagicMock()
+            response.__enter__.return_value = SimpleNamespace(status=200)
+            return response
+
+        with patch("publish_feed.urlopen", side_effect=edge) as fetch:
+            verify_staged_assets([story])
+        self.assertEqual(fetch.call_count, 3)
+
+    def test_staged_asset_http_failure_still_blocks_with_diagnostic(self):
+        story = {"id": "episode-one", "audioURL": "https://cdn.example/missing"}
+        error = HTTPError(story["audioURL"], 404, "Not Found", {}, None)
+        with patch("publish_feed.urlopen", side_effect=error) as fetch, \
+             patch("publish_feed.time.sleep"):
+            with self.assertRaisesRegex(ValueError, "staged audioURL.*HTTP Error 404"):
+                verify_staged_assets([story])
+        self.assertEqual(fetch.call_count, 4)
+
     def story(self):
         return {
             "id": "episode-webwork-1", "title": "Silk & science", "dek": 'A "small" story',

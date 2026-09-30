@@ -198,16 +198,21 @@ def verify_staged_assets(stories: list[dict]) -> None:
             url = story[field]
             if not is_https_url(url):
                 raise ValueError(f"{story['id']}: invalid {field}")
+            last_error = "no successful response"
             for attempt in range(4):
                 try:
-                    with urlopen(Request(url, method="HEAD", headers={"Cache-Control": "no-cache"}),
+                    # Match verify_daily_feed: the current r2.dev edge rejects
+                    # urllib's default user agent even for existing public assets.
+                    with urlopen(Request(url, method="HEAD", headers={"Cache-Control": "no-cache",
+                                                                       "User-Agent": "curl/8.0"}),
                                  timeout=20) as response:
                         if response.status == 200:
                             break
-                except OSError:
-                    pass
+                        last_error = f"HTTP {response.status}"
+                except OSError as error:
+                    last_error = str(error)
                 if attempt == 3:
-                    raise ValueError(f"{story['id']}: staged {field} is unavailable: {url}")
+                    raise ValueError(f"{story['id']}: staged {field} is unavailable: {url} ({last_error})")
                 time.sleep(5)
 
 

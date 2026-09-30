@@ -14,6 +14,15 @@ from verify_daily_feed import verify  # noqa: E402
 
 
 class DailyReleaseTests(unittest.TestCase):
+    def test_empty_shows_publish_before_another_episode_of_an_existing_show(self):
+        candidates = [(Path('fern.json'), {'host': 'fern', 'show': 'Wild Company'}),
+                      (Path('noor.json'), {'host': 'noor', 'show': 'Gradient'}),
+                      (Path('marek.json'), {'host': 'marek', 'show': 'Layer by Layer'})]
+        feed = [{'id': 'published', 'hostID': 'fern', 'published': '2026-09-30'}]
+        with patch('daily_release.available', return_value=candidates):
+            picked = select(Path('unused'), feed, '2026-10-01')
+        self.assertEqual([entry['host'] for _, entry in picked], ['noor', 'marek'])
+
     def test_merge_preserves_archive_and_caps_daily_additions(self):
         older = {"id": "old", "published": "2026-09-21"}
         a = {"id": "a", "published": "2026-09-22"}

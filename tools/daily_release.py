@@ -97,7 +97,15 @@ def select(batches: Path, feed: list, day: str, *, limit: int = 2) -> list[tuple
     slots = limit - published_today
     if slots == 0:
         return []
-    picked = available(batches, feed)[:slots]
+    coverage = {}
+    for story in feed:
+        host = story.get('hostID', '')
+        coverage[host] = coverage.get(host, 0) + 1
+    # Give empty/underfilled shows their first real episode before topping up the
+    # earliest show in manifest order again. Stable ties keep newest-batch priority.
+    candidates = sorted(available(batches, feed),
+                        key=lambda item: coverage.get(item[1]['host'], 0))
+    picked = candidates[:slots]
     if len(picked) == slots:
         return picked
     raise ValueError(f"Only {len(picked)} unpublished approved episodes available; need {slots} for {day}")

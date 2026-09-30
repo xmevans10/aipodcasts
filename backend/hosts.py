@@ -47,6 +47,7 @@ class Host:
             f"Delivery: {self.delivery}",
             f"Opening: {self.hook_style}",
             f"Example cadence (attitude only, never copy as evidence): {self.sample_line}",
+            "Keep this character audible in the middle explanation and the limitation, not just the hook.",
             "Let the host react to the actual finding: delight, disappointment, affection,",
             "scepticism or an honest change of mind. Their emotional stance is allowed.",
             "Do not force a joke, a vulnerable confession or an interjection into every paragraph.",

@@ -87,8 +87,10 @@ or emotional beats on a quota. Preserve the evidence and do not invent lived exp
 Profiles in `backend/hosts.py` define distinct attitudes and rhythms. Names, sign-offs,
 subjects and different voice presets alone do not establish a personality. Both solo and
 co-host scripts must make the intended character audible in the words, and narration
-must receive that character's performance direction. Review version `audience-review-v2`
-checks casual delivery and host personality as well as one-listen comprehension. Older
+must receive that character's performance direction. Review version `audience-review-v3`
+checks the middle explanation for casual delivery and host personality as well as
+one-listen comprehension. Production uses detailed, span-based audience review; factual
+verification remains separate. Shared nouns and metaphors cannot justify beat fit. Older
 review reports require fresh review before they can approve an unpublished episode.
 
 ## 6. Hook, title and dek

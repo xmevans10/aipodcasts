@@ -24,7 +24,7 @@ from typing import Callable
 from hosts import HOSTS
 from editorial import CONTRACT_VERSION
 
-REVIEW_VERSION = "audience-review-v2"
+REVIEW_VERSION = "audience-review-v3"
 
 RESPONSES_URL = "https://api.openai.com/v1/responses"
 
@@ -96,13 +96,19 @@ packet_gap: where our evidence is thin, is that stated as a limit of this episod
   evidence rather than asserted as a weakness of the paper or an accusation about the
   authors? Inventing a missing sample, control or validation fails this.
 beat_fit: is the link between the paper and this show grounded in the paper itself, or
-  manufactured by an opening metaphor?
+  manufactured by an opening metaphor? Use the supplied literal beat, not shared nouns.
+  A spider pulsar is not an arachnid story; a fuel-cell site is not a bee-colony story;
+  a mathematical network is not automatically fungal biology. Mark these unfounded.
+  A pleasant host hook cannot manufacture scientific relevance.
 casual_delivery: does this sound like someone sharing an interesting discovery with a
   friend, with natural connected sentences and room for a reaction, rather than a paper
-  summary or a perfectly polished lecture? Technical words in the required paper title
+  summary or a perfectly polished lecture? Inspect the MIDDLE explanation, not just the
+  hook. Lists of anatomical parts, metal concentrations or multiple model comparisons
+  without a clear listener-facing purpose fail even when each sentence is short.
+  Technical words in the required paper title
   are attribution; judge the host's surrounding explanation. Do not demand jokes or filler.
 host_personality: compare the supplied host profiles with the words spoken, ignoring names
-  and sign-offs. Is the intended attitude and rhythm audible? In dialogue, can you tell
+  and sign-offs. Is the intended attitude and rhythm audible through the middle too? In dialogue, can you tell
   the hosts apart by how they react and respond? A generic warm expert voice fails.
   Reactions, preferences, modest self-correction and vulnerability are welcome; do not
   penalise them as invented evidence unless they assert a fake event, biography or fact.
@@ -165,7 +171,9 @@ def review_script(draft: dict, source: dict, evidence: str, show: str, beat: str
             reserve("audience", story_id)
         questions = [
             TypedQuestion("beat_fit", "choice",
-                          "Does this paper belong on this show's topic? Choose grounded, weak, or unfounded.",
+                          "Does the paper belong on the literal supplied beat? Ignore shared nouns and "
+                          "opening metaphors: spider pulsars are not arachnids, fuel cells are not bees, "
+                          "and mathematical networks are not automatically fungi. Choose grounded, weak, or unfounded.",
                           {"grounded": "clearly on topic", "weak": "somewhat related",
                            "unfounded": "does not belong on this show"}),
         ]

@@ -1,4 +1,8 @@
-# Language clues for the fictional hosts
+# Historical language research for the fictional hosts
+
+Current production clues are derived from `backend/hosts.py`. These September research
+notes are background, not a second set of active instructions. Joke quotas, mandatory
+number rhythms and invented personal anecdotes in the former implementation are retired.
 
 Writer-facing hints for drafting narration that *sounds* like a real presenter of the
 genre rather than generic AI prose. These are **style notes only**. They were distilled

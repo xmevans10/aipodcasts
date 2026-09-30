@@ -34,7 +34,13 @@ show is casual and approachable; the facts stay rigorous.
 - Lead with the picture, then add the specifics. Explain the idea before the detail.
 - Keep numbers human: round them, compare to something familiar, say why the number
   matters. Never stack statistics.
-- Short sentences, one idea each. No lecture tone, no textbook phrasing.
+- Connected, varied spoken sentences. No lecture tone or textbook phrasing. The middle
+  explanation must sound like the same person as the hook, not an abstract read aloud.
+- Turn a list of results into the one comparison the listener needs. A tour through
+  every muscle group, metal concentration or model score is still a lecture in short
+  sentences. Keep any figure necessary to avoid misleading the listener.
+- Before returning, read the middle paragraph aloud. Would you say that sentence to a
+  friend? If it sounds like a report, rewrite the phrasing while preserving the claim.
 - Simplify the wording, never the finding, the uncertainty or the limitation.
 - Before returning the script, read it from the start as a first-time listener. For
   every specialist word outside the required paper title, explain the idea before

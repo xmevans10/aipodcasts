@@ -111,7 +111,8 @@ def dialogue_guide(hosts) -> str:
     lines += [
         "At most one analogy in the whole episode, offered by one presenter, in ordinary",
         "English and never labelled.",
-        "Each presenter must be identifiable from their turns alone, with names and sign-offs",
+        "Each presenter must be identifiable from their turns alone, including the explanation and limits,",
+        "with names and sign-offs",
         "removed. Interchangeable presenters are a failed script.",
         "Personality changes the delivery only. Never let it alter a finding, a number, a",
         "limitation or an attribution, and never let a flourish cost the listener clarity.",

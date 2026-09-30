@@ -106,8 +106,10 @@ feedback; factual Jev verification remains independent. Earlier approvals are st
 The detailed-review replacement batch yielded zero eligible scripts. Minor-only revision
 decisions and early retries also consumed its call budget. Review v4 clarifies that
 minor advisories may pass; major/blocker comprehension, personality, honesty and beat
-failures remain release gates. The next run uses one candidate per show.
+failures remain release gates. The subsequent v4 run used one candidate per show and produced 3/16 strict approvals; its complete-batch gate failed. Three full private QA recordings passed script/timing/container checks. A seeded follow-up is running; the one-week buffer remains below target.
 
 Google narration now carries passage position and directions for meaningful emphasis,
 pauses and uncertainty. Renderer checks preserve the supplied words and cover single-
 and multi-passage episodes. Perceived improvement remains unverified until audio QA.
+
+Two further release defects were repaired: daily preparation still demanded the former Jev audience reviewer, and SMC checking reactions were matched by show topic rather than paper identity. Preparation now accepts the current detailed audience reports; SMC checks require an exact DOI link in the reaction article and include the actual commentary. Claims and audience checks remain independent. Build 1.0.0 (10) has processed in TestFlight; final checks passed (302 backend tests, 202 iOS logic checks plus deep links, unsigned Release compilation). Both known iPhones remained unavailable.

@@ -2,7 +2,7 @@
 
 Planning baseline: **30 September 2026**. Based on the [content-flow audit](CONTENT-FLOW-AUDIT.md), live feed and Actions evidence, rather than the older demo-era inventory. This replaces `IMPLEMENTATION-PLAN.md` as the current sequencing document; `LAUNCH.md` remains useful for positioning and draft marketing copy.
 
-**Public launch decision: still gated; content recovery is deployed.** The catalog now contains six episodes, including two new releases on 30 September. Independent public health checks pass. The unpublished inventory is being regenerated under the stricter personality and audience review; earlier approvals are stale and do not count toward the one-week buffer. Signed build 9 has successfully processed in internal TestFlight. External TestFlight and public launch follow source/audio review, real-device QA and a two-week listener cohort.
+**Public launch decision: still gated; content recovery is deployed.** The catalog now contains six episodes, including two new releases on 30 September. Independent public health checks pass. The unpublished inventory is being regenerated under the stricter personality and audience review; earlier approvals are stale and do not count toward the one-week buffer. Signed build 10 has successfully processed in internal TestFlight. Three fresh scripts pass current gates; their private QA recordings are ready. The one-week buffer remains unmet. External TestFlight and public launch follow source/audio review, real-device QA and a two-week listener cohort.
 
 ## Product promise and scope
 
@@ -115,13 +115,13 @@ After release: operator checks cadence, inventory, audio errors, source correcti
 |---|---|
 | Publishing code repair | Deployed; current-date recovery release and independent content-health jobs succeeded |
 | Actual new publication | Six live episodes; today's two releases verified through public audio, sidecars and sharing |
-| Latest usable batch | No eligible replacement scripts yet; [v4 replenishment](https://github.com/xmevans10/aipodcasts/actions/runs/36743990186) is running; earlier v1/v2/v3 approvals are stale |
-| Backend checks | 293 passed after the character, narration and audience-review changes |
+| Latest usable batch | [v4 batch](https://github.com/xmevans10/aipodcasts/actions/runs/36743990186) has 3/16 strict approvals; earlier v1/v2/v3 approvals are stale; follow-up replenishment is running |
+| Backend checks | 302 passed after narration, private QA and exact-paper expert-reaction matching |
 | iOS logic | 202 checks passed plus deep-link checks |
 | iOS release compile | Unsigned Release build succeeded with simulator SDK; simulator not launched |
-| Published assets | All four episodes: audio/sidecar/share-page 200; matching sidecar IDs; byte-range 206 |
+| Published assets | Six catalog entries; latest content-health checks passed for today’s two releases, including assets, read-along and ranged M4A streams |
 | Device/listening QA | Not performed in this audit |
-| Signed TestFlight | Build 1.0.0 (9) signed, uploaded and successfully processed by App Store Connect (app 6813660087); release notes set; external beta not distributed |
+| Signed TestFlight | Build 1.0.0 (10) signed, uploaded and successfully processed by App Store Connect (app 6813660087); release notes set; external beta not distributed |
 | Source/voice commercial policy, privacy/store package | Requires owner review and verification |
 | Real listener outcomes | Unmeasured; cohort has not been run |
 
@@ -137,7 +137,7 @@ For replenishment, use `full-run.yml` with `release_fresh_batch=false`. A seed A
 
 Each catalog commit through `publish_feed.py` first saves the previous catalog under `v1/.release/feed-snapshots/<sha256>.json`; its exact key appears in the job result. A snapshot write failure blocks the feed commit. The deployed sharing-page backfill was exercised successfully and saved a snapshot of the current six-episode catalog. For rollback, stop/serialize publishers, inspect the selected snapshot and its asset availability, then restore that exact JSON to `v1/feed.json` using the operator's R2 credentials with `Cache-Control: no-cache`. Run `content-health` and device checks afterwards. This audit has verified snapshot creation, not an intentional live rollback drill.
 
-The embedded credential was removed from the local Git remote URL; invalidating the old credential still requires its owner to revoke/rotate it. Production domain and support destinations await the founder's domain choice. CI TestFlight signing secrets/environment are not configured; the existing local signing setup successfully uploaded and processed build 9. Its stale key-file location was repaired in the ignored local configuration, without changing the key. The distributed IPA contains the privacy manifest.
+The embedded credential was removed from the local Git remote URL; invalidating the old credential still requires its owner to revoke/rotate it. Production domain and support destinations await the founder's domain choice. CI TestFlight signing secrets/environment are not configured; the existing local signing setup successfully uploaded and processed build 10. Its stale key-file location was repaired in the ignored local configuration, without changing the key. The distributed IPA contains the privacy manifest.
 
 At the recovery handoff, GitHub backend CI, iOS compile CI, `content-health` and snapshot/backfill runs were green. The two bounded replenishment runs produced 14/16 approvals and failed the complete-sixteen gate; Signal & Noise and Marginal Gains remain withheld. Those approvals predate personality review v4; the old inventory is now withheld pending fresh review. Native Foundation URLSession returned HTTP 200 and decoded all six episodes; this is a macOS networking probe, not iPhone playback QA. Both known physical iPhones remain unavailable.
 
@@ -160,10 +160,10 @@ produced zero approvals: real comprehension/beat failures were caught, but minor
 advisories also triggered revision and early retries exhausted the call budget before
 the whole roster was attempted. Review v4 explicitly permits a pass with minor
 advisories; substantive failures still require repair. The [new bounded run](https://github.com/xmevans10/aipodcasts/actions/runs/36743990186)
-uses one candidate per show within the existing call budget. Its scripts are not yet
-counted as eligible inventory.
+uses one candidate per show within the existing call budget. It produced three strict approvals: Wild Company, Gradient and Layer by Layer. The complete-sixteen gate failed; only those three enter usable inventory. A [bounded follow-up](https://github.com/xmevans10/aipodcasts/actions/runs/36747287289) preserves them and tries alternative candidates after the expert-reaction matching repair.
 
 Narration now receives opening/body/closing context and sentence-level direction for
 emphasis, pauses, questions and uncertainty. This is implemented and tested, but improved
-intonation has not yet been confirmed by listening. Private Google calibration previews
-await export approval after automatic approval review rejected the request.
+intonation has not yet been confirmed by listening. The owner approved private Google calibration exports. Six A/B takes and three full episodes were rendered through the existing workload identity and downloaded for [QA](QA-BUILD-10.md); none were added to the public feed. Local ADC lacked project permission. Script/timing/container integrity passed; perceptual and physical-device QA remain open.
+
+Daily preparation now uses the same detailed audience reviewer as generation; its previous Jev-only handoff would have stranded new approvals. Expert-reaction checks now require the actual paper DOI in the reaction article and use commentary text, rather than topic-matched titles from unrelated studies. No withheld script has been retroactively approved.

@@ -2,6 +2,8 @@
 
 Audited 30 September 2026. Repository baseline: `2856389`. Companion: [product roadmap](PRODUCT-ROADMAP.md). Findings distinguish live observations, code defects and checks still needed. This is a code/operations audit with public endpoint probes, not a completed device or human listening audit.
 
+**Remediation update, later on 30 September:** the publishing and partial-inventory repairs are deployed. [The recovery release succeeded](https://github.com/xmevans10/aipodcasts/actions/runs/36703861437): six episodes are now live, including two dated today. [Independent content health passed](https://github.com/xmevans10/aipodcasts/actions/runs/36704837615). Replenishment reached 14/16 strict approvals, leaving 12 unpublished scripts after today's release. Production reset protection, a shared Actions writer lock, rendered-artifact validation, prior-feed snapshots and app recovery improvements are deployed. The findings below describe the original baseline; current readiness and remaining gates are recorded in the roadmap.
+
 ## Why new episodes stopped
 
 **Confirmed immediate cause:** the new staged-asset check in `tools/publish_feed.py:verify_staged_assets` uses urllib's default user agent. The current Cloudflare public edge returns **403** to that request. It returns **200** for the same existing asset with `User-Agent: curl/8.0`, which `verify_daily_feed.py` already uses. The publisher interprets this as missing audio and stops before updating `feed.json`.

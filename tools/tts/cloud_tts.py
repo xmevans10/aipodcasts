@@ -41,23 +41,40 @@ def _synthesize_with_retry(client, request, transient_errors):
             time.sleep(2 ** attempt)
 
 
-def narration_direction(host_id: str | None = None) -> str:
+PASSAGE_DIRECTIONS = {
+    "opening": "Begin as if welcoming one familiar listener. Let the opening question carry curiosity; leave room before its answer. Do not use an announcer's introduction.",
+    "body": "Continue the conversation without restarting or greeting the listener again. Follow the meaning of this passage, not a repeated sing-song pattern.",
+    "closing": "Let the final thought settle, then give the sign-off an easy, personal warmth. Do not turn the ending into a promotional announcement.",
+    "complete": "Give the opening, explanation and ending a connected conversational arc.",
+}
+
+
+def narration_direction(host_id: str | None = None, *, passage: str = "body") -> str:
     """Performance direction from the same character used by the writer."""
     from hosts import HOSTS
-    if host_id is None:
-        return "Use clear, natural conversational delivery."
-    host = HOSTS[host_id]  # A bad production mapping must not silently lose the character.
-    return (f"You are performing the fictional presenter {host.name}. "
+    passage_direction = PASSAGE_DIRECTIONS[passage]
+    character = "Use clear, natural conversational delivery. "
+    if host_id is not None:
+        host = HOSTS[host_id]  # A bad production mapping must not silently lose the character.
+        character = (f"You are performing the fictional presenter {host.name}. "
             f"Character: {host.persona} Delivery: {host.delivery} "
-            f"Emotional range: {', '.join(host.emotion_palette)}. "
+            f"Emotional range: {', '.join(host.emotion_palette)}. ")
+    return (character + passage_direction + " "
             "Let the supplied words carry genuine-feeling reactions and small imperfections. "
             "Use subtle changes in emphasis, pace and warmth, not a caricature. "
+            "Shape each sentence around its meaning: lightly stress the word that changes the idea, "
+            "leave a short beat after a surprising result, and slow slightly for an honest limit or admission. "
+            "Keep uncertainty audible without sounding ominous or implying the evidence is stronger than written. "
+            "A genuine question may lift in pitch; a settled statement should land. "
+            "Vary phrase lengths and pauses naturally; avoid lifting the pitch at every sentence ending. "
+            "Keep numbers and qualifications clear, at a conversational volume. "
             "Keep this character consistent across the episode's separate turns. "
             "A small natural chuckle or thoughtful breath is welcome when the supplied words earn it. "
             "Do not add words, ums or sound effects, and do not force a reaction into every line. ")
 
 
-def synthesize(text: str, voice_name: str, accent: str, *, host_id: str | None = None) -> np.ndarray:
+def synthesize(text: str, voice_name: str, accent: str, *, host_id: str | None = None,
+               passage: str = "body") -> np.ndarray:
     """Synthesize text with ADC and retry transient Google service/rate errors."""
     from google.api_core.exceptions import DeadlineExceeded, InternalServerError, ServiceUnavailable, TooManyRequests
 
@@ -66,7 +83,7 @@ def synthesize(text: str, voice_name: str, accent: str, *, host_id: str | None =
 
     texttospeech, client = _make_client()
     prompt = (f"Speak in a natural {accent} English voice for a science podcast. "
-              + narration_direction(host_id) + " "
+              + narration_direction(host_id, passage=passage) + " "
               "Read only the supplied text; do not add words.")
     request = {
         "input": texttospeech.SynthesisInput(text=text, prompt=prompt),

@@ -111,7 +111,27 @@ class CloudTtsTests(unittest.TestCase):
              mock.patch.object(cloud_tts, "synthesize", return_value=np.ones(4, dtype=np.float32)) as call:
             audio = bundle_shows.render_google_cloud("Hello.", "Leda", 1.0)
         self.assertEqual(len(audio), 4)
-        call.assert_called_once_with("Hello.", "Leda", "UK", host_id="nova")
+        call.assert_called_once_with("Hello.", "Leda", "UK", host_id="nova", passage="body")
+
+    def test_episode_renderer_passes_position_without_changing_spoken_words(self):
+        inputs = [{"text": text, "voice": "Leda"} for text in
+                  ["A question?", "Here is the result.", "We still don't know."]]
+        with tempfile.TemporaryDirectory() as tmp, \
+             mock.patch.object(bundle_shows, "render_google_cloud", return_value=np.ones(2400)) as render:
+            bundle_shows.render_turns(inputs, Path(tmp) / "test.wav", 1.0, render=render)
+        self.assertEqual([call.kwargs["passage"] for call in render.call_args_list],
+                         ["opening", "body", "closing"])
+        self.assertEqual([call.args[0] for call in render.call_args_list],
+                         [item["text"] for item in inputs])
+
+    def test_single_passage_gets_complete_arc_and_invalid_position_fails(self):
+        with tempfile.TemporaryDirectory() as tmp, \
+             mock.patch.object(bundle_shows, "render_google_cloud", return_value=np.ones(2400)) as render:
+            bundle_shows.render_turns([{"text": "Hello.", "voice": "Leda"}],
+                                     Path(tmp) / "test.wav", 1.0, render=render)
+        self.assertEqual(render.call_args.kwargs["passage"], "complete")
+        with self.assertRaises(KeyError):
+            cloud_tts.narration_direction("nova", passage="unknown")
 
 
 if __name__ == "__main__":

@@ -176,12 +176,12 @@ def render_kokoro(text: str, voice: str, speed: float):
     return np.concatenate(chunks), segments
 
 
-def render_google_cloud(text: str, voice: str, speed: float):
+def render_google_cloud(text: str, voice: str, speed: float, *, passage: str = "body"):
     if speed != 1.0:
         raise ValueError("Google Cloud Gemini TTS speed is instruction-controlled; use --speed 1.0")
     from cloud_tts import synthesize
     return synthesize(text, voice, _GOOGLE_ACCENTS.get(voice, "US"),
-                      host_id=_GOOGLE_HOSTS.get(voice))
+                      host_id=_GOOGLE_HOSTS.get(voice), passage=passage)
 
 
 _GOOGLE_ACCENTS: dict[str, str] = {}
@@ -258,7 +258,13 @@ def render_turns(inputs: list[dict], wav: Path, speed: float, render=None,
             stream.writeframes(intro.tobytes())
             offset += len(intro)
         for index, item in enumerate(inputs):
-            audio, segments = _rendered(render(item["text"], item["voice"], speed))
+            if render is render_google_cloud:
+                passage = ("complete" if len(inputs) == 1 else "opening" if index == 0
+                           else "closing" if index == len(inputs) - 1 else "body")
+                result = render(item["text"], item["voice"], speed, passage=passage)
+            else:
+                result = render(item["text"], item["voice"], speed)
+            audio, segments = _rendered(result)
             if len(audio) == 0 or not all(math.isfinite(float(v)) for v in audio):
                 raise ValueError("Narration returned empty or non-finite audio")
             if index:

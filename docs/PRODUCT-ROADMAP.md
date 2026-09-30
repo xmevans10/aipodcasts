@@ -115,7 +115,7 @@ After release: operator checks cadence, inventory, audio errors, source correcti
 |---|---|
 | Publishing code repair | Deployed; current-date recovery release and independent content-health jobs succeeded |
 | Actual new publication | Six live episodes; today's two releases verified through public audio, sidecars and sharing |
-| Latest usable batch | No eligible replacement scripts yet; earlier v1/v2/v3 approvals are stale and unavailable for release |
+| Latest usable batch | No eligible replacement scripts yet; [v4 replenishment](https://github.com/xmevans10/aipodcasts/actions/runs/36743990186) is running; earlier v1/v2/v3 approvals are stale |
 | Backend checks | 293 passed after the character, narration and audience-review changes |
 | iOS logic | 202 checks passed plus deep-link checks |
 | iOS release compile | Unsigned Release build succeeded with simulator SDK; simulator not launched |
@@ -159,8 +159,9 @@ verification. The [replacement batch](https://github.com/xmevans10/aipodcasts/ac
 produced zero approvals: real comprehension/beat failures were caught, but minor-only
 advisories also triggered revision and early retries exhausted the call budget before
 the whole roster was attempted. Review v4 explicitly permits a pass with minor
-advisories; substantive failures still require repair. The next bounded run will use
-one candidate per show within the existing call budget.
+advisories; substantive failures still require repair. The [new bounded run](https://github.com/xmevans10/aipodcasts/actions/runs/36743990186)
+uses one candidate per show within the existing call budget. Its scripts are not yet
+counted as eligible inventory.
 
 Narration now receives opening/body/closing context and sentence-level direction for
 emphasis, pauses, questions and uncertainty. This is implemented and tested, but improved

@@ -20,6 +20,10 @@ on:
         type: boolean
         default: false
 
+concurrency:
+  group: zwicky-production-feed-v1
+  cancel-in-progress: false
+
 jobs:
   retitle:
     runs-on: ubuntu-latest

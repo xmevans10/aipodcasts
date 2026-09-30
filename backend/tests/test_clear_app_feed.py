@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
 from clear_app_feed import load_exclusions, published_dois, wipe_app  # noqa: E402
+from daily_release import app_feed_url
 
 
 class FakePaginator:
@@ -52,15 +53,24 @@ class ClearAppFeedTests(unittest.TestCase):
             exclusions_path = Path(tmp) / "excluded.json"
             count, deleted = wipe_app(
                 client, "episodes", "v1",
-                "https://pub-e19f5de621fd4b4ea01c0465d0251407.r2.dev", 1234,
+                "https://staging.example", 1234,
                 exclusions_path)
-            self.assertEqual((count, deleted), (1, 2))
+            self.assertEqual((count, deleted), (1, 3))
             self.assertEqual(client.puts["v1/feed.json"], [])
             self.assertEqual(client.puts["v1/.release/excluded-dois.json"],
                              ["10.1234/old.paper"])
             self.assertEqual(client.puts["v1/.release/baseline.json"]["minimum_run_id"], 1234)
-            self.assertEqual(client.listed_prefixes, ["v1/audio/", "v1/episodes/"])
+            self.assertEqual(client.listed_prefixes, ["v1/audio/", "v1/episodes/", "v1/listen/"])
             self.assertEqual(json.loads(exclusions_path.read_text()), ["10.1234/old.paper"])
+
+    def test_live_feed_reset_is_rejected_before_any_writes(self):
+        client = FakeS3([])
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(ValueError, "Refusing to wipe the live"):
+                wipe_app(client, "episodes", "v1", app_feed_url().removesuffix("/v1/feed.json"),
+                         1234, Path(tmp) / "excluded.json")
+        self.assertEqual(client.puts, {})
+        self.assertEqual(client.deletes, [])
 
     def test_exclusion_ledger_adds_prior_feed_dois(self):
         client = FakeS3([])

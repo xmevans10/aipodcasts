@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: publish-share-pages-v1
+  group: zwicky-production-feed-v1
   cancel-in-progress: false
 
 jobs:

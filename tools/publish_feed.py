@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import math
 import os
 import re
 import sys
@@ -135,6 +136,42 @@ def load_episodes(directory: Path) -> list:
             continue
         episodes.append({**json.loads(path.read_text()), "_file": str(path)})
     return episodes
+
+
+def validate_rendered_episodes(episodes: list, directory: Path) -> None:
+    """Reject corrupt or mismatched audio/transcripts before any storage writes."""
+    seen = set()
+    for payload in episodes:
+        name = Path(payload["_file"]).stem
+        story = payload.get("story") or {}
+        body = story.get("body")
+        if not isinstance(body, str):
+            raise ValueError("Listening page transcript must be text")
+        if story.get("id") != "episode-" + name or story["id"] in seen:
+            raise ValueError(f"{name}: duplicate or mismatched episode identity")
+        seen.add(story["id"])
+        duration = payload.get("duration")
+        if (isinstance(duration, bool) or not isinstance(duration, (int, float))
+                or not math.isfinite(duration) or duration <= 0):
+            raise ValueError(f"{name}: invalid audio duration")
+        spoken, previous_end = [], 0.0
+        for paragraph in payload.get("transcript") or []:
+            for word in paragraph.get("words") or []:
+                start, end = word.get("start"), word.get("end")
+                if (any(isinstance(t, bool) or not isinstance(t, (int, float))
+                        or not math.isfinite(t) for t in (start, end))
+                        or start < previous_end - 0.002 or end < start or end > duration + 0.02):
+                    raise ValueError(f"{name}: invalid transcript timing")
+                if not isinstance(word.get("text"), str) or not word["text"].strip():
+                    raise ValueError(f"{name}: missing transcript word")
+                spoken.append(word["text"])
+                previous_end = end
+        if not spoken or spoken != body.split():
+            raise ValueError(f"{name}: transcript differs from the published script")
+        with (directory / f"{name}.m4a").open("rb") as audio:
+            header = audio.read(12)
+        if len(header) < 12 or header[4:8] != b"ftyp":
+            raise ValueError(f"{name}: invalid M4A container")
 
 
 def merge_feed(existing: list, incoming: list, *, day: str, max_per_day: int = 2) -> list:
@@ -273,6 +310,8 @@ def main() -> None:
     episodes = [] if args.share_pages_only else load_episodes(directory)
     if not episodes and not args.share_pages_only:
         raise ValueError("No rendered episodes to publish")
+    if episodes:
+        validate_rendered_episodes(episodes, directory)
     client = None
     missing_pages = set()
     if args.share_pages_only:

@@ -55,8 +55,8 @@ def wipe_app(client, bucket: str, prefix: str, public_base: str, run_id: int,
              exclusions_path: Path) -> tuple[int, int]:
     key_prefix = prefix.strip("/")
     feed_url = public_base.rstrip("/") + "/" + key_prefix + "/feed.json"
-    if feed_url != app_feed_url():
-        raise ValueError("R2 publication target differs from the app's default feed URL")
+    if feed_url == app_feed_url():
+        raise ValueError("Refusing to wipe the live app feed; resets are staging-only")
 
     feed = load_existing_feed(client, bucket, key_prefix)
     if any(not isinstance(story, dict) or not story.get("id") for story in feed):
@@ -73,7 +73,7 @@ def wipe_app(client, bucket: str, prefix: str, public_base: str, run_id: int,
     })
 
     deleted = 0
-    for subdir in ("audio/", "episodes/"):
+    for subdir in ("audio/", "episodes/", "listen/"):
         paginator = client.get_paginator("list_objects_v2")
         for page in paginator.paginate(Bucket=bucket, Prefix=f"{key_prefix}/{subdir}"):
             keys = [{"Key": item["Key"]} for item in page.get("Contents", [])]

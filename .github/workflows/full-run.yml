@@ -66,13 +66,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Reject committed transcript seeds for a fresh release
+      - name: Reject retired destructive release mode
         if: ${{ inputs.release_fresh_batch == true }}
         run: |
-          if [ -n "$SEED_DIR" ]; then
-            echo "A fresh release cannot reuse a committed transcript directory" >&2
-            exit 1
-          fi
+          echo "Fresh-release reset is retired: generate reviewed transcripts, then use prepare-daily-episodes to append safely." >&2
+          exit 1
 
       - id: google-auth
         name: Authenticate to Google Cloud for episode audio

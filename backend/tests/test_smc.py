@@ -2,7 +2,8 @@ import sys
 from pathlib import Path
 import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from smc import (expert_reactions, is_expert_reaction, parse_feed, reactions_for_host)
+from smc import (expert_reactions, is_expert_reaction, parse_feed, reactions_for_host,
+                 reactions_for_source)
 
 FEED = """<?xml version="1.0"?>
 <rss version="2.0"><channel>
@@ -70,6 +71,34 @@ class SmcTests(unittest.TestCase):
 
     def test_feed_failure_returns_empty(self):
         self.assertEqual(expert_reactions(lambda url: ("error", "network")), [])
+
+    def test_topic_match_cannot_attach_another_papers_caveats(self):
+        hints = reactions_for_host('lena', expert_reactions(feed_fetch))
+        page = '<div class="entry-content">Limited sample. <a href="https://doi.org/10.1234/other">Paper</a></div>'
+        self.assertEqual(reactions_for_source({'url': 'https://doi.org/10.1234/target'},
+                                             hints, lambda url: ('text', page)), [])
+
+    def test_exact_paper_link_in_article_supplies_commentary(self):
+        reaction = {'title': 'Expert reaction to sleep', 'url': 'https://example.org/reaction'}
+        page = '<nav>Navigation</nav><div class="entry-content"><p>Only one age group.</p><br/><a href="https://doi.org/10.1234/TARGET">Paper</a></div><footer>Other text</footer>'
+        result = reactions_for_source({'url': 'https://doi.org/10.1234/target'},
+                                      [reaction], lambda url: ('text', page))
+        self.assertEqual(result[0]['source_doi'], '10.1234/target')
+        self.assertIn('Only one age group.', result[0]['text'])
+        self.assertNotIn('Navigation', result[0]['text'])
+        self.assertNotIn('Other text', result[0]['text'])
+
+    def test_related_link_outside_article_is_not_a_paper_match(self):
+        page = '<div class="entry-content">A different study.</div><footer><a href="https://doi.org/10.1234/target">Related</a></footer>'
+        self.assertEqual(reactions_for_source({'url': 'https://doi.org/10.1234/target'},
+                                             [{'url': 'https://example.org/reaction'}],
+                                             lambda url: ('text', page)), [])
+
+    def test_unavailable_or_unrecognised_page_has_no_supplementary_gate(self):
+        source = {'url': 'https://doi.org/10.1234/target'}
+        hints = [{'url': 'https://example.org/reaction'}]
+        for response in [('error', 'network'), ('text', '<p>Unknown layout</p>')]:
+            self.assertEqual(reactions_for_source(source, hints, lambda url: response), [])
 
 
 if __name__ == "__main__":

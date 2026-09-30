@@ -256,19 +256,23 @@ def verify_draft(draft: dict, source: dict, packet: dict, decider_: Decider,
         questions.append(TypedQuestion("no_overstatement", "boolean",
             "The 'script' field stays within the 'evidence' field and does not overstate it."))
         # Science Media Centre reactions are a checking source: they add a caveat
-        # question for the beats they cover (see smc.py). They never enter evidence.
+        # question only for reactions linked to this paper (see smc.py).
+        # They never enter the scientific evidence packet.
         if caveats:
             questions.append(TypedQuestion("smc_caveats", "boolean",
                 "The script acknowledges the caveats or limitations raised by these expert "
-                "reactions and does not overstate beyond the evidence: "
-                + "; ".join(c.get("title", "") for c in caveats)))
+                "reactions that are concretely stated and applicable to this paper. "
+                "Do not infer criticism or missing facts from a reaction title. "
+                "The script must stay within its scientific evidence: "
+                + "; ".join(c.get("title", "") + ": " + c.get("text", "") for c in caveats)))
         try:
             state = {
                 "script": _text_of(draft),
                 "evidence": evidence_text(packet)[:6000],
             }
             if caveats:
-                state["expert_reactions"] = [{"title": c.get("title"), "url": c.get("url")}
+                state["expert_reactions"] = [{"title": c.get("title"), "url": c.get("url"),
+                                               "source_doi": c.get("source_doi"), "text": c.get("text", "")}
                                              for c in caveats]
             decisions = decider_.ask(questions, state)
         except RuntimeError as error:
@@ -317,8 +321,9 @@ def verify_story(db, story_id: str, decider_mode: str = "auto") -> dict:
     if os.environ.get("LILT_SMC", "").strip().lower() in ("1", "true", "yes"):
         try:
             from beats import normalize_host
-            from smc import expert_reactions, reactions_for_host
-            caveats = reactions_for_host(normalize_host(record["host"]), expert_reactions())
+            from smc import expert_reactions, reactions_for_host, reactions_for_source
+            hints = reactions_for_host(normalize_host(record["host"]), expert_reactions())
+            caveats = reactions_for_source(source, hints)
         except Exception:
             caveats = []
     return verify_draft(draft, source, packet, decider(decider_mode), caveats=caveats)

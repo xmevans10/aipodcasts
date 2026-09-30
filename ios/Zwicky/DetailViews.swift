@@ -379,7 +379,8 @@ struct SettingsView: View {
                 Section("Trust & privacy") {
                     NavigationLink("How an episode is made") { PolicyView(title: "How an episode is made", text: "We select research sources, write an original explanation, and check claims against the source before publishing.\n\nAI can make mistakes. Every episode includes attribution, a note on what the evidence can and can’t show, and links to the original sources. Hosts are fictional AI presenters, never the researchers themselves.") }
                     NavigationLink("Privacy") { PolicyView(title: "Privacy", text: "Zwicky stores your profile, saved episodes, followed shows, listening queue, playback positions, finished episodes and listening minutes on your device. It contains no advertising or analytics SDKs and does not create an account.\n\nLoading episodes sends normal network requests, including your IP address, to the episode host. Opening source links is subject to the destination’s privacy policy.") }
-                    Button("Delete local listening data", role: .destructive) { reset = true }
+                    Button("Delete listening data", role: .destructive) { reset = true }
+                    Text("Clears saved episodes, queue, playback positions, history and listening minutes. Your profile and followed shows are kept.").font(.caption).foregroundStyle(Theme.secondary)
                 }
                 Section("Credits") {
                     Text("Host illustrations: DiceBear “Notionists” (CC0). Narration: synthetic voices. Reading typeface: Charter.").font(.caption).foregroundStyle(Theme.secondary)
@@ -394,8 +395,8 @@ struct SettingsView: View {
                 EmptyView()
                 #endif
             }
-            .confirmationDialog("Delete saved episodes, queue and listening history?", isPresented: $reset, titleVisibility: .visible) {
-                Button("Delete local data", role: .destructive) { player.clearListeningData(); library.saved = []; library.history = []; UserDefaults.standard.removeObject(forKey: "saved"); UserDefaults.standard.removeObject(forKey: "history") }
+            .confirmationDialog("Delete your saved episodes and listening data?", isPresented: $reset, titleVisibility: .visible) {
+                Button("Delete listening data", role: .destructive) { player.clearListeningData(); library.saved = []; library.history = []; UserDefaults.standard.removeObject(forKey: "saved"); UserDefaults.standard.removeObject(forKey: "history") }
             }
         }
     }

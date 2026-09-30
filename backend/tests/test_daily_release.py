@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
-from daily_release import doi_from_url, select  # noqa: E402
+from daily_release import available, doi_from_url, select  # noqa: E402
 from publish_feed import merge_feed  # noqa: E402
 from verify_daily_feed import verify  # noqa: E402
 
@@ -72,6 +72,9 @@ class DailyReleaseTests(unittest.TestCase):
             self.assertEqual([e["show"] for _, e in first_day],
                              ["Hive Mind", "Mycelium"])
             self.assertEqual(first_day[1][0].parent.parent.name, "200")
+            with patch("daily_release.check_batch", return_value=(16, 16)):
+                inventory = available(root, feed)
+            self.assertEqual(len(inventory), 2, "inventory excludes published scripts and older duplicate revisions")
             self.assertEqual(doi_from_url("https://doi.org/10.1038/ABC.1"), "10.1038/abc.1")
 
     def test_selection_requires_enough_inventory(self):

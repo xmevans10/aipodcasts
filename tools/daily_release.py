@@ -48,15 +48,9 @@ def published_versions(feed: list) -> dict[tuple[str, str], str]:
     return versions
 
 
-def select(batches: Path, feed: list, day: str, *, limit: int = 2) -> list[tuple[Path, dict]]:
+def available(batches: Path, feed: list) -> list[tuple[Path, dict]]:
     if not isinstance(feed, list):
         raise ValueError("Published feed is malformed")
-    published_today = sum(story.get("published") == day for story in feed)
-    if published_today > limit:
-        raise ValueError(f"Feed already has {published_today} episodes on {day}")
-    slots = limit - published_today
-    if slots == 0:
-        return []
     published = published_versions(feed)
     order = []
     candidates = {}
@@ -90,8 +84,20 @@ def select(batches: Path, feed: list, day: str, *, limit: int = 2) -> list[tuple
                 # Batches are traversed newest first, so the first approved
                 # revision for a paper is the latest one.
                 candidates[key] = (path, entry, body)
-    picked = [(candidates[key][0], candidates[key][1]) for key in order
-              if published.get(key) != candidates[key][2]][:slots]
+    return [(candidates[key][0], candidates[key][1]) for key in order
+            if published.get(key) != candidates[key][2]]
+
+
+def select(batches: Path, feed: list, day: str, *, limit: int = 2) -> list[tuple[Path, dict]]:
+    if not isinstance(feed, list):
+        raise ValueError("Published feed is malformed")
+    published_today = sum(story.get("published") == day for story in feed)
+    if published_today > limit:
+        raise ValueError(f"Feed already has {published_today} episodes on {day}")
+    slots = limit - published_today
+    if slots == 0:
+        return []
+    picked = available(batches, feed)[:slots]
     if len(picked) == slots:
         return picked
     raise ValueError(f"Only {len(picked)} unpublished approved episodes available; need {slots} for {day}")
@@ -110,7 +116,8 @@ def stage(picked: list[tuple[Path, dict]], directory: Path) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--batches", type=Path, required=True)
-    parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--out", type=Path)
+    parser.add_argument("--inventory", action="store_true", help="report usable unpublished inventory without rendering")
     parser.add_argument("--date", default=dt.datetime.now(dt.timezone.utc).date().isoformat())
     parser.add_argument("--feed-file", type=Path, help="offline test input instead of R2")
     args = parser.parse_args()
@@ -121,6 +128,22 @@ def main() -> None:
         if target != app_feed_url():
             raise ValueError("R2 publication target differs from the app's default feed URL")
         feed = load_existing_feed(r2_client(), os.environ["R2_BUCKET"], os.environ.get("R2_PREFIX", "v1"))
+    if args.inventory:
+        eligible = available(args.batches, feed)
+        shows = {}
+        for _, entry in eligible:
+            shows[entry["show"]] = shows.get(entry["show"], 0) + 1
+        count = len(eligible)
+        print(json.dumps({"eligible_episodes": count, "days_at_two_per_day": count / 2,
+                          "below_week_buffer": count < 14, "shows": shows}, indent=2))
+        if os.environ.get("GITHUB_STEP_SUMMARY"):
+            with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as summary:
+                summary.write(f"### Content inventory\n\n{count} unpublished, strictly reviewed episodes "
+                              f"({count / 2:g} days at two/day). "
+                              + ("Below the 14-episode buffer target.\n" if count < 14 else "Buffer target met.\n"))
+        return
+    if not args.out:
+        parser.error("--out is required unless --inventory is used")
     picked = select(args.batches, feed, args.date)
     stage(picked, args.out)
     print(f"{len(picked)} episodes queued for {args.date}: " + ", ".join(e["show"] for _, e in picked))

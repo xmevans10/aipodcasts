@@ -14,6 +14,11 @@ on:
     types: [completed]
     branches: [main]
   workflow_dispatch:
+    inputs:
+      publish_now:
+        description: Incident recovery only - publish prepared approved episodes immediately
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -136,7 +141,7 @@ jobs:
             --merge-existing --max-per-day 2 --assets-only
 
       - name: Wait until 08:00 Eastern
-        if: steps.live.outputs.released != 'true' && steps.ready.outputs.count != '0'
+        if: steps.live.outputs.released != 'true' && steps.ready.outputs.count != '0' && !(github.event_name == 'workflow_dispatch' && inputs.publish_now)
         run: |
           python3 - <<'PY'
           from datetime import datetime

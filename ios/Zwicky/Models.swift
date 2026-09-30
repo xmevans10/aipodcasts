@@ -106,6 +106,8 @@ struct Source: Codable, Hashable {
     let url: String
     let attribution: String
     let license: String
+    var evidenceTier: String? = nil
+    var evidenceNote: String? = nil
 }
 /// One spoken turn in a co-hosted episode.
 struct DialogueTurn: Codable, Hashable { let speaker: String; let text: String }
@@ -170,6 +172,25 @@ struct BundledEpisode: Codable {
     /// Five-band audio levels (0...1) every `levelHop` seconds, from backend/envelope.py.
     var levels: [[Double]] = []
     var levelHop: Double = 0.1
+    func matches(_ expected: Story) -> Bool {
+        guard story.id == expected.id, story.hostID == expected.hostID,
+              story.body == expected.body, duration.isFinite, duration > 0,
+              !transcript.isEmpty else { return false }
+        var words: [String] = []
+        var previous = 0.0
+        for paragraph in transcript {
+            for word in paragraph.words {
+                guard word.start.isFinite, word.start >= previous - 0.002,
+                      word.start >= 0, word.start <= duration + 0.02 else { return false }
+                if let end = word.end {
+                    guard end.isFinite, end >= word.start, end <= duration + 0.02 else { return false }
+                    previous = end
+                } else { previous = word.start }
+                words.append(word.text)
+            }
+        }
+        return words == expected.body.split(whereSeparator: { $0.isWhitespace }).map(String.init)
+    }
 }
 /// Metadata for streamed episodes. Episode catalogs and audio arrive only through the feed.
 enum Episodes {
@@ -177,18 +198,21 @@ enum Episodes {
     static var remote: [String: BundledEpisode] = [:]
     static func episode(for storyID: String) -> BundledEpisode? { remote[storyID] }
     /// Fetch and cache a streamed episode's sidecar so read-along works off the feed.
-    static func load(_ story: Story) async {
-        if episode(for: story.id) != nil { return }
-        guard let raw = story.detailURL, let url = URL(string: raw), url.scheme == "https" else { return }
-        await Telemetry.measure("episodes.sidecar") {
+    @discardableResult static func load(_ story: Story) async -> Bool {
+        if let cached = episode(for: story.id), cached.matches(story) { return true }
+        remote.removeValue(forKey: story.id)
+        guard let raw = story.detailURL, let url = URL(string: raw), url.scheme == "https", url.host != nil else { return false }
+        return await Telemetry.measure("episodes.sidecar") {
             guard let (data, response) = try? await URLSession.shared.data(from: url),
                   (response as? HTTPURLResponse)?.statusCode == 200,
-                  let decoded = try? JSONDecoder().decode(BundledEpisode.self, from: data) else {
+                  let decoded = try? JSONDecoder().decode(BundledEpisode.self, from: data),
+                  decoded.matches(story) else {
                 Telemetry.feed.error("sidecar \(story.id, privacy: .public) failed")
-                return
+                return false
             }
             remote[story.id] = decoded
             Telemetry.feed.debug("sidecar \(story.id, privacy: .public) \(data.count, privacy: .public) bytes")
+            return true
         }
     }
     static func transcript(for storyID: String) -> [TranscriptParagraph]? { episode(for: storyID)?.transcript }
@@ -210,6 +234,7 @@ enum Episodes {
     @Published var following: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "following") ?? Show.all.map(\.id))
     /// True when a configured feed failed to refresh and the cached copy is shown.
     @Published var isOffline = false
+    @Published var refreshFailed = false
     @Published private(set) var feedCachedAt: Date?
     /// Newest published date the listener has already been told about, so we only
     /// announce genuinely new episodes (stored across launches).
@@ -273,6 +298,13 @@ enum Episodes {
     /// Newest first.
     var latest: [Story] { stories.sorted { ($0.published ?? "") > ($1.published ?? "") } }
     func episodes(of show: Show) -> [Story] { latest.filter { show.hostIDs.contains($0.hostID) } }
+    static func firstEpisode(in stories: [Story], following ids: Set<String>) -> Story? {
+        let playable = stories.filter { story in
+            guard let raw = story.audioURL, let url = URL(string: raw) else { return false }
+            return url.scheme == "https" && url.host != nil
+        }.sorted { ($0.published ?? "") > ($1.published ?? "") }
+        return playable.first { ids.contains($0.show.id) } ?? playable.first
+    }
     var feedURL: String { Library.defaultFeedURL }
     func toggle(_ story: Story) {
         if saved.contains(story.id) { saved.remove(story.id) } else { saved.insert(story.id) }
@@ -312,6 +344,7 @@ enum Episodes {
             feedCachedAt = .now
             StoryCache.saveFeed(feed, sourceURL: feedURL)
             isOffline = false
+            refreshFailed = false
             error = nil
             rebuild()
             // First run: remember where "new" starts so we don't announce the back catalogue.
@@ -322,7 +355,10 @@ enum Episodes {
         } catch {
             let elapsed = Telemetry.ms(since: start)
             if feedCachedAt != nil {
-                isOffline = true
+                refreshFailed = true
+                isOffline = (error as? URLError).map {
+                    [.notConnectedToInternet, .networkConnectionLost, .dataNotAllowed].contains($0.code)
+                } ?? false
                 self.error = nil
                 Telemetry.feed.error("refresh failed after \(elapsed, format: .fixed(precision: 1)) ms (status/error), showing cached feed: \(String(describing: error), privacy: .public)")
             } else {

@@ -170,6 +170,36 @@ private func testStoryHelpers() {
 
 // MARK: - dialogue decoding
 
+@MainActor private func testContentRecovery() {
+    func story(_ id: String, host: String = "nova", audio: String? = "https://example.org/audio.m4a") -> Story {
+        Story(id: id, title: "Title", dek: "Dek", topic: "SPACE", hostID: host, minutes: 1,
+              body: "Hello science.", caveat: "Small study", sources: [], audioURL: audio,
+              isDemo: false, published: "2026-09-30", turns: nil, hostIDs: nil)
+    }
+    let episode = story("one")
+    let paragraph = TranscriptParagraph(words: [
+        TranscriptWord(text: "Hello", start: 0, end: 0.9),
+        TranscriptWord(text: "science.", start: 1, end: 1.9)])
+    let valid = BundledEpisode(story: episode, duration: 2, transcript: [paragraph])
+    check(valid.matches(episode), "matching read-along sidecar is accepted")
+    check(!valid.matches(story("another")), "wrong episode sidecar is rejected")
+    check(!BundledEpisode(story: episode, duration: .nan, transcript: [paragraph]).matches(episode),
+          "invalid sidecar duration is rejected")
+    let reversed = TranscriptParagraph(words: [TranscriptWord(text: "Hello", start: 1, end: 0.5)])
+    check(!BundledEpisode(story: episode, duration: 2, transcript: [reversed]).matches(episode),
+          "reversed sidecar timings are rejected")
+    let missing = TranscriptParagraph(words: [TranscriptWord(text: "Hello", start: 0, end: 0.9)])
+    check(!BundledEpisode(story: episode, duration: 2, transcript: [missing]).matches(episode),
+          "truncated read-along text is rejected")
+    checkEqual(Library.firstEpisode(in: [episode], following: ["mycelium"])?.id, "one",
+               "onboarding offers a playable fallback when selected shows have no episodes")
+    let nature = story("nature", host: "fern")
+    checkEqual(Library.firstEpisode(in: [episode, nature], following: ["wild-company"])?.id, "nature",
+               "onboarding prefers a playable followed show")
+    check(Library.firstEpisode(in: [story("bad", audio: "http://example.org/audio")], following: []) == nil,
+          "onboarding does not recommend insecure or unavailable narration")
+}
+
 private func testDialogueFields() {
     let legacy = """
     {"id":"l","title":"T","dek":"D","topic":"SPACE","hostID":"nova","minutes":3,"body":"b","caveat":"c","sources":[],"isDemo":false}
@@ -230,6 +260,7 @@ private func testDialogueFields() {
         testDialogueFields()
         MainActor.assumeIsolated {
             testEpisodeCacheMigration()
+            testContentRecovery()
             testCoverLayout()
         }
 

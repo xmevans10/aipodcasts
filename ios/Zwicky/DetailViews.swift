@@ -10,6 +10,7 @@ struct EpisodeView: View {
 
     @State private var headerPassed = false
     @State private var detailLoaded = false
+    @State private var detailLoading = false
     private let fade: CGFloat = 72
 
     var body: some View {
@@ -42,7 +43,7 @@ struct EpisodeView: View {
                         .font(.caption).foregroundStyle(Theme.secondary)
                 }
 
-                if let transcript = Episodes.transcript(for: story.id) {
+                if detailLoaded, let transcript = Episodes.transcript(for: story.id) {
                     NavigationLink { TranscriptView(story: story, paragraphs: transcript) } label: {
                         HStack(spacing: 14) {
                             Image(systemName: "text.quote").font(.title3).foregroundStyle(Theme.ink).frame(width: 40, height: 40).background(Theme.subtle, in: Circle())
@@ -55,6 +56,15 @@ struct EpisodeView: View {
                         }.card(padding: 14, radius: OpenAIKit.Radius.card)
                     }.buttonStyle(.plain)
                     .accessibilityHint("Opens the read-along transcript")
+                } else if story.detailURL != nil {
+                    HStack {
+                        if detailLoading { ProgressView(); Text("Loading read along…") }
+                        else {
+                            Text("Read along couldn't load. The transcript is below.")
+                            Spacer()
+                            Button("Retry") { Task { await loadDetail() } }
+                        }
+                    }.font(.caption).foregroundStyle(Theme.secondary)
                 }
 
                 VStack(alignment: .leading, spacing: 10) {
@@ -83,6 +93,9 @@ struct EpisodeView: View {
                                 }
                                 Text(source.attribution).font(.caption).foregroundStyle(Theme.secondary)
                                 Text(source.license).font(.caption).foregroundStyle(Theme.tertiary)
+                                if source.evidenceTier == "abstract" {
+                                    Text("Based on the paper's abstract").font(.caption).foregroundStyle(Theme.secondary)
+                                }
                             }
                         }
                     }
@@ -102,9 +115,15 @@ struct EpisodeView: View {
         .background(Theme.canvas)
         .immersiveNavigationBar(show: story.show, title: story.show.title, solid: headerPassed)
         .task(id: story.id) {
-            await Episodes.load(story)
-            detailLoaded = true
+            await loadDetail()
         }
+    }
+
+    private func loadDetail() async {
+        guard !detailLoading else { return }
+        detailLoading = true
+        defer { detailLoading = false }
+        detailLoaded = await Episodes.load(story)
     }
 
     /// Colour band in the show's wash behind the show chip and title, fading into the canvas.

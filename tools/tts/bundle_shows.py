@@ -110,6 +110,8 @@ def story_for(transcript: dict, duration: float, published: str, episode: str = 
                 "url": https(source.get("url", ""), source.get("doi", transcript.get("doi", ""))),
                 "attribution": source.get("attribution") or "Authors listed at source",
                 "license": source.get("license") or "See source",
+                **({"evidenceTier": source["evidence_tier"]} if source.get("evidence_tier") else {}),
+                **({"evidenceNote": source["evidence_note"]} if source.get("evidence_note") else {}),
             }],
             "audioURL": "bundle:" + name + ".m4a",
             "isDemo": False,

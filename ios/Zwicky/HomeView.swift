@@ -35,7 +35,7 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 36) {
                     header
-                    if library.isOffline { offlineBanner }
+                    if library.refreshFailed { offlineBanner }
                     if let story = featured { FeaturedEpisodeCard(story: story) }
                     if let story = continueStory { continueCard(story) }
                     if !freshThisWeek.isEmpty { newShelf }
@@ -84,7 +84,7 @@ struct HomeView: View {
             Image(systemName: "wifi.slash").font(.body.weight(.semibold)).foregroundStyle(Theme.ink)
                 .frame(width: 36, height: 36).background(Theme.subtle, in: Circle())
             VStack(alignment: .leading, spacing: 2) {
-                Text("You're offline").typeStyle(.headline).foregroundStyle(Theme.ink)
+                Text(library.isOffline ? "You're offline" : "Couldn't refresh episodes").typeStyle(.headline).foregroundStyle(Theme.ink)
                 Text(cachedText).typeStyle(.meta).foregroundStyle(Theme.secondary)
             }
             Spacer(minLength: 8)

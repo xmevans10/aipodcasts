@@ -11,7 +11,7 @@ struct WelcomeView: View {
     @AccessibilityFocusState private var headingFocused: Bool
 
     private var firstEpisode: Story? {
-        library.latest.first { selected.contains($0.show.id) }
+        Library.firstEpisode(in: library.stories, following: selected)
     }
 
     var body: some View {
@@ -122,6 +122,9 @@ struct WelcomeView: View {
                                 VStack(alignment: .leading, spacing: 1) {
                                     Text(show.title).font(.subheadline.weight(.semibold)).lineLimit(1)
                                     Text(show.category).font(.caption).foregroundStyle(Theme.secondary).lineLimit(1)
+                                    if library.episodes(of: show).isEmpty && !library.loading {
+                                        Text("Episodes coming soon").font(.caption2).foregroundStyle(Theme.secondary)
+                                    }
                                 }
                             }
                         }

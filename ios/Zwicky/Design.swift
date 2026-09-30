@@ -78,6 +78,7 @@ extension Color {
 }
 
 struct PrimaryButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var fullWidth = false
     /// A show's colours when the button belongs to one; ink otherwise.
     var show: Show? = nil
@@ -96,9 +97,9 @@ struct PrimaryButtonStyle: ButtonStyle {
                                                            startPoint: .top, endPoint: .center), lineWidth: 0.75))
             .shadow(color: (show?.dark ?? Theme.ink).opacity(configuration.isPressed ? 0.14 : 0.22),
                     radius: configuration.isPressed ? 3 : 10, y: configuration.isPressed ? 1 : 5)
-            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.97 : 1)
             .brightness(configuration.isPressed ? -0.04 : 0)
-            .animation(.spring(response: 0.28, dampingFraction: 0.7), value: configuration.isPressed)
+            .animation(reduceMotion ? .easeInOut(duration: 0.2) : .spring(response: 0.24, dampingFraction: 0.72), value: configuration.isPressed)
     }
 }
 

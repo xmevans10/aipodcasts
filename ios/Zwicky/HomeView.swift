@@ -34,14 +34,14 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 36) {
-                    header
+                    header.motionEntrance()
                     if library.refreshFailed { offlineBanner }
-                    if let story = featured { FeaturedEpisodeCard(story: story) }
-                    if let story = continueStory { continueCard(story) }
-                    if !freshThisWeek.isEmpty { newShelf }
-                    showsSection
-                    latestSection
-                    statsSection
+                    if let story = featured { FeaturedEpisodeCard(story: story).motionEntrance(delay: 0.08) }
+                    if let story = continueStory { continueCard(story).motionEntrance(delay: 0.12) }
+                    if !freshThisWeek.isEmpty { newShelf.motionEntrance(delay: 0.16) }
+                    showsSection.motionEntrance(delay: 0.2)
+                    latestSection.motionEntrance(delay: 0.24)
+                    statsSection.motionEntrance(delay: 0.28)
                     Label("Every episode cites its sources. Hosts and narration are AI-generated.", systemImage: "checkmark.seal")
                         .typeStyle(.meta).foregroundStyle(Theme.secondary)
                 }
@@ -195,6 +195,7 @@ struct HomeView: View {
 /// Full-bleed hero for the newest unplayed episode: the show's gradient, the host large,
 /// the title at hero size. Tapping the card opens the player; the play button toggles it.
 private struct FeaturedEpisodeCard: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @EnvironmentObject var player: AudioPlayer
     var story: Story
     @ScaledMetric(relativeTo: .largeTitle) private var avatarSize: CGFloat = 84
@@ -205,8 +206,12 @@ private struct FeaturedEpisodeCard: View {
     private var active: Bool { isCurrent && player.playing }
     private var shape: RoundedRectangle { RoundedRectangle(cornerRadius: OpenAIKit.Radius.hero, style: .continuous) }
 
-    private func togglePlayback() { isCurrent ? player.toggle() : player.play(story) }
+    private func togglePlayback() {
+        Haptics.tap()
+        isCurrent ? player.toggle() : player.play(story)
+    }
     private func openPlayer() {
+        Haptics.tap()
         if !isCurrent { player.play(story) }
         player.isPlayerPresented = true
     }
@@ -242,7 +247,7 @@ private struct FeaturedEpisodeCard: View {
             .clipShape(shape)
             .contentShape(shape)
         }
-        .buttonStyle(HeroPressStyle())
+        .buttonStyle(PressableStyle(scale: 0.985, dim: 0.96))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Featured episode from \(show.title): \(story.title). \(story.dek). \(story.minutes) minutes.")
         .accessibilityHint("Opens the player")
@@ -257,6 +262,7 @@ private struct FeaturedEpisodeCard: View {
             Image("cover-\(show.id)")
                 .resizable()
                 .scaledToFill()
+                .livingArtwork()
             // Scrim: keeps the white title, dek and controls legible over the art.
             LinearGradient(colors: [show.dark.opacity(0.2), show.dark.opacity(0.45), .black.opacity(0.55)],
                            startPoint: .top, endPoint: .bottom)
@@ -267,6 +273,7 @@ private struct FeaturedEpisodeCard: View {
         HStack(alignment: .center, spacing: 12) {
             Button(action: togglePlayback) {
                 Image(systemName: active ? "pause.fill" : "play.fill")
+                    .contentTransition(reduceMotion ? .opacity : .symbolEffect(.replace))
                     .font(.system(size: playSize * 0.36, weight: .bold))
                     .foregroundStyle(show.dark)
                     .offset(x: active ? 0 : playSize * 0.03)
@@ -274,7 +281,8 @@ private struct FeaturedEpisodeCard: View {
                     .background(.white, in: Circle())
                     .shadow(color: .black.opacity(0.2), radius: 8, y: 3)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.pressable)
+            .animation(Motion.standard(reduceMotion: reduceMotion), value: active)
             .accessibilityLabel(active ? "Pause \(story.title)" : "Play \(story.title)")
 
             VStack(alignment: .leading, spacing: 2) {
@@ -302,14 +310,6 @@ private struct FeaturedEpisodeCard: View {
             .buttonStyle(.plain)
             .accessibilityLabel("Episode details for \(story.title)")
         }
-    }
-}
-
-private struct HeroPressStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.985 : 1)
-            .animation(.snappy(duration: 0.18), value: configuration.isPressed)
     }
 }
 

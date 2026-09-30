@@ -7,6 +7,7 @@ struct WelcomeView: View {
     @EnvironmentObject private var player: AudioPlayer
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var step = 0
+    @State private var advancing = true
     @State private var selected: Set<String> = Set(Show.all.prefix(4).map(\.id))
     @AccessibilityFocusState private var headingFocused: Bool
 
@@ -28,7 +29,10 @@ struct WelcomeView: View {
                 }
                 .padding(.horizontal, 24).padding(.top, 12).padding(.bottom, 24)
                 .frame(maxWidth: 600, alignment: .leading).frame(maxWidth: .infinity)
-                .id(step).transition(.opacity.combined(with: .offset(y: reduceMotion ? 0 : 10)))
+                .id(step)
+                .transition(reduceMotion ? .opacity : .asymmetric(
+                    insertion: .opacity.combined(with: .offset(x: advancing ? 32 : -32)),
+                    removal: .opacity.combined(with: .offset(x: advancing ? -32 : 32))))
             }
             actions
         }
@@ -68,6 +72,7 @@ struct WelcomeView: View {
             title("Science worth\nlistening to.")
             Text("Big ideas. Easy listening. Two fresh science episodes each day.")
                 .font(.body).foregroundStyle(Theme.secondary)
+            ListeningSpark().frame(height: 24)
             featureStrip
             VStack(alignment: .leading, spacing: 14) {
                 point("clock", "About three minutes an episode")
@@ -84,7 +89,10 @@ struct WelcomeView: View {
         let featured = ids.compactMap { id in Show.all.first { $0.id == id } }
         return ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                ForEach(featured) { ShowCover(show: $0).frame(width: 116) }
+                ForEach(Array(featured.enumerated()), id: \.element.id) { index, show in
+                    ShowCover(show: show).frame(width: 116)
+                        .motionEntrance(delay: Double(index) * 0.06)
+                }
             }
             .padding(.vertical, 2)
         }
@@ -105,7 +113,8 @@ struct WelcomeView: View {
                 ForEach(Show.all) { show in
                     let isOn = selected.contains(show.id)
                     Button {
-                        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.15)) {
+                        Haptics.selection()
+                        withAnimation(Motion.standard(reduceMotion: reduceMotion)) {
                             if isOn { selected.remove(show.id) } else { selected.insert(show.id) }
                         }
                     } label: {
@@ -115,6 +124,7 @@ struct WelcomeView: View {
                                 .overlay(alignment: .topTrailing) {
                                     Image(systemName: isOn ? "checkmark.circle.fill" : "circle")
                                         .font(.title2).symbolRenderingMode(.palette)
+                                        .contentTransition(reduceMotion ? .opacity : .symbolEffect(.replace))
                                         .foregroundStyle(isOn ? .white : .white.opacity(0.9), isOn ? Theme.ink : .clear).padding(10)
                                 }
                             HStack(spacing: 8) {
@@ -129,7 +139,7 @@ struct WelcomeView: View {
                             }
                         }
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.pressable)
                     .accessibilityLabel("\(show.title), \(show.category), hosted by \(show.host.name)")
                     .accessibilityAddTraits(isOn ? .isSelected : [])
                 }
@@ -145,7 +155,12 @@ struct WelcomeView: View {
             VStack(spacing: 10) {
                 ForEach(goalOptions, id: \.minutes) { option in
                     let isOn = library.dailyGoalMinutes == option.minutes
-                    Button { library.dailyGoalMinutes = option.minutes } label: {
+                    Button {
+                        Haptics.selection()
+                        withAnimation(Motion.standard(reduceMotion: reduceMotion)) {
+                            library.dailyGoalMinutes = option.minutes
+                        }
+                    } label: {
                         HStack(spacing: 14) {
                             Text("\(option.minutes)").font(.system(size: 20, weight: .semibold, design: .rounded)).monospacedDigit()
                                 .frame(width: 46, height: 46).background(isOn ? Theme.ink : Theme.subtle, in: Circle())
@@ -157,12 +172,13 @@ struct WelcomeView: View {
                             Spacer(minLength: 0)
                             Image(systemName: isOn ? "checkmark.circle.fill" : "circle").font(.title3)
                                 .foregroundStyle(isOn ? Theme.ink : Theme.tertiary.opacity(0.5))
+                                .contentTransition(reduceMotion ? .opacity : .symbolEffect(.replace))
                         }
                         .padding(14)
                         .background(Theme.surface, in: RoundedRectangle(cornerRadius: OpenAIKit.Radius.card, style: .continuous))
                         .overlay(RoundedRectangle(cornerRadius: OpenAIKit.Radius.card, style: .continuous).strokeBorder(isOn ? Theme.ink : Theme.hairline, lineWidth: isOn ? 1.5 : 1))
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.pressable)
                     .accessibilityLabel("\(option.minutes) minutes a day, \(option.title)")
                     .accessibilityAddTraits(isOn ? .isSelected : [])
                 }
@@ -234,11 +250,14 @@ struct WelcomeView: View {
     }
 
     private func go(to next: Int) {
-        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.25)) { step = next }
+        advancing = next > step
+        Haptics.selection()
+        withAnimation(Motion.standard(reduceMotion: reduceMotion)) { step = next }
         headingFocused = true
     }
 
     private func finish(play: Bool) {
+        Haptics.success()
         if !selected.isEmpty { library.setFollowing(selected) }
         if let first = Show.all.first(where: { selected.contains($0.id) }) { library.hostID = first.hostIDs.first ?? first.id }
         if play, let story = firstEpisode { player.play(story) }

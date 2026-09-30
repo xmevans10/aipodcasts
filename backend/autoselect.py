@@ -401,7 +401,17 @@ def is_primary_venue(work):
 
 def fit(work, terms):
     text = (work["title"] + " " + work["abstract"]).lower()
-    return sum(1 for term in terms if term.lower() in text) / len(terms)
+    # Whole words matter: "bee" in "been", "rest" in "breast", and "star"
+    # in "start" previously made unrelated papers look like literal beat matches.
+    aliases = {"fungus": r"(?:fungus|fungi|fungal)",
+               "bee": r"(?:bees?|bumblebees?|honeybees?)",
+               "galaxy": r"(?:galaxy|galaxies)"}
+    if terms == BEATS['spinner'] and re.search(r'\bpulsars?\b', text):
+        return 0.0  # "Spider" here is an astronomical nickname.
+    if terms == BEATS['nova'] and re.search(r'moon imagery.{0,80}translation|translation.{0,80}moon imagery', text):
+        return 0.0  # Literary imagery is not an observation of the physical Moon.
+    return sum(bool(re.search(r'(?<!\w)' + aliases.get(term, re.escape(term) + r's?') + r'(?!\w)', text))
+               for term in terms) / len(terms)
 
 
 def openalex_by_doi(doi: str, fetch=None):
@@ -563,11 +573,11 @@ def seen_dois(db):
 
 def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
            today: dt.date | None = None, fetch=None, source: str | None = None,
-           min_reputation: float = MIN_REPUTATION):
+           min_reputation: float = MIN_REPUTATION, excluded_dois: set[str] | None = None):
     today = today or dt.date.today()
     since = (today - dt.timedelta(days=days)).isoformat()
     source = source or ("openalex" if os.environ.get("LILT_OPENALEX_KEY", "").strip() else "crossref")
-    exclude = seen_dois(db)
+    exclude = seen_dois(db) | {doi.casefold() for doi in (excluded_dois or ())}
     editorial, community = load_tastemakers(fetch)
     releases, lookups = load_releases(fetch, editorial, since=dt.date.fromisoformat(since), today=today)
     events = cluster_releases(releases)
@@ -586,7 +596,11 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
                 work = normalize_openalex(item) if source == "openalex" else normalize(item)
                 if work is None or work["doi"] in exclude or work["doi"] in works:
                     continue
-                work["host"], work["show"], work["terms"] = host, HOSTS[host].show, terms
+                match = best_host(work)
+                owner, owner_terms = host, terms
+                if match is not None and match[2] >= FIT_GATE:
+                    owner, owner_terms, _ = match
+                work["host"], work["show"], work["terms"] = owner, HOSTS[owner].show, owner_terms
                 work["discovered_by"] = "beat"
                 works[work["doi"]] = work
 

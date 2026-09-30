@@ -114,9 +114,11 @@ class FullRunActionsTests(unittest.TestCase):
             args = SimpleNamespace(seed_dir=str(SEED), days=14, per_show=3,
                                    limit=80, out=str(out), decider="auto",
                                    select_only=False, no_verify=False)
-            with patch.object(run_all_shows, "select_stories", return_value=empty_selection), \
+            with patch.object(run_all_shows, "select_stories", return_value=empty_selection) as selector, \
                  patch.object(run_all_shows, "connect", side_effect=lambda: __import__("sqlite3").connect(":memory:")):
                 run_all_shows.build(args)
+            excluded = selector.call_args.kwargs['excluded_dois']
+            self.assertIn('10.1038/s42004-026-01968-x', excluded)
             self.assertEqual(check_batch(out, require_all=False), (5, 16))
             self.assertEqual(len(list((out / "transcripts").glob("*.json"))), 5)
             manifest = json.loads((out / "manifest.json").read_text())

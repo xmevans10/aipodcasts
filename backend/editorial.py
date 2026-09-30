@@ -180,6 +180,10 @@ def spoken_defects(text: str, *, caveat: str | None = None,
     defects: list[str] = []
     text = text or ""
 
+    if re.search(r'\bthis episode (?:therefore )?(?:should|must) be withheld\b', text, re.I):
+        defects.append('editorial_non_episode: the script says this episode should be withheld. '
+                       'An editorial rejection is not a playable science episode; choose an on-beat paper.')
+
     for pattern in _SCOPE_LEAK:
         found = pattern.search(text)
         if found:

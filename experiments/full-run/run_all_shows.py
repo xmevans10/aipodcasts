@@ -23,9 +23,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "backend"))
+sys.path.insert(0, str(ROOT / "tools"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from beats import BEATS, normalize_host  # noqa: E402
+from extend_doi_exclusions import failed_dois  # noqa: E402
 from pipeline import (HOSTS, approve_auto, connect, draft_story, ingest_any,  # noqa: E402
                       load_local_env, row, select_stories)
 
@@ -99,8 +101,16 @@ def build(args):
         seed_entries = {e["show"]: e for e in
                         json.loads((seed / "manifest.json").read_text())["shows"]}
     today = dt.date.today()
+    # Exclude before per-show quotas are filled. Filtering a one-paper shortlist
+    # afterwards used to leave every retry empty instead of choosing the next paper.
+    selection_excluded = excluded_dois | failed_dois({'shows': list(seed_entries.values())})
+    selection_excluded.update(str(entry['doi']).casefold() for entry in seed_entries.values()
+                              if entry.get('doi'))
+    selection_excluded.update(str(doi).casefold() for entry in seed_entries.values()
+                              for doi in entry.get('excluded_dois', []))
     selection = select_stories(db, days=args.days, per_show=args.per_show, limit=args.limit,
-                               today=today, fetch=None, source=None)
+                               today=today, fetch=None, source=None,
+                               excluded_dois=selection_excluded)
 
     by_host: dict[str, list] = {}
     for work in selection["selected"]:

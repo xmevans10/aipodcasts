@@ -107,6 +107,10 @@ class ContractReachesBothWritersTests(unittest.TestCase):
 
 
 class SpokenDefectTests(unittest.TestCase):
+    def test_a_withholding_note_is_not_a_playable_episode(self):
+        defects = editorial.spoken_defects('This episode therefore should be withheld from The Long View.')
+        self.assertTrue(any(defect.startswith('editorial_non_episode:') for defect in defects))
+
     def test_every_fixture_matches_its_expected_checks(self):
         for case in fx.load()["cases"]:
             with self.subTest(case["id"]):

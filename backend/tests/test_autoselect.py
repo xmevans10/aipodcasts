@@ -5,7 +5,7 @@ import sys
 import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from pipeline import connect
-from autoselect import select, report, is_reusable, normalize_openalex, studiness
+from autoselect import select, report, is_reusable, normalize_openalex, studiness, fit
 
 CC_BY = "https://creativecommons.org/licenses/by/4.0/"
 
@@ -114,6 +114,28 @@ class SelectTests(unittest.TestCase):
     def test_fit_gate_drops_off_beat(self):
         result = self.select(per_show=3, limit=10)
         self.assertNotIn("A study of ordinary clouds", [work["title"] for work in result["selected"]])
+
+    def test_substrings_do_not_manufacture_show_fit(self):
+        from beats import BEATS
+        for host, text in [('amara', 'The tests have been repeated between runs.'),
+                           ('lena', 'A breast cancer blood test.'),
+                           ('yusuf', 'Starting a chemical reaction.')]:
+            self.assertEqual(fit({'title': text, 'abstract': ''}, BEATS[host]), 0)
+        self.assertGreater(fit({'title': 'Bumblebees visit flowers', 'abstract': ''}, BEATS['amara']), 0)
+
+    def test_failed_paper_is_excluded_before_the_single_candidate_quota(self):
+        self.crossref['moon'].append(crossref_item('10.1234/next', 'The Moon has a hidden crater',
+            license_url=CC_BY, abstract='We measured a surprising crater on the Moon.'))
+        result = self.select(per_show=1, limit=16, excluded_dois={'10.1371/journal.pone.0000001'})
+        lunar = [work for work in result['selected'] if work['host'] == 'nova']
+        self.assertEqual([work['doi'] for work in lunar], ['10.1234/next'])
+
+    def test_spider_pulsar_routes_to_stellar_show_instead_of_arachnids(self):
+        self.crossref['spider'] = [crossref_item('10.1234/pulsar', 'Stellar spectroscopy of spider pulsars',
+            license_url=CC_BY, abstract='We measured stellar spectra around a pulsar.')]
+        result = self.select(per_show=1, limit=16)
+        work = next(work for work in result['selected'] if work['doi'] == '10.1234/pulsar')
+        self.assertEqual(work['host'], 'yusuf')
 
     def test_editorial_signal_boosts_matched_paper(self):
         result = self.select(per_show=3, limit=10)

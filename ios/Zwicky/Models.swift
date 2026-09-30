@@ -12,26 +12,26 @@ struct Host: Identifiable, Codable, Hashable {
     var show: Show { Show.forHost(id) ?? Show.all[0] }
     var showID: String { show.id }
     static let all = [
-        Host(id: "nova", name: "Mira Vale", niche: "Space & physics", personality: "Big questions. A little cosmic perspective.", symbol: "sparkles", hue: 0.66),
-        Host(id: "fern", name: "Clara Rowan", niche: "Our living planet", personality: "Wild connections, told with warmth.", symbol: "leaf", hue: 0.27),
-        Host(id: "ada", name: "Elias Reed", niche: "Minds & machines", personality: "Curious, clear-eyed, delightfully nerdy.", symbol: "waveform.path", hue: 0.06),
-        Host(id: "atlas", name: "Theo Mercer", niche: "Earth & climate", personality: "The planet beneath the headlines, told patiently.", symbol: "touchid", hue: 0.47),
-        Host(id: "spinner", name: "Dr. Priya Nandakumar", niche: "Spiders & silk", personality: "Reads a web like a blueprint, one thread at a time.", symbol: "point.3.connected.trianglepath.dotted", hue: 0.76),
-        Host(id: "yusuf", name: "Dr. Yusuf Adeyemi", niche: "Stars & astrochemistry", personality: "The atoms in you were forged in stars, and he can show you how.", symbol: "atom", hue: 0.10),
-        Host(id: "noor", name: "Dr. Noor Haddad", niche: "AI & machine learning", personality: "Clear about what a model learned, and what it didn't.", symbol: "cpu", hue: 0.58),
-        Host(id: "marek", name: "Marek Novak", niche: "3D printing & materials", personality: "Prints the part, then tests the part.", symbol: "cube.transparent", hue: 0.03),
-        Host(id: "tomas", name: "Dr. Tomas Iversen", niche: "Sports science", personality: "Marginal gains, measured honestly.", symbol: "figure.run", hue: 0.30),
-        Host(id: "lena", name: "Dr. Lena Petrova", niche: "Sleep & circadian", personality: "Takes rest seriously, one rhythm at a time.", symbol: "moon.zzz", hue: 0.62),
-        Host(id: "rosa", name: "Dr. Rosa Ibarra", niche: "Fungi & networks", personality: "Follows the network underground.", symbol: "network", hue: 0.82),
-        Host(id: "amara", name: "Dr. Amara Okafor", niche: "Bees & pollinators", personality: "Small pollinators, large consequences.", symbol: "hexagon", hue: 0.14),
-        Host(id: "kenji", name: "Dr. Kenji Watanabe", niche: "Deep sea", personality: "Pressure, darkness and patience.", symbol: "water.waves", hue: 0.52),
-        Host(id: "freya", name: "Dr. Freya Lindqvist", niche: "Ancient DNA", personality: "Deep time, read from a fragment of bone.", symbol: "fossil.shell", hue: 0.36),
-        Host(id: "ines", name: "Ines Marlowe", niche: "Methods & evidence", personality: "Precise, gently sceptical, always checking the method.", symbol: "checkmark.seal", hue: 0.00),
-        Host(id: "dev", name: "Dev Raman", niche: "Methods & evidence", personality: "Warm translator from a result to what it changes.", symbol: "text.bubble", hue: 0.41),
-        Host(id: "jax", name: "Jackson \"Jax\" Ruiz", niche: "Astrophysics", personality: "Loud questions, quick jokes, real science.", symbol: "star", hue: 0.72),
-        Host(id: "kai", name: "Kai Nakamura", niche: "Astrophysics", personality: "The quiet one who does the maths.", symbol: "function", hue: 0.20),
-        Host(id: "benny", name: "Benny Ortiz", niche: "Astrophysics", personality: "Allergic to a boring comparison.", symbol: "flame", hue: 0.88),
-        Host(id: "chase", name: "Chase Whitaker", niche: "Astrophysics", personality: "The sceptic with the best punchlines.", symbol: "star.fill", hue: 0.96)
+        Host(id: "nova", name: "Mira Vale", niche: "Space & physics", personality: "Your quietly mischievous stargazing aunt. Calm wonder, with a knowing smile.", symbol: "sparkles", hue: 0.66),
+        Host(id: "fern", name: "Clara Rowan", niche: "Our living planet", personality: "Big affection for small creatures. Joyful, curious and a little mischievous.", symbol: "leaf", hue: 0.27),
+        Host(id: "ada", name: "Elias Reed", niche: "Minds & machines", personality: "Thinks out loud, follows the puzzle, admits when the neat answer falls apart.", symbol: "waveform.path", hue: 0.06),
+        Host(id: "atlas", name: "Theo Mercer", niche: "Earth & climate", personality: "Warm, patient and quietly authoritative. Still happy to be surprised.", symbol: "touchid", hue: 0.47),
+        Host(id: "spinner", name: "Dr. Priya Nandakumar", niche: "Spiders & silk", personality: "A craft enthusiast for tiny details. Earnest, tactile and wonderfully nerdy.", symbol: "point.3.connected.trianglepath.dotted", hue: 0.76),
+        Host(id: "yusuf", name: "Dr. Yusuf Adeyemi", niche: "Stars & astrochemistry", personality: "A soulful storyteller with room for wonder, tenderness and unfinished answers.", symbol: "atom", hue: 0.10),
+        Host(id: "noor", name: "Dr. Noor Haddad", niche: "AI & machine learning", personality: "Sharp wit, low tolerance for hype. Gives a good result its due.", symbol: "cpu", hue: 0.58),
+        Host(id: "marek", name: "Marek Novak", niche: "3D printing & materials", personality: "An enthusiastic tinkerer who enjoys an honest mess and a useful failure.", symbol: "cube.transparent", hue: 0.03),
+        Host(id: "tomas", name: "Dr. Tomas Iversen", niche: "Sports science", personality: "Your encouraging coach friend. Takes small gains seriously and miracle claims lightly.", symbol: "figure.run", hue: 0.30),
+        Host(id: "lena", name: "Dr. Lena Petrova", niche: "Sleep & circadian", personality: "A candid late-night companion. Gentle, quietly funny and comfortable with uncertainty.", symbol: "moon.zzz", hue: 0.62),
+        Host(id: "rosa", name: "Dr. Rosa Ibarra", niche: "Fungi & networks", personality: "Earthy, blunt and affectionate. Has a soft spot for the things we wrinkle our noses at.", symbol: "network", hue: 0.82),
+        Host(id: "amara", name: "Dr. Amara Okafor", niche: "Bees & pollinators", personality: "Joyful curiosity and a generous smile. Spots the little action everyone else missed.", symbol: "hexagon", hue: 0.14),
+        Host(id: "kenji", name: "Dr. Kenji Watanabe", niche: "Deep sea", personality: "Your understated night-shift companion. Dry humour, patience and a rare flash of awe.", symbol: "water.waves", hue: 0.52),
+        Host(id: "freya", name: "Dr. Freya Lindqvist", niche: "Ancient DNA", personality: "A sharp, wry detective with a tender side. Leaves an unresolved story honest.", symbol: "fossil.shell", hue: 0.36),
+        Host(id: "ines", name: "Ines Marlowe", niche: "Methods & evidence", personality: "A raised eyebrow and a dry smile. Loves a good answer more than being right.", symbol: "checkmark.seal", hue: 0.00),
+        Host(id: "dev", name: "Dev Raman", niche: "Methods & evidence", personality: "Generous enthusiasm, easy explanations. Happy to admit he got ahead of himself.", symbol: "text.bubble", hue: 0.41),
+        Host(id: "jax", name: "Jackson \"Jax\" Ruiz", niche: "Astrophysics", personality: "Delight arrives before the words. Excitable, open and happy to be corrected.", symbol: "star", hue: 0.72),
+        Host(id: "kai", name: "Kai Nakamura", niche: "Astrophysics", personality: "Sarcastic, with warmth underneath. His enthusiasm is conditional, but real.", symbol: "function", hue: 0.20),
+        Host(id: "benny", name: "Benny Ortiz", niche: "Astrophysics", personality: "An affectionate daydreamer. Wanders into big questions, then smiles his way back.", symbol: "flame", hue: 0.88),
+        Host(id: "chase", name: "Chase Whitaker", niche: "Astrophysics", personality: "The competitive fact friend. Proud of a good number, sheepish about a bad explanation.", symbol: "star.fill", hue: 0.96)
     ]
 }
 /// A show may be fronted by one host or a small cast; `id` is a stable slug.

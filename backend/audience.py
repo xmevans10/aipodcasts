@@ -24,7 +24,7 @@ from typing import Callable
 from hosts import HOSTS
 from editorial import CONTRACT_VERSION
 
-REVIEW_VERSION = "audience-review-v3"
+REVIEW_VERSION = "audience-review-v4"
 
 RESPONSES_URL = "https://api.openai.com/v1/responses"
 
@@ -128,9 +128,18 @@ hearing: the question, what the researchers did, what they found, and what it do
 establish. Write it in plain words. If you cannot recover one of these from the script, say
 so in that field rather than filling it in from your own knowledge of the subject.
 
-Decide: "pass" only if a nonspecialist would come away with the question, the method, the
-finding and the limitation. "revise" if the script is fixable by editing. "withhold" if the
-paper does not belong on this show, or the script cannot be fixed without new evidence.
+Severity and decision must agree. Minor means advisory: a small wording preference or
+imperfection that does not prevent comprehension, honest uncertainty, casual delivery or
+an audible character. Do not demand a perfectly polished performance. A missing joke or
+an absent emotional flourish is not itself a major issue.
+
+Decide: "pass" when a nonspecialist can recover the question, method, finding and limit,
+the literal beat fits, and the host sounds conversational and recognisable. PASS WITH
+MINOR ADVISORIES when those conditions hold; minor issues do not require revision.
+"revise" requires at least one concrete MAJOR or BLOCKER issue, with a quoted span and an
+instruction necessary to fix comprehension, honesty, casual delivery or host personality.
+"withhold" if the paper does not belong on this show, or new evidence is needed. A
+scientific overclaim is never a minor wording preference.
 '''
 
 

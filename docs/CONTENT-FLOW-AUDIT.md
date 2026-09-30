@@ -90,3 +90,24 @@ Positive foundations to preserve: HTTPS default feed, last-good atomic disk cach
 3. Select two eligible current episodes with the existing daily allowance and origin checks. Stage/validate assets; commit and verify the public feed using the same publication date. A historical prepared artifact must not simply be relabeled today.
 4. Confirm the updated feed and both episodes on an actual iPhone, including playback and read-along. If verification fails, restore the previous catalog while investigating the origin/client failure.
 5. Observe the following releases and usable inventory. A green preparation job or two existing date labels alone is insufficient health evidence.
+
+## Personality follow-up — 30 September
+
+Two additional causes of flat delivery were found: a second style roster appended after
+the character brief, with contradictory pacing/joke rules, and one generic Google TTS
+performance prompt for every host. Both are replaced by directions derived from the
+20 current profiles in [CHARACTERS.md](CHARACTERS.md). Reactions, natural imperfections,
+modest vulnerability, brief earned chuckles and thoughtful breaths are permitted.
+
+A spot-check of the first personality batch found lecture prose and unrelated pulsar,
+mathematical-network and fuel-cell stories despite boolean audience approvals. Review v4
+examines the middle explanation and literal beat using detailed span-based audience
+feedback; factual Jev verification remains independent. Earlier approvals are stale.
+The detailed-review replacement batch yielded zero eligible scripts. Minor-only revision
+decisions and early retries also consumed its call budget. Review v4 clarifies that
+minor advisories may pass; major/blocker comprehension, personality, honesty and beat
+failures remain release gates. The next run uses one candidate per show.
+
+Google narration now carries passage position and directions for meaningful emphasis,
+pauses and uncertainty. Renderer checks preserve the supplied words and cover single-
+and multi-passage episodes. Perceived improvement remains unverified until audio QA.

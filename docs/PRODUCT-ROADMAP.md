@@ -2,7 +2,7 @@
 
 Planning baseline: **30 September 2026**. Based on the [content-flow audit](CONTENT-FLOW-AUDIT.md), live feed and Actions evidence, rather than the older demo-era inventory. This replaces `IMPLEMENTATION-PLAN.md` as the current sequencing document; `LAUNCH.md` remains useful for positioning and draft marketing copy.
 
-**Public launch decision: still gated; content recovery is deployed.** The catalog now contains six episodes, including two new releases on 30 September. Independent public health checks pass. Twelve strictly reviewed unpublished episodes provide six days of buffer; the one-week target is not yet met. Signed build 7 uploaded successfully to internal TestFlight. External TestFlight and public launch follow source/audio review, real-device QA and a two-week listener cohort.
+**Public launch decision: still gated; content recovery is deployed.** The catalog now contains six episodes, including two new releases on 30 September. Independent public health checks pass. The unpublished inventory is being regenerated under the stricter personality and audience review; earlier approvals are stale and do not count toward the one-week buffer. Signed build 9 has successfully processed in internal TestFlight. External TestFlight and public launch follow source/audio review, real-device QA and a two-week listener cohort.
 
 ## Product promise and scope
 
@@ -115,13 +115,13 @@ After release: operator checks cadence, inventory, audio errors, source correcti
 |---|---|
 | Publishing code repair | Deployed; current-date recovery release and independent content-health jobs succeeded |
 | Actual new publication | Six live episodes; today's two releases verified through public audio, sidecars and sharing |
-| Latest usable batch | 14/16 strict individual approvals; 12 unpublished after today's release (six days of buffer) |
-| Backend checks | 288 passed; deployed GitHub backend CI also passed |
+| Latest usable batch | No eligible replacement scripts yet; earlier v1/v2/v3 approvals are stale and unavailable for release |
+| Backend checks | 293 passed after the character, narration and audience-review changes |
 | iOS logic | 202 checks passed plus deep-link checks |
 | iOS release compile | Unsigned Release build succeeded with simulator SDK; simulator not launched |
 | Published assets | All four episodes: audio/sidecar/share-page 200; matching sidecar IDs; byte-range 206 |
 | Device/listening QA | Not performed in this audit |
-| Signed TestFlight | Build 1.0.0 (7) signed, uploaded and successfully processed by App Store Connect (app 6813660087); release notes set; external beta not distributed |
+| Signed TestFlight | Build 1.0.0 (9) signed, uploaded and successfully processed by App Store Connect (app 6813660087); release notes set; external beta not distributed |
 | Source/voice commercial policy, privacy/store package | Requires owner review and verification |
 | Real listener outcomes | Unmeasured; cohort has not been run |
 
@@ -137,8 +137,32 @@ For replenishment, use `full-run.yml` with `release_fresh_batch=false`. A seed A
 
 Each catalog commit through `publish_feed.py` first saves the previous catalog under `v1/.release/feed-snapshots/<sha256>.json`; its exact key appears in the job result. A snapshot write failure blocks the feed commit. The deployed sharing-page backfill was exercised successfully and saved a snapshot of the current six-episode catalog. For rollback, stop/serialize publishers, inspect the selected snapshot and its asset availability, then restore that exact JSON to `v1/feed.json` using the operator's R2 credentials with `Cache-Control: no-cache`. Run `content-health` and device checks afterwards. This audit has verified snapshot creation, not an intentional live rollback drill.
 
-The embedded credential was removed from the local Git remote URL; invalidating the old credential still requires its owner to revoke/rotate it. Production domain and support destinations await the founder's domain choice. CI TestFlight signing secrets/environment are not configured; the existing local signing setup successfully uploaded build 7. Its stale key-file location was repaired in the ignored local configuration, without changing the key. The distributed IPA contains the privacy manifest.
+The embedded credential was removed from the local Git remote URL; invalidating the old credential still requires its owner to revoke/rotate it. Production domain and support destinations await the founder's domain choice. CI TestFlight signing secrets/environment are not configured; the existing local signing setup successfully uploaded and processed build 9. Its stale key-file location was repaired in the ignored local configuration, without changing the key. The distributed IPA contains the privacy manifest.
 
-At handoff, GitHub backend CI, iOS compile CI, `content-health` and snapshot/backfill runs are green. The two bounded replenishment runs produced 14/16 approvals and failed the complete-sixteen gate; Signal & Noise and Marginal Gains remain withheld. Their safe partial inventory is available to daily preparation. Native Foundation URLSession returned HTTP 200 and decoded all six episodes; this is a macOS networking probe, not iPhone playback QA. Both known physical iPhones remain unavailable.
+At the recovery handoff, GitHub backend CI, iOS compile CI, `content-health` and snapshot/backfill runs were green. The two bounded replenishment runs produced 14/16 approvals and failed the complete-sixteen gate; Signal & Noise and Marginal Gains remain withheld. Those approvals predate personality review v4; the old inventory is now withheld pending fresh review. Native Foundation URLSession returned HTTP 200 and decoded all six episodes; this is a macOS networking probe, not iPhone playback QA. Both known physical iPhones remain unavailable.
 
 Next: source/final-audio review, persistent cost accounting and correction/withdrawal handling; reach a full week of inventory; verify the updated beta on an available physical iPhone; configure the production domain/support pages and external TestFlight package. Public release remains gated on these checks and actual listener evidence.
+
+## Host personality follow-up — 30 September
+
+All 20 original characters now have distinct attitudes, conversational rhythms, emotional
+range and cadence examples in [the character bible](CHARACTERS.md). Writing and Google
+Gemini performance directions share these profiles. Host summaries are updated in build 9;
+build 8 introduced native motion in onboarding and Home. Device listening/timing QA remains
+open.
+
+The first personality batch recorded 12/16 automated approvals, but human spot-checks
+found lecture-like middle sections and off-topic metaphor bridges. Those reports cannot
+release under v4. Removed the second, contradictory language-clue roster and switched
+production to detailed span-based audience review while retaining separate Jev factual
+verification. The [replacement batch](https://github.com/xmevans10/aipodcasts/actions/runs/36738352796)
+produced zero approvals: real comprehension/beat failures were caught, but minor-only
+advisories also triggered revision and early retries exhausted the call budget before
+the whole roster was attempted. Review v4 explicitly permits a pass with minor
+advisories; substantive failures still require repair. The next bounded run will use
+one candidate per show within the existing call budget.
+
+Narration now receives opening/body/closing context and sentence-level direction for
+emphasis, pauses, questions and uncertainty. This is implemented and tested, but improved
+intonation has not yet been confirmed by listening. Private Google calibration previews
+await export approval after automatic approval review rejected the request.

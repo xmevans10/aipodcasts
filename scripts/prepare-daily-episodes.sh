@@ -11,7 +11,9 @@ python3 -m pip install boto3
 python3 tools/clear_app_feed.py --baseline-out "$out_root/release-baseline.json"
 baseline=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["minimum_run_id"])' \
   "$out_root/release-baseline.json")
-export LILT_REVIEWER=jev
+# Match the detailed audience reviewer used by full-run; scientific verification
+# remains Jev and is checked independently in every transcript.
+export LILT_REVIEWER=openai
 python3 tools/download_reviewed_batches.py --out "$out_root/batches" --baseline "$baseline"
 python3 tools/daily_release.py --batches "$out_root/batches" --inventory
 python3 tools/daily_release.py --batches "$out_root/batches" \

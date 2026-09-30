@@ -53,7 +53,8 @@ def narration_direction(host_id: str | None = None) -> str:
             "Let the supplied words carry genuine-feeling reactions and small imperfections. "
             "Use subtle changes in emphasis, pace and warmth, not a caricature. "
             "Keep this character consistent across the episode's separate turns. "
-            "Do not add laughter, sighs, ums, words or sound effects that are not in the text. ")
+            "A small natural chuckle or thoughtful breath is welcome when the supplied words earn it. "
+            "Do not add words, ums or sound effects, and do not force a reaction into every line. ")
 
 
 def synthesize(text: str, voice_name: str, accent: str, *, host_id: str | None = None) -> np.ndarray:

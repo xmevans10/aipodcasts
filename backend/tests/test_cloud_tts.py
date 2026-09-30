@@ -77,7 +77,8 @@ class CloudTtsTests(unittest.TestCase):
             direction = cloud_tts.narration_direction(host_id)
             self.assertIn(host.persona, direction)
             self.assertIn(host.delivery, direction)
-            self.assertIn("Do not add laughter", direction)
+            self.assertIn("natural chuckle", direction)
+            self.assertIn("Do not add words", direction)
             directions.add(direction)
         self.assertEqual(len(directions), len(HOSTS))
 

@@ -30,6 +30,8 @@ class FakeS3:
     def get_object(self, **kwargs):
         if kwargs["Key"] == "v1/feed.json":
             return {"Body": io.BytesIO(json.dumps(self.feed).encode())}
+        if kwargs["Key"] in self.puts:
+            return {"Body": io.BytesIO(json.dumps(self.puts[kwargs["Key"]]).encode())}
         error = RuntimeError("missing")
         error.response = {"Error": {"Code": "NoSuchKey"}}
         raise error
@@ -82,7 +84,7 @@ class ClearAppFeedTests(unittest.TestCase):
     def test_generation_excludes_live_papers_as_well_as_retired_papers(self):
         client = FakeS3([])
         client.puts['v1/.release/excluded-dois.json'] = ['10.1234/old']
-        client.puts['v1/feed.json'] = [{'sources': [{'url': 'https://doi.org/10.5678/Live'}]}]
+        client.feed = [{'sources': [{'url': 'https://doi.org/10.5678/Live'}]}]
         self.assertEqual(current_exclusions(client, 'bucket', 'v1'), ['10.1234/old', '10.5678/live'])
 
 

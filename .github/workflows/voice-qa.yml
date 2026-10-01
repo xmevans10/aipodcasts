@@ -7,6 +7,9 @@ on:
       batch_run_id:
         description: Reviewed full-run ID for three full episodes (blank for character comparisons)
         default: ''
+      resume_run_id:
+        description: Prior private QA run to recover completed renders (optional)
+        default: ''
       episode_limit:
         description: Maximum approved episodes to render (1–16)
         default: '3'
@@ -23,6 +26,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       BATCH_RUN_ID: ${{ inputs.batch_run_id }}
+      RESUME_RUN_ID: ${{ inputs.resume_run_id }}
       EPISODE_LIMIT: ${{ inputs.episode_limit || '3' }}
       LILT_REVIEWER: openai
       GOOGLE_CLOUD_PROJECT: zwicky-509510
@@ -53,12 +57,19 @@ jobs:
           gh run download "$BATCH_RUN_ID" --repo "$GITHUB_REPOSITORY" --name full-run-transcripts --dir reviewed-batch
           python3 experiments/full-run/check_batch.py reviewed-batch --allow-partial
           python3 tools/tts/select_voice_qa.py reviewed-batch qa-transcripts --limit "$EPISODE_LIMIT"
+      - name: Recover previous private audio
+        if: env.RESUME_RUN_ID != '' && env.BATCH_RUN_ID != ''
+        run: |
+          [[ "$RESUME_RUN_ID" =~ ^[0-9]+$ ]] || exit 1
+          gh run download "$RESUME_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "voice-qa-$RESUME_RUN_ID" --dir prior-qa
+          if [ -d prior-qa/voice-qa ]; then cp -R prior-qa/voice-qa .; fi
       - name: Render approved full QA episodes
         if: env.BATCH_RUN_ID != ''
         run: |
-          python3 tools/tts/bundle_shows.py --transcripts qa-transcripts --out voice-qa --tts-provider google-cloud
+          python3 tools/tts/bundle_shows.py --transcripts qa-transcripts --out voice-qa --tts-provider google-cloud --resume
           python3 tools/tts/estimate_cost.py --episodes voice-qa --out voice-qa/cost-estimate.json
       - name: Save private listening artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: voice-qa-${{ github.run_id }}

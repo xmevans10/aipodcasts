@@ -18,9 +18,12 @@ USD_PER_MILLION_AUDIO_TOKENS = 10
 
 def estimate(directory: Path) -> list[dict]:
     rows = []
-    for path in sorted(directory.glob("*.json")):
-        if path.stem == "index":
-            continue
+    index = json.loads((directory / "index.json").read_text())
+    if (not isinstance(index, list) or len(index) != len(set(index))
+            or any(not isinstance(name, str) or not name.isalnum() for name in index)):
+        raise ValueError("Invalid completed-render index")
+    for name in sorted(index):
+        path = directory / f"{name}.json"
         payload = json.loads(path.read_text())
         seconds = float(payload["duration"])
         if seconds <= 0 or not (directory / f"{path.stem}.m4a").is_file():

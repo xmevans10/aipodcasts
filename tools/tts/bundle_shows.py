@@ -36,6 +36,7 @@ import audience
 from dialogue import turns_body, turns_narration_inputs, validate_dialogue_contract
 from hosts import HOSTS, dialogue_hosts  # noqa: E402
 from sound_design import SoundDesign, fade  # noqa: E402
+from render_cache import signature, reusable, save_json, sha256
 
 SR = 24000
 
@@ -309,6 +310,7 @@ def main() -> None:
     parser.add_argument("--speed", type=float, default=1.0)
     parser.add_argument("--tts-provider", choices=("kokoro", "google-cloud"), default="kokoro")
     parser.add_argument("--require-all-shows", action="store_true", help="fail before rendering unless all 16 shows are present")
+    parser.add_argument("--resume", action="store_true", help="reuse byte-verified renders with identical script, voice and production inputs")
     args = parser.parse_args()
 
     import datetime as dt
@@ -322,7 +324,6 @@ def main() -> None:
                          for host_id, entry in cast.items() if entry.get("geminiVoice")}
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    legacy = sorted(p.stem for p in out.glob("*.json") if p.stem != "index")
 
     jobs = []
     for path in sorted(Path(args.transcripts).glob("*.json")):
@@ -340,6 +341,12 @@ def main() -> None:
     rendered = []
     for transcript, inputs in jobs:
         name = episode_key(published, transcript.get("doi", ""), transcript["show"])
+        input_signature = signature(transcript, cast, args.tts_provider, args.speed, published)
+        if args.resume and reusable(out, name, input_signature):
+            print(f"reusing verified render {transcript['show']} -> {name}", flush=True)
+            rendered.append(name)
+            save_json(out / "index.json", sorted(rendered))
+            continue
         wav = out / f"{name}.wav"
         print(f"rendering {transcript['show']} -> {name} ({len(inputs)} turns) ...", flush=True)
         sound_design = SoundDesign(name)
@@ -359,13 +366,17 @@ def main() -> None:
         payload["levels"] = envelope_wav(wav)
         to_m4a(wav, out / f"{name}.m4a")
         payload['mastering'] = validate_encoded(out / f"{name}.m4a")
+        payload["renderProvenance"] = {"inputSHA256": input_signature,
+                                       "audioSHA256": sha256(out / f"{name}.m4a"),
+                                       "provider": args.tts_provider}
         wav.unlink()
-        (out / f"{name}.json").write_text(json.dumps(payload, ensure_ascii=False) + "\n")
+        save_json(out / f"{name}.json", payload)
         print(f"  {duration:.1f}s, {len(payload['levels'])} level frames", flush=True)
         rendered.append(name)
+        save_json(out / "index.json", sorted(rendered))
 
-    index = sorted(set(legacy) | set(rendered))
-    (out / "index.json").write_text(json.dumps(index, indent=2) + "\n")
+    index = sorted(rendered)
+    save_json(out / "index.json", index)
     print(f"bundled {len(rendered)} episode(s); index has {len(index)}")
 
 

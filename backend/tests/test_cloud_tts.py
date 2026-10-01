@@ -94,6 +94,8 @@ class CloudTtsTests(unittest.TestCase):
                 "duration": 200,
                 "story": {"id": "episode", "title": "A story", "hostID": "nova"},
             }))
+            (directory / "index.json").write_text(json.dumps(["episode"]))
+            (directory / "cost-estimate.json").write_text(json.dumps({"episodes": []}))
             self.assertEqual(estimate(directory)[0]["audioCostUpperBoundUSD"], 0.05)
 
     def test_decodes_cloud_linear16_wav_to_normalized_audio(self):

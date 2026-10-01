@@ -10,7 +10,7 @@ from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 from daily_release import app_feed_url
-from publish_feed import is_https_url, verify_staged_assets
+from publish_feed import is_https_url, verify_staged_assets, validate_readalong
 
 
 def todays_episodes(feed: list, day: str) -> list:
@@ -39,24 +39,28 @@ def fetch(url: str):
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--date", default=dt.datetime.now(ZoneInfo("America/New_York")).date().isoformat())
+    parser.add_argument("--all-episodes", action="store_true", help="probe the archive as well as today's release")
     args = parser.parse_args()
     with fetch(app_feed_url()) as response:
         feed = json.load(response)
     today = todays_episodes(feed, args.date)
-    verify_staged_assets(today)
-    for story in today:
+    checked = feed if args.all_episodes else today
+    verify_staged_assets(checked)
+    for story in checked:
         with fetch(story["detailURL"]) as response:
             sidecar = json.load(response)
         if (sidecar.get("story", {}).get("id") != story["id"]
                 or sidecar.get("story", {}).get("body") != story.get("body")
+                or sidecar.get("story", {}).get("hostID") != story.get("hostID")
                 or not sidecar.get("transcript")):
             raise ValueError(f"{story['id']}: public read-along differs from the feed")
+        validate_readalong(sidecar, story["id"])
         request = Request(story["audioURL"], headers={"User-Agent": "curl/8.0", "Range": "bytes=0-31"})
         with urlopen(request, timeout=20) as response:
             header = response.read(32)
             if response.status != 206 or header[4:8] != b"ftyp":
                 raise ValueError(f"{story['id']}: public audio is not a ranged M4A stream")
-    report = {"date": args.date, "catalog_count": len(feed), "released_ids": [s["id"] for s in today],
+    report = {"date": args.date, "catalog_count": len(feed), "checked_episodes": len(checked), "released_ids": [s["id"] for s in today],
               "public_audio_read_along_and_sharing": "passed"}
     print(json.dumps(report, indent=2))
     if os.environ.get("GITHUB_STEP_SUMMARY"):

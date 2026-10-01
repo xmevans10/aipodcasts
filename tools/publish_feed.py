@@ -139,6 +139,31 @@ def load_episodes(directory: Path) -> list:
     return episodes
 
 
+def validate_readalong(payload: dict, name: str) -> None:
+    """Validate exact spoken words and their timeline for local or public sidecars."""
+    body = (payload.get("story") or {}).get("body")
+    if not isinstance(body, str):
+        raise ValueError(f"{name}: transcript body must be text")
+    duration = payload.get("duration")
+    if (isinstance(duration, bool) or not isinstance(duration, (int, float))
+            or not math.isfinite(duration) or duration <= 0):
+        raise ValueError(f"{name}: invalid audio duration")
+    spoken, previous_end = [], 0.0
+    for paragraph in payload.get("transcript") or []:
+        for word in paragraph.get("words") or []:
+            start, end = word.get("start"), word.get("end")
+            if (any(isinstance(t, bool) or not isinstance(t, (int, float))
+                    or not math.isfinite(t) for t in (start, end))
+                    or start < previous_end - 0.002 or end < start or end > duration + 0.02):
+                raise ValueError(f"{name}: invalid transcript timing")
+            if not isinstance(word.get("text"), str) or not word["text"].strip():
+                raise ValueError(f"{name}: missing transcript word")
+            spoken.append(word["text"])
+            previous_end = end
+    if not spoken or spoken != body.split():
+        raise ValueError(f"{name}: transcript differs from the published script")
+
+
 def validate_rendered_episodes(episodes: list, directory: Path) -> None:
     """Reject corrupt or mismatched audio/transcripts before any storage writes."""
     seen = set()
@@ -151,24 +176,7 @@ def validate_rendered_episodes(episodes: list, directory: Path) -> None:
         if story.get("id") != "episode-" + name or story["id"] in seen:
             raise ValueError(f"{name}: duplicate or mismatched episode identity")
         seen.add(story["id"])
-        duration = payload.get("duration")
-        if (isinstance(duration, bool) or not isinstance(duration, (int, float))
-                or not math.isfinite(duration) or duration <= 0):
-            raise ValueError(f"{name}: invalid audio duration")
-        spoken, previous_end = [], 0.0
-        for paragraph in payload.get("transcript") or []:
-            for word in paragraph.get("words") or []:
-                start, end = word.get("start"), word.get("end")
-                if (any(isinstance(t, bool) or not isinstance(t, (int, float))
-                        or not math.isfinite(t) for t in (start, end))
-                        or start < previous_end - 0.002 or end < start or end > duration + 0.02):
-                    raise ValueError(f"{name}: invalid transcript timing")
-                if not isinstance(word.get("text"), str) or not word["text"].strip():
-                    raise ValueError(f"{name}: missing transcript word")
-                spoken.append(word["text"])
-                previous_end = end
-        if not spoken or spoken != body.split():
-            raise ValueError(f"{name}: transcript differs from the published script")
+        validate_readalong(payload, name)
         with (directory / f"{name}.m4a").open("rb") as audio:
             header = audio.read(12)
         if len(header) < 12 or header[4:8] != b"ftyp":

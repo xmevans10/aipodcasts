@@ -74,3 +74,14 @@ if args[0].endswith('daily_release.py') and '--out' in args:
                 ('download_reviewed_batches.py', 'daily_release.py'))]
             self.assertEqual(len(validations), 3)
             self.assertTrue(all(call['reviewer'] == 'openai' for call in validations))
+
+    @patch.dict(os.environ, {'LILT_REVIEWER': 'openai'})
+    @patch('audience.REVIEW_VERSION', 'audience-review-v1')
+    def test_requested_hosts_must_all_be_approved(self):
+        batch = ROOT / 'experiments/full-run/stage4-2026-09-22'
+        with tempfile.TemporaryDirectory() as tmp:
+            selected = select(batch, Path(tmp) / 'selected', 1, ['ines'])
+            self.assertEqual([entry['host'] for entry in selected], ['ines'])
+            with self.assertRaisesRegex(ValueError, 'lack approved'):
+                select(batch, Path(tmp) / 'held', 1, ['jax'])
+            self.assertFalse((Path(tmp) / 'held').exists())

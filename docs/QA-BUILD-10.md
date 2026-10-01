@@ -49,14 +49,8 @@ the app journey, not the character comparison.
 Both known physical phones were unavailable to the operator. No device walkthrough or
 subjective full-audio sign-off is claimed. No simulator was launched.
 
-## Release status
+## Release status — 1 October
 
-Three fresh scripts are currently eligible; the complete-sixteen gate failed. The public
-feed remains intact and today's independent health check passed. The seven-day buffer
-target is fourteen episodes, so launch readiness still needs replenishment and listening
-sign-off. Run `36747287289` is a bounded seeded follow-up; do not count its results before
-current gates pass. The roadmap retains the remaining source, support and cohort gates.
+Eight episodes are live across six shows. QA the actual app recordings of **When ChatGPT Misses Your Point** (Gradient) and **When Printed Lattices Lose Their Strength** (Layer by Layer), released today. Private recordings above are earlier renders, so do not assume identical intonation or timing. Latest independent health run `36833259337` passed.
 
-The actual daily selector was dry-run against the current public catalog: it found three
-unpublished eligible scripts (1.5 days at two/day), and selected Wild Company and Gradient
-for 1 October. This performed no rendering, uploads or feed mutations.
+Backfill `36831940287` passes the strict partial check with six approvals, including Webwork's **Can Silk Help a Wound Heal?**; four scripts remain unpublished after today's release. Star Stuff remains withheld. The fourteen-episode reserve target is not met. Build 11 changes the icon; playback and full listening sign-off remain required.

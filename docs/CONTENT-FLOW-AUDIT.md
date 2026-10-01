@@ -106,10 +106,16 @@ feedback; factual Jev verification remains independent. Earlier approvals are st
 The detailed-review replacement batch yielded zero eligible scripts. Minor-only revision
 decisions and early retries also consumed its call budget. Review v4 clarifies that
 minor advisories may pass; major/blocker comprehension, personality, honesty and beat
-failures remain release gates. The subsequent v4 run used one candidate per show and produced 3/16 strict approvals; its complete-batch gate failed. Three full private QA recordings passed script/timing/container checks. A seeded follow-up is running; the one-week buffer remains below target.
+failures remain release gates. The subsequent v4 run used one candidate per show and produced 3/16 strict approvals; its complete-batch gate failed. Three full private QA recordings passed script/timing/container checks. The seeded follow-up failed; its extra automated approval was a non-episode withholding note, now blocked at the release boundary. The prior three valid scripts remain eligible; the one-week buffer remains below target.
 
 Google narration now carries passage position and directions for meaningful emphasis,
 pauses and uncertainty. Renderer checks preserve the supplied words and cover single-
 and multi-passage episodes. Perceived improvement remains unverified until audio QA.
 
 Two further release defects were repaired: daily preparation still demanded the former Jev audience reviewer, and SMC checking reactions were matched by show topic rather than paper identity. Preparation now accepts the current detailed audience reports; SMC checks require an exact DOI link in the reaction article and include the actual commentary. Claims and audience checks remain independent. Build 1.0.0 (10) has processed in TestFlight; final checks passed (302 backend tests, 202 iOS logic checks plus deep links, unsigned Release compilation). Both known iPhones remained unavailable.
+
+The empty-show investigation identified three more structural defects: substring keyword matches (bee/been, rest/breast, star/start), ownership by first query rather than strongest beat, and rejected-paper exclusions applied after a one-candidate quota. These are corrected, with regression coverage. Publication now prioritises shows with the fewest public episodes; the actual dry-run selects Gradient and Layer by Layer. A 90-day bootstrap run is filling the remaining launch-show gaps. Four of sixteen shows currently have public episodes, so the full catalog is not ready to promise at launch. Latest checks: 307 backend tests, 202 iOS checks plus deep links, successful Release compilation.
+
+## 1 October release update
+
+The live feed now has eight episodes across six shows. Gradient and Layer by Layer published successfully; latest independent health run `36833259337` passed. Backfill `36831940287` yields six strict approvals, including Webwork, with four unpublished after today's release. Star Stuff remains withheld. A bounded, evidence-guided factual rewrite now complements targeted audience repair; fresh factual and audience checks remain mandatory. Required checks pass: 313 backend tests, 202 iOS checks plus deep links, Release compilation. Build 11 carries the revised textured olive/cream Z icon; physical-device and subjective listening QA remain open.

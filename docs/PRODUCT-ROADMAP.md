@@ -2,7 +2,7 @@
 
 Planning baseline: **30 September 2026**. Based on the [content-flow audit](CONTENT-FLOW-AUDIT.md), live feed and Actions evidence, rather than the older demo-era inventory. This replaces `IMPLEMENTATION-PLAN.md` as the current sequencing document; `LAUNCH.md` remains useful for positioning and draft marketing copy.
 
-**Public launch decision: still gated; content recovery is deployed.** The catalog now contains six episodes, including two new releases on 30 September. Independent public health checks pass. The unpublished inventory is being regenerated under the stricter personality and audience review; earlier approvals are stale and do not count toward the one-week buffer. Signed build 10 has successfully processed in internal TestFlight. Three fresh scripts pass current gates; their private QA recordings are ready. The one-week buffer remains unmet. External TestFlight and public launch follow source/audio review, real-device QA and a two-week listener cohort.
+**Public launch decision, 1 October: still gated.** Eight episodes are live across six of sixteen shows, including Gradient and Layer by Layer released today. Build 10 processed in internal TestFlight; build 11 replaces the icon with a larger cream Z with subtly flowing strokes and raised-paper depth on lighter textured olive. The latest strictly checked batch has six approved scripts, two already published today, leaving four unpublished scripts against the fourteen-episode reserve target. Webwork now has an approved script; Star Stuff remains withheld. Physical-device and subjective audio sign-off, support/privacy destinations, source-use policy, correction/rollback validation and the store package remain open. The proposed two-week listener cohort is our quality gate, not an Apple submission requirement.
 
 ## Product promise and scope
 
@@ -114,12 +114,12 @@ After release: operator checks cadence, inventory, audio errors, source correcti
 | Gate | Observed status |
 |---|---|
 | Publishing code repair | Deployed; current-date recovery release and independent content-health jobs succeeded |
-| Actual new publication | Six live episodes; today's two releases verified through public audio, sidecars and sharing |
-| Latest usable batch | [v4 batch](https://github.com/xmevans10/aipodcasts/actions/runs/36743990186) has 3/16 strict approvals; earlier v1/v2/v3 approvals are stale; follow-up replenishment is running |
-| Backend checks | 302 passed after narration, private QA and exact-paper expert-reaction matching |
+| Actual new publication | Eight live episodes; today's two releases verified through public audio, sidecars and sharing |
+| Latest usable batch | [Latest backfill](https://github.com/xmevans10/aipodcasts/actions/runs/36831940287) has 6/16 strict approvals, including Webwork; two are now published, leaving four unpublished |
+| Backend checks | 313 passed including bounded factual repair |
 | iOS logic | 202 checks passed plus deep-link checks |
 | iOS release compile | Unsigned Release build succeeded with simulator SDK; simulator not launched |
-| Published assets | Six catalog entries; latest content-health checks passed for today’s two releases, including assets, read-along and ranged M4A streams |
+| Published assets | Eight catalog entries; latest content-health checks passed for today’s two releases, including assets, read-along and ranged M4A streams |
 | Device/listening QA | Not performed in this audit |
 | Signed TestFlight | Build 1.0.0 (10) signed, uploaded and successfully processed by App Store Connect (app 6813660087); release notes set; external beta not distributed |
 | Source/voice commercial policy, privacy/store package | Requires owner review and verification |
@@ -160,10 +160,24 @@ produced zero approvals: real comprehension/beat failures were caught, but minor
 advisories also triggered revision and early retries exhausted the call budget before
 the whole roster was attempted. Review v4 explicitly permits a pass with minor
 advisories; substantive failures still require repair. The [new bounded run](https://github.com/xmevans10/aipodcasts/actions/runs/36743990186)
-uses one candidate per show within the existing call budget. It produced three strict approvals: Wild Company, Gradient and Layer by Layer. The complete-sixteen gate failed; only those three enter usable inventory. A [bounded follow-up](https://github.com/xmevans10/aipodcasts/actions/runs/36747287289) preserves them and tries alternative candidates after the expert-reaction matching repair.
+uses one candidate per show within the existing call budget. It produced three strict approvals: Wild Company, Gradient and Layer by Layer. The complete-sixteen gate failed; only those three enter usable inventory. The seeded follow-up failed: exclusions were applied after its one-paper-per-show limit, leaving most shows without an alternative. A fourth automated approval was a script recommending its own withholding; a deterministic release check now rejects that batch. The prior three valid scripts remain eligible. A [corrected 90-day launch backfill](https://github.com/xmevans10/aipodcasts/actions/runs/36749787816) preserves them while trying genuine alternatives.
 
 Narration now receives opening/body/closing context and sentence-level direction for
 emphasis, pauses, questions and uncertainty. This is implemented and tested, but improved
 intonation has not yet been confirmed by listening. The owner approved private Google calibration exports. Six A/B takes and three full episodes were rendered through the existing workload identity and downloaded for [QA](QA-BUILD-10.md); none were added to the public feed. Local ADC lacked project permission. Script/timing/container integrity passed; perceptual and physical-device QA remain open.
 
 Daily preparation now uses the same detailed audience reviewer as generation; its previous Jev-only handoff would have stranded new approvals. Expert-reaction checks now require the actual paper DOI in the reaction article and use commentary text, rather than topic-matched titles from unrelated studies. No withheld script has been retroactively approved.
+
+Show coverage is a separate launch gate: six of sixteen shows currently have public episodes. Before presenting the full roster as ready, each advertised show needs a real, reviewed, playable starter episode. Selection now matches whole terms, routes to the strongest beat and applies prior-paper exclusions before quotas. Daily publication prioritises empty/underfilled shows; a real selector dry-run chooses Gradient and Layer by Layer next. The broader source window is for the launch catalog, not a claim that older research happened today.
+
+
+## App Store release checklist — 1 October
+
+1. Supply: make every promoted show playable or limit the advertised launch catalog. Reach fourteen approved unpublished scripts at two releases/day. Latest reviewed batch: `36831940287`, six approvals including Webwork; strict partial check passes.
+2. Quality: listen to launch audio for facts, pronunciation, emotion, clipping and transcript timing. Exercise the signed build on physical iPhones: first play, lock-screen/background playback, interruption, queue/resume, poor network, upgrade and accessibility.
+3. Operations: demonstrate correction/withdrawal and rollback on staging, confirm operator alerts and reliable daily supply, finish persistent spend accounting.
+4. Trust: verify source-use and voice rights, evidence/status disclosures, live support/privacy pages and accurate App Privacy responses against actual app/network behavior.
+5. Submission: final icon/build, real device screenshots, description/keywords, age rating, content rights, export-compliance answers, review contact/notes, territories and pricing. Submit the tested binary for App Review; release after approval.
+6. Product validation: conduct the planned listener cohort and resolve material comprehension/playback issues before public launch. This is a product decision, not an Apple-mandated delay.
+
+Icon generation: built-in image generator; prompt: enlarge the cream Z by roughly 15%, soften stroke transitions toward cursive, lighten olive about 50% to #79835D, retain paper texture and add shallow embossed depth; opaque square with no corner mask. Production asset: `ios/Zwicky/Assets.xcassets/AppIcon.appiconset/AppIcon.png`, 1024×1024, no alpha.

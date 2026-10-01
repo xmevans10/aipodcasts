@@ -492,7 +492,12 @@ def validate_draft(draft: dict, source: dict) -> None:
         raise ValueError("Draft has unexpected fields")
     for field, maximum in [("title", 120), ("dek", 220), ("body", 9000), ("caveat", 1800)]:
         if not isinstance(draft[field], str) or not 10 <= len(draft[field]) <= maximum:
-            raise ValueError("Invalid " + field)
+            actual = len(draft[field]) if isinstance(draft[field], str) else type(draft[field]).__name__
+            message = f"Invalid {field}: expected a string of 10–{maximum} characters; got {actual}."
+            if field == 'caveat':
+                message += (" Write a meaningful plain-language limitations paragraph and copy it into "
+                            "the spoken body; never invent a limitation to fill the field.")
+            raise ValueError(message)
     if not 180 <= len(draft["body"].split()) <= 1000:
         raise ValueError("Narration must be between 180 and 1000 words")
     if not isinstance(draft["claims"], list) or not 1 <= len(draft["claims"]) <= 15:

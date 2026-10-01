@@ -150,6 +150,15 @@ class SpokenDefectTests(unittest.TestCase):
 
 
 class SoloValidationTests(unittest.TestCase):
+    def test_required_scientific_notation_in_paper_credit_is_not_a_stage_direction(self):
+        source = {**SOURCE, 'title': 'An [O III] measurement of stellar gas'}
+        draft = solo_draft()
+        draft['body'] = draft['body'].replace(SOURCE['title'], source['title'])
+        validate_podcast(draft, source, HOSTS['nova'])
+        draft['body'] = draft['body'].replace('How does a leaf stay flat?', '[whispers] How does a leaf stay flat?')
+        with self.assertRaisesRegex(ValueError, 'markdown_or_stage_direction'):
+            validate_podcast(draft, source, HOSTS['nova'])
+
     def test_a_clean_draft_passes(self):
         validate_podcast(solo_draft(), SOURCE, HOSTS["nova"])
 

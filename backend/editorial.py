@@ -156,11 +156,12 @@ _PRODUCTION_LABEL = re.compile(
     r"aside|intro|outro|hook|section)\b[^.!?\n]{0,24}:",
     re.I)
 
+_BRACKET_DIRECTION = re.compile(r"\[[^\]\n]{1,40}\]")
 _STAGE_DIRECTION = [
     re.compile(r"\*\*|\*(?=\w)"),
     re.compile(r"^\s{0,3}#{1,6}\s", re.M),
     re.compile(r"^\s{0,3}[-*]\s+", re.M),
-    re.compile(r"\[[^\]\n]{1,40}\]"),
+    _BRACKET_DIRECTION,
 ]
 
 _STALE_SAME_TITLE = re.compile(
@@ -201,13 +202,18 @@ def spoken_defects(text: str, *, caveat: str | None = None,
             "Never say the label out loud. Mark a comparison in ordinary English instead, "
             "such as \"it is a bit like\" or \"think of it as\".")
 
+    # The required paper credit can contain real notation such as [O III]. Only
+    # that exact title span is exempt; directions elsewhere are still rejected.
+    outside_credit = re.sub(re.escape(source_title), '', text, flags=re.I) if source_title else text
     for pattern in _STAGE_DIRECTION:
-        found = pattern.search(text)
+        found = pattern.search(outside_credit if pattern is _BRACKET_DIRECTION else text)
         if found:
             defects.append(
                 "markdown_or_stage_direction: the script contains markdown, a heading, a "
                 f"bullet or a bracketed direction (\"{found.group(0).strip()}\"). The body is "
-                "narrated exactly as written. Remove it and write plain spoken prose.")
+                "narrated exactly as written. Remove it and write plain spoken prose. "
+                "Bracketed scientific notation is allowed only inside the exact paper title credit; "
+                "use ordinary spoken names elsewhere.")
             break
 
     stale = _STALE_SAME_TITLE.search(text)

@@ -140,7 +140,8 @@ def validate_dialogue_contract(draft: dict, source: dict, hosts) -> None:
     for field, low, high in [("title", 10, 120), ("dek", 10, 220), ("caveat", 10, 1800)]:
         value = draft[field]
         if not isinstance(value, str) or not low <= len(value) <= high:
-            raise ValueError("Invalid " + field)
+            actual = len(value) if isinstance(value, str) else type(value).__name__
+            raise ValueError(f"Invalid {field}: expected a string of {low}–{high} characters; got {actual}")
     validate_episode_title(draft["title"], source["title"])
     turns = draft["turns"]
     if not isinstance(turns, list) or not 6 <= len(turns) <= 60:

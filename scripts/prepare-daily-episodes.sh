@@ -16,6 +16,7 @@ baseline=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["mini
 export LILT_REVIEWER=openai
 python3 tools/download_reviewed_batches.py --out "$out_root/batches" --baseline "$baseline"
 python3 tools/daily_release.py --batches "$out_root/batches" --inventory
+python3 tools/content_status.py --batches "$out_root/batches" --out "$out_root/content-status"
 python3 tools/daily_release.py --batches "$out_root/batches" \
   --out "$out_root/daily-transcripts" --date "$release_date"
 find "$out_root/daily-transcripts" -maxdepth 1 -name '*.json' | wc -l | tr -d ' ' \

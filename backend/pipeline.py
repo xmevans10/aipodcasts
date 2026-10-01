@@ -757,7 +757,8 @@ def approve_auto(db, story_id: str, decider_mode: str = "auto", repairs: int | N
                               if factual_repairs is None else factual_repairs))
     attempted, factual_attempted = 0, 0
     while True:
-        report = verifier.verify_story(db, story_id, decider_mode)
+        report = verifier.verify_story(db, story_id, decider_mode,
+                                       reserve=lambda provider, sid: reserve_call(db, provider, sid))
         if not report["pass"]:
             failures = report.get('failures') or []
             repairable = failures and all(str(failure).startswith(

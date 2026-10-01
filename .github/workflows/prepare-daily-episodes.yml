@@ -66,6 +66,15 @@ jobs:
         if: steps.existing.outputs.skip != 'true'
         run: bash scripts/prepare-daily-episodes.sh "$RELEASE_DATE" .
 
+      - name: Save content operations report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-status-${{ github.run_id }}
+          path: content-status/
+          if-no-files-found: ignore
+          retention-days: 90
+
       - name: Save prepared release
         if: steps.existing.outputs.skip != 'true'
         uses: actions/upload-artifact@v4

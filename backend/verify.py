@@ -302,7 +302,7 @@ def verify_draft(draft: dict, source: dict, packet: dict, decider_: Decider,
     return report
 
 
-def verify_story(db, story_id: str, decider_mode: str = "auto") -> dict:
+def verify_story(db, story_id: str, decider_mode: str = "auto", *, reserve=None) -> dict:
     record = db.execute("SELECT * FROM stories WHERE id=?", (story_id,)).fetchone()
     if record is None:
         raise ValueError("Unknown story")
@@ -326,4 +326,14 @@ def verify_story(db, story_id: str, decider_mode: str = "auto") -> dict:
             caveats = reactions_for_source(source, hints)
         except Exception:
             caveats = []
-    return verify_draft(draft, source, packet, decider(decider_mode), caveats=caveats)
+    selected = decider(decider_mode)
+    if reserve is not None and not isinstance(selected, DeterministicDecider):
+        underlying = selected
+        class AccountedDecider(Decider):
+            name = underlying.name
+
+            def ask(self, questions, state):
+                reserve(underlying.name, story_id)
+                return underlying.ask(questions, state)
+        selected = AccountedDecider()
+    return verify_draft(draft, source, packet, selected, caveats=caveats)

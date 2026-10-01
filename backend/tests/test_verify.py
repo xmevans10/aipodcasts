@@ -3,6 +3,7 @@ import tempfile
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from pipeline import connect
 from verify import Decision, Decider, JevDecider, TypedQuestion, verify_draft, verify_story, numeric_fidelity
@@ -113,3 +114,27 @@ class VerifyTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+    def test_paid_verification_is_reserved_before_request(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            db = connect(Path(tmp) / 'test.sqlite3')
+            source, packet, draft = fixtures()
+            db.execute('INSERT INTO stories(id,source,host,draft,draft_input) VALUES(?,?,?,?,?)',
+                       ('s1', json.dumps(source), 'nova', json.dumps(draft), json.dumps(packet)))
+            db.commit()
+            events = []
+            class Paid(FakeDecider):
+                def ask(self, questions, state):
+                    events.append('request')
+                    return super().ask(questions, state)
+            with patch('verify.decider', return_value=Paid(.99)):
+                verify_story(db, 's1', reserve=lambda provider, sid: events.append('reserve'))
+            self.assertEqual(events, ['reserve', 'request'])
+            events.clear()
+            with patch('verify.decider', return_value=Paid(.99)):
+                def blocked(provider, sid):
+                    raise ValueError('Cap reached')
+                with self.assertRaisesRegex(ValueError, 'Cap reached'):
+                    verify_story(db, 's1', reserve=blocked)
+            self.assertEqual(events, [])
+            db.close()

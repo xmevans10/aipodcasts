@@ -149,6 +149,10 @@ jobs:
           LILT_AUDIENCE_REPAIRS: ${{ inputs.release_fresh_batch && '2' || '1' }}
           LILT_ENTERTAINMENT_RELEASE: ${{ inputs.release_fresh_batch && '1' || '0' }}
 
+      - name: Preserve generation usage including failed attempts
+        if: always()
+        run: python3 tools/export_usage.py --run-id "$GITHUB_RUN_ID" --out full-run-artifacts/usage.json
+
       - name: Upload reviewed and withheld transcripts
         if: always()
         uses: actions/upload-artifact@v4

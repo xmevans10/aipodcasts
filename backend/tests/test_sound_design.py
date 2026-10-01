@@ -1,4 +1,5 @@
 import hashlib
+import array
 import sys
 import tempfile
 import unittest
@@ -8,10 +9,31 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools/tts"))
 from bundle_shows import SR, render_turns, solo_sections, wav_duration  # noqa: E402
-from sound_design import ASSETS, SoundDesign, transition_positions  # noqa: E402
+from sound_design import ASSETS, SoundDesign, transition_positions, fade, rms  # noqa: E402
 
 
 class SoundDesignTests(unittest.TestCase):
+    def test_fades_return_to_zero_without_truncation(self):
+        for count in (1, 8, SR):
+            source = array.array('h', [10000]) * count
+            shaped = fade(source)
+            self.assertEqual(len(shaped), count)
+            self.assertEqual(shaped[0], 0)
+            self.assertEqual(shaped[-1], 0)
+            self.assertLessEqual(max(map(abs, shaped)), 10000)
+
+    def test_cues_follow_voice_level_and_keep_peak_headroom(self):
+        loud, soft = SoundDesign('0123456789abcdef'), SoundDesign('0123456789abcdef')
+        loud.set_voice_reference([0.2] * SR)
+        soft.set_voice_reference([0.04] * SR)
+        for design in (loud, soft):
+            for cue in (design.intro(), design.between(2, 6), design.outro()):
+                self.assertEqual(cue[0], 0)
+                self.assertEqual(cue[-1], 0)
+                self.assertLessEqual(max(map(abs, cue)), 16384)
+                self.assertLessEqual(rms(cue), design.voice_rms * 32767 * 10 ** (-12 / 20) + 1)
+        self.assertLess(rms(soft.intro()), rms(loud.intro()))
+
     def test_cc0_assets_match_recorded_hashes(self):
         expected = {
             "soft-confirmation.wav": "e3f6641f2895127509460b184bf1e05f980446034edf423541a381adaf331bd8",
@@ -61,6 +83,7 @@ class SoundDesignTests(unittest.TestCase):
             self.assertGreater(wav_duration(output), paragraphs[-1]["words"][-1]["end"])
             for paragraph in paragraphs:
                 start = round(paragraph["words"][0]["start"] * SR)
+                self.assertEqual(int.from_bytes(audio[start * 2:start * 2 + 2], 'little', signed=True), 0)
                 self.assertEqual(int.from_bytes(audio[start * 2 + 200:start * 2 + 202], "little", signed=True), 3277)
 
 

@@ -35,7 +35,7 @@ from verify import draft_fingerprint
 import audience
 from dialogue import turns_body, turns_narration_inputs, validate_dialogue_contract
 from hosts import HOSTS, dialogue_hosts  # noqa: E402
-from sound_design import SoundDesign  # noqa: E402
+from sound_design import SoundDesign, fade  # noqa: E402
 
 SR = 24000
 
@@ -253,10 +253,6 @@ def render_turns(inputs: list[dict], wav: Path, speed: float, render=None,
         stream.setnchannels(1)
         stream.setsampwidth(2)
         stream.setframerate(SR)
-        if sound_design:
-            intro = sound_design.intro()
-            stream.writeframes(intro.tobytes())
-            offset += len(intro)
         for index, item in enumerate(inputs):
             if render is render_google_cloud:
                 passage = ("complete" if len(inputs) == 1 else "opening" if index == 0
@@ -267,6 +263,11 @@ def render_turns(inputs: list[dict], wav: Path, speed: float, render=None,
             audio, segments = _rendered(result)
             if len(audio) == 0 or not all(math.isfinite(float(v)) for v in audio):
                 raise ValueError("Narration returned empty or non-finite audio")
+            if index == 0 and sound_design:
+                sound_design.set_voice_reference(audio)
+                intro = sound_design.intro()
+                stream.writeframes(intro.tobytes())
+                offset += len(intro)
             if index:
                 bridge = sound_design.between(index, len(inputs)) if sound_design else None
                 if bridge is not None:
@@ -286,6 +287,9 @@ def render_turns(inputs: list[dict], wav: Path, speed: float, render=None,
                 paragraph.update(speaker=item["speaker"], hostID=item["host"])
             paragraphs.append(paragraph)
             pcm = array.array("h", (round(max(-1, min(1, float(v))) * 32767) for v in audio))
+            # Three milliseconds removes a discontinuity at digital silence without
+            # trimming narration or shifting any word timestamp.
+            pcm = fade(pcm, 0.003, 0.003)
             if sys.byteorder != "little":
                 pcm.byteswap()
             stream.writeframes(pcm.tobytes())
@@ -341,12 +345,20 @@ def main() -> None:
         sound_design = SoundDesign(name)
         renderer = render_google_cloud if args.tts_provider == "google-cloud" else render_kokoro
         paragraphs = render_turns(inputs, wav, args.speed, render=renderer, sound_design=sound_design)
+        from mastering import master, validate_encoded
+        before_master = wav_duration(wav)
+        master(wav)
         duration = wav_duration(wav)
+        if abs(duration - before_master) > 0.01:
+            raise ValueError('Mastering changed the narration timeline')
         payload = story_for(transcript, duration, published, episode=name, paragraphs=paragraphs)
         payload["audioDesign"] = {"stingerSHA256": sound_design.fingerprint,
+                                  "version": "speech-relative-fades-v2",
+                                  "voiceReferenceRMS": round(sound_design.voice_rms, 6),
                                   "assets": ["Kenney Interface Sounds (CC0)", "Kenney Music Jingles (CC0)"]}
         payload["levels"] = envelope_wav(wav)
         to_m4a(wav, out / f"{name}.m4a")
+        payload['mastering'] = validate_encoded(out / f"{name}.m4a")
         wav.unlink()
         (out / f"{name}.json").write_text(json.dumps(payload, ensure_ascii=False) + "\n")
         print(f"  {duration:.1f}s, {len(payload['levels'])} level frames", flush=True)

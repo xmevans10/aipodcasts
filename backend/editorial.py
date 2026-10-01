@@ -90,7 +90,8 @@ The claim quotations you supply are internal review evidence and are never read 
 '''
 
 WRITING_PROCESS = '''HOW TO WRITE IT — work through this, then write. Do not show your working,
-do not produce an outline, and do not narrate the process in the episode.
+do not produce an outline, and do not narrate the writing/generation process in the episode.
+This does NOT mean hiding the host's curiosity, momentary confusion or change of understanding.
 1. Pick the single supported finding worth explaining. Ignore the rest of the paper.
 2. Name the one idea a listener must already hold for that finding to land. Put it first,
    in ordinary words.
@@ -98,8 +99,35 @@ do not produce an outline, and do not narrate the process in the episode.
    followed people for years, trained a model on simulated data.
 4. State the result plainly, then its boundary, as one connected thought.
 5. Read it back and cut: instrument and model names, gene and species names you do not
-   need, secondary statistics, category lists, and asides that show off the host rather
-   than the science.
+   need, secondary statistics and category lists. Keep an aside when it reveals what the
+   host finds funny, troubling or surprising and carries the listener into the next idea.
+'''
+
+HUMAN_STORY_GUIDE = '''THINKING AND FEELING OUT LOUD — storytelling, not a miniature paper review.
+Build around a supported tension: an intuitive expectation, what was actually tested,
+and the detail that changes how the host understands it. Let that question pull us through
+the MIDDLE, instead of marching through an inventory of methods and results. Do not imply
+an expected outcome was the researchers' hypothesis unless the source says so.
+Use tangible actions/objects the source supplies. An explicitly imagined everyday analogy
+can help; invented lab scenes, dialogue, memories and researcher feelings cannot.
+The fictional host may want a simpler answer, feel unsettled, get excited about a detail,
+notice their own mistaken intuition or briefly search for better words. Make the reason
+audible. A generic 'wow, fascinating' pasted onto a summary does not do this.
+Let a sentence change direction when the thought changes. Fragments, a brief reaction,
+self-correction or a warm aside can stay when they make understanding easier. Do not
+insert ums, fake confusion, laughs or vulnerability on a schedule. Never pretend to be
+confused about a basic fact just to stage an explanation. Express laughter through earned
+humor and performance direction, never bracketed stage notes or a canned laugh track.
+In dialogue, let the last speaker's actual words provoke the next turn: question,
+pushback, recognition, playful disagreement or a more useful analogy. Neither speaker
+should be a permanently clueless audience surrogate. Both can notice and revise things.
+Keep personality inside the explanation: one host lingers fondly on a living detail,
+another punctures a seductive claim, another gets absorbed in how something was built.
+An emotional arc need not end in excitement. Honest disappointment or an unresolved
+question can be the ending. Preserve the finding and every material limit.
+Before returning JSON, silently ask: what did THIS host initially expect or want, what
+specific detail moved them, and why does the next thought follow? If the body is still
+an abstract with contractions, rewrite its narrative spine. Do not add a reaction quota.
 '''
 
 
@@ -126,7 +154,7 @@ def contract_block() -> str:
     string matches that a validator rejects outright, and a writer that has just read four
     paragraphs about cutting for clarity will otherwise paraphrase the headline away.
     """
-    return "\n".join([PRECEDENCE, AUDIENCE_CONTRACT, INTERNAL_CONTROLS, WRITING_PROCESS,
+    return "\n".join([PRECEDENCE, AUDIENCE_CONTRACT, INTERNAL_CONTROLS, WRITING_PROCESS, HUMAN_STORY_GUIDE,
                        OPENING_CHECKLIST])
 
 

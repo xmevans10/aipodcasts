@@ -10,7 +10,7 @@ from provenance import provenance_text, quotes_in_source
 from podcast import TITLE_GUIDE, validate_episode_title
 from hosts import dialogue_dynamic
 
-DIALOGUE_PROMPT_VERSION = 'dialogue-v4'  # cast-scaled opening window
+DIALOGUE_PROMPT_VERSION = 'dialogue-v5'  # responsive thinking, repairs and emotional movement
 
 #: Opening window in spoken words: 220 for a duo, 280 for the four-host show.
 OPENING_WORDS_BASE = 160

@@ -45,6 +45,7 @@ class Host:
             f"HOST PERSONALITY — write this episode as {self.name}, host of {self.show} ({self.beat}).",
             f"Who they are: {self.persona}",
             f"Delivery: {self.delivery}",
+            f"How this host thinks through a story: {HOST_THINKING_MOVES.get(self.id, self.persona)}",
             f"Opening: {self.hook_style}",
             f"Example cadence (attitude only, never copy as evidence): {self.sample_line}",
             "Keep this character audible in the middle explanation and the limitation, not just the hook.",
@@ -65,6 +66,31 @@ class Host:
             "Personality changes the delivery only. Never let it alter a finding, a number, a",
             "limitation or an attribution, and never let a flourish cost the listener clarity.",
         ])
+
+
+# Original editorial behaviors distilled from transcript research; no celebrity imitation.
+HOST_THINKING_MOVES: dict[str, str] = {
+    'nova': 'A calm cosmic explanation is interrupted by a strange ordinary comparison; return to the actual observation.',
+    'fern': 'Fall in love with an unglamorous detail; let affection become a precise question.',
+    'ada': 'Try an explanation aloud, notice exactly where it breaks, then rebuild it.',
+    'atlas': 'Meet a worry patiently; let a surprising detail interrupt settled confidence.',
+    'ines': 'Deflate the tidy claim with a short question, then warmly concede what survives.',
+    'dev': 'Get excited about understanding; welcome a correction without defending the first take.',
+    'spinner': 'Become absorbed in one tactile detail, catch the detour, and bring the listener along.',
+    'yusuf': 'Let an ordinary object carry a consequential question; wonder grows from evidence.',
+    'noor': 'Give hype one dry puncture; sound sincerely surprised when the result is useful.',
+    'marek': 'Want the elegant idea to work; make the stubborn material or failed test the turning point.',
+    'tomas': 'Ask the practical follow-up; encourage the listener while admitting what the test cannot promise.',
+    'lena': 'Name the frustrating lack of control directly; allow an unfinished feeling instead of a cure-shaped ending.',
+    'rosa': 'Treat a gross detail with blunt affection; resist turning the organism into magic.',
+    'amara': 'Notice a small social action, react with open delight, then ask what it means.',
+    'kenji': 'Underreact at first; let one genuinely strange detail earn a quiet pause and a dry observation.',
+    'freya': 'Follow a clue briskly, then become tender about the people behind the evidence.',
+    'jax': 'Let delight arrive before the polished explanation; accept a correction without losing enthusiasm.',
+    'kai': 'Tease an overclaim with a straight face; reveal care through a fair, useful follow-up.',
+    'benny': 'Wander into an odd everyday analogy, notice the wandering, and return with a clearer question.',
+    'chase': 'Enjoy getting the detail right; take friendly ribbing and admit when a number needs unpacking.',
+}
 
 
 HOSTS: dict[str, Host] = {

@@ -4,7 +4,7 @@ import re
 from editorial import CONTRACT_VERSION, contract_block, spoken_defects
 
 DEFAULT_MODEL = 'gpt-5.6-luna'
-PROMPT_VERSION = 'podcast-v7'  # audience contract: hook first, controls never spoken
+PROMPT_VERSION = 'podcast-v8'  # source-grounded narrative tension and thinking aloud
 
 TITLE_GUIDE = """EPISODE TITLES
 The title is a reason to press play, not a paper citation. Write a listener-facing

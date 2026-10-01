@@ -4,7 +4,7 @@ import re
 from editorial import CONTRACT_VERSION, contract_block, spoken_defects
 
 DEFAULT_MODEL = 'gpt-5.6-luna'
-PROMPT_VERSION = 'podcast-v8'  # source-grounded narrative tension and thinking aloud
+PROMPT_VERSION = 'podcast-v9'  # source-grounded narrative tension and thinking aloud
 
 TITLE_GUIDE = """EPISODE TITLES
 The title is a reason to press play, not a paper citation. Write a listener-facing
@@ -46,7 +46,8 @@ Shape the episode naturally, without spoken section headings:
    Use short, varied sentences, contractions and natural spoken transitions.
    At most one analogy, introduced in ordinary English such as 'it is a bit like'.
 4. Include the important uncertainty and study limitations before the closing.
-   Put that exact limitations paragraph, verbatim, in the caveat field too.
+   First explain the limitation in your own ordinary spoken words. Copy YOUR resulting
+   paragraph verbatim into the caveat field too; do not copy the paper's technical wording.
 5. Close by returning to the opening image with an earned takeaway, not a hype claim.
 
 Do not read a DOI, URL, full author roll call, bracketed citations, stage directions,

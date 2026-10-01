@@ -88,7 +88,7 @@ def available(batches: Path, feed: list) -> list[tuple[Path, dict]]:
                 # revision for a paper is the latest one.
                 candidates[key] = (path, entry, body)
     return [(candidates[key][0], candidates[key][1]) for key in order
-            if key not in withdrawn and published.get(key) != candidates[key][2]]
+            if key not in withdrawn and key not in published]
 
 
 def select(batches: Path, feed: list, day: str, *, limit: int = 2) -> list[tuple[Path, dict]]:

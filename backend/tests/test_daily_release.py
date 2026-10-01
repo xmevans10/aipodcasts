@@ -64,7 +64,7 @@ class DailyReleaseTests(unittest.TestCase):
             (new / "manifest.json").write_text(json.dumps({"shows": [
                 {"show": "Hive Mind", "host": "amara", "doi": "10.1234/later", "status": "approved"},
                 {"show": "Mycelium", "host": "rosa", "doi": "10.1234/new", "status": "approved"}]}))
-            for directory, stem, body in ((old, "wild-company", "already published"),
+            for directory, stem, body in ((old, "wild-company", "a different narration for the already published paper"),
                                            (old, "mycelium", "new episode"),
                                            (new, "hive-mind", "later episode"),
                                            (new, "mycelium", "newer revision")):

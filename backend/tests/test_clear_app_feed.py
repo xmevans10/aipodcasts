@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
-from clear_app_feed import load_exclusions, published_dois, wipe_app  # noqa: E402
+from clear_app_feed import current_exclusions, load_exclusions, published_dois, wipe_app  # noqa: E402
 from daily_release import app_feed_url
 
 
@@ -77,6 +77,13 @@ class ClearAppFeedTests(unittest.TestCase):
         client.puts["v1/.release/excluded-dois.json"] = ["10.1234/old"]
         self.assertEqual(published_dois([{"sources": [
             {"url": "https://doi.org/10.5678/New"}]}]), {"10.5678/new"})
+
+
+    def test_generation_excludes_live_papers_as_well_as_retired_papers(self):
+        client = FakeS3([])
+        client.puts['v1/.release/excluded-dois.json'] = ['10.1234/old']
+        client.puts['v1/feed.json'] = [{'sources': [{'url': 'https://doi.org/10.5678/Live'}]}]
+        self.assertEqual(current_exclusions(client, 'bucket', 'v1'), ['10.1234/old', '10.5678/live'])
 
 
 if __name__ == "__main__":

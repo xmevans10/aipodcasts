@@ -10,7 +10,7 @@ from provenance import provenance_text, quotes_in_source
 from podcast import TITLE_GUIDE, validate_episode_title
 from hosts import dialogue_dynamic
 
-DIALOGUE_PROMPT_VERSION = 'dialogue-v5'  # responsive thinking, repairs and emotional movement
+DIALOGUE_PROMPT_VERSION = 'dialogue-v6'  # responsive thinking, repairs and emotional movement
 
 #: Opening window in spoken words: 220 for a duo, 280 for the four-host show.
 OPENING_WORDS_BASE = 160
@@ -57,8 +57,9 @@ Shape the episode naturally:
    adds more jargon than the turn before it is wrong, however accurate it is. Do not
    split one academic monologue between names. At most one analogy in the whole episode,
    offered by one presenter in ordinary English such as 'it is a bit like'.
-4. Include the important uncertainty and study limitations before the close. Put that exact
-   limitations paragraph, verbatim, in the caveat field too.
+4. Explain the important uncertainty and study limitations in your own ordinary spoken
+   words before the close. Copy YOUR resulting paragraph verbatim into the caveat field
+   too; the match is between your output fields, not a quote from the source paper.
 5. Close with each presenter's exact sign-off in that presenter's own final turn.
    Never put another presenter's sign-off in a speaker's turn.
 

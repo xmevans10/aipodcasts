@@ -38,6 +38,13 @@ def published_dois(feed: list) -> set[str]:
     return dois
 
 
+def current_exclusions(client, bucket: str, prefix: str) -> list[str]:
+    feed = read_json_object(client, bucket, prefix.strip('/') + '/feed.json', None)
+    if not isinstance(feed, list):
+        raise ValueError('Live feed unavailable; refusing generation without current exclusions')
+    return sorted(set(load_exclusions(client, bucket, prefix)) | published_dois(feed))
+
+
 def load_exclusions(client, bucket: str, prefix: str) -> list[str]:
     value = read_json_object(client, bucket, state_key(prefix, "excluded-dois"), [])
     if not isinstance(value, list) or any(not isinstance(doi, str) for doi in value):
@@ -105,7 +112,7 @@ def main() -> None:
     prefix = os.environ.get("R2_PREFIX", "v1")
     if args.load_exclusions:
         args.load_exclusions.parent.mkdir(parents=True, exist_ok=True)
-        args.load_exclusions.write_text(json.dumps(load_exclusions(client, bucket, prefix)) + "\n")
+        args.load_exclusions.write_text(json.dumps(current_exclusions(client, bucket, prefix)) + "\n")
     if args.baseline_out:
         value = read_json_object(client, bucket, state_key(prefix, "baseline"), None)
         if not isinstance(value, dict) or not isinstance(value.get("minimum_run_id"), int):

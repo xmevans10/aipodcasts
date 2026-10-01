@@ -140,7 +140,9 @@ structural requirements, not style advice, and a draft that misses one is reject
    named author from `source_attribution` and "and colleagues" if there are several.
 4. Each of those two titles is spoken EXACTLY ONCE in the whole script, and the paper is
    credited once, not once per presenter.
-5. The `caveat` field appears WORD FOR WORD in the spoken script, exactly once.
+5. Write the limitation in your own plain spoken words, then copy that paragraph into
+   both `caveat` and the spoken script WORD FOR WORD, exactly once. This is a match
+   between your two output fields, NOT an instruction to quote the source paper.
 6. The closing carries each presenter's exact sign-off, in that presenter's own words.
 Requirements 2, 3 and 5 are verbatim string matches. Cutting for clarity never means
 cutting these; trim elsewhere.

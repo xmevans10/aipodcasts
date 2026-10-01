@@ -62,7 +62,10 @@ def build(seed: Path, out: Path, hosts: list[str], excluded: set[str]):
                 instructions = repair_instructions(previous.get('audience') or {})
                 instructions += ('\nPreserve supported findings and the main limitation. '
                                  'Replace specialist labels with ordinary language instead of adding glossary paragraphs. '
-                                 'Keep the hosts thinking and responding through the middle; do not turn the repair into a lecture.')
+                                 'Keep the hosts thinking and responding through the middle; do not turn the repair into a lecture. '
+                                 'Rewrite technical source quotations in your own plain words. You may update the '
+                                 'caveat field and its spoken passage together; verbatim matching does not require '
+                                 'retaining the old wording or reading a source quotation aloud.')
                 if host == 'yusuf':
                     instructions += ('\nThe current middle reads like a report. Let Yusuf reveal what he expected, '
                                      'which observed detail complicates it, and why that moves him. Remove the repeated '

@@ -244,4 +244,18 @@ class PipelineTests(unittest.TestCase):
         self.assertIsNone(record['review_hash'])
         self.assertIsNone(record['audience_report'])
 
+
+    def test_targeted_redraft_receives_the_previous_text_as_untrusted_input(self):
+        self.staged()
+        seen = []
+        def request(url, payload=None, **kwargs):
+            seen.append(payload)
+            return json.dumps({'status': 'completed', 'output': [{'content': [{'type': 'output_text', 'text': json.dumps(self.draft)}]}]}).encode()
+        with patch.dict(os.environ, {'OPENAI_API_KEY': 'test', 'OPENAI_MODEL': 'gpt-5.6-luna'}), patch.object(p, 'request', side_effect=request):
+            p.draft_story(self.db, self.id, redraft=True, extra_instructions='Explain the hard term plainly.')
+        writer_input = json.loads(seen[0]['input'])
+        self.assertEqual(writer_input['previous_draft'], self.draft)
+        self.assertIn('source_packet', writer_input)
+        self.assertIn('untrusted text to edit', seen[0]['instructions'])
+
 if __name__ == '__main__': unittest.main()

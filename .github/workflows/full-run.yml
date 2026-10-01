@@ -13,6 +13,9 @@ on:
       per_show:
         description: Candidates considered per show
         default: "3"
+      repair_hosts:
+        description: Comma-separated canonical hosts for targeted salvage (requires a seed run)
+        default: ''
       seed_dir:
         description: Committed batch to resume (optional)
         default: ""
@@ -132,7 +135,18 @@ jobs:
         if: ${{ inputs.release_fresh_batch == true }}
         run: echo '[]' > "$RUNNER_TEMP/empty-feed.json"
 
+      - name: Repair selected reviewed drafts
+        if: inputs.repair_hosts != ''
+        env:
+          REPAIR_HOSTS: ${{ inputs.repair_hosts }}
+          LILT_MAX_PROVIDER_CALLS_PER_DAY: '24'
+        run: |
+          [ -n "$SEED_DIR" ] || exit 1
+          python3 experiments/full-run/repair_batch.py --seed-dir "$SEED_DIR" --out full-run-artifacts \
+            --hosts "$REPAIR_HOSTS" --exclude-dois-file "$RUNNER_TEMP/excluded-dois.json"
+
       - name: Generate one transcript per show
+        if: inputs.repair_hosts == ''
         run: |
           python3 experiments/full-run/run_all_shows.py \
             --days "$DAYS" \

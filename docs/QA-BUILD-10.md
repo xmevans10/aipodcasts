@@ -54,3 +54,11 @@ subjective full-audio sign-off is claimed. No simulator was launched.
 Eight episodes are live across six shows. QA the actual app recordings of **When ChatGPT Misses Your Point** (Gradient) and **When Printed Lattices Lose Their Strength** (Layer by Layer), released today. Private recordings above are earlier renders, so do not assume identical intonation or timing. Latest independent health run `36833259337` passed.
 
 Backfill `36831940287` passes the strict partial check with six approvals, including Webwork's **Can Silk Help a Wound Heal?**; four scripts remain unpublished after today's release. Star Stuff remains withheld. The fourteen-episode reserve target is not met. Build 11 changes the icon; playback and full listening sign-off remain required.
+
+## Full-batch audio QA — 1 October
+
+Generation `36835451105` produced nine strict approvals; private audio render `36844094932` uses speech-relative fades v2 and two-pass mastering. Follow-up `36844386557` preserves these approvals and attempts the other seven shows. Do not count pending results or label this sixteen-show coverage. Combined validated inventory currently contains twelve unique unpublished scripts (six days at two/day).
+
+For every new recording: listen to the first ten seconds, both story-break cues and the final ten seconds. Check voice is foreground, cue attacks/releases are smooth, tails finish before speech, sentence endings and initial consonants remain intact, no digital clicks or unexpected level changes, and transcript timing remains correct. Compare headphones and phone speaker. Episode signatures vary; shared sampled material is CC0 Kenney audio.
+
+Each export now records measured integrated loudness and true peak. Target is -16 LUFS ±1; final AAC true peak must be ≤-1 dBTP, with a -2 dBTP mastering target to allow codec headroom. Mastering may not shift the timeline by more than 10 ms. These measurements do not replace subjective listening sign-off. Mandatory real-encoder CI passed (318 tests); the local integration test is skipped because local FFmpeg is broken.

@@ -2,7 +2,7 @@
 
 Planning baseline: **30 September 2026**. Based on the [content-flow audit](CONTENT-FLOW-AUDIT.md), live feed and Actions evidence, rather than the older demo-era inventory. This replaces `IMPLEMENTATION-PLAN.md` as the current sequencing document; `LAUNCH.md` remains useful for positioning and draft marketing copy.
 
-**Public launch decision, 1 October: still gated.** Eight episodes are live across six of sixteen shows, including Gradient and Layer by Layer released today. Build 10 processed in internal TestFlight; build 11 replaces the icon with a larger cream Z with subtly flowing strokes and raised-paper depth on lighter textured olive. The latest strictly checked batch has six approved scripts, two already published today, leaving four unpublished scripts against the fourteen-episode reserve target. Webwork now has an approved script; Star Stuff remains withheld. Physical-device and subjective audio sign-off, support/privacy destinations, source-use policy, correction/rollback validation and the store package remain open. The proposed two-week listener cohort is our quality gate, not an Apple submission requirement.
+**Public launch decision, 1 October: still gated.** Eight episodes are live across six of sixteen shows, including Gradient and Layer by Layer released today. Build 10 processed in internal TestFlight; build 11 replaces the icon with a larger cream Z with subtly flowing strokes and raised-paper depth on lighter textured olive. The latest strictly checked batch has six approved scripts, two already published today, the subsequent full generation run raises deduplicated inventory to twelve unpublished scripts against the fourteen-episode reserve target. Webwork now has an approved script; Star Stuff remains withheld. Physical-device and subjective audio sign-off, support/privacy destinations, source-use policy, correction/rollback validation and the store package remain open. The proposed two-week listener cohort is our quality gate, not an Apple submission requirement.
 
 ## Product promise and scope
 
@@ -181,3 +181,8 @@ Show coverage is a separate launch gate: six of sixteen shows currently have pub
 6. Product validation: conduct the planned listener cohort and resolve material comprehension/playback issues before public launch. This is a product decision, not an Apple-mandated delay.
 
 Icon generation: built-in image generator; prompt: enlarge the cream Z by roughly 15%, soften stroke transitions toward cursive, lighten olive about 50% to #79835D, retain paper texture and add shallow embossed depth; opaque square with no corner mask. Production asset: `ios/Zwicky/Assets.xcassets/AppIcon.appiconset/AppIcon.png`, 1024×1024, no alpha.
+
+
+### Full generation and sound design — 1 October
+
+Run `36835451105` produced nine strict approvals; three later shows reached the 96-call run budget. Follow-up `36844386557` preserves approvals and tries seven remaining shows; pending outcomes do not count. Private full audio render `36844094932` uses cue fades, speech-relative cue levels, 3 ms narration seam smoothing and measured two-pass loudness mastering with final AAC rejection thresholds. CI exercises the actual encoder. Source selection now requires an astronomical subject for Star Stuff spectroscopy, avoiding clinical/materials mismatches. Device listening remains required; no new native build is needed for these backend audio changes.

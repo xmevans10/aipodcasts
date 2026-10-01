@@ -2,6 +2,11 @@
 from __future__ import annotations
 
 import io
+import datetime as dt
+import hashlib
+import json
+from pathlib import Path
+import uuid
 import os
 import time
 import wave
@@ -31,11 +36,26 @@ def decode_linear16(wav_data: bytes) -> np.ndarray:
     return np.frombuffer(pcm, dtype="<i2").astype(np.float32) / 32768.0
 
 
-def _synthesize_with_retry(client, request, transient_errors):
+def record_usage(event: dict) -> None:
+    path = os.environ.get('LILT_AUDIO_USAGE_FILE')
+    if not path:
+        return
+    record = {**event, 'at': dt.datetime.now(dt.timezone.utc).isoformat(), 'model': MODEL}
+    target = Path(path); target.parent.mkdir(parents=True, exist_ok=True)
+    with target.open('a') as log:
+        log.write(json.dumps(record, allow_nan=False) + '\n')
+
+
+def _synthesize_with_retry(client, request, transient_errors, *, record=None):
     for attempt in range(3):
+        if record: record({'event': 'attempt', 'attempt': attempt + 1})
         try:
-            return client.synthesize_speech(request=request)
+            # Disable hidden SDK retries; this loop is the explicit three-attempt limit.
+            response = client.synthesize_speech(request=request, retry=None)
+            if record: record({'event': 'response', 'attempt': attempt + 1})
+            return response
         except transient_errors:
+            if record: record({'event': 'transient_failure', 'attempt': attempt + 1})
             if attempt == 2:
                 raise
             time.sleep(2 ** attempt)
@@ -97,5 +117,10 @@ def synthesize(text: str, voice_name: str, accent: str, *, host_id: str | None =
         ),
     }
     transient = (DeadlineExceeded, InternalServerError, ServiceUnavailable, TooManyRequests)
-    response = _synthesize_with_retry(client, request, transient)
-    return decode_linear16(response.audio_content)
+    identity = {'requestID': uuid.uuid4().hex, 'hostID': host_id, 'voice': voice_name,
+                'textSHA256': hashlib.sha256(text.encode()).hexdigest(), 'textBytes': len(text.encode())}
+    response = _synthesize_with_retry(client, request, transient,
+                                      record=lambda event: record_usage({**identity, **event}))
+    audio = decode_linear16(response.audio_content)
+    record_usage({**identity, 'event': 'decoded_audio', 'durationSeconds': len(audio) / SAMPLE_RATE})
+    return audio

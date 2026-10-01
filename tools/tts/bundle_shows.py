@@ -324,6 +324,8 @@ def main() -> None:
                          for host_id, entry in cast.items() if entry.get("geminiVoice")}
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
+    if args.tts_provider == "google-cloud":
+        os.environ["LILT_AUDIO_USAGE_FILE"] = str(out / "tts-usage.jsonl")
 
     jobs = []
     for path in sorted(Path(args.transcripts).glob("*.json")):

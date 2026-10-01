@@ -1,3 +1,4 @@
+import os
 import array
 import io
 import json
@@ -40,6 +41,7 @@ class CloudTtsTests(unittest.TestCase):
         with mock.patch.object(cloud_tts.time, "sleep") as sleep:
             result = cloud_tts._synthesize_with_retry(client, {}, (TemporaryFailure,))
         self.assertEqual(result, "audio")
+        self.assertTrue(all(call.kwargs["retry"] is None for call in client.synthesize_speech.call_args_list))
         self.assertEqual(client.synthesize_speech.call_count, 3)
         self.assertEqual([call.args[0] for call in sleep.call_args_list], [1, 2])
 
@@ -138,3 +140,16 @@ class CloudTtsTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class NarrationUsageTests(unittest.TestCase):
+    def test_failed_attempts_are_logged_without_script_or_credentials(self):
+        class Transient(Exception): pass
+        client = mock.Mock(); client.synthesize_speech.side_effect = [Transient(), 'audio']
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'usage.jsonl'
+            with mock.patch.dict(os.environ, {'LILT_AUDIO_USAGE_FILE': str(path)}), mock.patch.object(cloud_tts.time, 'sleep'):
+                cloud_tts._synthesize_with_retry(client, {}, (Transient,), record=cloud_tts.record_usage)
+            events = [json.loads(line) for line in path.read_text().splitlines()]
+            self.assertEqual([e['event'] for e in events], ['attempt', 'transient_failure', 'attempt', 'response'])
+            self.assertFalse(any('text' in e or 'apiKey' in e for e in events))

@@ -5,7 +5,7 @@ import sys
 import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from pipeline import connect
-from autoselect import select, report, is_reusable, normalize_openalex, studiness, fit
+from autoselect import select, report, is_reusable, normalize_openalex, studiness, fit, is_review_work
 
 CC_BY = "https://creativecommons.org/licenses/by/4.0/"
 
@@ -285,3 +285,17 @@ class SelectTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ReviewSourceTests(unittest.TestCase):
+    def test_explicit_review_sources_are_rejected_before_paid_generation(self):
+        for title in ['Beyond Efficiency: A Systematic Survey of Resource-Efficient Large Language Models',
+                      'Recent Advances in Coronary Imaging', 'A review of stellar observations']:
+            self.assertTrue(is_review_work({'title': title}))
+        self.assertTrue(is_review_work({'title': 'Materials AI', 'abstract': 'In this review we discuss methods.'}))
+
+    def test_original_survey_and_new_analysis_remain_eligible(self):
+        for title in ['A survey of 200 participants reveals sleep patterns', 'Galaxy survey finds new stars']:
+            # The unqualified phrase "a survey of" can describe empirical participants;
+            # explicit literature/synthesis framing must be required instead.
+            self.assertFalse(is_review_work({'title': title, 'abstract': 'We measured sleep in 200 participants.'}))

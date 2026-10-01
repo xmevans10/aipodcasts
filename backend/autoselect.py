@@ -504,6 +504,19 @@ def is_preprint_show_work(work) -> bool:
     return (work.get("type") or "").lower() == "preprint" and work.get("host") in PREPRINT_SHOWS
 
 
+def is_review_work(work: dict) -> bool:
+    """Reject explicitly labeled syntheses even when the connector calls them articles.
+
+    An empirical survey remains eligible: 'survey' alone is not a rejection.
+    """
+    if re.search(r'\b(?:systematic|comprehensive|scoping|narrative|literature)\s+(?:review|survey)\b|'
+                 r'\ba\s+review\s+of\b|\brecent advances in\b|^review\s*:',
+                 work.get('title', ''), re.I):
+        return True
+    return bool(re.search(r'\b(?:this (?:review|survey)|we (?:systematically )?review)\b',
+                          work.get('abstract') or '', re.I))
+
+
 def studiness(work):
     """Distinguish a study from commentary/review using abstract framing.
 
@@ -626,6 +639,9 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
         preprints_here = min_reputation < MIN_REPUTATION or work["host"] in PREPRINT_SHOWS
         allowed_types = PREPRINT_TYPES if preprints_here else PRIMARY_TYPES
         if work.get("type") not in allowed_types:
+            non_primary += 1
+            continue
+        if is_review_work(work):
             non_primary += 1
             continue
         work_studiness = studiness(work)

@@ -137,6 +137,12 @@ class SelectTests(unittest.TestCase):
         work = next(work for work in result['selected'] if work['doi'] == '10.1234/pulsar')
         self.assertEqual(work['host'], 'yusuf')
 
+    def test_bee_algorithm_is_not_insect_behaviour(self):
+        from beats import BEATS
+        work = {'title': 'Artificial bee colony optimization',
+                'abstract': 'We test a bee colony algorithm on benchmark computer networks.'}
+        self.assertEqual(fit(work, BEATS['amara']), 0)
+
     def test_editorial_signal_boosts_matched_paper(self):
         result = self.select(per_show=3, limit=10)
         by_doi = {work["doi"]: work for work in result["selected"]}

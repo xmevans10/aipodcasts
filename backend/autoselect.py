@@ -408,6 +408,8 @@ def fit(work, terms):
                "galaxy": r"(?:galaxy|galaxies)"}
     if terms == BEATS['spinner'] and re.search(r'\bpulsars?\b', text):
         return 0.0  # "Spider" here is an astronomical nickname.
+    if terms == BEATS['amara'] and re.search(r'\b(?:artificial bee colony|bee colony (?:algorithm|optimi[sz]ation))\b', text):
+        return 0.0  # Computer algorithms inspired by bees are not bee behaviour.
     if terms == BEATS['nova'] and re.search(r'moon imagery.{0,80}translation|translation.{0,80}moon imagery', text):
         return 0.0  # Literary imagery is not an observation of the physical Moon.
     return sum(bool(re.search(r'(?<!\w)' + aliases.get(term, re.escape(term) + r's?') + r'(?!\w)', text))

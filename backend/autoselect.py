@@ -412,6 +412,9 @@ def fit(work, terms):
         return 0.0  # Computer algorithms inspired by bees are not bee behaviour.
     if terms == BEATS['nova'] and re.search(r'moon imagery.{0,80}translation|translation.{0,80}moon imagery', text):
         return 0.0  # Literary imagery is not an observation of the physical Moon.
+    if terms == BEATS['yusuf'] and not re.search(
+            r'\b(?:stars?|stellar|astrochemistry|astronom\w*|astrophys\w*|interstellar|galax\w*|cosmic|nebula\w*)\b', text):
+        return 0.0  # Spectroscopy alone also finds heart scans and materials research.
     return sum(bool(re.search(r'(?<!\w)' + aliases.get(term, re.escape(term) + r's?') + r'(?!\w)', text))
                for term in terms) / len(terms)
 

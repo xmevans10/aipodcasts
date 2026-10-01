@@ -130,6 +130,14 @@ class SelectTests(unittest.TestCase):
         lunar = [work for work in result['selected'] if work['host'] == 'nova']
         self.assertEqual([work['doi'] for work in lunar], ['10.1234/next'])
 
+    def test_stellar_show_requires_astronomical_subject_beyond_spectroscopy(self):
+        from beats import BEATS
+        for title in ('Cardiac spectroscopy improves a heart scan',
+                      'Spectroscopy of cobalt oxide catalysts'):
+            self.assertEqual(fit({'title': title, 'abstract': ''}, BEATS['yusuf']), 0)
+        self.assertGreater(fit({'title': 'Spectroscopy reveals iron in tiny galaxies',
+                                'abstract': ''}, BEATS['yusuf']), 0)
+
     def test_spider_pulsar_routes_to_stellar_show_instead_of_arachnids(self):
         self.crossref['spider'] = [crossref_item('10.1234/pulsar', 'Stellar spectroscopy of spider pulsars',
             license_url=CC_BY, abstract='We measured stellar spectra around a pulsar.')]

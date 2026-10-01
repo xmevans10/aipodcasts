@@ -52,6 +52,9 @@ def available(batches: Path, feed: list) -> list[tuple[Path, dict]]:
     if not isinstance(feed, list):
         raise ValueError("Published feed is malformed")
     published = published_versions(feed)
+    withdrawn = {(story.get('hostID'), doi_from_url(source.get('url', '')))
+                 for story in feed if story.get('withdrawalNotice') is not None
+                 for source in story.get('sources', [])}
     order = []
     candidates = {}
     for directory in sorted(batches.iterdir(),
@@ -85,13 +88,13 @@ def available(batches: Path, feed: list) -> list[tuple[Path, dict]]:
                 # revision for a paper is the latest one.
                 candidates[key] = (path, entry, body)
     return [(candidates[key][0], candidates[key][1]) for key in order
-            if published.get(key) != candidates[key][2]]
+            if key not in withdrawn and published.get(key) != candidates[key][2]]
 
 
 def select(batches: Path, feed: list, day: str, *, limit: int = 2) -> list[tuple[Path, dict]]:
     if not isinstance(feed, list):
         raise ValueError("Published feed is malformed")
-    published_today = sum(story.get("published") == day for story in feed)
+    published_today = sum(story.get("published") == day and story.get("withdrawalNotice") is None for story in feed)
     if published_today > limit:
         raise ValueError(f"Feed already has {published_today} episodes on {day}")
     slots = limit - published_today

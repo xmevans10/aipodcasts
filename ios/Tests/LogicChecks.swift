@@ -193,6 +193,14 @@ private func testStoryHelpers() {
           "truncated read-along text is rejected")
     checkEqual(Library.firstEpisode(in: [episode], following: ["mycelium"])?.id, "one",
                "onboarding offers a playable fallback when selected shows have no episodes")
+    var withdrawn = episode
+    withdrawn.withdrawalNotice = "Withdrawn because a material claim requires correction."
+    check(withdrawn.isWithdrawn, "explicit withdrawal marks the episode unavailable")
+    check(Library.firstEpisode(in: [withdrawn], following: []) == nil,
+          "withdrawn episodes cannot become onboarding recommendations")
+    let restoredWithdrawal = try! JSONDecoder().decode(Story.self, from: JSONEncoder().encode(withdrawn))
+    checkEqual(restoredWithdrawal.withdrawalNotice, withdrawn.withdrawalNotice,
+               "cached and saved episodes preserve withdrawal notices")
     let nature = story("nature", host: "fern")
     checkEqual(Library.firstEpisode(in: [episode, nature], following: ["wild-company"])?.id, "nature",
                "onboarding prefers a playable followed show")

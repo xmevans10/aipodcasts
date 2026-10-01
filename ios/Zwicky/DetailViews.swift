@@ -2,7 +2,9 @@ import SwiftUI
 import StoreKit
 
 struct EpisodeView: View {
-    let story: Story
+    private let originalStory: Story
+    init(story: Story) { self.originalStory = story }
+    private var story: Story { library.stories.first { $0.id == originalStory.id } ?? originalStory }
     @EnvironmentObject var library: Library
     @EnvironmentObject var player: AudioPlayer
     private var isCurrent: Bool { player.story?.id == story.id }
@@ -20,15 +22,28 @@ struct EpisodeView: View {
 
                 EpisodeMeta(story: story).padding(.top, -4)
 
+                if let notice = story.withdrawalNotice ?? story.correctionNotice {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Label(story.isWithdrawn ? "Episode withdrawn" : "Correction", systemImage: "info.circle")
+                            .font(.headline)
+                        Text(notice).font(.subheadline)
+                        if let id = story.replacementID, let replacement = library.stories.first(where: { $0.id == id && !$0.isWithdrawn }) {
+                            NavigationLink("Open corrected episode") { EpisodeView(story: replacement) }
+                        }
+                    }.padding(16).frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Theme.subtle, in: RoundedRectangle(cornerRadius: OpenAIKit.Radius.card))
+                }
+
                 HStack(spacing: 10) {
                     Button { isCurrent ? player.toggle() : player.play(story) } label: {
                         Label(isCurrent && player.playing ? "Pause" : player.progress(of: story) > 0 && player.progress(of: story) < 1 ? "Resume" : "Play",
                               systemImage: isCurrent && player.playing ? "pause.fill" : "play.fill")
                     }.buttonStyle(PrimaryButtonStyle(show: story.show))
                     .accessibilityHint("Plays this episode")
+                    .disabled(story.isWithdrawn)
                     Spacer()
                     iconButton(queued ? "text.badge.checkmark" : "text.badge.plus", label: queued ? "In your queue" : "Add to queue") { player.enqueue(story) }
-                        .disabled(queued || isCurrent)
+                        .disabled(queued || isCurrent || story.isWithdrawn)
                     iconButton(library.saved.contains(story.id) ? "bookmark.fill" : "bookmark", label: library.saved.contains(story.id) ? "Unsave" : "Save") { library.toggle(story) }
                     if let url = story.sharingURL {
                         ShareLink(item: url, subject: Text(story.title), message: Text(story.dek),
@@ -38,12 +53,12 @@ struct EpisodeView: View {
                     }
                 }
 
-                if story.audioURL == nil {
+                if story.audioURL == nil && !story.isWithdrawn {
                     Label("Device voice sample. This preview is narrated on your device.", systemImage: "waveform")
                         .font(.caption).foregroundStyle(Theme.secondary)
                 }
 
-                if detailLoaded, let transcript = Episodes.transcript(for: story.id) {
+                if detailLoaded, !story.isWithdrawn, let transcript = Episodes.transcript(for: story.id) {
                     NavigationLink { TranscriptView(story: story, paragraphs: transcript) } label: {
                         HStack(spacing: 14) {
                             Image(systemName: "text.quote").font(.title3).foregroundStyle(Theme.ink).frame(width: 40, height: 40).background(Theme.subtle, in: Circle())
@@ -56,7 +71,7 @@ struct EpisodeView: View {
                         }.card(padding: 14, radius: OpenAIKit.Radius.card)
                     }.buttonStyle(.plain)
                     .accessibilityHint("Opens the read-along transcript")
-                } else if story.detailURL != nil {
+                } else if story.detailURL != nil && !story.isWithdrawn {
                     HStack {
                         if detailLoading { ProgressView(); Text("Loading read along…") }
                         else {

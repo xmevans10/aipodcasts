@@ -79,6 +79,14 @@ def episode_page(story: dict) -> bytes:
     story_id = story.get("id", "")
     if not isinstance(story_id, str) or not re.fullmatch(r"[a-z0-9][a-z0-9._-]{0,159}", story_id):
         raise ValueError("Listening page episode ID must be a URL-safe slug")
+    if story.get("withdrawalNotice") is not None:
+        if not is_https_url(share_url):
+            raise ValueError("Withdrawal page requires an HTTPS share URL")
+        return (f'<!doctype html><html lang="en"><meta charset="utf-8">'
+                f'<meta name="viewport" content="width=device-width,initial-scale=1">'
+                f'<title>Episode withdrawn — Zwicky</title><main><h1>Episode withdrawn</h1>'
+                f'<h2>{escape(story.get("title"))}</h2><p>{escape(story["withdrawalNotice"])}</p>'
+                f'<p>Open Zwicky for the current catalog.</p></main></html>').encode()
     if not is_https_url(share_url) or not is_https_url(audio_url):
         raise ValueError("Listening pages require HTTPS share and audio URLs")
     body_text = story.get("body", "")
@@ -199,7 +207,7 @@ def merge_feed(existing: list, incoming: list, *, day: str, max_per_day: int = 2
     incoming_ids = {story["id"] for story in incoming}
     incoming_papers = {key for story in incoming if (key := paper_key(story))}
     existing = [story for story in existing
-                if paper_key(story) not in incoming_papers or story["id"] in incoming_ids]
+                if story.get("withdrawalNotice") is not None or paper_key(story) not in incoming_papers or story["id"] in incoming_ids]
     by_id = {story["id"]: story for story in existing}
     if len(by_id) != len(existing):
         raise ValueError("Existing feed has duplicate story ids")
@@ -209,7 +217,7 @@ def merge_feed(existing: list, incoming: list, *, day: str, max_per_day: int = 2
             raise ValueError("Published story id already has different metadata")
         by_id[story["id"]] = story
     merged = sorted(by_id.values(), key=lambda s: (s.get("published", ""), s["id"]), reverse=True)
-    if sum(s.get("published") == day for s in merged) > max_per_day:
+    if sum(s.get("published") == day and s.get("withdrawalNotice") is None for s in merged) > max_per_day:
         raise ValueError(f"More than {max_per_day} episodes would be published on {day}")
     return merged
 

@@ -1,0 +1,30 @@
+name: release-drill
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-storage-drill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_PUBLIC_BASE: ${{ secrets.R2_PUBLIC_BASE }}
+      R2_PREFIX: v1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python3 -m pip install boto3
+      - name: Exercise isolated withdrawal and rollback
+        run: python3 tools/staging_release_drill.py --run-id "$GITHUB_RUN_ID" --out release-drill.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: release-drill-${{ github.run_id }}
+          path: release-drill.json
+          retention-days: 90

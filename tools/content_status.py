@@ -22,7 +22,7 @@ def status(batches: Path, feed: list) -> dict:
     canonical = {normalize_host(host.id): host.show for host in HOSTS.values()}
     rows = []
     for host, show in canonical.items():
-        public = [s for s in feed if normalize_host(s.get('hostID', '')) == host]
+        public = [s for s in feed if normalize_host(s.get('hostID', '')) == host and s.get('withdrawalNotice') is None]
         pending = [entry for _, entry in eligible if normalize_host(entry['host']) == host]
         rows.append({'host': host, 'show': show, 'publicEpisodes': len(public),
                      'lastPublished': max((s.get('published', '') for s in public), default=None),
@@ -36,7 +36,8 @@ def status(batches: Path, feed: list) -> dict:
         runs[run_id] = usage
     count = len(eligible)
     return {'generatedAt': dt.datetime.now(dt.timezone.utc).isoformat(),
-            'publicEpisodes': len(feed), 'playableShows': sum(r['publicEpisodes'] > 0 for r in rows),
+            'withdrawnEpisodes': sum(s.get('withdrawalNotice') is not None for s in feed),
+            'publicEpisodes': sum(s.get('withdrawalNotice') is None for s in feed), 'playableShows': sum(r['publicEpisodes'] > 0 for r in rows),
             'catalogShows': len(rows), 'approvedUnpublished': count, 'daysAtTwoPerDay': count / 2,
             'belowWeekBuffer': count < 14, 'shows': rows, 'recordedUsageRuns': list(runs.values()),
             'billingBalanceAndActualSpend': 'unknown; reconcile provider billing',

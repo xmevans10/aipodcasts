@@ -205,18 +205,34 @@ import UIKit
     func checkpoint() { if !isPreview && !listening.completed.contains(story?.id ?? "") { listening.checkpoint(position) }; persist() }
     func restore(_ stories: [Story]) {
         for item in stories { catalog[item.id] = item }
-        feed = stories.map(\.id)
+        feed = stories.filter { !$0.isWithdrawn }.map(\.id)
+        listening.queue.removeAll { catalog[$0]?.isWithdrawn == true }
+        if let current = story, let revised = catalog[current.id], revised.isWithdrawn {
+            pause()
+            speech.stopSpeaking(at: .immediate)
+            player?.replaceCurrentItem(with: nil)
+            story = revised
+            message = revised.withdrawalNotice
+            updateNowPlaying()
+            persist()
+        }
         if story == nil, let id = listening.currentID, let item = catalog[id] {
             story = item; position = listening.positions[id] ?? 0; duration = Double(item.minutes * 60)
         }
     }
-    func enqueue(_ item: Story) { catalog[item.id] = item; listening.enqueue(item.id); persist() }
+    func enqueue(_ item: Story) {
+        let latest = catalog[item.id] ?? item
+        guard !latest.isWithdrawn else { message = latest.withdrawalNotice; return }
+        catalog[item.id] = latest; listening.enqueue(item.id); persist()
+    }
     func removeQueued(_ id: String) { listening.queue.removeAll { $0 == id }; persist() }
     func moveQueued(_ id: String, by amount: Int) { listening.move(id, by: amount); persist() }
     func clearQueue() { listening.queue = []; persist() }
     func playEdition(_ items: [Story]) {
-        guard let first = items.first else { return }
-        restore(items); listening.queue = Array(items.dropFirst().map(\.id)); play(first)
+        let eligible = items.map { catalog[$0.id] ?? $0 }.filter { !$0.isWithdrawn }
+        guard let first = eligible.first else { return }
+        for item in eligible { catalog[item.id] = item }
+        listening.queue = Array(eligible.dropFirst().map(\.id)); play(first)
     }
     func next() {
         checkpoint()
@@ -289,6 +305,8 @@ import UIKit
     }
 
     func play(_ item: Story, host: Host? = nil, pushHistory: Bool = true) {
+        let item = catalog[item.id] ?? item
+        guard !item.isWithdrawn else { message = item.withdrawalNotice; return }
         if pushHistory, let current = story, current.id != item.id {
             history.append(current.id)
             if history.count > 25 { history.removeFirst() }
@@ -353,11 +371,11 @@ import UIKit
     }
     func pause() { player?.pause(); speech.pauseSpeaking(at: .immediate); playing = false; lastTick = nil; checkpoint(); updateNowPlaying() }
     func resume() {
-        guard story != nil else { return }
+        guard let story, !story.isWithdrawn else { message = story?.withdrawalNotice; return }
         guard activateSession() else { return }
-        if let player, !listening.completed.contains(story?.id ?? "") { player.playImmediately(atRate: rate) }
+        if let player, !listening.completed.contains(story.id) { player.playImmediately(atRate: rate) }
         else if speech.isPaused { speech.continueSpeaking() }
-        else if let story { play(story); return }
+        else { play(story); return }
         playing = true
         updateNowPlaying()
     }

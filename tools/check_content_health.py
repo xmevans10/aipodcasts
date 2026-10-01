@@ -21,12 +21,14 @@ def todays_episodes(feed: list, day: str) -> list:
         if not isinstance(story, dict) or not isinstance(story.get("id"), str):
             raise ValueError("Public catalog contains an invalid episode")
         ids.append(story["id"])
+        if story.get("withdrawalNotice") is not None:
+            continue
         if not all(is_https_url(story.get(field, ""))
                    for field in ("audioURL", "detailURL", "shareURL")):
             raise ValueError(f"{story['id']}: invalid public asset URL")
     if len(set(ids)) != len(ids):
         raise ValueError("Public catalog contains duplicate episode IDs")
-    today = [story for story in feed if story.get("published") == day]
+    today = [story for story in feed if story.get("published") == day and story.get("withdrawalNotice") is None]
     if len(today) != 2:
         raise ValueError(f"Expected two episodes for {day}; public catalog has {len(today)}")
     return today
@@ -44,7 +46,7 @@ def main() -> None:
     with fetch(app_feed_url()) as response:
         feed = json.load(response)
     today = todays_episodes(feed, args.date)
-    checked = feed if args.all_episodes else today
+    checked = [s for s in feed if s.get("withdrawalNotice") is None] if args.all_episodes else today
     verify_staged_assets(checked)
     for story in checked:
         with fetch(story["detailURL"]) as response:

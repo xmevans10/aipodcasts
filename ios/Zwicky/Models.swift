@@ -128,6 +128,11 @@ struct Story: Identifiable, Codable, Hashable {
     var detailURL: String? = nil
     /// Public listening page. Older feed entries can still share their audio URL.
     var shareURL: String? = nil
+    /// Explicit notices preserve saved links while preventing withdrawn playback.
+    var withdrawalNotice: String? = nil
+    var correctionNotice: String? = nil
+    var replacementID: String? = nil
+    var isWithdrawn: Bool { withdrawalNotice != nil }
     /// Spoken conversation when an episode is co-hosted. Optional so older
     /// single-host JSON without the key keeps decoding.
     let turns: [DialogueTurn]?
@@ -296,11 +301,11 @@ enum Episodes {
     }
     func setFollowing(_ ids: Set<String>) { following = ids; UserDefaults.standard.set(Array(ids), forKey: "following") }
     /// Newest first.
-    var latest: [Story] { stories.sorted { ($0.published ?? "") > ($1.published ?? "") } }
+    var latest: [Story] { stories.filter { !$0.isWithdrawn }.sorted { ($0.published ?? "") > ($1.published ?? "") } }
     func episodes(of show: Show) -> [Story] { latest.filter { show.hostIDs.contains($0.hostID) } }
     static func firstEpisode(in stories: [Story], following ids: Set<String>) -> Story? {
         let playable = stories.filter { story in
-            guard let raw = story.audioURL, let url = URL(string: raw) else { return false }
+            guard !story.isWithdrawn, let raw = story.audioURL, let url = URL(string: raw) else { return false }
             return url.scheme == "https" && url.host != nil
         }.sorted { ($0.published ?? "") > ($1.published ?? "") }
         return playable.first { ids.contains($0.show.id) } ?? playable.first
@@ -317,7 +322,7 @@ enum Episodes {
     /// Episodes published after the last acknowledged marker, newest first.
     var newEpisodes: [Story] {
         guard !lastSeenPublished.isEmpty else { return [] }
-        return stories.filter { ($0.published ?? "") > lastSeenPublished }
+        return stories.filter { !$0.isWithdrawn && ($0.published ?? "") > lastSeenPublished }
             .sorted { ($0.published ?? "") > ($1.published ?? "") }
     }
     var unseenNewCount: Int { newEpisodes.count }

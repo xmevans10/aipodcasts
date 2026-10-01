@@ -194,8 +194,11 @@ never removes a caveat.
 - The exact `source_title` then appears **once**, within the opening, together with the
   first named author and "and colleagues" where there are multiple authors, plus the
   journal where available.
-- The exact episode headline also appears once in the opening, and is a different string
-  from the paper title.
+- The episode headline remains distinct from the paper title on the app card. Speaking
+  it is optional; never announce title-field labels. Introduce the research in ordinary
+  words and bring in the show and host naturally. Relative publication timing requires
+  dated evidence; do not invent personal reading experiences.
+  Updated from the user’s conversational-opening feedback, 2026-10-01.
 - The full exact citation always remains in source metadata and the app's source card.
 
 Known cost of this policy: a long technical paper title in the first 30 seconds is a real

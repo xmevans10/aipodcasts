@@ -134,17 +134,17 @@ an abstract with contractions, rewrite its narrative spine. Do not add a reactio
 OPENING_CHECKLIST = '''OPENING CHECKLIST — check these before you return the JSON. They are
 structural requirements, not style advice, and a draft that misses one is rejected.
 1. The FIRST sentence is a hook. It is not the paper citation and not a greeting.
-2. Somewhere in the opening, after that hook, the `title` field appears WORD FOR WORD in
-   the spoken script. Copy it exactly; do not paraphrase it, shorten it or reword it.
+2. Introduce the research conversationally and identify the show and host naturally.
+   The episode headline belongs on the app card; saying it aloud is optional.
 3. Somewhere in the opening, the `source_title` appears WORD FOR WORD, with the first
    named author from `source_attribution` and "and colleagues" if there are several.
-4. Each of those two titles is spoken EXACTLY ONCE in the whole script, and the paper is
-   credited once, not once per presenter.
+4. The paper title is spoken EXACTLY ONCE. An optional spoken episode headline is
+   used at most once. Never announce "the title of the episode is" or "the paper is titled".
 5. Write the limitation in your own plain spoken words, then copy that paragraph into
    both `caveat` and the spoken script WORD FOR WORD, exactly once. This is a match
    between your two output fields, NOT an instruction to quote the source paper.
 6. The closing carries each presenter's exact sign-off, in that presenter's own words.
-Requirements 2, 3 and 5 are verbatim string matches. Cutting for clarity never means
+Requirements 3 and 5 are verbatim string matches. Cutting for clarity never means
 cutting these; trim elsewhere.
 '''
 
@@ -253,6 +253,12 @@ def spoken_defects(text: str, *, caveat: str | None = None,
             f"(\"{stale.group(0).strip()}\"). The episode headline and the paper title are two "
             "different strings. Introduce the paper by its own title without claiming they match.")
 
+    # Exempt exact source-title text: an unusual paper title is not a host announcement.
+    if re.search(r"\bthe\s+title\s+of\s+(?:the\s+)?episode\s+is\b",
+                 outside_credit, re.I):
+        defects.append("metadata_announcement: introduce the research and citation naturally; "
+                       "do not read title-field labels aloud.")
+
     malformed = _MALFORMED_PUNCTUATION.search(text)
     if malformed:
         defects.append(
@@ -284,6 +290,6 @@ def spoken_defects(text: str, *, caveat: str | None = None,
         if normalized_episode and _normalized(text).count(normalized_episode) > 1:
             defects.append(
                 "episode_title_repeated: the episode headline is spoken more than once. Say it "
-                "once in the opening.")
+                "at most once, if it fits naturally.")
 
     return defects

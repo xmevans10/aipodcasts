@@ -4,7 +4,7 @@ import re
 from editorial import CONTRACT_VERSION, contract_block, spoken_defects
 
 DEFAULT_MODEL = 'gpt-5.6-luna'
-PROMPT_VERSION = 'podcast-v9'  # source-grounded narrative tension and thinking aloud
+PROMPT_VERSION = 'podcast-v10'  # source-grounded narrative tension and thinking aloud
 
 TITLE_GUIDE = """EPISODE TITLES
 The title is a reason to press play, not a paper citation. Write a listener-facing
@@ -27,8 +27,8 @@ For simulations, animals or observational studies, do not imply a real-world tes
 human benefit or causation. A title must not promise a treatment, a cause or an experiment
 the evidence cannot support. Put helpful specifics in the dek and the precise paper title
 in the spoken attribution and source card. The exact episode headline and exact source
-paper title are TWO distinct strings. Each appears in the opening exactly once, and the
-hook comes before either of them.
+paper title are TWO distinct strings. The episode headline belongs on the app card;
+speaking it is optional. Credit the paper once after the hook.
 """
 
 PODCAST_INSTRUCTIONS = '''You write short, engaging science podcast episodes for Zwicky.
@@ -37,11 +37,19 @@ Return the requested JSON; body is the complete spoken script, 350–550 words.
 
 Shape the episode naturally, without spoken section headings:
 1. Open with a concrete curiosity hook or vivid question, not generic greetings.
-2. Then, still within the first 180 words, work in the exact episode title as the
-   headline. Introduce the paper by its exact source_title and credit the first named
+2. Then, still within the first 180 words, introduce what the paper investigates in
+   ordinary words. Introduce the paper by its exact source_title and credit the first named
    author from source_attribution, followed by 'and colleagues' when there are multiple
    authors. Mention the journal if provided. Do not infer author seniority or say 'led by'.
    The opening SENTENCE is never the citation, and neither title is spoken twice.
+   Bring in the show name and presenter names naturally after the hook, using the
+   supplied cast metadata. The episode headline is optional in speech; never announce
+   "the title of the episode is" or "the paper is titled" as a metadata checklist.
+   A natural citation can be: "They wanted to know [question]. The paper is called
+   [exact source title], by [first author] and colleagues. Basically, [plain result]."
+   Vary this rhythm with the host's personality; do not repeat this template verbatim.
+   Do not invent a weekend activity, personal reading experience or publication timing.
+   Say "published this weekend" or "new" only when dated source evidence supports it.
 3. Explain the question, what the researchers did, and the interesting finding.
    Use short, varied sentences, contractions and natural spoken transitions.
    At most one analogy, introduced in ordinary English such as 'it is a bit like'.
@@ -83,7 +91,7 @@ def validate_episode_title(title, source_title):
 def validate_podcast(draft, source, host=None):
     validate_episode_title(draft['title'], source['title'])
     opening = normalized(' '.join(draft['body'].split()[:180]))
-    for label, value in [('episode headline', draft['title']), ('paper title', source['title'])]:
+    for label, value in [('paper title', source['title'])]:
         if normalized(value) not in opening:
             raise ValueError('Podcast opening must include the exact ' + label + ', word for '
                              'word, within the first 180 spoken words. The exact string to '

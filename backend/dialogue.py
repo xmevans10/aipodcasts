@@ -10,7 +10,7 @@ from provenance import provenance_text, quotes_in_source
 from podcast import TITLE_GUIDE, validate_episode_title
 from hosts import dialogue_dynamic
 
-DIALOGUE_PROMPT_VERSION = 'dialogue-v6'  # responsive thinking, repairs and emotional movement
+DIALOGUE_PROMPT_VERSION = 'dialogue-v7'  # responsive thinking, repairs and emotional movement
 
 #: Opening window in spoken words: 220 for a duo, 280 for the four-host show.
 OPENING_WORDS_BASE = 160
@@ -45,12 +45,20 @@ headings.
 
 Shape the episode naturally:
 1. Open with a concrete curiosity hook or vivid question from one presenter.
-2. Then, still early in the episode, work in the exact episode title as the
-   headline, introduce the paper by its exact source_title and credit the first named
+2. Then, still early in the episode, explain what the paper investigates in ordinary
+   words, introduce it by its exact source_title and credit the first named
    author from source_attribution followed by 'and colleagues' when there are multiple
    authors. Mention the journal if provided. Do not infer author seniority or say 'led by'.
    The opening SENTENCE is never the citation. Credit the paper once, not once per
    presenter, and do not speak either title twice.
+   Bring in the show name and presenter names naturally after the hook, using the
+   supplied cast metadata. The episode headline is optional in speech; never announce
+   "the title of the episode is" or "the paper is titled" as a metadata checklist.
+   A natural citation can be: "They wanted to know [question]. The paper is called
+   [exact source title], by [first author] and colleagues. Basically, [plain result]."
+   Vary this rhythm with the host's personality; do not repeat this template verbatim.
+   Do not invent a weekend activity, personal reading experience or publication timing.
+   Say "published this weekend" or "new" only when dated source evidence supports it.
 3. Explain the question, what the researchers did and the interesting finding. Make the
    exchange PROGRESSIVE: one presenter asks the question a listener would actually ask,
    and the next answers it in EASIER words without introducing new terms. A turn that
@@ -170,7 +178,7 @@ def validate_dialogue_contract(draft: dict, source: dict, hosts) -> None:
     # room two do before the headline and citation can land without crowding out the hook.
     window = OPENING_WORDS_BASE + OPENING_WORDS_PER_HOST * len(hosts)
     opening = provenance_text(" ".join(words[:window])).casefold()
-    for label, value in [("episode headline", draft["title"]), ("paper title", source["title"])]:
+    for label, value in [("paper title", source["title"])]:
         if provenance_text(value).casefold() not in opening:
             raise ValueError(
                 f"Dialogue opening must include the exact {label}, word for word, within the "

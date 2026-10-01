@@ -7,6 +7,15 @@ class PodcastTests(unittest.TestCase):
         self.draft = {'title': 'The quiet achievement', 'caveat': 'The sample was small.',
                       'body': 'How does a leaf stay flat? Today: The quiet achievement. Kate Harline and colleagues explore this in Growth across a leaf. The sample was small. Look again at that leaf.'}
     def test_spoken_citation(self): validate_podcast(self.draft, self.source)
+    def test_episode_headline_can_stay_on_app_card(self):
+        self.draft['body'] = self.draft['body'].replace('Today: The quiet achievement. ', '')
+        validate_podcast(self.draft, self.source)
+
+    def test_metadata_announcement_is_rejected(self):
+        self.draft['body'] = self.draft['body'].replace('Today:', 'The title of the episode is')
+        with self.assertRaisesRegex(ValueError, 'metadata_announcement'):
+            validate_podcast(self.draft, self.source)
+
     def test_paper_title_is_not_an_episode_headline(self):
         self.draft['title'] = self.source['title']
         with self.assertRaisesRegex(ValueError, 'listener-facing'):

@@ -9,6 +9,22 @@ secret values):
 python3 backend/pipeline.py doctor
 ```
 
+## Active production route — 1 October 2026
+
+The deployed Actions pipeline writes with OpenAI `gpt-5.6-luna` at low reasoning effort, uses the same configured OpenAI model for detailed audience review, verifies facts with TypeSafe/Jev, and narrates with Google Cloud `gemini-2.5-flash-tts` through GitHub workload identity. R2 serves the feed/audio. The optional `pipeline narrate` providers below are separate paths; ElevenLabs is not the current production narrator. App icon edits in this session used the built-in image tool, not the application's OpenAI key.
+
+| Service | Active purpose | Billing visibility |
+|---|---|---|
+| OpenAI | Writer and audience review | Organization billing dashboard; organization Costs API requires admin access, not just the application key |
+| TypeSafe/Jev | Factual verification | Signed-in TypeSafe billing console; inference-key presence is not a credit balance |
+| Google Cloud | Production narration | Cloud Billing dashboard/export; service-account synthesis permission does not establish billing visibility |
+| DeepSeek | Optional verifier fallback | Read-only `/user/balance` endpoint; not the writer |
+| ElevenLabs | Optional alternate narration | Subscription endpoint; local key authentication needs repair before using this path |
+| OpenAlex / CORE | Research discovery/evidence | Separate account/rate limits; do not infer their quotas from generation balances |
+| Cloudflare R2 | Feed/audio storage and delivery | Cloudflare billing dashboard; separate from model credits |
+
+The 96-call cap applies to the full-run job's local provider ledger. It is not a persistent account-wide dollar ceiling across Actions runs. The renderer emits an audio-only estimate; retries, text input, writing and factual/audience reviews require actual provider billing for a total spend figure.
+
 ## The short list (what to hand over)
 
 | # | Credential | What it unlocks | Required now? |
@@ -19,8 +35,7 @@ python3 backend/pipeline.py doctor
 | 4 | `SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/`SMTP_PASSWORD` | Newsletter delivery (`backend/newsletter.py send --deliver`) | Only to email |
 | 5 | App Store Connect API key (key id, issuer id, `.p8`) | Archive/upload to TestFlight | Already in use |
 
-Everything else is local and needs no key: the free `VOICE_PROVIDER=local` path, the
-device-voice demos in the app, and all tests.
+The free `VOICE_PROVIDER=local` path, device-voice demos and tests need no inference key. Production verification and cloud narration use the separate services above.
 
 ## Narration providers
 

@@ -1,6 +1,7 @@
 import array
 import json
 import math
+import os
 import shutil
 import subprocess
 import sys
@@ -31,6 +32,8 @@ class MasteringTests(unittest.TestCase):
     def test_real_master_and_aac_keep_timing_and_meet_levels(self):
         if not shutil.which('ffmpeg') or subprocess.run(
                 ['ffmpeg', '-version'], capture_output=True).returncode:
+            if os.environ.get('REQUIRE_AUDIO_MASTERING_TEST') == '1':
+                self.fail('Working FFmpeg is required in production CI')
             self.skipTest('Working FFmpeg unavailable')
         with tempfile.TemporaryDirectory() as tmp:
             wav = Path(tmp) / 'speech.wav'

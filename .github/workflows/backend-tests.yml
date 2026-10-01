@@ -38,10 +38,15 @@ jobs:
           python-version: "3.11"
 
       - name: Install test dependencies
-        run: python3 -m pip install --upgrade pip pytest numpy
+        run: |
+          python3 -m pip install --upgrade pip pytest numpy
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
 
       - name: Backend tests
         run: python3 -m pytest -q backend/tests
+        env:
+          REQUIRE_AUDIO_MASTERING_TEST: '1'
 
       - name: Publicity-signal effect (deterministic, offline)
         run: python3 experiments/selection/publicity_effect.py

@@ -15,6 +15,19 @@ from select_voice_qa import select
 class VoiceQaTests(unittest.TestCase):
     @patch.dict(os.environ, {'LILT_REVIEWER': 'openai'})
     @patch('audience.REVIEW_VERSION', 'audience-review-v1')
+    def test_full_batch_selects_all_approved_without_withheld_scripts(self):
+        batch = ROOT / 'experiments/full-run/stage4-2026-09-22'
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / 'selected'
+            entries = select(batch, out, limit=16)
+            expected = [e for e in json.loads((batch / 'manifest.json').read_text())['shows']
+                        if e['status'] == 'approved']
+            self.assertEqual(len(entries), len(expected))
+            self.assertEqual(len(list(out.glob('*.json'))), len(expected))
+            with self.assertRaisesRegex(ValueError, 'between 1 and 16'):
+                select(batch, Path(tmp) / 'bad', limit=17)
+    @patch.dict(os.environ, {'LILT_REVIEWER': 'openai'})
+    @patch('audience.REVIEW_VERSION', 'audience-review-v1')
     def test_selects_three_contrasting_approved_scripts_without_editing(self):
         batch = ROOT / 'experiments/full-run/stage4-2026-09-22'
         with tempfile.TemporaryDirectory() as tmp:

@@ -7,6 +7,9 @@ on:
       batch_run_id:
         description: Reviewed full-run ID for three full episodes (blank for character comparisons)
         default: ''
+      episode_limit:
+        description: Maximum approved episodes to render (1–16)
+        default: '3'
 
 permissions:
   contents: read
@@ -20,6 +23,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       BATCH_RUN_ID: ${{ inputs.batch_run_id }}
+      EPISODE_LIMIT: ${{ inputs.episode_limit || '3' }}
       LILT_REVIEWER: openai
       GOOGLE_CLOUD_PROJECT: zwicky-509510
       GOOGLE_CLOUD_REGION: eu
@@ -48,8 +52,8 @@ jobs:
           [[ "$BATCH_RUN_ID" =~ ^[0-9]+$ ]] || exit 1
           gh run download "$BATCH_RUN_ID" --repo "$GITHUB_REPOSITORY" --name full-run-transcripts --dir reviewed-batch
           python3 experiments/full-run/check_batch.py reviewed-batch --allow-partial
-          python3 tools/tts/select_voice_qa.py reviewed-batch qa-transcripts
-      - name: Render three full QA episodes
+          python3 tools/tts/select_voice_qa.py reviewed-batch qa-transcripts --limit "$EPISODE_LIMIT"
+      - name: Render approved full QA episodes
         if: env.BATCH_RUN_ID != ''
         run: |
           python3 tools/tts/bundle_shows.py --transcripts qa-transcripts --out voice-qa --tts-provider google-cloud

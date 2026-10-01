@@ -739,7 +739,8 @@ def review(db, story_id: str, reviewer: str):
         db.execute("UPDATE stories SET state='approved',reviewer=?,review_hash=? WHERE id=?", (reviewer.strip(), digest, story_id))
 
 
-def approve_auto(db, story_id: str, decider_mode: str = "auto", repairs: int | None = None):
+def approve_auto(db, story_id: str, decider_mode: str = "auto", repairs: int | None = None,
+                 factual_repairs: int | None = None):
     """Replace the named human reviewer with both automated gates.
 
     Scientific verification and audience review are independent. A story is approved only
@@ -752,16 +753,36 @@ def approve_auto(db, story_id: str, decider_mode: str = "auto", repairs: int | N
     if repairs is None:
         repairs = int(os.environ.get("LILT_AUDIENCE_REPAIRS",
                                      str(audience_review.DEFAULT_MAX_REPAIRS)))
-    attempted = 0
+    factual_limit = min(1, max(0, int(os.environ.get('LILT_FACTUAL_REPAIRS', '0'))
+                              if factual_repairs is None else factual_repairs))
+    attempted, factual_attempted = 0, 0
     while True:
         report = verifier.verify_story(db, story_id, decider_mode)
         if not report["pass"]:
-            return {"story": story_id, "status": "abstained", **report}
+            failures = report.get('failures') or []
+            repairable = failures and all(str(failure).startswith(
+                ('numbers_not_in_evidence', 'quote_not_in_source', 'entail_', 'no_overstatement='))
+                for failure in failures)
+            if repairable and factual_attempted < factual_limit:
+                before = json.loads(row(db, story_id)['draft'])
+                factual_attempted += 1
+                revised = draft_story(db, story_id, redraft=True, extra_instructions=(
+                    'EVIDENCE REVIEW rejected the previous draft:\n- ' + '\n- '.join(failures)
+                    + '\nCorrect or remove only unsupported assertions, numbers or evidence quotations. '
+                    'Use the supplied source passages; add no facts, and keep the real question, '
+                    'main result and material uncertainty. This rewrite must pass fresh factual '
+                    'verification and audience review.'))
+                if verifier.draft_fingerprint(revised) != verifier.draft_fingerprint(before):
+                    continue
+                # An identical rewrite cannot earn a new roll of the verifier.
+            return {"story": story_id, "status": "abstained", **report,
+                    "factual_repairs": factual_attempted}
         listener = audience_check(db, story_id)
         if listener.get("pass"):
             review(db, story_id, report["reviewer"])
             return {"story": story_id, "status": "approved", **report,
-                    "audience": listener, "audience_repairs": attempted}
+                    "audience": listener, "audience_repairs": attempted,
+                    "factual_repairs": factual_attempted}
         # Entertainment release mode keeps evidence verification as the hard gate while
         # treating a fresh "revise" audience verdict as editorial guidance, not a veto.
         # A missing/unavailable review, explicit withhold, or unfounded show fit still blocks.
@@ -772,6 +793,7 @@ def approve_auto(db, story_id: str, decider_mode: str = "auto", repairs: int | N
             review(db, story_id, report["reviewer"])
             return {"story": story_id, "status": "approved", **report,
                     "audience": listener, "audience_repairs": attempted,
+                    "factual_repairs": factual_attempted,
                     "audience_editorial_override": "revise accepted for entertainment release"}
         # Only a parsed review with actionable failures is worth a writer call. A pending
         # review means we could not reach a reviewer; re-rolling would not change the text.
@@ -781,7 +803,7 @@ def approve_auto(db, story_id: str, decider_mode: str = "auto", repairs: int | N
                     "status": "audience_" + ("pending" if listener.get("status") == "pending"
                                              else "rejected"),
                     "pass": False, "factual": report, "audience": listener,
-                    "audience_repairs": attempted}
+                    "audience_repairs": attempted, "factual_repairs": factual_attempted}
         attempted += 1
         draft_story(db, story_id, redraft=True,
                     extra_instructions=audience_review.repair_instructions(listener))

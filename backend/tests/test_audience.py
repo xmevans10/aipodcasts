@@ -374,6 +374,58 @@ class ApproveAutoTests(unittest.TestCase):
         self.assertEqual(result["status"], "abstained")
         request.assert_not_called()  # no audience call once the science has failed
 
+    def test_factual_rewrite_requires_fresh_science_and_audience_approval(self):
+        better = {**DRAFT, 'body': DRAFT['body'].replace(
+            'Evidence is interesting and uncertainty matters.', 'The measured result remains uncertain.')}
+        writer = json.dumps({'status': 'completed', 'output': [{'content': [
+            {'type': 'output_text', 'text': json.dumps(better)}]}]}).encode()
+        with patch.dict(os.environ, self.env), \
+             patch.object(p.verifier, 'verify_story', side_effect=[
+                 {'pass': False, 'failures': ['entail_0=0.7 below 0.8'], 'reviewer': 'auto-verifier:test'},
+                 {'pass': True, 'failures': [], 'reviewer': 'auto-verifier:test'}]) as science, \
+             patch.object(p, 'request', side_effect=[writer, provider_response(CLEAN_REVIEW)]) as request:
+            result = p.approve_auto(self.db, self.id, factual_repairs=1)
+        self.assertEqual(result['status'], 'approved')
+        self.assertEqual(result['factual_repairs'], 1)
+        self.assertEqual(science.call_count, 2)
+        self.assertEqual(request.call_count, 2)
+        self.assertIn('EVIDENCE REVIEW rejected', request.call_args_list[0].kwargs['payload']['instructions'])
+
+    def test_factual_rewrites_are_bounded_and_cannot_bypass_a_second_failure(self):
+        better = {**DRAFT, 'dek': 'A clearer description of the same measured result.'}
+        writer = json.dumps({'status': 'completed', 'output': [{'content': [
+            {'type': 'output_text', 'text': json.dumps(better)}]}]}).encode()
+        with patch.dict(os.environ, self.env), \
+             patch.object(p.verifier, 'verify_story', return_value={
+                 'pass': False, 'failures': ['entail_0=0.7 below 0.8'], 'reviewer': 'auto-verifier:test'}) as science, \
+             patch.object(p, 'request', return_value=writer) as request:
+            result = p.approve_auto(self.db, self.id, factual_repairs=50)
+        self.assertEqual(result['status'], 'abstained')
+        self.assertFalse(result['pass'])
+        self.assertEqual(result['factual_repairs'], 1)
+        self.assertEqual(science.call_count, 2)
+        self.assertEqual(request.call_count, 1)
+
+    def test_an_identical_factual_rewrite_does_not_reroll_verification(self):
+        with patch.object(p.verifier, 'verify_story', return_value={
+                 'pass': False, 'failures': ['entail_0=0.7 below 0.8'], 'reviewer': 'auto-verifier:test'}) as science, \
+             patch.object(p, 'draft_story', return_value=DRAFT) as writer, \
+             patch.object(p, 'audience_check') as listener:
+            result = p.approve_auto(self.db, self.id, factual_repairs=1)
+        self.assertEqual(result['status'], 'abstained')
+        self.assertEqual(science.call_count, 1)
+        writer.assert_called_once()
+        listener.assert_not_called()
+
+    def test_unavailable_verifier_or_unsuitable_source_never_spends_a_rewrite(self):
+        for failure in ['verifier_unavailable: timeout', 'no_decision: entail_0', 'primary_finding=0.1 below 0.5']:
+            with self.subTest(failure), patch.object(p.verifier, 'verify_story', return_value={
+                     'pass': False, 'failures': [failure], 'reviewer': 'auto-verifier:test'}), \
+                 patch.object(p, 'draft_story') as writer:
+                result = p.approve_auto(self.db, self.id, factual_repairs=1)
+            self.assertEqual(result['status'], 'abstained')
+            writer.assert_not_called()
+
     def test_a_passed_evidence_check_does_not_substitute_for_comprehension(self):
         with patch.dict(os.environ, {**self.env, "LILT_AUDIENCE_REPAIRS": "0"}):
             with patch.object(p.verifier, "verify_story",

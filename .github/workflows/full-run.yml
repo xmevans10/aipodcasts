@@ -53,6 +53,9 @@ jobs:
       LILT_EUREKALERT: "1"
       LILT_SMC: "1"
       LILT_DRAFT_ATTEMPTS: "2"
+      # One evidence-guided rewrite for a fixable claim error; unchanged drafts,
+      # unsuitable source studies and unavailable verifiers are never re-rolled.
+      LILT_FACTUAL_REPAIRS: "1"
       # The replacement release can try more papers when review rejects a candidate.
       LILT_MAX_PROVIDER_CALLS_PER_DAY: ${{ inputs.release_fresh_batch && '192' || '96' }}
       SEED_DIR: ${{ inputs.seed_dir || '' }}

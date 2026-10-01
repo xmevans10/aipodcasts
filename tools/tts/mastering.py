@@ -8,7 +8,7 @@ from pathlib import Path
 
 def measure(path: Path) -> dict:
     result = subprocess.run(['ffmpeg', '-hide_banner', '-nostats', '-i', str(path),
-                             '-af', 'loudnorm=I=-16:TP=-2:LRA=11:print_format=json',
+                             '-af', 'loudnorm=I=-16:TP=-3:LRA=11:print_format=json',
                              '-f', 'null', '-'], capture_output=True, text=True, check=True)
     blocks = re.findall(r'\{[^{}]*"input_i"[^{}]*\}', result.stderr, re.DOTALL)
     if not blocks:
@@ -22,7 +22,9 @@ def measure(path: Path) -> dict:
 
 def master(path: Path) -> None:
     levels = measure(path)
-    settings = ('loudnorm=I=-16:TP=-2:LRA=11:linear=true:'
+    # AAC reconstruction can overshoot PCM peaks by more than 1 dB. Reserve
+    # additional encoder headroom; the final encoded measurement remains binding.
+    settings = ('loudnorm=I=-16:TP=-3:LRA=11:linear=true:'
                 f'measured_I={levels["input_i"]}:measured_TP={levels["input_tp"]}:'
                 f'measured_LRA={levels["input_lra"]}:measured_thresh={levels["input_thresh"]}:'
                 f'offset={levels["target_offset"]}')

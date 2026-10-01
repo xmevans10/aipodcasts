@@ -2,7 +2,7 @@
 
 Planning baseline: **30 September 2026**. Based on the [content-flow audit](CONTENT-FLOW-AUDIT.md), live feed and Actions evidence, rather than the older demo-era inventory. This replaces `IMPLEMENTATION-PLAN.md` as the current sequencing document; `LAUNCH.md` remains useful for positioning and draft marketing copy.
 
-**Public launch decision, 1 October: still gated.** Eight episodes are live across six of sixteen shows, including Gradient and Layer by Layer released today. Build 10 processed in internal TestFlight; build 11 replaces the icon with a larger cream Z with subtly flowing strokes and raised-paper depth on lighter textured olive. The latest strictly checked batch has six approved scripts, two already published today, the subsequent full generation run raises deduplicated inventory to twelve unpublished scripts against the fourteen-episode reserve target. Webwork now has an approved script; Star Stuff remains withheld. Physical-device and subjective audio sign-off, support/privacy destinations, source-use policy, correction/rollback validation and the store package remain open. The proposed two-week listener cohort is our quality gate, not an Apple submission requirement.
+**Public launch decision, 1 October: still gated.** Build 1.0.0 (12) is signed and uploaded to internal TestFlight. All sixteen shows have strictly approved scripts; nineteen unique unpublished approvals provide 9.5 days at two releases/day. Public coverage remains eight episodes across six shows. Withdrawal and snapshot rollback were exercised against a separate staging prefix. Physical-device playback, subjective listening, real support/privacy destinations, commercial rights verification and final store/account declarations remain open. The proposed listener cohort is a product quality gate, not an Apple submission requirement.
 
 ## Product promise and scope
 
@@ -115,13 +115,13 @@ After release: operator checks cadence, inventory, audio errors, source correcti
 |---|---|
 | Publishing code repair | Deployed; current-date recovery release and independent content-health jobs succeeded |
 | Actual new publication | Eight live episodes; today's two releases verified through public audio, sidecars and sharing |
-| Latest usable batch | [Latest backfill](https://github.com/xmevans10/aipodcasts/actions/runs/36831940287) has 6/16 strict approvals, including Webwork; two are now published, leaving four unpublished |
-| Backend checks | 313 passed including bounded factual repair |
-| iOS logic | 202 checks passed plus deep-link checks |
+| Latest usable batch | [Complete batch](https://github.com/xmevans10/aipodcasts/actions/runs/36874953619): 16/16 strict approvals; deduplicated unpublished inventory 19 |
+| Backend checks | Latest completed CI: 339 passed, including real FFmpeg mastering |
+| iOS logic | 205 checks passed plus deep-link checks |
 | iOS release compile | Unsigned Release build succeeded with simulator SDK; simulator not launched |
-| Published assets | Eight catalog entries; latest content-health checks passed for today’s two releases, including assets, read-along and ranged M4A streams |
+| Published assets | All eight public episodes passed asset, exact transcript/timing and ranged M4A checks |
 | Device/listening QA | Not performed in this audit |
-| Signed TestFlight | Build 1.0.0 (10) signed, uploaded and successfully processed by App Store Connect (app 6813660087); release notes set; external beta not distributed |
+| Signed TestFlight | Build 1.0.0 (12) signed and uploaded; Apple processing and physical-device signoff not confirmed; external beta not distributed |
 | Source/voice commercial policy, privacy/store package | Requires owner review and verification |
 | Real listener outcomes | Unmeasured; cohort has not been run |
 
@@ -135,7 +135,7 @@ Normal operation: run `prepare-daily-episodes.yml`; it selects/reviews existing 
 
 For replenishment, use `full-run.yml` with `release_fresh_batch=false`. A seed Actions run can reuse approved scripts while finding alternatives for withheld shows. Batch completeness may report failure even when approved partial inventory is usable; preparation checks those approvals itself. Do not turn on entertainment overrides or lower review standards to fill a buffer.
 
-Each catalog commit through `publish_feed.py` first saves the previous catalog under `v1/.release/feed-snapshots/<sha256>.json`; its exact key appears in the job result. A snapshot write failure blocks the feed commit. The deployed sharing-page backfill was exercised successfully and saved a snapshot of the current six-episode catalog. For rollback, stop/serialize publishers, inspect the selected snapshot and its asset availability, then restore that exact JSON to `v1/feed.json` using the operator's R2 credentials with `Cache-Control: no-cache`. Run `content-health` and device checks afterwards. This audit has verified snapshot creation, not an intentional live rollback drill.
+Each catalog commit through `publish_feed.py` first saves the previous catalog under `v1/.release/feed-snapshots/<sha256>.json`; its exact key appears in the job result. A snapshot write failure blocks the feed commit. The deployed sharing-page backfill was exercised successfully and saved a snapshot of the current six-episode catalog. For rollback, stop/serialize publishers, inspect the selected snapshot and its asset availability, then restore that exact JSON to `v1/feed.json` using the operator's R2 credentials with `Cache-Control: no-cache`. Run `content-health` and device checks afterwards. The staging release drill `36873167708` subsequently verified stale-write rejection, withdrawal, replacement links, audio removal and restoration without touching production. Production rollback remains an explicitly reviewed operator action.
 
 The embedded credential was removed from the local Git remote URL; invalidating the old credential still requires its owner to revoke/rotate it. Production domain and support destinations await the founder's domain choice. CI TestFlight signing secrets/environment are not configured; the existing local signing setup successfully uploaded and processed build 10. Its stale key-file location was repaired in the ignored local configuration, without changing the key. The distributed IPA contains the privacy manifest.
 
@@ -173,9 +173,9 @@ Show coverage is a separate launch gate: six of sixteen shows currently have pub
 
 ## App Store release checklist — 1 October
 
-1. Supply: make every promoted show playable or limit the advertised launch catalog. Reach fourteen approved unpublished scripts at two releases/day. Latest reviewed batch: `36831940287`, six approvals including Webwork; strict partial check passes.
+1. Supply: the fourteen-script reserve is met (nineteen unpublished). Make every promoted show publicly playable or limit the advertised catalog; only six of sixteen currently have public episodes.
 2. Quality: listen to launch audio for facts, pronunciation, emotion, clipping and transcript timing. Exercise the signed build on physical iPhones: first play, lock-screen/background playback, interruption, queue/resume, poor network, upgrade and accessibility.
-3. Operations: demonstrate correction/withdrawal and rollback on staging, confirm operator alerts and reliable daily supply, finish persistent spend accounting.
+3. Operations: staging withdrawal/rollback is demonstrated. Confirm operator alerts and reliable daily supply; finish durable account-wide spend accounting and a numeric spending ceiling.
 4. Trust: verify source-use and voice rights, evidence/status disclosures, live support/privacy pages and accurate App Privacy responses against actual app/network behavior.
 5. Submission: final icon/build, real device screenshots, description/keywords, age rating, content rights, export-compliance answers, review contact/notes, territories and pricing. Submit the tested binary for App Review; release after approval.
 6. Product validation: conduct the planned listener cohort and resolve material comprehension/playback issues before public launch. This is a product decision, not an Apple-mandated delay.
@@ -186,3 +186,13 @@ Icon generation: built-in image generator; prompt: enlarge the cream Z by roughl
 ### Full generation and sound design — 1 October
 
 Run `36835451105` produced nine strict approvals; three later shows reached the 96-call run budget. Follow-up `36844386557` preserves approvals and tries seven remaining shows; pending outcomes do not count. Private full audio render `36844094932` uses cue fades, speech-relative cue levels, 3 ms narration seam smoothing and measured two-pass loudness mastering with final AAC rejection thresholds. CI exercises the actual encoder. Source selection now requires an astronomical subject for Star Stuff spectroscopy, avoiding clinical/materials mismatches. Device listening remains required; no new native build is needed for these backend audio changes.
+
+### Current engineering handoff — 1 October
+
+Targeted repairs now receive the exact rejected draft alongside refreshed source evidence. Previously the repair instruction lacked the draft it was meant to salvage. Repairs retain strict factual and audience gates; fresh-release selection excludes already published papers even when a rewritten script differs. Explicit literature reviews are excluded while empirical surveys remain eligible. Spoken caveats clarify the paper’s limitation in everyday language.
+
+Private audio jobs checkpoint completed recordings and verify script, production inputs, encoded bytes and levels before reuse. Every Google narration attempt is logged; hidden SDK retries are disabled. Writer and factual-review attempts are counted against run limits. These artifacts provide usage evidence, not verified account balances or an enforced global dollar cap.
+
+Build 12 includes withdrawal notices, replacement links and stale playback/queue protection. See [withdrawal runbook](release/withdrawal-runbook.md) and [store submission draft](release/store-submission-draft.md). Neither draft support/privacy text nor internal build upload constitutes store submission.
+
+Audio run `36875606615` preserved Gradient, but rejected the next AAC file at -0.71 dBTP. Mastering now reserves 3 dB of PCM peak headroom; the unchanged final gate requires -17 to -15 LUFS and peaks no higher than -1 dBTP. Remaining private renders are being recovered; measured audio and approved scripts are separate from listening approval.

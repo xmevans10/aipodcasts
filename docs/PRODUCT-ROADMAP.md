@@ -196,3 +196,12 @@ Private audio jobs checkpoint completed recordings and verify script, production
 Build 12 includes withdrawal notices, replacement links and stale playback/queue protection. See [withdrawal runbook](release/withdrawal-runbook.md) and [store submission draft](release/store-submission-draft.md). Neither draft support/privacy text nor internal build upload constitutes store submission.
 
 Audio run `36875606615` preserved Gradient, but rejected the next AAC file at -0.71 dBTP. Mastering now reserves 3 dB of PCM peak headroom; the unchanged final gate requires -17 to -15 LUFS and peaks no higher than -1 dBTP. Remaining private renders are being recovered; measured audio and approved scripts are separate from listening approval.
+
+### Account infrastructure update — 4 October
+
+The owner approved using the upgraded Supabase project for necessary database/auth
+capabilities while retaining Cloudflare delivery. Account work is now in scope; prior
+account deferral is superseded. [Supabase foundation](SUPABASE.md) contains an unapplied
+private listener-state migration and a staging isolation test. Target project/provider
+selection, native auth, deletion and opt-in sync remain pending; guest playback is the
+existing shipped behavior. No production migration or listener-data upload has occurred.

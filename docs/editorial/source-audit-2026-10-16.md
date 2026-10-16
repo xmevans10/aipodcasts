@@ -112,3 +112,21 @@ preparation; empty niches remain empty rather than receiving forced fits.
 
 The other niches intentionally have no active episodes yet. Daily generation and release
 use the revised rules; gaps cannot be filled with unrelated papers or legacy prepared audio.
+
+## Story-first reset and fresh batch — 2026-10-16
+
+At the user's request, retirement run `38970879057` removed the two remaining v6
+recordings from playback. All **36 pre-change episodes** now retain notices and backups.
+Fresh generation `38970966705` approved one new script. After adding Science News
+coverage and fixing the confirmed Neanderthal discovery vocabulary gap, expanded run
+`38981027755` produced **five current v7-reviewed scripts** without reusing published papers.
+
+Staging `38981781331` and successful application `38982577465` published **The Injured
+Person of Shanidar Cave** (Old Bones) and **When Math Gets a Proof Checker** (Gradient).
+The public feed, both audio/detail endpoints and both word-timed sidecars were verified;
+the published text matches the reviewed plan exactly. Existing production voices were used.
+
+Three reviewed scripts remain queued: **Pioneer 10’s Longest Near Miss**, **What the Brain
+Does Without Awareness**, and **When Redwood Leaves Feel the Heat**. The ordinary two-per-day
+release rule remains in force. Current checks: 373 backend tests passed, one skipped;
+205 iOS checks and the Release compile passed.

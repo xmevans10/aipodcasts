@@ -1,0 +1,75 @@
+name: adopt-editorial-catalog
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_run:
+        description: Reviewed full-run batch to stage
+        required: true
+      plan_run:
+        description: Staging run with the exact reviewed plan (blank stages only)
+        default: ''
+      plan_sha:
+        description: Exact plan SHA256 required for application
+        default: ''
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+concurrency:
+  group: zwicky-production-feed-v1
+  cancel-in-progress: false
+jobs:
+  adoption:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_PUBLIC_BASE: ${{ secrets.R2_PUBLIC_BASE }}
+      R2_PREFIX: v1
+      GOOGLE_CLOUD_PROJECT: zwicky-509510
+      GOOGLE_CLOUD_REGION: eu
+      LILT_REVIEWER: openai
+      SOURCE_RUN: ${{ inputs.source_run }}
+      PLAN_RUN: ${{ inputs.plan_run }}
+      PLAN_SHA: ${{ inputs.plan_sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python3 -m pip install boto3
+      - if: inputs.plan_run == ''
+        uses: google-github-actions/auth@v3
+        with:
+          project_id: zwicky-509510
+          workload_identity_provider: projects/963729700523/locations/global/workloadIdentityPools/github-actions/providers/sciencebreak-main
+          service_account: zwicky-406@zwicky-509510.iam.gserviceaccount.com
+      - name: Stage two recordings and an exact catalog plan
+        if: inputs.plan_run == ''
+        run: |
+          gh run download "$SOURCE_RUN" --name full-run-transcripts --dir "adoption/batches/$SOURCE_RUN"
+          python3 tools/adopt_editorial_catalog.py select --source-run "$SOURCE_RUN"
+          sudo apt-get update
+          sudo apt-get install -y espeak-ng ffmpeg
+          python3 -m pip install numpy 'google-cloud-texttospeech>=2.31.0'
+          python3 tools/tts/bundle_shows.py --transcripts adoption/transcripts --out adoption/episodes --date "$(cat adoption/date.txt)" --tts-provider google-cloud
+          python3 tools/adopt_editorial_catalog.py plan --source-run "$SOURCE_RUN"
+      - name: Apply the exact reviewed staged plan
+        if: inputs.plan_run != ''
+        run: |
+          test -n "$PLAN_SHA"
+          gh run download "$PLAN_RUN" --name editorial-adoption --dir adoption
+          python3 tools/adopt_editorial_catalog.py apply --plan-sha "$PLAN_SHA"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: editorial-adoption
+          path: adoption/
+          retention-days: 30
+          if-no-files-found: ignore

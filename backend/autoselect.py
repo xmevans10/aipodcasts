@@ -63,6 +63,7 @@ CONTACT = os.environ.get("LILT_CONTACT_EMAIL", "zwicky-research@example.com")
 FEEDS = {
     "quanta": ("https://www.quantamagazine.org/feed/", 1.0),
     "nature": ("https://www.nature.com/nature.rss", 0.9),
+    "sciencenews": ("https://www.sciencenews.org/feed", 0.9),
     "science": ("https://www.science.org/rss/news_current.xml", 0.8),
     "sciencedaily": ("https://www.sciencedaily.com/rss/top/science.xml", 0.5),
     "physorg": ("https://phys.org/rss-feed/", 0.5),
@@ -411,7 +412,8 @@ def fit(work, terms):
     # in "start" previously made unrelated papers look like literal beat matches.
     aliases = {"fungus": r"(?:fungus|fungi|fungal)",
                "bee": r"(?:bees?|bumblebees?|honeybees?)",
-               "galaxy": r"(?:galaxy|galaxies)"}
+               "galaxy": r"(?:galaxy|galaxies)",
+               "archaeology": r"(?:archaeolog(?:y|ical)|palaeolith\w*|paleolith\w*|neandert\w*|hominins?)"}
     # Narrow shows require their literal subject. Incidental terms such as rest,
     # silk, decomposition or insect behaviour cannot manufacture a niche fit.
     anchors = {

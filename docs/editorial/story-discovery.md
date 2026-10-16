@@ -129,7 +129,7 @@ parsed; `lena` matched the REM-sleep reaction and `ada` the brain ones. Covered 
 ## Daily generation
 
 `full-run.yml` runs at 23:00 UTC and on demand. Production starts with dated coverage
-from Quanta, Nature, Science, ScienceDaily and Phys.org, follows explicit paper links,
+from Quanta, Nature, Science, Science News, ScienceDaily and Phys.org, follows explicit paper links,
 and ranks source placement and independent coverage ahead of show balance. This is an
 attention proxy; readership totals are not available. Crossref and OpenAlex provide
 primary research metadata and evidence rather than broad keyword story discovery.

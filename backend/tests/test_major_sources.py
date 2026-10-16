@@ -49,6 +49,22 @@ class MajorSourceTests(unittest.TestCase):
                                     dt.date(2026, 10, 1), dt.date(2026, 10, 16))
         self.assertEqual([c['doi'] for c in coverage], ['10.1234/study'])
 
+    def test_science_news_preserves_explicit_paper_and_independent_coverage(self):
+        from autoselect import FEEDS
+        from publicity import INDEPENDENT
+        xml = ('<rss><channel><item><title>A telling hole in a Neandertal bone</title>'
+               '<link>https://www.sciencenews.org/article/hole-neandertal-bone-fatal-spear</link>'
+               '<pubDate>Thu, 15 Oct 2026 15:00:00 +0000</pubDate></item></channel></rss>')
+        def fetch(url):
+            return 'text', xml if url.endswith('/feed') else ('<main><a href="https://www.nature.com/articles/s41598-026-69193-z">'
+                                                            'The study</a></main>')
+        rows, failures = load_coverage({'sciencenews': FEEDS['sciencenews']}, fetch,
+                                      dt.date(2026, 10, 1), dt.date(2026, 10, 16))
+        self.assertEqual(failures, [])
+        self.assertEqual([r['doi'] for r in rows], ['10.1038/s41598-026-69193-z'])
+        self.assertEqual(rows[0]['match'], 'explicit_doi')
+        self.assertGreater(coverage_priority(rows, INDEPENDENT)[0], 0)
+
     def test_external_feed_link_and_old_coverage_cannot_qualify(self):
         xml = '<rss><channel><item><title>Crater</title><link>https://evil.test/story</link></item><item><title>Old</title><link>https://news.test/old</link><pubDate>2020-01-01</pubDate></item></channel></rss>'
         def get(url):
@@ -67,6 +83,12 @@ class MajorSourceTests(unittest.TestCase):
     def test_syndication_never_accumulates_independent_votes(self):
         items = [{'source': x, 'weight': .5, 'feed_rank': 1} for x in ['physorg', 'sciencedaily']]
         self.assertEqual(coverage_priority(items, {'science'}), coverage_priority(items[:1], {'science'}))
+
+    def test_archaeology_candidate_does_not_require_the_word_archaeology(self):
+        work = {'title': 'Evidence for funerary behaviour and lethal trauma in a new Neanderthal individual',
+                'abstract': 'The hominin fossil record preserves evidence of wooden spears in the Middle Palaeolithic.'}
+        self.assertGreaterEqual(fit(work, BEATS['freya']), .25)
+        self.assertEqual(fit({'title': 'A new industrial reactor', 'abstract': 'Modern engineering.'}, BEATS['freya']), 0)
 
     def test_narrow_show_needs_literal_subject(self):
         for host, title in [('rosa', 'Decomposition of a matrix'), ('lena', 'Rest energy of particles'),

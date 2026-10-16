@@ -25,7 +25,7 @@ from difflib import SequenceMatcher
 SYNDICATORS = {"sciencedaily", "physorg"}
 # Outlets that apply their own editorial judgement: each one is an independent signal,
 # not syndication of a press release.
-INDEPENDENT = {"quanta", "nature", "science"}
+INDEPENDENT = {"quanta", "nature", "science", "sciencenews"}
 # Press-release origins. Presence here is the tier-1 publicity signal.
 PRESS = {"eurekalert", "pressoffice", "university", "journal"}
 

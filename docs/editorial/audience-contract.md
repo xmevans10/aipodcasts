@@ -253,7 +253,7 @@ audience review against this document.
 
 ## 2026-10-16: coherent source selection and human language
 
-Production selection starts with current coverage from Quanta, Nature, Science,
+Production selection starts with current coverage from Quanta, Nature, Science, Science News,
 ScienceDaily and Phys.org. A candidate needs an explicit DOI in the feed or linked
 article, a literal match to a show's niche, usable primary evidence, recent dated coverage,
 and a non-retracted publication that is not future-dated. Headline resemblance never establishes coverage. Each

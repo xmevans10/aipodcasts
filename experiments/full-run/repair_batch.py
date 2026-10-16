@@ -27,6 +27,13 @@ def candidate(seed: Path, host: str, excluded: set[str]) -> dict:
         verification = artifact.get('verification') or {}
         factual = verification.get('factual') or verification
         listener = artifact.get('audience') or {}
+        numeric_only = (factual.get('failures') and all(str(f).startswith('numbers_not_in_evidence:') for f in factual['failures'])
+                        and artifact.get('routing', {}).get('host') == host
+                        and artifact.get('routing', {}).get('version') == 'source-question-routing-v1')
+        if numeric_only:
+            from editorial_policy import require_transcript
+            require_transcript(artifact)
+            eligible.append((0, str(path), artifact))
         if factual.get('pass') and listener.get('beat_fit') == 'grounded' and listener.get('decision') in ('pass', 'revise'):
             issues = sum((4 if i.get('rule') in ('numbers', 'limitations', 'result_concrete') else 1)
                          for i in listener.get('issues', []) if i.get('severity') in ('major', 'blocker'))
@@ -70,7 +77,12 @@ def build(seed: Path, out: Path, hosts: list[str], excluded: set[str]):
                     instructions += ('\nThe current middle reads like a report. Let Yusuf reveal what he expected, '
                                      'which observed detail complicates it, and why that moves him. Remove the repeated '
                                      'sample counts in the limitation. Add no lived memory or facts.')
-                draft_story(db, story_id, redraft=True, extra_instructions=instructions)
+                factual = previous.get('verification') or {}
+                numeric_recheck = factual.get('failures') and all(str(f).startswith('numbers_not_in_evidence:') for f in factual['failures'])
+                if not numeric_recheck:
+                    draft_story(db, story_id, redraft=True, extra_instructions=instructions)
+                else:
+                    instructions = 'Recheck unchanged script against freshly ingested evidence after numeric extraction correction.'
                 verification = approve_auto(db, story_id, 'jev', repairs=1, factual_repairs=0)
                 record = row(db, story_id); draft = json.loads(record['draft']); source = json.loads(record['source'])
                 listener = verification.get('audience') or {}

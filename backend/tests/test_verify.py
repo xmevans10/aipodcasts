@@ -35,6 +35,11 @@ class VerifyTests(unittest.TestCase):
         self.assertFalse(report["pass"])
         self.assertTrue(any("numbers_not_in_evidence" in f for f in report["failures"]))
 
+    def test_mathml_spaced_decimals_preserve_actual_values(self):
+        self.assertEqual(numeric_fidelity("6.5 and 8.3 km/s", "6 . 5 − 4.3 + 3.9 and 8 . 3 − 1.4"), [])
+        self.assertEqual(numeric_fidelity("6.8 km/s", "6 . 5 − 4.3 + 3.9"), ["6.8"])
+        self.assertEqual(numeric_fidelity("6.5 km/s", "6 and 5 separate samples"), ["6.5"])
+
     def test_grouped_source_numbers_match_spoken_digits(self):
         self.assertEqual(numeric_fidelity("137,592 labels", "137 592 labels"), [])
         self.assertEqual(numeric_fidelity("137,592 labels", "137\u202f592 labels"), [])

@@ -196,6 +196,9 @@ def decider(mode: str = "auto") -> Decider:
 def hard_numbers(text: str) -> set[str]:
     """Numbers worth checking: 2+ digits or a decimal. Single digits are prose, not data."""
     found = set()
+    # MathML extraction may separate a decimal point from its digits. Normalize
+    # only a point surrounded by spaces and digits; never join separate numbers.
+    text = re.sub(r"(?<=\d)[ \u00a0\u202f]+\.[ \u00a0\u202f]+(?=\d)", ".", text or "")
     # Scientific PDFs often use spaces (including thin/NBSP) for digit grouping.
     text = re.sub(r"(?<![\d.])\d{1,3}(?:[ \u00a0\u202f]\d{3})+(?!\d)",
                   lambda m: re.sub(r"\s", "", m.group()), text or "")

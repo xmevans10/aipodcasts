@@ -25,3 +25,20 @@ class RepairCandidateTests(unittest.TestCase):
             self.assertEqual(candidate(seed, 'noor', {'10.1/published'})['doi'], '10.1/fixable')
             with self.assertRaisesRegex(ValueError, 'no grounded'):
                 candidate(seed, 'jax', set())
+
+    def test_numeric_recheck_requires_current_source_assignment(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            seed = Path(tmp); (seed / 'withheld').mkdir()
+            artifact = {'host': 'jax', 'doi': '10.1234/galaxy',
+                'selection_policy': 'major-source-first-v2',
+                'major_sources': [{'doi': '10.1234/galaxy', 'source': 'quanta', 'match': 'explicit_doi',
+                                   'url': 'https://www.quantamagazine.org/galaxy'}],
+                'routing': {'host': 'jax', 'doi': '10.1234/galaxy', 'version': 'source-question-routing-v1'},
+                'verification': {'pass': False, 'failures': ["numbers_not_in_evidence: ['6.5']"]}}
+            path = seed / 'withheld' / 'galaxy.json'
+            path.write_text(json.dumps(artifact))
+            self.assertEqual(candidate(seed, 'jax', set())['doi'], artifact['doi'])
+            artifact['verification']['failures'] = ['entail_0=0.2 below 0.8']
+            path.write_text(json.dumps(artifact))
+            with self.assertRaisesRegex(ValueError, 'no grounded'):
+                candidate(seed, 'jax', set())

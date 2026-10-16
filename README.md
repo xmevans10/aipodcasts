@@ -46,13 +46,14 @@ Three directed episodes are in [`demos/three-hosts-2026-09-17`](demos/three-host
 
 ## In the app
 
-Zwicky is a platform for four shows, each with its own host: **The Long View** (Mira Vale, space), **Wild Company** (Clara Rowan, nature), **Signal & Noise** (Elias Reed, brain and technology) and **Common Ground** (Theo Mercer, Earth; sample only). Five tabs: **Home** (your shows as cards, continue listening, latest episodes, listening stats), **Browse** (search shows and episodes), **Hosts** (each presenter, their show and how they work), **Library** (followed shows, queue, saved / in progress / played) and **You** (daily goal ring, a week of listening minutes, totals, following and settings). Onboarding is four steps: what this is, pick shows, set a daily goal, play a first episode.
+Zwicky has sixteen shows with distinct hosts and science niches. Five tabs: **Home** (your shows as cards, continue listening, latest episodes, listening stats), **Browse** (search shows and episodes), **Hosts** (each presenter, their show and how they work), **Library** (followed shows, queue, saved / in progress / played) and **You** (daily goal ring, a week of listening minutes, totals, following and settings). Onboarding has five steps: who Fritz Zwicky was, the mission, the process, follow shows, and login or guest access.
 
 Episodes are loaded from the published feed; the app ships no episode audio or episode catalog. **Read along** loads each episode's transcript sidecar and highlights words as they are spoken; word timings come from the renderer and are anchored to the episode audio. Host portraits are DiceBear "Notionists" illustrations (CC0). Design notes: [docs/DESIGN.md](docs/DESIGN.md).
 
 ### Production narration and episode titles
 
-The weekly and manual render workflows support all 16 shows with the fixed Kokoro cast.
+Daily generation supports all 16 show niches; only covered, grounded stories enter the
+release queue. Production narration uses Google Cloud TTS with a fixed cast.
 Ground Truth and Star Bros render each speaker turn separately; sidecars carry speaker
 names, host IDs, approximate word times anchored to each turn, and the final audio envelope.
 See [voice options](docs/VOICE-OPTIONS.md) for the production path and timing limitations.

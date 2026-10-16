@@ -78,11 +78,12 @@ when early, and merges the audio into the feed once. It never replaces the archi
 with only that day's episodes. GitHub scheduled jobs can still start late or be
 dropped, so 08:00 is a target rather than a hard guarantee.
 
-The weekly `full-run.yml` checks complete review before marking a batch successful.
-The overnight Action checks the batch again before rendering. An incomplete or edited
-transcript batch cannot reach the R2 publish step. The weekly Action can resume a
-partially approved batch from a committed `seed_dir` or a prior `seed_run_id`; see
-[story discovery](editorial/story-discovery.md#weekly-full-run).
+The daily `full-run.yml` generates reviewed inventory at 23:00 UTC. Each eligible
+script needs current source coverage, source-only show assignment, factual and audience
+reviews. Partial batches are allowed; uncovered or off-topic niches remain empty.
+The overnight Action checks scripts again before rendering, and publishing rejects
+stale prepared audio. Current reviewed batches can resume through `seed_run_id`; see
+[story discovery](editorial/story-discovery.md#daily-generation).
 
 The preparation artifact includes `cost-estimate.json` with a per-episode audio
 duration upper bound at Google's public Gemini 2.5 Flash TTS rate. It excludes

@@ -90,3 +90,25 @@ Narration and publication reject legacy batches and prepared audio. Published
 records carry matching source coverage, source-only show assignment, policy
 versions and a hash of the delivered script. Generation runs daily before overnight
 preparation; empty niches remain empty rather than receiving forced fits.
+
+## Live adoption verified — 2026-10-16
+
+- Reviewed generation: Actions `38958923899`; targeted numeric extraction recheck:
+  `38960059976`. Two scripts passed current factual and audience reviews.
+- Staged recordings and exact plan: `38960342826`. Applied successfully: `38961316669`.
+- Plan SHA256: `ea88e0b66c26f52868f887b00f88b5feef1622dd7572184b729b769acf5673f6`.
+- The public app feed contains **two active current-policy episodes** and **34 retirement
+  notices**. All original feed records and legacy assets were backed up before the
+  conditional feed switch. Old IDs remain available; their recordings are no longer public.
+- Star Bros: **When Galaxy Stars Move Too Slowly**, DOI `10.3847/1538-4357/ae6b8d`,
+  discovered through Quanta coverage. Public recording: 266.95 seconds.
+- Signal & Noise: **Where Amyloid Clearance Looks Strongest**, DOI `10.1001/jama.2026.13058`,
+  discovered through ScienceDaily coverage. Public recording: 213.75 seconds.
+- Both public sidecars match the reviewed migration plan exactly, pass script-provenance
+  validation and have valid word-timed read-along data. Both audio/detail endpoints resolve.
+- A retired Webwork listening page returns 200 with its notice; its former audio returns 404.
+- Final validation: 366 backend tests passed, one skipped; 205 iOS checks and deep-link
+  checks passed; the Release simulator-target compile passed without launching a simulator.
+
+The other niches intentionally have no active episodes yet. Daily generation and release
+use the revised rules; gaps cannot be filled with unrelated papers or legacy prepared audio.

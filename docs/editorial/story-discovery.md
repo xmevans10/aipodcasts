@@ -126,54 +126,46 @@ Reactions never enter the evidence packet or the script. Verified live: 18 react
 parsed; `lena` matched the REM-sleep reaction and `ada` the brain ones. Covered by
 `backend/tests/test_smc.py`.
 
-## Weekly full run
+## Daily generation
 
-`experiments/full-run/run_all_shows.py` runs select → ingest → draft → factual
-verification → audience review for every show. `.github/workflows/full-run.yml` runs it
-on Mondays (`0 13 * * 1`) and on demand. Approved JSON/Markdown pairs go under
-`full-run-artifacts/transcripts/`; rejected drafts go under `withheld/` with their
-manifest disposition. The Action always uploads that artifact, even if the release gate
-fails. `check_batch.py` permits the daily release queue only when all sixteen
-canonical shows have approved, current factual and audience fingerprints and their
-Markdown matches the approved JSON. An incomplete run leaves the feed unchanged.
+`full-run.yml` runs at 23:00 UTC and on demand. Production starts with dated coverage
+from Quanta, Nature, Science, ScienceDaily and Phys.org, follows explicit paper links,
+and ranks source placement and independent coverage ahead of show balance. This is an
+attention proxy; readership totals are not available. Crossref and OpenAlex provide
+primary research metadata and evidence rather than broad keyword story discovery.
 
-To continue the stage 4 batch entirely in Actions, dispatch `full-run-transcripts`
-with `seed_dir=experiments/full-run/stage4-2026-09-22`. The five approved scripts are
-checked and reused; the other eleven are selected and reviewed in that run. For another
-attempt, dispatch it with `seed_run_id` set to the previous full-run Actions run ID.
-That downloads its artifact and reuses only approved scripts. `seed_run_id` takes
-precedence over `seed_dir`. The two off-beat papers in the stage 4 manifest are excluded
-from reselection. Review failures and missing candidates stay visible in the manifest;
-the workflow never treats them as approvals.
+A source-only classifier assigns each paper's central question and measured outcome to
+an explicit show scope before writing. The writer uses the audience contract and the
+adapted avoid-ai-writing rules. Independent factual and audience reviews must approve
+the same final script. Approved pairs enter `transcripts/`; failures remain in `withheld/`.
+Partial batches are valid. No quota requires all sixteen shows to receive an episode.
 
-Required repository secrets for drafting: `OPENAI_API_KEY`, `TYPESAFE_AI_API_KEY`,
-`LILT_OPENALEX_KEY`, `LILT_CONTACT_EMAIL`. Optional selection inputs include
-`CORE_API_KEY` and `DEEPSEEK_API_KEY`. The writer and reviewer model come from
-`OPENAI_MODEL` (default `gpt-5.6-luna`); `OPENAI_REASONING_EFFORT` is a repository
-variable (default `low`). The per-run provider cap is 96. Secrets are injected into the
-Action environment, never committed or uploaded with the transcripts. This weekly
-workflow never renders or publishes audio.
+`seed_run_id` resumes only artifacts that pass the current policy. Historical stage 4
+fixtures cannot be released under the current gates. `repair_hosts` permits targeted,
+evidence-grounded repairs and fresh review, without weakening either approval gate.
+The configured writer/reviewer model remains `OPENAI_MODEL` (default `gpt-5.6-luna`),
+with a 96-call full-run cap. Provider secrets remain in Actions, never in artifacts.
 
 ## Daily rolling release
 
-`.github/workflows/daily-episodes.yml` runs at 08:00 UTC each day or on demand. It
-starts with the approved scripts in the committed stage 4 batch, then reads completed
-full-run artifacts. It rechecks every approved script, even in a partial batch, and takes the
-oldest two approved scripts not yet represented by that exact spoken text in the R2
-feed. Those two scripts alone are rendered with Kokoro, uploaded as a daily audio
-artifact, and merged into the existing feed with word-timed sidecars. A reviewed rewrite
-of an older episode replaces that paper's older feed entry; unrelated archive entries
-stay available, and existing audio files are not deleted. The Action then checks the
-app's default public feed URL and both new audio/detail URLs. It uses the feed as the
-publication ledger, counts episodes already published on the current UTC date, and
-refuses to exceed two. A rerun
-after the day's two releases is a no-op. If fewer than two reviewed, unpublished
-episodes are available, the Action fails without changing the feed. A complete 16-show
-buffer lasts eight days at this pace; approved episodes from later review runs replenish it.
-Before rendering, it also requires the configured R2 public feed URL to match the app's
-default feed URL.
+`prepare-daily-episodes.yml` prepares up to two unpublished, reviewed episodes overnight
+in America/New_York. Google Cloud TTS renders the selected scripts and word-timed
+sidecars. Editorial source priority comes before show balance. The publication ledger
+prevents repeated papers; withdrawn IDs remain in that ledger. Missing inventory
+leaves the live feed unchanged rather than admitting fillers.
 
-This Action requires the five `R2_*` repository secrets in
-[Integrations](../INTEGRATIONS.md#episode-delivery-public-cloudflare-r2). It never needs
-writer or reviewer keys. `render-episodes.yml` remains an artifact-only preview path;
-it does not publish the full batch in one day.
+`daily-episodes.yml` stages audio, sidecars and listening pages, verifies they resolve,
+and targets 08:00 Eastern publication. It preserves prior records and enforces two
+active releases per Eastern calendar day. Old prepared artifacts cannot bypass current
+policy checks. Public records carry source coverage, show assignment, policy versions
+and the hash of the delivered script.
+
+## Editorial catalog adoption
+
+`adopt-editorial-catalog.yml` first stages two current reviewed recordings and exports
+an exact migration plan. Applying requires that staging run and its plan SHA256. It
+backs up the original feed and legacy assets, rejects a changed feed, and conditionally
+switches to new recordings plus retirement notices. Old IDs and links survive; old
+recordings are removed from public playback only after backups and the feed update.
+Failed cleanup can resume against the same exact adopted feed without replacing backups.
+The normal daily release schedule then replenishes the revised catalog.

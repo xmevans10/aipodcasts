@@ -238,7 +238,9 @@ popularity chart. Unavailable feeds and unresolved paper links can leave show sl
 empty. Production must abstain rather than fill them with unrelated or uncovered papers.
 `require_major_source=False` is an explicit research/exploration option, not the release
 default. Narrow beats require their literal subject; incidental mentions of rest, silk,
-decomposition or insect behaviour cannot establish fit. Audience review v5 requires
+decomposition or insect behaviour cannot establish fit. A source-only assignment identifies the central question and measured outcome before
+writing, using the explicit show scopes in `backend/show_routing.py`. A neural network
+used in a brain study does not turn that study into AI research. Audience review v6 requires
 `grounded` beat fit; `weak` and `unfounded` require reselection rather than a rewrite
 that tries to manufacture relevance.
 

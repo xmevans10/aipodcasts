@@ -71,9 +71,12 @@ struct WelcomeView: View {
 
     private var biography: some View {
         Group {
-            editorialArt("THE NAMESAKE", symbol: "sparkles")
-            title("A universe of\nquestions.")
-            Text("Fritz Zwicky, a Caltech astronomer, proposed dark matter and, with Walter Baade, linked supernovae to neutron stars. His bold ideas reshaped astronomy and inspire our curiosity about the universe today.")
+            Image("fritz-zwicky-pencil")
+                .resizable().scaledToFit().aspectRatio(1, contentMode: .fit)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .accessibilityLabel("Pencil portrait of Fritz Zwicky")
+            title("Who was Zwicky?")
+            Text("Fritz Zwicky was a Caltech astronomer who proposed dark matter and, with Walter Baade, linked supernovae to neutron stars. But many people have never heard of him. His dark matter proposal went largely unappreciated for decades, before becoming central to our understanding of the universe.")
                 .font(.body).foregroundStyle(Theme.secondary)
             Link("Explore Zwicky’s legacy ↗", destination: URL(string: "https://burkeinstitute.caltech.edu/research/Legacy")!)
                 .font(.caption).tint(Color(hex: 0xA74620))
@@ -83,11 +86,11 @@ struct WelcomeView: View {
     private var mission: some View {
         Group {
             editorialArt("OUR MISSION", symbol: "waveform")
-            title("Keep your\ncuriosity alive.")
-            Text("We turn science into short, thoughtful listening—so you can explore big ideas, understand the evidence, and find wonder in your everyday life.")
+            title("Discovery deserves\nto be shared.")
+            Text("We highlight interesting scientific publications and the people behind them, turning research into stories more people can understand, learn from, and celebrate. Because scientific discovery deserves to be shared.")
                 .font(.body).foregroundStyle(Theme.secondary)
             featureStrip
-            Text("Small episodes. A bigger world.").font(.system(.headline, design: .serif))
+            Text("Learn something new. Celebrate discovery.").font(.system(.headline, design: .serif))
         }
     }
 

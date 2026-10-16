@@ -79,6 +79,17 @@ class VerdictTests(unittest.TestCase):
         self.assertFalse(report["pass"])
         self.assertTrue(any("term_before_use" in f for f in report["failures"]))
 
+    def test_buried_thesis_blocks_even_if_other_checks_pass(self):
+        review = {**CLEAN_REVIEW, "issues": [{"severity": "major", "rule": "opening_storyline",
+            "span": "How does a leaf stay flat?",
+            "instruction": "Explain the actual question and central observation before technical detail."}]}
+        self.assertFalse(audience.verdict(review, DRAFT, SOURCE["text"])["pass"])
+
+    def test_prior_review_cannot_bypass_new_storyline_gate(self):
+        report = audience.verdict(CLEAN_REVIEW, DRAFT, SOURCE["text"])
+        report["review_version"] = "audience-review-v6"
+        self.assertFalse(audience.is_fresh(report, DRAFT))
+
     def test_a_minor_issue_is_recorded_but_does_not_block(self):
         review = {**CLEAN_REVIEW, "issues": [
             {"severity": "minor", "rule": "analogy", "span": "like a bridge",
@@ -120,6 +131,18 @@ class VerdictTests(unittest.TestCase):
         self.assertIn("Loop-forming cohesin", text)
         self.assertIn("do not remove a number", text)
 
+    def test_storyline_review_receives_only_spoken_words_in_opening_excerpt(self):
+        captured = {}
+        def fetch(url, **kwargs):
+            captured.update(kwargs["payload"])
+            return provider_response(CLEAN_REVIEW)
+        with patch.dict(os.environ, {"LILT_REVIEWER": "openai", "OPENAI_API_KEY": "test", "OPENAI_MODEL": "configured"}):
+            audience.review_script(DRAFT, SOURCE, "EXTRA SOURCE FACTS", "The Long View", "space", fetch=fetch)
+        state = json.loads(captured["input"])
+        self.assertEqual(state["opening_excerpt"], " ".join(DRAFT["body"].split()[:90]))
+        self.assertNotIn("EXTRA SOURCE FACTS", state["opening_excerpt"])
+        self.assertIn("opening_storyline", captured["instructions"])
+
     def test_jev_typed_audience_judgment(self):
         class FakeJev:
             def ask(self, questions, state):
@@ -139,7 +162,7 @@ class VerdictTests(unittest.TestCase):
         self.assertEqual(report["reviewer"], "audience-reviewer:jev")
 
     def test_flat_or_interchangeable_delivery_withholds_approval(self):
-        for failed_rule in ("casual_delivery", "host_personality"):
+        for failed_rule in ("storyline", "casual_delivery", "host_personality"):
             class FakeJev:
                 def ask(self, questions, state):
                     self_outer.assertTrue(state["host_profiles"])

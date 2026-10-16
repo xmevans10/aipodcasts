@@ -10,7 +10,7 @@ from provenance import provenance_text, quotes_in_source
 from podcast import TITLE_GUIDE, validate_episode_title
 from hosts import dialogue_dynamic
 
-DIALOGUE_PROMPT_VERSION = 'dialogue-v7'  # responsive thinking, repairs and emotional movement
+DIALOGUE_PROMPT_VERSION = 'dialogue-v8'  # responsive thinking, repairs and emotional movement
 
 #: Opening window in spoken words: 220 for a duo, 280 for the four-host show.
 OPENING_WORDS_BASE = 160
@@ -44,7 +44,9 @@ presenters; do not let one speaker run more than two turns in a row. No spoken s
 headings.
 
 Shape the episode naturally:
-1. Open with a concrete curiosity hook or vivid question from one presenter.
+1. Have the presenters establish the concrete story in everyday words within the first
+   few turns: the question or tension, central observation and honest study scale. A
+   vivid question without a clear thesis is insufficient.
 2. Then, still early in the episode, explain what the paper investigates in ordinary
    words, introduce it by its exact source_title and credit the first named
    author from source_attribution followed by 'and colleagues' when there are multiple

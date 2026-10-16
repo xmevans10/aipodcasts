@@ -6,7 +6,7 @@ import json
 
 SELECTION = 'major-source-first-v2'
 WRITING = 'avoid-ai-writing-v3.38.0'
-REVIEW = 'audience-review-v6'
+REVIEW = 'audience-review-v7'
 
 
 def coverage_for(doi, rows):

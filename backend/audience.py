@@ -25,7 +25,7 @@ from hosts import HOSTS
 from anti_slop import SOURCE_FIDELITY_GUIDE
 from editorial import CONTRACT_VERSION
 
-REVIEW_VERSION = "audience-review-v6"
+REVIEW_VERSION = "audience-review-v7"
 
 RESPONSES_URL = "https://api.openai.com/v1/responses"
 
@@ -79,6 +79,16 @@ doing something else. They cannot reread a sentence or look a word up.
 
 Judge the script against these rules, and name the rule you are applying in each issue:
 
+opening_storyline: using only the opening_excerpt, can a nonspecialist say what this
+  story is about and what was observed, with the study scale honestly represented?
+  For the Alzheimer’s case, a vague hook about folds, grooves or a patchy answer fails
+  if the listener does not yet
+  know this is a treatment targeting a protein and an uneven observation in one brain.
+  Do not supply missing context from the paper or evidence. A buried thesis is MAJOR.
+connected_storyline: does each paragraph or turn advance the same question through
+  background, researchers' actions, observations/comparison, meaning and limit? A list
+  of accurate facts with no listener-facing reason for their order is MAJOR. Do not
+  require headings, a fixed paragraph count, jokes or an invented emotional arc.
 one_question: does one central question, one main result and one meaningful boundary come
   through, rather than a survey of everything the paper did?
 term_before_use: is every essential technical term explained in ordinary words BEFORE it is
@@ -116,7 +126,8 @@ host_personality: compare the supplied host profiles with the words spoken, igno
   the hosts apart by how they react and respond? A generic warm expert voice fails.
   Reactions, preferences, modest self-correction and vulnerability are welcome; do not
   penalise them as invented evidence unless they assert a fake event, biography or fact.
-  Do not require every emotion or trait in every episode.
+  Do not require every emotion or trait in every episode, an acted confusion, or a
+  manufactured emotional arc. Clear explanation can itself convey the host’s attitude.
 dialogue: for multi-presenter scripts, does each turn answer the one before it in EASIER
   words? Alternating expert-sounding speeches fails, however accurate each one is.
   Are the presenters distinguishable from one another by voice alone?
@@ -137,7 +148,8 @@ imperfection that does not prevent comprehension, honest uncertainty, casual del
 an audible character. Do not demand a perfectly polished performance. A missing joke or
 an absent emotional flourish is not itself a major issue.
 
-Decide: "pass" when a nonspecialist can recover the question, method, finding and limit,
+Decide: "pass" when the opening establishes the story and the connected script lets a
+nonspecialist recover the question, method, finding and limit,
 the literal beat fits, and the host sounds conversational and recognisable. PASS WITH
 MINOR ADVISORIES when those conditions hold; minor issues do not require revision.
 A weak or unfounded beat fit requires "withhold" and reselection.
@@ -202,6 +214,11 @@ def review_script(draft: dict, source: dict, evidence: str, show: str, beat: str
                 "understood_" + key, "boolean",
                 f"After one listen, could a non-specialist understand the script's {label}?"))
         for rule, instruction in (
+            ("storyline", "Using the opening_excerpt alone, can an ordinary listener explain what this story "
+             "is about and its central observation, with study scale honestly represented? Then does the "
+             "full script develop one connected question through actions, observations, meaning and limit? "
+             "A vague hook, buried thesis, or disconnected technical inventory fails. Do not fill gaps "
+             "from the source, or require a manufactured emotional arc."),
             ("casual_delivery", "Does the script sound like a person sharing a discovery with a friend, "
              "rather than a polished academic summary? Allow reactions and small imperfections; "
              "do not demand jokes or filler. Ignore jargon inside the required paper citation."),
@@ -214,7 +231,7 @@ def review_script(draft: dict, source: dict, evidence: str, show: str, beat: str
         state = {
             "host_profiles": profiles,
             "show": show, "beat": beat, "title": draft.get("title", ""),
-            "script": _spoken(draft), "paper_title": source.get("title", ""),
+            "script": _spoken(draft), "opening_excerpt": " ".join(_spoken(draft).split()[:90]), "paper_title": source.get("title", ""),
             "evidence_excerpt": evidence[:6000],
         }
         try:
@@ -225,18 +242,20 @@ def review_script(draft: dict, source: dict, evidence: str, show: str, beat: str
         fit = beat_decision.answer if beat_decision else None
         checks = {q.id.removeprefix("understood_"): decisions[q.id].answer
                   for q in questions[1:] if q.id in decisions}
-        if (fit not in ("grounded", "weak", "unfounded") or len(checks) != 6
+        if (fit not in ("grounded", "weak", "unfounded") or len(checks) != len(questions) - 1
                 or any(type(value) is not bool for value in checks.values())):
             raise RuntimeError("Jev audience review returned an incomplete judgment")
         return {
             "decision": "withhold" if fit != "grounded" else
                         "pass" if all(checks.values()) else "revise",
-            "issues": [{"severity": "major", "rule": key if key in ("casual_delivery", "host_personality") else "one_listen_comprehension",
+            "issues": [{"severity": "major", "rule": key if key in ("storyline", "casual_delivery", "host_personality") else "one_listen_comprehension",
                         "span": "", "instruction": (
                             "Rewrite as a casual conversation, allowing an earned reaction and natural phrasing."
                             if key == "casual_delivery" else
                             "Make the supplied character audible in attitude, rhythm and responses; do not change the science."
                             if key == "host_personality" else
+                            "State the question and central observation in plain words at the start, then connect the actions, result and limitation without adding facts."
+                            if key == "storyline" else
                             f"Jev found the {key} unclear after one listen.")}
                        for key, value in checks.items() if not value],
             "first_hard_sentence": "", "unexplained_terms": [], "beat_fit": fit,
@@ -258,6 +277,7 @@ def review_script(draft: dict, source: dict, evidence: str, show: str, beat: str
         "dek": draft.get("dek", ""),
         "format": "dialogue" if "turns" in draft else "solo",
         "script": _spoken(draft),
+        "opening_excerpt": " ".join(_spoken(draft).split()[:90]),
         "stated_limitation": draft.get("caveat", ""),
         "paper_title": source.get("title", ""),
         "paper_attribution": source.get("attribution", ""),

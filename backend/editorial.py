@@ -103,11 +103,38 @@ This does NOT mean hiding the host's curiosity, momentary confusion or change of
    host finds funny, troubling or surprising and carries the listener into the next idea.
 '''
 
+STORYLINE_GUIDE = '''STORY FIRST — a full storyline in everyday language.
+In the first few sentences, tell the listener what this story is about and the central
+observation. Establish the real question or tension and why the observation is interesting.
+A vague curiosity hook, anatomical image or clever reaction cannot substitute for a thesis.
+Keep the study's scale honest from the beginning. Reveal the finding; do not withhold it
+for suspense while explaining terminology.
+
+Carry one connected thread: question -> necessary background -> what researchers did ->
+what they observed, with a useful comparison -> what it might mean -> what it cannot
+establish -> the remaining question. These are narrative functions, not spoken headings
+or a fixed paragraph count. Explain why each detail matters to that thread. Dialogue
+presenters jointly advance the same story rather than giving separate mini-lectures.
+
+Use everyday language throughout the middle. Introduce names, anatomy, instruments and
+protein labels only after the listener understands their role, and only when needed.
+Illustrative framing, NEVER source evidence to copy: a treatment targets a protein; one
+treated brain has much less of it in some areas; those areas also show less damage.
+Start with that observation and the one-patient scale. Folds, grooves and protein names
+come later. Do not turn that association into proof of treatment benefit.
+
+Personality serves the explanation. Do not invent an expectation, confusion or emotional
+arc to manufacture a story. Do not inflate a modest finding into practical advice or a
+breakthrough. Preserve attribution, numbers needed for honesty and material uncertainty.
+Before returning JSON, ask whether an ordinary listener could explain the story from the
+opening alone, and then follow why each subsequent paragraph or turn comes next.
+'''
+
 HUMAN_STORY_GUIDE = '''THINKING AND FEELING OUT LOUD — storytelling, not a miniature paper review.
-Build around a supported tension: an intuitive expectation, what was actually tested,
-and the detail that changes how the host understands it. Let that question pull us through
-the MIDDLE, instead of marching through an inventory of methods and results. Do not imply
-an expected outcome was the researchers' hypothesis unless the source says so.
+Build around the paper's real question and the observation that makes its answer
+interesting. If an intuitive expectation helps explain that question, label it as the
+host's intuition; never invent a researcher hypothesis. Let the scientific question pull
+us through the MIDDLE rather than marching through an inventory of methods and results.
 Use tangible actions/objects the source supplies. An explicitly imagined everyday analogy
 can help; invented lab scenes, dialogue, memories and researcher feelings cannot.
 The fictional host may want a simpler answer, feel unsettled, get excited about a detail,
@@ -125,8 +152,8 @@ Keep personality inside the explanation: one host lingers fondly on a living det
 another punctures a seductive claim, another gets absorbed in how something was built.
 An emotional arc need not end in excitement. Honest disappointment or an unresolved
 question can be the ending. Preserve the finding and every material limit.
-Before returning JSON, silently ask: what did THIS host initially expect or want, what
-specific detail moved them, and why does the next thought follow? If the body is still
+Before returning JSON, silently ask: what question is the listener following, what
+specific detail matters to the scientific question, and why does the next thought follow? If the body is still
 an abstract with contractions, rewrite its narrative spine. Do not add a reaction quota.
 '''
 
@@ -156,7 +183,7 @@ def contract_block() -> str:
     string matches that a validator rejects outright, and a writer that has just read four
     paragraphs about cutting for clarity will otherwise paraphrase the headline away.
     """
-    return "\n".join([PRECEDENCE, AUDIENCE_CONTRACT, INTERNAL_CONTROLS, WRITING_PROCESS, HUMAN_STORY_GUIDE,
+    return "\n".join([PRECEDENCE, AUDIENCE_CONTRACT, INTERNAL_CONTROLS, WRITING_PROCESS, HUMAN_STORY_GUIDE, STORYLINE_GUIDE,
                        OPENING_CHECKLIST])
 
 

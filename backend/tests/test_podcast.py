@@ -1,4 +1,7 @@
 import unittest
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from podcast import validate_podcast, narration_script
 
 class PodcastTests(unittest.TestCase):
@@ -7,6 +10,17 @@ class PodcastTests(unittest.TestCase):
         self.draft = {'title': 'The quiet achievement', 'caveat': 'The sample was small.',
                       'body': 'How does a leaf stay flat? Today: The quiet achievement. Kate Harline and colleagues explore this in Growth across a leaf. The sample was small. Look again at that leaf.'}
     def test_spoken_citation(self): validate_podcast(self.draft, self.source)
+    def test_citation_can_follow_plain_language_setup_after_180_words(self):
+        setup = 'What did researchers learn? ' + 'Researchers followed how leaves grow. ' * 38
+        self.draft['body'] = setup + self.draft['body']
+        validate_podcast(self.draft, self.source)
+
+    def test_citation_still_must_appear_within_opening(self):
+        setup = 'What did researchers learn? ' + 'Researchers followed how leaves grow. ' * 45
+        self.draft['body'] = setup + self.draft['body']
+        with self.assertRaisesRegex(ValueError, '220 spoken words'):
+            validate_podcast(self.draft, self.source)
+
     def test_episode_headline_can_stay_on_app_card(self):
         self.draft['body'] = self.draft['body'].replace('Today: The quiet achievement. ', '')
         validate_podcast(self.draft, self.source)

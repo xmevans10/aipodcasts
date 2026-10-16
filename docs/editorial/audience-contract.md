@@ -1,7 +1,7 @@
 # The Zwicky audience contract
 
 Canonical editorial standard for spoken Zwicky episodes, solo and co-hosted.
-Version: `audience-contract-v1` (2026-09-22).
+Version: `audience-contract-v1` (2026-09-22; storyline clarification 2026-10-16).
 
 This document is the standard that generation prompts, deterministic validators and the
 audience reviewer all refer to. When a prompt, a validator and this document disagree,
@@ -43,6 +43,34 @@ Each episode carries:
 
 Secondary results, secondary statistics and secondary caveats are cut. A second finding
 earns a place only when the main finding is unintelligible without it.
+
+### Make the story clear before the detail
+
+In the first few sentences, explain in everyday words what this story is about and
+its central observation. Establish the real question or tension and why this observation
+is interesting. A vague curiosity hook, an anatomical image or a clever reaction cannot
+stand in for that explanation. Keep the study's scale honest from the beginning.
+
+Then carry one connected storyline: the question → the necessary background → what
+researchers did → what they observed and the useful comparison → what that might mean
+→ what it cannot establish → the remaining question. These are narrative functions,
+not spoken headings or a rigid paragraph count. A dialogue follows the same thread.
+
+For example, the Alzheimer’s case begins with a treatment targeting a protein, uneven
+amounts of that protein in one treated brain, and fewer signs of damage in the clearer
+areas. Only then explain the treatment, comparison and brain anatomy. “Folds and grooves”
+is supporting detail, not the thesis. This is an illustration, never evidence to copy
+into another episode. Preserve association versus causation and the one-patient limit.
+
+Use plain words throughout, not merely a friendly opening followed by a technical middle.
+Name a specialist term only when it serves the story. Explain why a method, number or
+comparison matters before asking the listener to remember it. Let host personality emerge
+through clear explanation and proportionate reactions; do not manufacture an expectation,
+confusion or emotional arc as a substitute for the scientific story.
+
+Audience review must flag a buried thesis or disconnected sequence of accurate facts as a
+major comprehension issue. The reviewer must recover the opening's story from the spoken
+words, not fill it in from the paper or evidence packet.
 
 ## 3. Explain the phenomenon before naming it
 
@@ -193,7 +221,9 @@ never removes a caveat.
 - The accessible hook comes **first**.
 - The exact `source_title` then appears **once**, within the opening, together with the
   first named author and "and colleagues" where there are multiple authors, plus the
-  journal where available.
+  journal where available. Solo scripts allow this credit within the first 220 words
+  so the plain-language setup comes first; the story itself must be clear in the first
+  few sentences. This does not relax exact attribution or permit a buried thesis.
 - The episode headline remains distinct from the paper title on the app card. Speaking
   it is optional; never announce title-field labels. Introduce the research in ordinary
   words and bring in the show and host naturally. Relative publication timing requires
@@ -201,9 +231,8 @@ never removes a caveat.
   Updated from the user’s conversational-opening feedback, 2026-10-01.
 - The full exact citation always remains in source metadata and the app's source card.
 
-Known cost of this policy: a long technical paper title in the first 30 seconds is a real
-obstacle for a general listener. The contract mitigates it by requiring the hook first and
-the title once, never twice.
+Known cost of this policy: an early long technical paper title can interrupt understanding.
+The contract requires the plain-language story setup first and the title once, never twice.
 
 **Approved alternative, not currently active:** exact title in the source card only; the
 spoken opening names the first author, the journal and a natural description of the topic.
@@ -240,7 +269,7 @@ empty. Production must abstain rather than fill them with unrelated or uncovered
 default. Narrow beats require their literal subject; incidental mentions of rest, silk,
 decomposition or insect behaviour cannot establish fit. A source-only assignment identifies the central question and measured outcome before
 writing, using the explicit show scopes in `backend/show_routing.py`. A neural network
-used in a brain study does not turn that study into AI research. Audience review v6 requires
+used in a brain study does not turn that study into AI research. Audience review v7 requires
 `grounded` beat fit; `weak` and `unfounded` require reselection rather than a rewrite
 that tries to manufacture relevance.
 

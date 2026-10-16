@@ -1,0 +1,72 @@
+name: retire-outdated-episodes
+
+on:
+  workflow_dispatch:
+    inputs:
+      feed_sha:
+        description: SHA256 of the exact catalog reviewed for retirement
+        required: true
+
+permissions:
+  contents: read
+concurrency:
+  group: zwicky-production-feed-v1
+  cancel-in-progress: false
+jobs:
+  retire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_PUBLIC_BASE: ${{ secrets.R2_PUBLIC_BASE }}
+      R2_PREFIX: v1
+      REVIEWED_FEED_SHA: ${{ inputs.feed_sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python3 -m pip install boto3
+      - name: Retire only episodes predating the current writing review
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          sys.path[:0] = ['backend', 'tools']
+          from editorial_policy import REVIEW
+          from publish_feed import r2_client, load_existing_feed
+          from withdraw_episode import plan, apply, fingerprint
+          client = r2_client()
+          bucket, prefix, base = os.environ['R2_BUCKET'], os.environ['R2_PREFIX'], os.environ['R2_PUBLIC_BASE']
+          feed = load_existing_feed(client, bucket, prefix)
+          if fingerprint(feed) != os.environ['REVIEWED_FEED_SHA']:
+              raise ValueError('Catalog changed after review; inspect a fresh snapshot')
+          targets = [s['id'] for s in feed if s.get('withdrawalNotice') is None
+                     and (s.get('editorialPolicy') or {}).get('review') != REVIEW]
+          notice = ('Retired during the story-first writing update. This recording predates '
+                    'our current requirement to explain the central question and finding '
+                    'clearly in everyday language. Follow this show for newly reviewed episodes.')
+          results = []
+          for episode_id in targets:
+              current = load_existing_feed(client, bucket, prefix)
+              reviewed = plan(current, episode_id, notice)
+              results.append(apply(client, bucket, prefix, base, reviewed))
+          remaining = load_existing_feed(client, bucket, prefix)
+          if any(s.get('withdrawalNotice') is None and
+                 (s.get('editorialPolicy') or {}).get('review') != REVIEW for s in remaining):
+              raise ValueError('A pre-change episode remains playable')
+          report = {'review': REVIEW, 'retired': results,
+                    'active': sum(s.get('withdrawalNotice') is None for s in remaining)}
+          Path('retirement-report.json').write_text(json.dumps(report, indent=2))
+          print(json.dumps(report, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: retirement-report
+          path: retirement-report.json
+          if-no-files-found: ignore
+          retention-days: 90

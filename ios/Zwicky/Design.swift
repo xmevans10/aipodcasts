@@ -134,75 +134,40 @@ extension SectionHeader where Trailing == EmptyView {
     init(title: String) { self.title = title; self.trailing = EmptyView() }
 }
 
-/// Podcast cover art: an organic mesh wash, a faint per-show line motif, film grain,
-/// a soft light bloom and the show title set in serif. No glyph watermark.
-/// Size it with `.frame(width:)`; it stays square.
+/// Sixteen retrofuturist illustrations, framed as colored science plates with live typography.
 struct ShowCover: View {
     var show: Show
     var body: some View {
         GeometryReader { geometry in
-            // Always square, whatever the parent proposes: a cover that stretches drags
-            // the row's text on top of it.
             let w = min(geometry.size.width, geometry.size.height)
+            let paper = Color(hex: 0xF0E3C5)
             ZStack(alignment: .bottomLeading) {
-                // Every decorative layer is clamped to w×w so none of them can size the cover.
-                Image("cover-\(show.id)")
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: w, height: w)
-                RadialGradient(colors: [show.light.opacity(0.4), .clear], center: UnitPoint(x: 0.82, y: 0.14),
-                               startRadius: 0, endRadius: w * 0.72)
-                Ellipse()
-                    .fill(LinearGradient(colors: [.white.opacity(0.18), .clear], startPoint: .top, endPoint: .bottom))
-                    .frame(width: w * 1.5, height: w * 0.42)
-                    .rotationEffect(.degrees(-26))
-                    .offset(x: -w * 0.18, y: w * 0.2)
-                    // Clamped to the cover: the sheen is wider than the art, and without this
-                    // the stack sizes itself to the sheen and shifts everything else off-centre.
-                    .frame(width: w, height: w)
+                paper.overlay(show.light.opacity(0.18))
+                Image("cover-\(show.id)").resizable().scaledToFill()
+                    .frame(width: w * 0.88, height: w * 0.66, alignment: show.id == "marginal-gains" || show.id == "hive-mind" ? .top : show.id == "slow-wave" ? .bottom : .center).clipped()
+                    .frame(width: w, height: w, alignment: .top)
+                    .offset(y: w * 0.06)
                 if w >= 96 {
-                    // A low shade behind the title keeps white type legible over the lightest mesh.
-                    LinearGradient(stops: [.init(color: show.dark.opacity(0.5), location: 0),
-                                           .init(color: .clear, location: 0.55)],
-                                   startPoint: .bottom, endPoint: .top)
-                        .frame(width: w, height: w)
-                }
-                // Printed, not digital: fine grain, overlay-blended within the compositing group.
-                CoverGrain().frame(width: w, height: w).blendMode(.overlay).opacity(w >= 96 ? 0.2 : 0.14)
-                if w >= 96 {
-                    // The trailing spacer pins the block left and stops a long title
-                    // laying itself out wider than the art and spilling past both edges.
-                    HStack(alignment: .bottom, spacing: 0) {
-                        VStack(alignment: .leading, spacing: w * 0.025) {
-                            Text(show.title).font(.system(size: w * 0.125, weight: .semibold, design: .serif)).tracking(-0.3)
-                                .lineLimit(2).minimumScaleFactor(0.7)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Text(show.host.name.uppercased()).font(.system(size: max(7, w * 0.046), weight: .semibold))
-                                .tracking(0.9).opacity(0.85).lineLimit(1)
-                        }
-                        Spacer(minLength: 0)
+                    VStack(alignment: .leading, spacing: w * 0.014) {
+                        Text(show.category.uppercased())
+                            .font(.system(size: max(6, w * 0.028), weight: .medium, design: .monospaced))
+                            .tracking(w * 0.006).lineLimit(1).minimumScaleFactor(0.7)
+                        Text(show.title.uppercased())
+                            .font(.system(size: w * 0.095, weight: .black, design: .default).width(.condensed))
+                            .lineLimit(2).minimumScaleFactor(0.65)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Rectangle().fill(show.mid).frame(height: max(1, w * 0.006))
                     }
-                    .foregroundStyle(.white).shadow(color: show.dark.opacity(0.4), radius: w * 0.05, y: w * 0.01)
-                    .frame(width: w * 0.86)
-                    .padding(.horizontal, w * 0.07)
-                    .padding(.bottom, w * 0.07)
+                    .foregroundStyle(show.dark)
+                    .padding(.horizontal, w * 0.06).padding(.bottom, w * 0.055)
                 }
+                CoverGrain().blendMode(.multiply).opacity(0.10)
             }
-            .frame(width: w, height: w)
-            // An overlay cannot change the cover's size, so the host never stretches the art.
-            .overlay(alignment: w >= 96 ? .topTrailing : .center) {
-                HostAvatar(host: show.host, size: w >= 96 ? w * 0.3 : w * 0.46)
-                    .overlay(Circle().strokeBorder(.white.opacity(0.7), lineWidth: max(1, w * 0.012)))
-                    .shadow(color: show.dark.opacity(0.35), radius: w * 0.04, y: w * 0.012)
-                    .padding(w >= 96 ? w * 0.07 : 0)
-            }
-            // Keeps the bloom and sheen inside the cover instead of compositing with the card behind it.
-            .compositingGroup()
-            .clipShape(RoundedRectangle(cornerRadius: max(6, w * 0.11), style: .continuous))
+            .frame(width: w, height: w).compositingGroup().clipped()
+            .clipShape(RoundedRectangle(cornerRadius: max(4, w * 0.035)))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .aspectRatio(1, contentMode: .fit)
-        .accessibilityHidden(true)
+        .aspectRatio(1, contentMode: .fit).accessibilityHidden(true)
     }
 }
 

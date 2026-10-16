@@ -755,7 +755,7 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
         if len(selected) >= limit:
             break
     selected_studiness = [w["studiness"] for w in selected]
-    return {"selection_policy": "major-source-first-v1" if require_major_source else "exploratory",
+    return {"selection_policy": "major-source-first-v2" if require_major_source else "exploratory",
             "source_failures": source_failures, "coverage_links": len(coverage),
             "source": source, "window_days": days, "papers_pulled": len(works), "candidates": len(ranked),
             "eligible": sum(1 for w in ranked if w["reusable"]), "selected": selected,

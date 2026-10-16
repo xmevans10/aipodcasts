@@ -85,7 +85,8 @@ jobs:
           sys.path.insert(0, "tools")
           from publish_feed import load_existing_feed, r2_client
           feed = load_existing_feed(r2_client(), os.environ["R2_BUCKET"], os.environ["R2_PREFIX"])
-          count = sum(story.get("published") == os.environ["RELEASE_DATE"] for story in feed)
+          count = sum(story.get("published") == os.environ["RELEASE_DATE"]
+                        and story.get("withdrawalNotice") is None for story in feed)
           if count > 2:
               raise ValueError(f"Feed already has {count} episodes today")
           print(f"Today's feed count: {count}")

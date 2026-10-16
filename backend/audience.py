@@ -25,7 +25,7 @@ from hosts import HOSTS
 from anti_slop import SOURCE_FIDELITY_GUIDE
 from editorial import CONTRACT_VERSION
 
-REVIEW_VERSION = "audience-review-v5"
+REVIEW_VERSION = "audience-review-v6"
 
 RESPONSES_URL = "https://api.openai.com/v1/responses"
 
@@ -178,6 +178,8 @@ def review_script(draft: dict, source: dict, evidence: str, show: str, beat: str
     `reserve` is the caller's provider-call accounting hook. It runs before the request so
     a failed review still counts against the operator's cap, exactly like generation.
     """
+    from show_routing import SCOPES
+    beat += "\nScope: " + next((SCOPES[h] for h in SCOPES if HOSTS[h].show == show), beat)
     profiles = [{"name": h.name, "persona": h.persona, "delivery": h.delivery,
                  "sample_cadence_not_evidence": h.sample_line}
                 for h in HOSTS.values() if h.show == show]

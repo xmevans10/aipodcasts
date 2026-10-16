@@ -14,7 +14,7 @@ from daily_release import app_feed_url, doi_from_url
 def verify(feed: list, expected: list, day: str) -> None:
     if not isinstance(feed, list):
         raise ValueError("Public feed is not a JSON list")
-    if sum(story.get("published") == day for story in feed) != 2:
+    if sum(story.get("published") == day and story.get("withdrawalNotice") is None for story in feed) != 2:
         raise ValueError(f"Public feed does not show exactly two episodes for {day}")
     for artifact in expected:
         key = (artifact["host"], artifact["doi"].casefold())

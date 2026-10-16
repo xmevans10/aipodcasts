@@ -14,6 +14,8 @@ from select_voice_qa import select
 
 class VoiceQaTests(unittest.TestCase):
     @patch.dict(os.environ, {'LILT_REVIEWER': 'openai'})
+    # Isolate this historical inventory fixture from current source-policy checks.
+    @patch("editorial_policy.require_transcript", new=lambda artifact: [])
     @patch('audience.REVIEW_VERSION', 'audience-review-v1')
     def test_full_batch_selects_all_approved_without_withheld_scripts(self):
         batch = ROOT / 'experiments/full-run/stage4-2026-09-22'
@@ -27,6 +29,8 @@ class VoiceQaTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'between 1 and 16'):
                 select(batch, Path(tmp) / 'bad', limit=17)
     @patch.dict(os.environ, {'LILT_REVIEWER': 'openai'})
+    # Isolate this historical inventory fixture from current source-policy checks.
+    @patch("editorial_policy.require_transcript", new=lambda artifact: [])
     @patch('audience.REVIEW_VERSION', 'audience-review-v1')
     def test_selects_three_contrasting_approved_scripts_without_editing(self):
         batch = ROOT / 'experiments/full-run/stage4-2026-09-22'
@@ -76,6 +80,8 @@ if args[0].endswith('daily_release.py') and '--out' in args:
             self.assertTrue(all(call['reviewer'] == 'openai' for call in validations))
 
     @patch.dict(os.environ, {'LILT_REVIEWER': 'openai'})
+    # Isolate this historical inventory fixture from current source-policy checks.
+    @patch("editorial_policy.require_transcript", new=lambda artifact: [])
     @patch('audience.REVIEW_VERSION', 'audience-review-v1')
     def test_requested_hosts_must_all_be_approved(self):
         batch = ROOT / 'experiments/full-run/stage4-2026-09-22'

@@ -16,6 +16,8 @@ from daily_release import select
 
 class ReviewedBatchDownloadTests(unittest.TestCase):
     # Exercise the historic fixture under the review version that approved it.
+    # Isolate this historical inventory fixture from current source-policy checks.
+    @patch("editorial_policy.require_transcript", new=lambda artifact: [])
     @patch("audience.REVIEW_VERSION", "audience-review-v1")
     def test_failed_run_supplies_only_its_strictly_approved_partial_scripts(self):
         downloaded = []

@@ -26,10 +26,11 @@ sys.path.insert(0, str(ROOT / "backend"))
 sys.path.insert(0, str(ROOT / "tools"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from show_routing import route
 from beats import BEATS, normalize_host  # noqa: E402
 from extend_doi_exclusions import failed_dois  # noqa: E402
 from pipeline import (HOSTS, approve_auto, connect, draft_story, ingest_any,  # noqa: E402
-                      load_local_env, row, select_stories)
+                      load_local_env, row, select_stories, request, reserve_call)
 
 HERE = Path(__file__).resolve().parent
 
@@ -113,7 +114,20 @@ def build(args):
                                excluded_dois=selection_excluded)
 
     by_host: dict[str, list] = {}
+    routing_failures = []
     for work in selection["selected"]:
+        if not args.select_only:
+            try:
+                assignment = route(work, fetch=request,
+                                   reserve=lambda provider, sid: reserve_call(db, provider, sid))
+                if assignment is None:
+                    routing_failures.append({"doi": work["doi"], "reason": "no grounded show"})
+                    continue
+                work.update(host=assignment["host"], show=HOSTS[assignment["host"]].show,
+                            routing=assignment)
+            except Exception as error:
+                routing_failures.append({"doi": work["doi"], "reason": str(error)[:200]})
+                continue
         by_host.setdefault(work["host"], []).append(work)
 
     out = Path(args.out) if args.out else HERE / ("run-" + dt.datetime.now().strftime("%Y%m%d-%H%M%S"))
@@ -177,6 +191,7 @@ def build(args):
                             "doi": work["doi"], "requested_by": work.get("discovered_by", "beat"),
                             "publicity_sources": work.get("publicity_sources", []),
                             "selection_policy": selection.get("selection_policy"),
+                            "routing": work.get("routing"),
                             "major_sources": work.get("major_sources", []),
                             "selection_priority": work.get("selection_priority", [0, 0]),
                             "source": {k: source.get(k) for k in
@@ -218,6 +233,7 @@ def build(args):
     approved = sum(1 for e in entries if e["status"] == "approved")
     manifest = {"generated": dt.datetime.now(dt.timezone.utc).isoformat(),
                 "approved": approved, "total": len(entries),
+                "routing_failures": routing_failures,
                 "release_ready": approved == len(entries),
                 "window_days": args.days, "selection": {k: selection[k] for k in
                     ("papers_pulled", "candidates", "publicity_events", "publicized_candidates")},

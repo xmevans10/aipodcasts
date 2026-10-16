@@ -100,6 +100,8 @@ class DailyReleaseTests(unittest.TestCase):
                 select(Path(tmp), [], "2026-09-22")
 
     # Exercise the historic fixture under the review version that approved it.
+    # Isolate this historical inventory fixture from current source-policy checks.
+    @patch("editorial_policy.require_transcript", new=lambda artifact: [])
     @patch("audience.REVIEW_VERSION", "audience-review-v1")
     def test_partial_reviewed_batch_can_supply_two_safe_episodes(self):
         with tempfile.TemporaryDirectory() as tmp:

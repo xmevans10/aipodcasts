@@ -70,7 +70,8 @@ class FullRunActionsTests(unittest.TestCase):
             args = SimpleNamespace(seed_dir="", days=14, per_show=3,
                                    limit=80, out=tmp, decider="auto",
                                    select_only=False, no_verify=False)
-            with patch.object(run_all_shows, "canonical_hosts", return_value=["fern"]), \
+            with patch.object(run_all_shows, "route", side_effect=lambda work, **kw: {"host": "fern", "doi": work["doi"], "version": "source-question-routing-v1"}), \
+                 patch.object(run_all_shows, "canonical_hosts", return_value=["fern"]), \
                  patch.object(run_all_shows, "select_stories", return_value=selection), \
                  patch.object(run_all_shows, "connect", side_effect=lambda: __import__("sqlite3").connect(":memory:")), \
                  patch.object(run_all_shows, "ingest_any", side_effect=["story-1", "story-2"]), \
@@ -82,8 +83,9 @@ class FullRunActionsTests(unittest.TestCase):
             self.assertEqual(artifact["doi"], "10.1234/approved")
 
     # Exercise the historic fixture under the review version that approved it.
+    @patch("editorial_policy.require_transcript", return_value=[])
     @patch("audience.REVIEW_VERSION", "audience-review-v1")
-    def test_partial_stage4_seed_is_valid_but_cannot_release(self):
+    def test_partial_stage4_seed_is_valid_but_cannot_release(self, _policy):
         self.assertEqual(check_batch(SEED, require_all=False), (5, 16))
         with self.assertRaisesRegex(ValueError, "Only 5/16 approved"):
             check_batch(SEED)
@@ -105,8 +107,9 @@ class FullRunActionsTests(unittest.TestCase):
                 check_batch(copy, require_all=False)
 
     # Exercise the historic fixture under the review version that approved it.
+    @patch("editorial_policy.require_transcript", return_value=[])
     @patch("audience.REVIEW_VERSION", "audience-review-v1")
-    def test_resuming_reuses_only_approved_scripts(self):
+    def test_resuming_reuses_only_approved_scripts(self, _policy):
         empty_selection = {"selected": [], "papers_pulled": 0, "candidates": 0,
                            "publicity_events": 0, "publicized_candidates": 0}
         with tempfile.TemporaryDirectory() as tmp:
@@ -142,7 +145,8 @@ class FullRunActionsTests(unittest.TestCase):
             args = SimpleNamespace(seed_dir="", days=14, per_show=3,
                                    limit=80, out=tmp, decider="auto",
                                    select_only=False, no_verify=False)
-            with patch.object(run_all_shows, "canonical_hosts", return_value=["fern"]), \
+            with patch.object(run_all_shows, "route", side_effect=lambda work, **kw: {"host": "fern", "doi": work["doi"], "version": "source-question-routing-v1"}), \
+                 patch.object(run_all_shows, "canonical_hosts", return_value=["fern"]), \
                  patch.object(run_all_shows, "select_stories", return_value=selection), \
                  patch.object(run_all_shows, "connect", side_effect=lambda: __import__("sqlite3").connect(":memory:")), \
                  patch.object(run_all_shows, "ingest_any", return_value="story-1"), \

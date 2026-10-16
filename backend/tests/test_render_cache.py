@@ -25,6 +25,9 @@ class RenderCacheTests(unittest.TestCase):
             audio = out / f'{name}.m4a'; audio.write_bytes(b'\x00\x00\x00\x18ftypM4A ')
             transcript = {'host': 'rosa', 'show': 'Mycelium', 'doi': '10.1/x', 'source': {},
                           'draft': {'title': 'Title', 'dek': 'Dek', 'body': 'One real thought.', 'caveat': 'Limited.'}}
+            transcript.update(routing={'version': 'source-question-routing-v1', 'host': transcript['host'], 'doi': transcript['doi']}, selection_policy='major-source-first-v2', major_sources=[{
+                'doi': '10.1/x', 'source': 'science', 'match': 'explicit_doi',
+                'url': 'https://www.science.org/content/article/test'}])
             payload = story_for(transcript, 4, '2026-10-01', episode=name)
             payload['renderProvenance'] = {'inputSHA256': 'sig', 'audioSHA256': sha256(audio)}
             save_json(out / f'{name}.json', payload)

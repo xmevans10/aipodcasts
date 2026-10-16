@@ -32,6 +32,9 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "backend"))
+import editorial_policy
+
 
 
 def story_payload(payload: dict, name: str, base: str) -> dict:
@@ -185,6 +188,7 @@ def validate_rendered_episodes(episodes: list, directory: Path) -> None:
             raise ValueError(f"{name}: duplicate or mismatched episode identity")
         seen.add(story["id"])
         validate_readalong(payload, name)
+        editorial_policy.require_story(story)
         with (directory / f"{name}.m4a").open("rb") as audio:
             header = audio.read(12)
         if len(header) < 12 or header[4:8] != b"ftyp":

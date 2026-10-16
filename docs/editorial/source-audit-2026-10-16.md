@@ -76,3 +76,17 @@ Published episodes have not been regenerated or withdrawn by this code change. T
 mismatches above need editorial disposition; older audience reports need fresh review
 under v5 before reuse. Direct preprint-only links that cannot resolve to the current
 paper connectors remain an abstention, not guessed coverage.
+
+## Activation follow-up
+
+The first production smoke batch (Actions 38954087182) exposed two additional
+false fits despite audience approval: galaxy dark matter was assigned to Star Stuff,
+and hippocampal plasticity to Gradient because it used a neural network. Neither
+was published. Selection v2 now assigns the central source question and measured
+outcome to a show before writing, without exposing the proposed host or script to
+the classifier. Explicit scope boundaries also reach audience review v6.
+
+Narration and publication reject legacy batches and prepared audio. Published
+records carry matching source coverage, source-only show assignment, policy
+versions and a hash of the delivered script. Generation runs daily before overnight
+preparation; empty niches remain empty rather than receiving forced fits.

@@ -4,7 +4,7 @@ name: full-run-transcripts
 # episodes, synthesize two approved shows, and publish them under the daily limit.
 on:
   schedule:
-    - cron: "0 13 * * 1"   # Mondays, 13:00 UTC
+    - cron: "0 23 * * *"   # Daily inventory before overnight preparation
   workflow_dispatch:
     inputs:
       days:

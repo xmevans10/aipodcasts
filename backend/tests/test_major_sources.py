@@ -95,7 +95,7 @@ class MajorSourceTests(unittest.TestCase):
                 result = select(db, today=today, fetch=fetch, source='crossref')
                 self.assertEqual([w['doi'] for w in result['selected']], [doi])
                 self.assertEqual(result['selected'][0]['major_sources'][0]['url'], 'https://news.test/story')
-                self.assertEqual(result['selection_policy'], 'major-source-first-v1')
+                self.assertEqual(result['selection_policy'], 'major-source-first-v2')
                 # Same headline, wrong literal niche: it cannot fill a show slot.
                 paper['title'], paper['abstract'] = ['A new chemical catalyst'], 'We tested metal reactions.'
                 self.assertEqual(select(db, today=today, fetch=fetch, source='crossref')['selected'], [])

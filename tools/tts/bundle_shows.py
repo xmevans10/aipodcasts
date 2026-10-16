@@ -28,6 +28,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "backend"))
+import editorial_policy
 import align  # noqa: E402
 from envelope import HOP, envelope_wav  # noqa: E402
 from podcast import validate_podcast
@@ -96,7 +97,7 @@ def story_for(transcript: dict, duration: float, published: str, episode: str = 
     ends = starts[1:] + [round(duration, 3)] if starts else []
     meta = HOSTS.get(host)
     topic = (meta.topic.upper() if meta and meta.topic else transcript["show"].upper())
-    return {
+    payload = {
         "story": {
             "id": "episode-" + name,
             "title": draft["title"],
@@ -125,6 +126,10 @@ def story_for(transcript: dict, duration: float, published: str, episode: str = 
             {"words": [{"text": w, "start": s, "end": e} for w, s, e in zip(words, starts, ends)]}],
         "levelHop": HOP,
     }
+
+    if transcript.get("selection_policy"):
+        payload["story"]["editorialPolicy"] = editorial_policy.stamp(payload["story"], transcript)
+    return payload
 
 
 def to_m4a(wav: Path, dest: Path) -> None:
@@ -229,6 +234,7 @@ def narration_inputs(transcript: dict, cast: dict, voice_key: str = "voice") -> 
     if not audience.is_fresh(listener, transcript["draft"]):
         raise ValueError(f"{transcript['show']}: audience review is stale for this script, "
                          "contract or review version; re-review before rendering")
+    editorial_policy.require_transcript(transcript)
     for item in inputs:
         voice = (cast.get(item["host"]) or {}).get(voice_key)
         if not voice or not item["text"].strip():

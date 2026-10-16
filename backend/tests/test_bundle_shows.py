@@ -125,6 +125,10 @@ class DialogueRenderTests(unittest.TestCase):
                 draft['turns'] += [{'speaker': HOSTS[h].name, 'text': HOSTS[h].sign_off} for h in ['benny', 'chase']]
         import audience
         return ({'host': host, 'show': HOSTS[host].show, 'draft': draft, 'source': SOURCE,
+                 'routing': {'version': 'source-question-routing-v1', 'host': host, 'doi': '10.1234/test'},
+                 'doi': '10.1234/test', 'selection_policy': 'major-source-first-v2',
+                 'major_sources': [{'doi': '10.1234/test', 'source': 'science',
+                                    'url': 'https://www.science.org/content/article/test', 'match': 'explicit_doi'}],
                  'verification': {'pass': True, 'draft_sha256': draft_fingerprint(draft)},
                  'audience': {'pass': True, 'draft_sha256': draft_fingerprint(draft),
                               'contract_version': audience.CONTRACT_VERSION,

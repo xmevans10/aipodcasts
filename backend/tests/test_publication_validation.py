@@ -11,10 +11,30 @@ from publish_feed import validate_rendered_episodes
 
 class PublicationValidationTests(unittest.TestCase):
     def payload(self):
-        return {"_file": "one.json", "story": {"id": "episode-one", "body": "Hello science."},
+        payload = {"_file": "one.json", "story": {"id": "episode-one", "hostID": "fern", "body": "Hello science."},
                 "duration": 2.0, "transcript": [{"words": [
                     {"text": "Hello", "start": 0.0, "end": 0.9},
                     {"text": "science.", "start": 1.0, "end": 1.9}]}]}
+
+        import editorial_policy
+        payload['story']['editorialPolicy'] = editorial_policy.stamp(payload['story'], {
+            'host': 'fern', 'routing': {'host': 'fern', 'doi': '10.1234/test', 'version': 'source-question-routing-v1'},
+            'doi': '10.1234/test', 'selection_policy': editorial_policy.SELECTION,
+            'major_sources': [{'doi': '10.1234/test', 'source': 'science',
+                               'url': 'https://www.science.org/content/article/test', 'match': 'explicit_doi'}]})
+        return payload
+
+    def test_legacy_prepared_episode_and_changed_script_cannot_publish(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / 'one.m4a').write_bytes(b'\x00\x00\x00\x18ftypM4A ')
+            payload = self.payload()
+            payload['story'].pop('editorialPolicy')
+            with self.assertRaisesRegex(ValueError, 'editorial policy'):
+                validate_rendered_episodes([payload], Path(tmp))
+            payload = self.payload()
+            payload['story']['caveat'] = 'Different scientific boundary'
+            with self.assertRaisesRegex(ValueError, 'provenance is stale'):
+                validate_rendered_episodes([payload], Path(tmp))
 
     def test_valid_episode_and_corrupt_container(self):
         with tempfile.TemporaryDirectory() as tmp:

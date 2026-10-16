@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import math
 import os
 import re
 import shutil
@@ -104,10 +105,15 @@ def select(batches: Path, feed: list, day: str, *, limit: int = 2) -> list[tuple
     for story in feed:
         host = story.get('hostID', '')
         coverage[host] = coverage.get(host, 0) + 1
-    # Give empty/underfilled shows their first real episode before topping up the
-    # earliest show in manifest order again. Stable ties keep newest-batch priority.
-    candidates = sorted(available(batches, feed),
-                        key=lambda item: coverage.get(item[1]['host'], 0))
+    # Editorial priority survives the generation batch. Show balance breaks ties;
+    # it must not demote a leading eligible story merely to fill a quiet niche.
+    def priority(item):
+        values = item[1].get('selection_priority', [0, 0])
+        if (not isinstance(values, list) or len(values) != 2
+                or any(type(v) not in (int, float) or not math.isfinite(v) or v < 0 for v in values)):
+            raise ValueError('Malformed editorial selection priority')
+        return (-values[0], -values[1], coverage.get(item[1]['host'], 0))
+    candidates = sorted(available(batches, feed), key=priority)
     picked = candidates[:slots]
     if len(picked) == slots:
         return picked

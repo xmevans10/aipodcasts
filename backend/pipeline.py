@@ -792,21 +792,10 @@ def approve_auto(db, story_id: str, decider_mode: str = "auto", repairs: int | N
             return {"story": story_id, "status": "approved", **report,
                     "audience": listener, "audience_repairs": attempted,
                     "factual_repairs": factual_attempted}
-        # Entertainment release mode keeps evidence verification as the hard gate while
-        # treating a fresh "revise" audience verdict as editorial guidance, not a veto.
-        # A missing/unavailable review, explicit withhold, or unfounded show fit still blocks.
-        if (os.environ.get("LILT_ENTERTAINMENT_RELEASE") == "1"
-                and listener.get("status") == "reviewed"
-                and listener.get("decision") == "revise"
-                and listener.get("beat_fit") in ("grounded", "weak")):
-            review(db, story_id, report["reviewer"])
-            return {"story": story_id, "status": "approved", **report,
-                    "audience": listener, "audience_repairs": attempted,
-                    "factual_repairs": factual_attempted,
-                    "audience_editorial_override": "revise accepted for entertainment release"}
         # Only a parsed review with actionable failures is worth a writer call. A pending
         # review means we could not reach a reviewer; re-rolling would not change the text.
         if (attempted >= repairs or listener.get("status") == "pending"
+                or listener.get("beat_fit") != "grounded"
                 or not listener.get("failures")):
             return {"story": story_id,
                     "status": "audience_" + ("pending" if listener.get("status") == "pending"

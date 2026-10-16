@@ -220,3 +220,45 @@ cannot decide whether science is understandable, and a gate tuned to reject diff
 subjects would be worse than the problem it replaces. Deterministic checks cover
 unambiguous defects only (see the enforcement map); comprehension is judged by structured
 audience review against this document.
+
+
+## 2026-10-16: coherent source selection and human language
+
+Production selection starts with current coverage from Quanta, Nature, Science,
+ScienceDaily and Phys.org. A candidate needs an explicit DOI in the feed or linked
+article, a literal match to a show's niche, usable primary evidence, recent dated coverage,
+and a non-retracted publication that is not future-dated. Headline resemblance never establishes coverage. Each
+selected paper retains the outlet, headline, article URL and feed position in the
+selection report and full-run artifact.
+
+Independent editorial coverage ranks first, followed by syndicated coverage and the
+existing evidence/recency ranking. An outlet votes once; syndicated copies do not
+accumulate independent votes. Feed order is an editorial/recency proxy, not a verified
+popularity chart. Unavailable feeds and unresolved paper links can leave show slots
+empty. Production must abstain rather than fill them with unrelated or uncovered papers.
+`require_major_source=False` is an explicit research/exploration option, not the release
+default. Narrow beats require their literal subject; incidental mentions of rest, silk,
+decomposition or insect behaviour cannot establish fit. Audience review v5 requires
+`grounded` beat fit; `weak` and `unfounded` require reselection rather than a rewrite
+that tries to manufacture relevance.
+
+The writing and review prompts incorporate the preservation rules from
+[Conor Bronsdon's avoid-ai-writing v3.38.0](https://github.com/conorbronsdon/avoid-ai-writing),
+reviewed 2026-10-16; its MIT license is retained in `docs/licenses/avoid-ai-writing-MIT.txt`.
+Adapted rules live in `backend/anti_slop.py`. Preserve claims, numbers, units, negation,
+population, causal boundaries, uncertainty, author credit, source links and essential
+technical terms. Explain the science in connected everyday language. Style findings
+are contextual suggestions, never proof of authorship or substitutes for scientific
+verification. Humanizing a repair must not fabricate memories, emotions, contrarian
+foils or details, or erase the host's existing voice. Factual verification and audience
+review remain separate required release gates.
+
+The former `LILT_ENTERTAINMENT_RELEASE` bypass cannot approve or render a failed
+audience review. Major clarity failures must be repaired and reviewed; weak niche
+fit must be reselected. Minor style advisories still pass under the ordinary reviewer.
+
+Daily release preserves editorial selection priority; show balance only breaks ties.
+A generation batch can leave niches empty, while its approved eligible episodes can
+still fill the two daily slots. The manifest lists every show's disposition and the
+release validator checks every included script; fewer than two eligible episodes
+blocks that day's release rather than manufacturing substitutes.

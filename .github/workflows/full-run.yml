@@ -161,7 +161,6 @@ jobs:
           DECIDER: jev
           LILT_SMC: ${{ inputs.release_fresh_batch && '0' || '1' }}
           LILT_AUDIENCE_REPAIRS: ${{ inputs.release_fresh_batch && '2' || '1' }}
-          LILT_ENTERTAINMENT_RELEASE: ${{ inputs.release_fresh_batch && '1' || '0' }}
 
       - name: Preserve generation usage including failed attempts
         if: always()
@@ -176,8 +175,8 @@ jobs:
           if-no-files-found: warn
           retention-days: 90
 
-      - name: Require sixteen current factual and audience approvals
-        run: python3 experiments/full-run/check_batch.py full-run-artifacts
+      - name: Require current factual and audience approvals for eligible stories
+        run: python3 experiments/full-run/check_batch.py full-run-artifacts --allow-partial
 
       - name: Set publication date
         if: ${{ inputs.release_fresh_batch == true }}
@@ -185,8 +184,6 @@ jobs:
 
       - name: Select two new episodes for today's release
         if: ${{ inputs.release_fresh_batch == true }}
-        env:
-          LILT_ENTERTAINMENT_RELEASE: "1"
         run: |
           mkdir -p "daily-batches/$GITHUB_RUN_ID"
           cp -R full-run-artifacts/. "daily-batches/$GITHUB_RUN_ID/"
@@ -195,8 +192,6 @@ jobs:
 
       - name: Install narration dependencies
         if: ${{ inputs.release_fresh_batch == true }}
-        env:
-          LILT_ENTERTAINMENT_RELEASE: "1"
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
@@ -204,8 +199,6 @@ jobs:
 
       - name: Render today's Google Cloud episodes
         if: ${{ inputs.release_fresh_batch == true }}
-        env:
-          LILT_ENTERTAINMENT_RELEASE: "1"
         run: |
           python3 tools/tts/bundle_shows.py --transcripts daily-transcripts \
             --out daily-episodes --date "$RELEASE_DATE" --tts-provider google-cloud

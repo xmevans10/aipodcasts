@@ -23,6 +23,14 @@ class DailyReleaseTests(unittest.TestCase):
             picked = select(Path('unused'), feed, '2026-10-01')
         self.assertEqual([entry['host'] for _, entry in picked], ['noor', 'marek'])
 
+    def test_editorial_priority_beats_show_balance(self):
+        candidates = [(Path('fern.json'), {'host': 'fern', 'selection_priority': [0.02, 0]}),
+                      (Path('noor.json'), {'host': 'noor', 'selection_priority': [0.01, 0]})]
+        feed = [{'hostID': 'fern', 'published': '2026-09-30'}]
+        with patch('daily_release.available', return_value=candidates):
+            picked = select(Path('unused'), feed, '2026-10-01', limit=1)
+        self.assertEqual(picked[0][1]['host'], 'fern')
+
     def test_merge_preserves_archive_and_caps_daily_additions(self):
         older = {"id": "old", "published": "2026-09-21"}
         a = {"id": "a", "published": "2026-09-22"}

@@ -108,6 +108,30 @@ Rhythm:
   the fictional host may supply their own feelings and attitude, not new evidence.
 '''
 
+# Adapted from avoid-ai-writing v3.38.0. These preservation rules apply to
+# generation and every repair; style findings remain advisory and contextual.
+SOURCE_FIDELITY_GUIDE = """HUMAN LANGUAGE, SAME SCIENCE — preservation before polish.
+Keep quantities and units, negation, study population, conditions, causal relationships,
+and the source's uncertainty. Do not turn an association into a cause, a simulation into
+an observation, a preprint into peer-reviewed evidence, or a possibility into a promise.
+Protect the exact paper title, author credits, evidence quotations, source URLs and
+required sign-offs. Explain essential technical terms; do not remove a term or a number
+when doing so would change the finding. Repeat the accurate term instead of cycling
+through synonyms that imply a different mechanism.
+Fix a style pattern only when its context makes it a problem. Necessary scientific
+hedges and literal technical uses are allowed. A style score is not a factual verdict
+or proof of authorship. Never optimize that score by weakening the science.
+During a rewrite, preserve the existing host's stance and reactions. Do not add fake
+memories, possessions, fieldwork, quotations, researcher emotions, forced contrarianism,
+staged candor, dramatic fragments or manufactured stakes to make it sound human.
+State why the finding matters using a consequence supported by the evidence; a generic
+endorsement or a grand prediction adds nothing. Keep connected, varied spoken sentences.
+Compare the final script with its evidence and, for a repair, its prior version: every
+changed claim, quantity, qualifier and attribution must still be supported. If a detail
+is missing, leave the gap visible rather than inventing specificity.
+"""
+ANTI_SLOP_GUIDE += "\n" + SOURCE_FIDELITY_GUIDE
+
 TIER1A = {
     "delve", "leverage", "harness", "robust", "comprehensive", "cutting-edge",
     "pivotal", "underscore", "meticulous", "seamless", "game-changer",

@@ -1,4 +1,9 @@
-"""Autonomous story selection: borrow taste, aggregate ranks, gate hard, abstain.
+"""Production selection: traceable major-source coverage, literal niche fit, abstention.
+
+The default starts with the configured major feeds and follows explicit paper DOIs.
+It records coverage URLs and feed ranks, then applies primary-evidence and show-fit
+checks. Only require_major_source=False enables the exploratory algorithm below.
+
 
 There is no human editor. Two facts shape the design:
 
@@ -43,6 +48,7 @@ from difflib import SequenceMatcher
 from pathlib import Path
 
 from beats import BEATS, normalize_host
+from major_sources import load_coverage, coverage_priority
 from eurekalert import releases as eurekalert_releases
 from hosts import HOSTS
 from publicity import (INDEPENDENT, Release, cluster_releases, editorial_value,
@@ -406,6 +412,18 @@ def fit(work, terms):
     aliases = {"fungus": r"(?:fungus|fungi|fungal)",
                "bee": r"(?:bees?|bumblebees?|honeybees?)",
                "galaxy": r"(?:galaxy|galaxies)"}
+    # Narrow shows require their literal subject. Incidental terms such as rest,
+    # silk, decomposition or insect behaviour cannot manufacture a niche fit.
+    anchors = {
+        'spinner': r'\b(?:spiders?|arachnids?|arane\w*|orb.weavers?)\b',
+        'amara': r'\b(?:bees?|bumblebees?|honeybees?|pollinat\w*)\b',
+        'rosa': r'\b(?:fungus|fungi|fungal|myceli\w*|mushrooms?|yeasts?)\b',
+        'lena': r'\b(?:sleep\w*|circadian|dream\w*|insomnia)\b',
+        'kenji': r'\b(?:deep[ -](?:sea|ocean)|abyssal|hydrothermal vents?)\b',
+    }
+    for host, anchor in anchors.items():
+        if terms == BEATS[host] and not re.search(anchor, text):
+            return 0.0
     if terms == BEATS['spinner'] and re.search(r'\bpulsars?\b', text):
         return 0.0  # "Spider" here is an astronomical nickname.
     if terms == BEATS['amara'] and re.search(r'\b(?:artificial bee colony|bee colony (?:algorithm|optimi[sz]ation))\b', text):
@@ -591,13 +609,27 @@ def seen_dois(db):
 
 def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
            today: dt.date | None = None, fetch=None, source: str | None = None,
-           min_reputation: float = MIN_REPUTATION, excluded_dois: set[str] | None = None):
+           min_reputation: float = MIN_REPUTATION, excluded_dois: set[str] | None = None,
+           require_major_source: bool = True):
     today = today or dt.date.today()
     since = (today - dt.timedelta(days=days)).isoformat()
     source = source or ("openalex" if os.environ.get("LILT_OPENALEX_KEY", "").strip() else "crossref")
     exclude = seen_dois(db) | {doi.casefold() for doi in (excluded_dois or ())}
-    editorial, community = load_tastemakers(fetch)
-    releases, lookups = load_releases(fetch, editorial, since=dt.date.fromisoformat(since), today=today)
+    if days < 0 or per_show < 1 or limit < 1:
+        raise ValueError("days must be nonnegative; per_show and limit must be positive")
+    coverage, source_failures = [], []
+    if require_major_source:
+        coverage, source_failures = load_coverage(
+            FEEDS, fetch or get, dt.date.fromisoformat(since), today)
+        editorial, community, lookups = {}, [], 0
+        releases = [Release(source=c['source'], title=c['title'], url=c['url'],
+                            date=c['date'], doi=c['doi']) for c in coverage]
+    else:
+        editorial, community = load_tastemakers(fetch)
+        releases, lookups = load_releases(fetch, editorial, since=dt.date.fromisoformat(since), today=today)
+    coverage_by_doi = {}
+    for item in coverage:
+        coverage_by_doi.setdefault(item['doi'], []).append(item)
     events = cluster_releases(releases)
     events_by_doi = event_index(events)
     # Independent editorial is its own signal; syndicators (ScienceDaily, Phys.org)
@@ -606,7 +638,7 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
                    if source in INDEPENDENT}
 
     works: dict[str, dict] = {}
-    for raw_host, terms in BEATS.items():
+    for raw_host, terms in (() if require_major_source else BEATS.items()):
         host = normalize_host(raw_host)
         for term in terms:
             items = openalex_window(term, since, fetch) if source == "openalex" else crossref_window(term, since, fetch)
@@ -622,14 +654,21 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
                 work["discovered_by"] = "beat"
                 works[work["doi"]] = work
 
+    if require_major_source:
+        # The bounded ingest budget follows editorial priority across outlets, not
+        # the order in which the feeds happened to be fetched.
+        events_by_doi = dict(sorted(events_by_doi.items(), key=lambda pair:
+            coverage_priority(coverage_by_doi.get(pair[0], []), INDEPENDENT), reverse=True))
     # A publicized paper can be a candidate even when no beat query surfaced it; the
     # press release is a pointer, so the metadata still comes from the paper connector.
     seeded = seed_publicized(works, events_by_doi, exclude, fetch, source,
-                             since=dt.date.fromisoformat(since))
+                             since=None if require_major_source else dt.date.fromisoformat(since))
 
     candidates = []
     retracted = non_primary = 0
     for work in works.values():
+        if work['date'] > today or (not require_major_source and work['date'] < dt.date.fromisoformat(since)):
+            continue
         if work.get("is_retracted"):
             retracted += 1
             continue
@@ -675,6 +714,8 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
             is_preprint_show_work(work) and bool(work.get("arxiv_id")))
         tier = "full" if full_tier else ("abstract" if work.get("abstract") else "none")
         work.update({
+            "major_sources": coverage_by_doi.get(work["doi"], []),
+            "selection_priority": list(coverage_priority(coverage_by_doi.get(work["doi"], []), INDEPENDENT)),
             "publicity": publicity_value(event),
             "publicity_sources": sorted(event.sources) if event else [],
             "editorial": editorial_score,
@@ -695,13 +736,15 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
     # Rank-aggregate: each signal contributes 1/(k+rank), so no axis dominates.
     fuse(candidates)
 
-    ranked = sorted(candidates, key=lambda w: w["score"], reverse=True)
+    ranked = sorted(candidates, key=lambda w: (
+        *coverage_priority(w['major_sources'], INDEPENDENT), w['score'], w['doi'])
+        if require_major_source else (w['score'],), reverse=True)
     selected, show_count, topic_count = [], {}, {}
     for work in ranked:
         # Preprints on the physical/computational shows are judged on license and fit,
         # not on journal reputation: a repository/preprint score is their norm.
         reputation_ok = venue_reputation(work) >= min_reputation or is_preprint_show_work(work)
-        if not work["reusable"] or not reputation_ok:
+        if (require_major_source and not work["major_sources"]) or not work["reusable"] or not reputation_ok:
             continue
         topic = work["topic"]
         if show_count.get(work["host"], 0) >= per_show or topic_count.get(topic, 0) >= MAX_PER_TOPIC:
@@ -712,7 +755,9 @@ def select(db, days: int = 14, per_show: int = 2, limit: int = 10,
         if len(selected) >= limit:
             break
     selected_studiness = [w["studiness"] for w in selected]
-    return {"source": source, "window_days": days, "papers_pulled": len(works), "candidates": len(ranked),
+    return {"selection_policy": "major-source-first-v1" if require_major_source else "exploratory",
+            "source_failures": source_failures, "coverage_links": len(coverage),
+            "source": source, "window_days": days, "papers_pulled": len(works), "candidates": len(ranked),
             "eligible": sum(1 for w in ranked if w["reusable"]), "selected": selected,
             "retracted_excluded": retracted, "non_primary_excluded": non_primary,
             "shows_filled": len({w["host"] for w in selected}),
@@ -740,4 +785,11 @@ def report(result: dict) -> str:
                      f"{venue} | {work['age']}d | {work['cited']} | "
                      f"{','.join(work['publicity_sources']) or '-'} | "
                      f"{','.join(work['editorial_sources']) or '-'} | {work['reusable']} |")
+    lines += ["", "Selection policy: " + result.get('selection_policy', 'legacy')]
+    for work in result['selected']:
+        for coverage in work.get('major_sources', []):
+            lines.append(f"- {work['doi']}: {coverage['source']} feed #{coverage['feed_rank']} "
+                         f"[coverage]({coverage['url']})")
+    if result.get('source_failures'):
+        lines += ["", "Source failures: " + "; ".join(result['source_failures'])]
     return "\n".join(lines)

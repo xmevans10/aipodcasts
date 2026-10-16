@@ -42,10 +42,7 @@ def check_artifact(artifact: dict, entry: dict, transcripts: Path, cast: dict) -
     if entry.get("verification_pass") is False or entry.get("factual") not in (None, "pass"):
         raise ValueError(f"{show}: manifest records a failed factual review")
     listener = artifact.get("audience") or {}
-    relaxed_revise = (os.environ.get("LILT_ENTERTAINMENT_RELEASE") == "1"
-                      and listener.get("decision") == "revise"
-                      and listener.get("beat_fit") in ("grounded", "weak"))
-    if entry.get("audience_pass") is False and not relaxed_revise:
+    if entry.get("audience_pass") is False:
         raise ValueError(f"{show}: manifest records a failed audience review")
     narration_inputs(artifact, cast)
     expected_md = render(draft, artifact["source"], host).strip()

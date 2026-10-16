@@ -176,6 +176,9 @@ def build(args):
                 artifact = {"show": show, "host": host, "story_id": story_id,
                             "doi": work["doi"], "requested_by": work.get("discovered_by", "beat"),
                             "publicity_sources": work.get("publicity_sources", []),
+                            "selection_policy": selection.get("selection_policy"),
+                            "major_sources": work.get("major_sources", []),
+                            "selection_priority": work.get("selection_priority", [0, 0]),
                             "source": {k: source.get(k) for k in
                                        ("title", "attribution", "journal", "url", "license",
                                         "evidence_tier", "evidence_note")},
@@ -188,7 +191,8 @@ def build(args):
                 (target / f"{stem}.json").write_text(
                     json.dumps(artifact, indent=2, ensure_ascii=False) + "\n")
                 (target / f"{stem}.md").write_text(render(draft, source, host) + "\n")
-                entry.update({"status": verification.get("status", "drafted") if verification else "drafted",
+                entry.update({"selection_priority": work.get("selection_priority", [0, 0]),
+                              "status": verification.get("status", "drafted") if verification else "drafted",
                               "doi": work["doi"], "title": draft.get("title", ""),
                               "story_id": story_id, "words": word_count(draft),
                               "evidence_tier": source.get("evidence_tier"),

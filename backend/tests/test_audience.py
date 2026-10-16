@@ -93,6 +93,11 @@ class VerdictTests(unittest.TestCase):
         self.assertFalse(report["pass"])
         self.assertTrue(any("Reselect" in f for f in report["failures"]))
 
+    def test_weak_beat_fit_also_requires_reselection(self):
+        report = audience.verdict({**CLEAN_REVIEW, "beat_fit": "weak"}, DRAFT, SOURCE["text"])
+        self.assertFalse(report["pass"])
+        self.assertTrue(any("Reselect" in f for f in report["failures"]))
+
     def test_an_incomplete_paraphrase_blocks(self):
         review = {**CLEAN_REVIEW,
                   "listener_paraphrase": {**CLEAN_REVIEW["listener_paraphrase"], "limit": ""}}

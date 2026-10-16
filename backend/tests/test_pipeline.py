@@ -41,7 +41,7 @@ class PipelineTests(unittest.TestCase):
         with self.assertRaises(ValueError): p.narrate(self.db, self.id)
     def test_unreviewed_publication_blocked(self):
         with self.assertRaises(ValueError): p.publish(self.db, self.id)
-    def test_entertainment_release_accepts_reviewed_revise_but_not_factual_failure(self):
+    def test_entertainment_release_cannot_bypass_audience_failure(self):
         self.staged()
         factual = {'pass': True, 'reviewer': 'automated reviewer'}
         listener = {'status': 'reviewed', 'pass': False, 'decision': 'revise',
@@ -50,11 +50,21 @@ class PipelineTests(unittest.TestCase):
              patch.object(p.verifier, 'verify_story', return_value=factual), \
              patch.object(p, 'audience_check', return_value=listener), \
              patch.object(p, 'review') as approve:
-            result = p.approve_auto(self.db, self.id)
-        self.assertEqual(result['status'], 'approved')
-        self.assertTrue(result['pass'])
-        self.assertEqual(result['audience']['decision'], 'revise')
-        approve.assert_called_once()
+            result = p.approve_auto(self.db, self.id, repairs=0)
+        self.assertEqual(result['status'], 'audience_rejected')
+        self.assertFalse(result['pass'])
+        approve.assert_not_called()
+    def test_weak_fit_is_reselected_without_a_writer_repair(self):
+        self.staged()
+        listener = {'status': 'reviewed', 'pass': False, 'decision': 'revise',
+                    'beat_fit': 'weak', 'failures': ['Reselect this paper']}
+        with patch.object(p.verifier, 'verify_story', return_value={'pass': True, 'reviewer': 'test'}), \
+             patch.object(p, 'audience_check', return_value=listener), \
+             patch.object(p, 'draft_story') as writer:
+            result = p.approve_auto(self.db, self.id, repairs=2)
+        self.assertEqual(result['status'], 'audience_rejected')
+        writer.assert_not_called()
+
     def test_drafts_not_public(self):
         self.staged(); self.assertEqual(p.feed(self.db, 'https://feed.example'), [])
     def test_approval_binds_exact_draft(self):

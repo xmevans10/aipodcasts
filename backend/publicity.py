@@ -94,7 +94,7 @@ def cluster_releases(releases) -> list:
         match = next((e for e in events if doi and e.doi == doi), None)
         if match is None:
             match = next((e for e in events
-                          if _similarity(release.title, e.title) >= FUZZY_MATCH), None)
+                          if (not doi or not e.doi) and _similarity(release.title, e.title) >= FUZZY_MATCH), None)
         if match is None:
             match = Event(key=doi or "title:" + _normalize(release.title),
                           title=release.title, doi=doi, date=release.date)

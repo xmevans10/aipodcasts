@@ -223,10 +223,7 @@ def narration_inputs(transcript: dict, cast: dict, voice_key: str = "voice") -> 
     # Audience review is a separate gate, checked here because rendering is a release
     # boundary. A missing, stale or failed report is never a pass.
     listener = transcript.get("audience") or {}
-    relaxed_revise = (os.environ.get("LILT_ENTERTAINMENT_RELEASE") == "1"
-                      and listener.get("decision") == "revise"
-                      and listener.get("beat_fit") in ("grounded", "weak"))
-    if listener.get("pass") is not True and not relaxed_revise:
+    if listener.get("pass") is not True:
         raise ValueError(f"{transcript['show']}: script has no passing audience review; "
                          "run `pipeline.py audience <id>` and repair the failures")
     if not audience.is_fresh(listener, transcript["draft"]):

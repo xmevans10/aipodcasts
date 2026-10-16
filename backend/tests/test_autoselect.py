@@ -5,7 +5,14 @@ import sys
 import unittest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from pipeline import connect
-from autoselect import select, report, is_reusable, normalize_openalex, studiness, fit, is_review_work
+from autoselect import select as select_candidates, report, is_reusable, normalize_openalex, studiness, fit, is_review_work
+
+# These legacy fixtures exercise paper eligibility and rank fusion separately from
+# the production coverage gate, which has dedicated end-to-end fixtures below.
+def select(*args, **kwargs):
+    kwargs.setdefault('require_major_source', False)
+    return select_candidates(*args, **kwargs)
+
 
 CC_BY = "https://creativecommons.org/licenses/by/4.0/"
 

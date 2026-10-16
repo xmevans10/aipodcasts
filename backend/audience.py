@@ -22,9 +22,10 @@ import urllib.error
 from typing import Callable
 
 from hosts import HOSTS
+from anti_slop import SOURCE_FIDELITY_GUIDE
 from editorial import CONTRACT_VERSION
 
-REVIEW_VERSION = "audience-review-v4"
+REVIEW_VERSION = "audience-review-v5"
 
 RESPONSES_URL = "https://api.openai.com/v1/responses"
 
@@ -99,7 +100,10 @@ beat_fit: is the link between the paper and this show grounded in the paper itse
   manufactured by an opening metaphor? Use the supplied literal beat, not shared nouns.
   A spider pulsar is not an arachnid story; a fuel-cell site is not a bee-colony story;
   a mathematical network is not automatically fungal biology. Mark these unfounded.
-  A pleasant host hook cannot manufacture scientific relevance.
+  Judge the central question and measured outcome, not an incidental organism or word.
+  Wine-buying preferences are not fungal biology; a web-shaped mooring is not spider
+  biology; an ocean on Enceladus is not Earth climate; DNA replication is not a study
+  of statistical replication. A pleasant host hook cannot manufacture relevance.
 casual_delivery: does this sound like someone sharing an interesting discovery with a
   friend, with natural connected sentences and room for a reaction, rather than a paper
   summary or a perfectly polished lecture? Inspect the MIDDLE explanation, not just the
@@ -136,11 +140,14 @@ an absent emotional flourish is not itself a major issue.
 Decide: "pass" when a nonspecialist can recover the question, method, finding and limit,
 the literal beat fits, and the host sounds conversational and recognisable. PASS WITH
 MINOR ADVISORIES when those conditions hold; minor issues do not require revision.
+A weak or unfounded beat fit requires "withhold" and reselection.
 "revise" requires at least one concrete MAJOR or BLOCKER issue, with a quoted span and an
 instruction necessary to fix comprehension, honesty, casual delivery or host personality.
 "withhold" if the paper does not belong on this show, or new evidence is needed. A
 scientific overclaim is never a minor wording preference.
 '''
+
+REVIEW_INSTRUCTIONS += "\n" + SOURCE_FIDELITY_GUIDE + "\nReview these preservation rules; do not rewrite the script."
 
 
 def _fingerprint(draft: dict) -> str:
@@ -180,7 +187,8 @@ def review_script(draft: dict, source: dict, evidence: str, show: str, beat: str
             reserve("audience", story_id)
         questions = [
             TypedQuestion("beat_fit", "choice",
-                          "Does the paper belong on the literal supplied beat? Ignore shared nouns and "
+                          "Does the central research question and measured outcome belong on the supplied beat? "
+                          "Ignore incidental organisms, shared nouns and "
                           "opening metaphors: spider pulsars are not arachnids, fuel cells are not bees, "
                           "and mathematical networks are not automatically fungi. Choose grounded, weak, or unfounded.",
                           {"grounded": "clearly on topic", "weak": "somewhat related",
@@ -219,7 +227,7 @@ def review_script(draft: dict, source: dict, evidence: str, show: str, beat: str
                 or any(type(value) is not bool for value in checks.values())):
             raise RuntimeError("Jev audience review returned an incomplete judgment")
         return {
-            "decision": "withhold" if fit == "unfounded" else
+            "decision": "withhold" if fit != "grounded" else
                         "pass" if all(checks.values()) else "revise",
             "issues": [{"severity": "major", "rule": key if key in ("casual_delivery", "host_personality") else "one_listen_comprehension",
                         "span": "", "instruction": (
@@ -314,8 +322,8 @@ def verdict(parsed: dict, draft: dict, evidence: str) -> dict:
     scripts in the 2026-09-21 batch had short sentences and plain syntax. The thresholds
     below were chosen against backend/tests/fixtures/editorial_cases.json:
 
-      pass  = the reviewer says pass, AND no blocker or major issue, AND beat fit is not
-              unfounded, AND the paraphrase recovers all four listener questions.
+      pass  = the reviewer says pass, AND no blocker or major issue, AND beat fit is
+              grounded, AND the paraphrase recovers all four listener questions.
       fail  = anything else, with the reviewer's own instructions as the repair text.
     """
     blocking = [issue for issue in parsed["issues"]
@@ -332,8 +340,8 @@ def verdict(parsed: dict, draft: dict, evidence: str) -> dict:
     for issue in blocking:
         failures.append(f"{issue['severity']}:{issue['rule']}: {issue['instruction']} "
                         f"(span: \"{issue['span'][:120]}\")")
-    if parsed["beat_fit"] == "unfounded":
-        failures.append("beat_fit=unfounded: this paper does not belong on this show. "
+    if parsed["beat_fit"] != "grounded":
+        failures.append(f"beat_fit={parsed['beat_fit']}: this paper is not clearly on this show’s beat. "
                         "Reselect a candidate or withhold the episode; do not write around it.")
     if thin:
         failures.append("listener_paraphrase_incomplete: a listener could not recover "

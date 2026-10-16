@@ -75,3 +75,26 @@ class EditorialAdoptionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'fingerprint'):
             apply(client, 'bucket', 'v1', BASE, self.plan, 'wrong')
         client.get_object.assert_not_called()
+
+    @patch('adopt_editorial_catalog.verify_staged_assets')
+    def test_failed_conditional_write_preserves_public_assets(self, _verify):
+        client = self.client()
+        def put(**kwargs):
+            if kwargs['Key'] == 'v1/feed.json':
+                raise RuntimeError('412 PreconditionFailed')
+        client.put_object.side_effect = put
+        with self.assertRaisesRegex(RuntimeError, '412'):
+            apply(client, 'bucket', 'v1', BASE, self.plan, fingerprint(self.plan))
+        client.delete_object.assert_not_called()
+        self.assertFalse(any(c.kwargs['Key'].startswith('v1/episodes/')
+                             for c in client.put_object.call_args_list))
+
+    @patch('adopt_editorial_catalog.verify_staged_assets')
+    def test_cleanup_can_resume_after_feed_commit_without_overwriting_backups(self, _verify):
+        client = self.client()
+        client.get_object.return_value['Body'] = io.BytesIO(encode(self.plan['feed']))
+        result = apply(client, 'bucket', 'v1', BASE, self.plan, fingerprint(self.plan))
+        client.copy_object.assert_not_called()
+        self.assertFalse(any(c.kwargs['Key'] == 'v1/feed.json' for c in client.put_object.call_args_list))
+        client.delete_object.assert_called_once()
+        self.assertEqual(result['retired'], 1)
